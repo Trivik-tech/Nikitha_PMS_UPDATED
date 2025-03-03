@@ -12,6 +12,8 @@ import ManagerProfile from './components/manager/profile/ManagerProfile';
 import PerformanceReview from './components/manager/review/PerformanceReview';
 import Complete from './components/manager/status/complete/Complete';
 import Pending from './components/manager/status/pending/Pending';
+import HrProfile from './components/hr/profile/HrProfile';
+
 
 
 
@@ -34,6 +36,7 @@ function App() {
           <Route exact path="/manager-review" element={<PerformanceReview/>} />
           <Route exact path="/completed-assessments" element={<Complete/>} />
           <Route exact path="/pending-assessments" element={<Pending/>} />
+          <Route exact path="/hr-profile" element={<HrProfile/>} />
 
 
           

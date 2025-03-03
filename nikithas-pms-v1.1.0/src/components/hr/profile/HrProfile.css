@@ -1,0 +1,213 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+
+
+body, html {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hr-container {
+    width: 90vw;
+    height: 90vh;
+    background: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    border-radius: 10px;
+}
+
+.hr-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+.hr-header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.hr-icon {
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+}
+
+.hr-logo {
+    position: absolute;
+    top: 30px;
+    right: 70px;
+    height: 100px;
+    z-index: 1;
+}
+
+.hr-profile-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    width: 100%;
+    border-bottom: 1px solid #ddd;
+}
+
+.hr-profile-left {
+    display: flex;
+    align-items: center;
+}
+
+.hr-profile-pic {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+.hr-profile-right {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.hr-designation, .hr-location {
+    color: #555;
+    font-size: 14px;
+}
+
+.hr-details {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.hr-section {
+    width: 48%;
+}
+
+.hr-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.hr-contact-info h3 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #333;
+    border-bottom: 2px solid #ddd;
+    background-color: #f9f9f9;
+    padding-bottom: 5px;
+    padding: 10px;
+}
+
+.hr-contact-info {
+    width: 100%;
+    padding: 20px;
+    text-align: left;
+}
+
+.hr-contact-card {
+    padding: 15px;
+    width: 30%;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    display: inline-block;
+    margin: 10px;
+}
+
+@media (max-width: 768px) {
+    .hr-container {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .hr-header {
+        padding: 10px;
+    }
+
+    .hr-logo {
+        height: 50px;
+    }
+
+    .hr-icon {
+        font-size: 20px;
+    }
+
+    .hr-profile-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 15px;
+    }
+
+    .hr-profile-pic {
+        width: 90px;
+        height: 90px;
+    }
+
+    .hr-profile-right {
+        margin-top: 10px;
+    }
+
+    .hr-details {
+        flex-direction: column;
+        gap: 20px;
+        padding: 15px;
+    }
+
+    .hr-section {
+        width: 100%;
+    }
+
+    .hr-contact-info {
+        text-align: center;
+        padding: 15px;
+    }
+    .hr-contact-info h3{
+        text-align: left;
+    }
+
+    .hr-contact-card {
+        width: 90%;
+        margin: 10px auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .hr-container {
+        width: 100%;
+        padding: 10px;
+    }
+
+    .hr-icon {
+        font-size: 18px;
+    }
+
+    .hr-profile-pic {
+        width: 80px;
+        height: 80px;
+    }
+
+    .hr-contact-card {
+        width: 100%;
+    }
+}
