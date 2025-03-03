@@ -1,0 +1,251 @@
+/* Global Styles */
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #f5f5f5;
+  overflow-x: hidden;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background-color: #fff;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  height: 95vh;
+  margin-top: 15px;
+  margin-left: 15px;
+  transition: transform 0.3s ease-in-out;
+  border-radius: 5px;
+}
+
+/* Sidebar Profile Section */
+.profile-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.profile-pic {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.sidebar h2 {
+  font-size: 15px;
+  margin-bottom: 20px;
+  margin-top: 15px;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin-bottom: 15px;
+}
+
+.sidebar ul li a {
+  text-decoration: none;
+  color: #333;
+  font-size: 16px;
+  display: block;
+  padding: 8px;
+  transition: 0.3s;
+}
+
+.sidebar ul li a:hover {
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 4px;
+}
+
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+  display: none;
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Main Content */
+.main-content {
+  flex-grow: 1;
+  padding: 17px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+  width: 100%;
+  position: relative;
+  padding-top: 25px;
+}
+
+.dashboard-header h1 {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-left: 15px;
+}
+
+.dashboard-logo {
+  width: 120px;
+  height: auto;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.header-icons {
+  display: flex;
+  align-items: center;
+}
+
+.notification-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 15px;
+  cursor: pointer;
+  color: #333;
+}
+
+.notification-icon:hover {
+  color: #007bff;
+}
+
+.logout-btn {
+  background-color: #202020;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.logout-btn:hover {
+  background-color: #cc0000;
+}
+
+/* Stats Container */
+.stats-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  margin: 0 4px;
+}
+
+.stat-icon {
+  width: 30px;
+  height: 30px;
+  margin-right: 15px;
+}
+
+.team-icon {
+  color: #007bff;
+}
+
+.pending-icon {
+  color: #FF9800;
+}
+
+.complete-icon {
+  color: #4CAF50;
+}
+
+.stat-card h2 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.stat-card p {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* Chart Container */
+.chart-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+@media screen and (max-width: 768px) {
+  .sidebar {
+      position: fixed;
+      left: -250px;
+      transition: left 0.3s ease-in-out;
+  }
+  .sidebar.open {
+      left: 0;
+  }
+  .sidebar-toggle {
+      display: block;
+  }
+  .stats-container {
+      flex-direction: column;
+  }
+  .stat-card {
+      width: 100%;
+      margin-bottom: 10px;
+  }
+  .chart-container {
+      width: 100%;
+  }
+  .dashboard-logo {
+      width: 90px;
+  }
+}
+.active {
+  font-weight: bold;
+  color: #007bff; /* Active color */
+  text-decoration: underline; /* Example */
+}

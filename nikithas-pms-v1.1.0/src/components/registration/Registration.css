@@ -1,0 +1,122 @@
+/* Wrapper */
+.reg-wrapper {
+  display: flex;
+  flex-direction: column; /* Stack logo on top */
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  width: 900px; /* Reduced width for a smaller form */
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  padding: 20px;
+  position: relative;
+
+  
+}
+
+/* Logo Section */
+.reg-logo-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end; /* Align logo to the top-right */
+  padding: 5px;
+}
+
+.reg-logo {
+  height: 100px; /* Adjusted logo size */
+  width: auto;
+}
+
+/* Layout for form and image */
+.reg-content-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 400px; /* Further reduced container height */
+  
+}
+
+/* Form Section */
+.reg-form-section {
+  flex: 1;
+  padding: 10px;
+  min-height: 350px; /* Reduced form section height */
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Center form content */
+}
+
+/* Move H2 slightly up */
+.reg-form-section h2 {
+  font-size: 20px; /* Slightly smaller heading */
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  margin-bottom: 15px; /* Reduced margin */
+}
+
+/* Input Fields */
+.reg-input-box {
+  margin-bottom: 10px; /* Further reduced spacing */
+}
+
+.reg-input-box input {
+  width: 100%;
+  height: 35px; /* Smaller input field */
+  padding: 0 10px;
+  font-size: 14px;
+  border: 1.5px solid #C7BEBE;
+  border-radius: 5px;
+  background: #eaeaea;
+  transition: all 0.3s ease;
+}
+
+.reg-input-box input:focus {
+  border-color: #303031;
+  background: #fff;
+}
+
+/* Button */
+.reg-input-box.reg-button input {
+  height: 40px; /* Adjusted button height */
+  width: 100%;
+  color: #fff;
+  background: black;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 15px;
+}
+
+.reg-input-box.reg-button input:hover {
+  background: #333;
+}
+
+/* Image Section */
+.reg-image-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 300px; /* Further reduced image section height */
+  background: url('../../assets/images/pms.jpg') no-repeat center center/cover;
+}
+
+.reg-image-section img {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* Labels */
+.reg-input-box label {
+  display: block;
+  font-size: 12px; /* Smaller label text */
+  font-weight: 500;
+  margin-bottom: 3px; /* Reduced spacing */
+  color: #555;
+  text-align: left;
+}

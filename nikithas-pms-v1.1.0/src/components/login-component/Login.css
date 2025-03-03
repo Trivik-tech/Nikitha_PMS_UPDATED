@@ -1,0 +1,222 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    /* font-family: 'Poppins', sans-serif; */
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f8f8;
+}
+
+.login-container {
+    display: flex;
+    background: #fff;
+    width: 900px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    padding: 10px;
+}
+
+.login-form-section {
+    flex: 1;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-form-section h1 {
+    font-size: 28px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.login-form-section  h3{
+    text-align: center;
+    font-weight: 600;
+}
+
+.login-input-group {
+    margin-bottom: 20px;
+}
+
+.login-input-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #555;
+    text-align: left;
+}
+
+.login-input-wrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.login-input-wrapper input {
+    width: 100%;
+    padding: 10px;
+    padding-left: 35px;
+    margin: 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    background: #eaeaea;
+}
+
+.login-input-wrapper .login-input-icon {
+    position: absolute;
+    left: 10px;
+    font-size: 20px;
+    color: #888;
+}
+
+.login-form-section .login-forgot-password {
+    text-align: right;
+    font-size: 14px;
+    color: #007bff;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+.login-form-section button {
+    width: 100%;
+    padding: 10px;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.login-image-section {
+    flex: 1;
+    background: url('../../assets/images/pms.jpg') no-repeat center center/cover;
+}
+
+.login-logo {
+    display: flex;
+    align-items: center;
+    /* margin-bottom: 20px; */
+}
+
+.login-logo img {
+    height: 100px;
+    margin-right: 10px;
+}
+
+input {
+    display: flex;
+    align-items: center;
+    margin: auto;
+    width: 480px;
+    height: 40px;
+    background: #eaeaea;
+    border-radius: 6px;
+}
+
+.login-password-error {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* Modal Overlay - Full Screen Cover */
+.login-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    pointer-events: auto;
+}
+
+/* Modal Content - Centered Box */
+.login-modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 10001;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.login-modal-content h2 {
+    margin-bottom: 15px;
+    font-size: 20px;
+}
+
+.login-modal-content p {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #333;
+}
+
+.login-modal-content button {
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.login-modal-content button:hover {
+    background: #0056b3;
+}
+
+/* Optional fade-in animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+.login-links-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.login-links-container span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.login-register-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-register-link:hover {
+    text-decoration: underline;
+}

@@ -1,0 +1,232 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    scrollbar-width: none;
+}
+
+body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+}
+
+.prf-container {
+    width: 90vw;
+    height: 90vh;
+    overflow-y: auto;
+    background-color: #fff;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    border-radius: 10px;
+}
+
+.prf-title-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+    padding: 10px 0;
+}
+
+.icon-link {
+    font-size: 24px;
+    color: #4f46e5;
+    text-decoration: none;
+    margin-right: auto; /* Pushes the title and logo to the right */
+}
+
+.prf-title {
+    flex-grow: 1;
+    text-align: left;
+    font-size: 30px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.prf-logo {
+    height: 100px;
+    margin-left: auto; /* Pushes logo to far right */
+}
+
+/* Other styles can remain the same */
+
+
+.prf-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin: 10px 0;
+}
+
+.prf-filters label {
+    font-size: 14px;
+}
+
+.prf-filters input {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 180px; 
+}
+
+/* Sections Container */
+.prf-sections {
+    margin-top: 20px;
+}
+
+.prf-section {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Section Header */
+.prf-section-header {
+    background-color: #f7f7f7;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.prf-section-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.prf-section-header span {
+    font-size: 14px;
+    color: #666;
+}
+
+.prf-submit-btn {
+    background-color: #4f46e5;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Table Styles - Fixed Column Widths */
+.prf-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Important for column alignment */
+    background-color: #fff;
+}
+
+.prf-table th, .prf-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    font-size: 14px;
+    vertical-align: middle;
+    box-sizing: border-box;
+}
+
+/* Column Width Definitions */
+.prf-table th:nth-child(1),
+.prf-table td:nth-child(1) {
+    width: 25%; /* KRA column */
+    text-align: left;
+}
+
+.prf-table th:nth-child(2),
+.prf-table td:nth-child(2) {
+    width: 10%; /* Weightage */
+    text-align: center;
+}
+
+.prf-table th:nth-child(3),
+.prf-table td:nth-child(3),
+.prf-table th:nth-child(4),
+.prf-table td:nth-child(4),
+.prf-table th:nth-child(5),
+.prf-table td:nth-child(5) {
+    width: 12%; /* Self, Lead, Peer Ratings */
+    text-align: center;
+}
+
+.prf-table th:nth-child(6),
+.prf-table td:nth-child(6) {
+    width: 12%; /* Average */
+    text-align: center;
+}
+
+/* Input Inside Table */
+.prf-table input {
+    width: 90%;
+    padding: 4px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* Overall Section */
+.prf-overall-section {
+    margin-top: 30px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+/* Overall Score Table */
+.prf-overall-table {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.prf-overall-table th, .prf-overall-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+    background-color: #fff;
+}
+
+/* Overall Remarks */
+.prf-overall-remarks {
+    margin-top: 20px;
+}
+
+.prf-overall-remarks textarea {
+    width: 100%;
+    height: 100px;
+    margin-top: 5px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: none;
+}
+
+/* Actions Section */
+.prf-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.prf-draft-btn, .prf-submit-review-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.prf-submit-review-btn {
+    background-color: #4f46e5;
+    color: white;
+}
+
+.prf-draft-btn {
+    background-color: #e0e0e0;
+}
