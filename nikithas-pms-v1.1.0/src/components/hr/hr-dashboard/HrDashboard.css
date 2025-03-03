@@ -1,0 +1,135 @@
+/* General container layout */
+.container {
+    display: flex;
+    height: 100vh; /* Full viewport height */
+    flex-wrap: wrap; /* Allow wrapping of elements on smaller screens */
+}
+
+.sidebar {
+    width: 20%; /* Sidebar takes up 20% of the screen on larger screens */
+    background-color: #f2f2f2;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    box-sizing: border-box;
+    min-width: 250px; /* Minimum width to ensure it doesn't shrink too much */
+}
+
+.profileImg {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.sidebarTitle {
+    font-size: 18px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.menu {
+    margin-top: 10px;
+}
+
+.menu a {
+    display: block;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+    font-size: 16px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+}
+
+.menu a.activeMenuLink,
+.menu a:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+/* Content area layout */
+.content {
+    flex-grow: 1; /* Takes the remaining space */
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto; /* Allow scrolling if content overflows */
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    height: 40px;
+}
+
+.logoutButton {
+    background-color: #000;
+    color: #fff;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 10px;
+}
+
+/* Status cards layout */
+.statusCards {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.statusCard {
+    flex: 1 1  20px; 
+    margin: 5px;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+    padding: 10px; /* Reduce padding */
+    height: auto; /* Make height adaptive */
+    min-height: 80px; /* Set a minimum height */
+}
+
+.count {
+    font-size: 28px;
+}
+
+/* Charts styles */
+.charts {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    gap: 10px; /* Adds spacing between charts */
+    
+}
+
+.chart {
+    flex: 1 1 48%; /* Ensures both charts take equal width */
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 415px; /* Ensures uniform height */
+    /* max-height: 320px; */
+}
+
+.chart canvas {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+
