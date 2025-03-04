@@ -1,8 +1,11 @@
 package com.triviktech.controllers.manager;
 
+import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
 import com.triviktech.payloads.request.manager.ManagerRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInformationResponseDto;
+import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
+import com.triviktech.services.krakpi.KraKpiService;
 import com.triviktech.services.manager.ManagerService;
 import com.triviktech.utilities.validation.ValidationMessage;
 import org.springframework.http.HttpStatus;
@@ -13,15 +16,18 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
 public class ManagerControllerImpl implements ManagerController{
 
     private final ManagerService managerService;
+    private final KraKpiService kraKpiService;
 
-    public ManagerControllerImpl(ManagerService managerService) {
+    public ManagerControllerImpl(ManagerService managerService, KraKpiService kraKpiService) {
         this.managerService = managerService;
+        this.kraKpiService = kraKpiService;
     }
 
     @Override
@@ -54,7 +60,22 @@ public class ManagerControllerImpl implements ManagerController{
     }
 
     @Override
-    public ResponseEntity<List<EmployeeInformationResponseDto>> listOfEmployeesForManager(String managerId) {
+    public ResponseEntity<List<EmployeeWithPmsStatus>> listOfEmployeesForManager(String managerId) {
         return ResponseEntity.ok(managerService.listOfEmployeesForManager(managerId));
+    }
+
+    @Override
+    public ResponseEntity<List<EmployeeWithPmsStatus>> listOfPMSPendingEmployees(String managerId) {
+        return ResponseEntity.ok(managerService.listOfPMSPendingEmployees(managerId));
+    }
+
+    @Override
+    public ResponseEntity<List<EmployeeWithPmsStatus>> listOfPMSCompletedEmployees(String managerId) {
+        return ResponseEntity.ok(managerService.listOfPMSCompletedEmployees(managerId));
+    }
+
+    @Override
+    public ResponseEntity<?> managerReview(String managerId, KraKpiRequestDto data) {
+        return ResponseEntity.ok(kraKpiService.managerReview(managerId,data));
     }
 }

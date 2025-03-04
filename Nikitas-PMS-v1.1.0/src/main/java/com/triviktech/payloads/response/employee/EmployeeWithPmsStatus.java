@@ -1,28 +1,21 @@
 package com.triviktech.payloads.response.employee;
 
 import com.triviktech.payloads.response.department.DepartmentResponseDto;
-import com.triviktech.payloads.response.manager.ManagerResponseDto;
-import com.triviktech.payloads.response.project.ProjectResponseDto;
 
-import java.util.Date;
-import java.util.Set;
-
-
-public class EmployeeResponseDto {
+public class EmployeeWithPmsStatus {
 
     private String employeeId;
 
     private String firstName;
     private String lastName;
-
-    private Long contactNumber;
-
-    private Date dateOfJoining;
-
+    private String email;
     private String designation;
 
     private DepartmentResponseDto department;
 
+    private boolean selfCompleted;
+    private boolean managerCompleted;
+    private boolean pmsInitiated;
 
     public String getEmployeeId() {
         return employeeId;
@@ -48,20 +41,12 @@ public class EmployeeResponseDto {
         this.lastName = lastName;
     }
 
-    public Long getContactNumber() {
-        return contactNumber;
+    public String getEmail() {
+        return email;
     }
 
-    public void setContactNumber(Long contactNumber) {
-        this.contactNumber = contactNumber;
-    }
-
-    public Date getDateOfJoining() {
-        return dateOfJoining;
-    }
-
-    public void setDateOfJoining(Date dateOfJoining) {
-        this.dateOfJoining = dateOfJoining;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getDesignation() {
@@ -78,5 +63,29 @@ public class EmployeeResponseDto {
 
     public void setDepartment(DepartmentResponseDto department) {
         this.department = department;
+    }
+
+    public boolean isSelfCompleted() {
+        return selfCompleted;
+    }
+
+    public void setSelfCompleted(boolean selfCompleted) {
+        this.selfCompleted = selfCompleted;
+    }
+
+    public boolean isManagerCompleted() {
+        return managerCompleted;
+    }
+
+    public void setManagerCompleted(boolean managerCompleted) {
+        this.managerCompleted = managerCompleted;
+    }
+
+    public boolean isPmsInitiated() {
+        return pmsInitiated;
+    }
+
+    public void setPmsInitiated(boolean pmsInitiated) {
+        this.pmsInitiated = pmsInitiated;
     }
 }

@@ -22,6 +22,25 @@ public class KraKpiResponseDto {
     private Date managerReviewDate;
     private Boolean pmsInitiated;
     private Boolean managerApproval;
+    private boolean selfCompleted;
+
+    private boolean managerCompleted;
+
+    public boolean isSelfCompleted() {
+        return selfCompleted;
+    }
+
+    public void setSelfCompleted(boolean selfCompleted) {
+        this.selfCompleted = selfCompleted;
+    }
+
+    public boolean isManagerCompleted() {
+        return managerCompleted;
+    }
+
+    public void setManagerCompleted(boolean managerCompleted) {
+        this.managerCompleted = managerCompleted;
+    }
 
     public Boolean getManagerApproval() {
         return managerApproval;
