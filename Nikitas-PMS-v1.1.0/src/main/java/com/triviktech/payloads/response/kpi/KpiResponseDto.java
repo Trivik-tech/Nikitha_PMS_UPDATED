@@ -7,6 +7,24 @@ public class KpiResponseDto {
     private Integer weightage;
     private Integer selfScore;
     private Integer managerScore;
+    private Float average;
+    private Integer review2;
+
+    public Float getAverage() {
+        return average;
+    }
+
+    public void setAverage(Float average) {
+        this.average = average;
+    }
+
+    public Integer getReview2() {
+        return review2;
+    }
+
+    public void setReview2(Integer review2) {
+        this.review2 = review2;
+    }
 
     public long getId() {
         return id;

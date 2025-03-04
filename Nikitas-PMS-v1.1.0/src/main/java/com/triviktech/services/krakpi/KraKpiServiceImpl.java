@@ -54,6 +54,11 @@ public class KraKpiServiceImpl implements KraKpiService{
         kraKpi.setRemark(kraKpiRequestDto.getRemark());
         kraKpi.setSelfCompleted(kraKpiRequestDto.isSelfCompleted());
         kraKpi.setManagerCompleted(kraKpi.isManagerCompleted());
+        kraKpi.setDueDate(kraKpiRequestDto.getDueDate());
+        kraKpi.setManagerReviewDate(kraKpiRequestDto.getManagerReviewDate());
+        kraKpi.setSelfReviewDate(kraKpiRequestDto.getSelfReviewDate());
+        kraKpi.setPmsInitiated(kraKpiRequestDto.getPmsInitiated());
+        kraKpi.setReview2(kraKpiRequestDto.isReview2());
 
         // Save KraKpi first to get a valid ID
         kraKpi = kraKpiRepository.saveAndFlush(kraKpi);

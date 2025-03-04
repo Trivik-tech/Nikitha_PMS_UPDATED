@@ -1,6 +1,7 @@
 package com.triviktech.controllers.employee;
 
 import com.triviktech.payloads.request.employee.EmployeeInformationRequestDto;
+import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInformationResponseDto;
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
 import com.triviktech.services.employee.EmployeeService;
@@ -36,5 +37,10 @@ public class EmployeeControllerImpl implements EmployeeController{
     @Override
     public ResponseEntity<KraKpiResponseDto> kraKpiForEmployee(String employeeId) {
         return ResponseEntity.ok(kraKpiService.kraKpiForEmployee(employeeId));
+    }
+
+    @Override
+    public ResponseEntity<KraKpiResponseDto> kraKpiRegistrationForEmployee(KraKpiRequestDto kraKpiRequestDto) {
+        return new ResponseEntity<>(kraKpiService.registerKraKpi(kraKpiRequestDto),HttpStatus.CREATED);
     }
 }

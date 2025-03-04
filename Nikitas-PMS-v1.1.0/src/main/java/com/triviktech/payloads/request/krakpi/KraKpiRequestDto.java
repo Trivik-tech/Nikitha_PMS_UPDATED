@@ -2,6 +2,7 @@ package com.triviktech.payloads.request.krakpi;
 
 import com.triviktech.payloads.request.kra.KraRequestDto;
 
+import java.util.Date;
 import java.util.Set;
 
 public class KraKpiRequestDto {
@@ -9,7 +10,60 @@ public class KraKpiRequestDto {
     private String employeeId;
     private String remark;
     private Set<KraRequestDto> kra;
+    private boolean review2;
+    private Date dueDate;
+    private Date selfReviewDate;
+    private Date managerReviewDate;
+    private Boolean pmsInitiated;
+    private Boolean managerApproval;
 
+    public Boolean getManagerApproval() {
+        return managerApproval;
+    }
+
+    public void setManagerApproval(Boolean managerApproval) {
+        this.managerApproval = managerApproval;
+    }
+
+    public boolean isReview2() {
+        return review2;
+    }
+
+    public void setReview2(boolean review2) {
+        this.review2 = review2;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public Date getSelfReviewDate() {
+        return selfReviewDate;
+    }
+
+    public void setSelfReviewDate(Date selfReviewDate) {
+        this.selfReviewDate = selfReviewDate;
+    }
+
+    public Date getManagerReviewDate() {
+        return managerReviewDate;
+    }
+
+    public void setManagerReviewDate(Date managerReviewDate) {
+        this.managerReviewDate = managerReviewDate;
+    }
+
+    public Boolean getPmsInitiated() {
+        return pmsInitiated;
+    }
+
+    public void setPmsInitiated(Boolean pmsInitiated) {
+        this.pmsInitiated = pmsInitiated;
+    }
 
     private boolean selfCompleted ;  // Default value to avoid null
 
