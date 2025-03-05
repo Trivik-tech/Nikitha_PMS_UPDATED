@@ -1,7 +1,9 @@
 package com.triviktech.controllers.manager;
 
+import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
 import com.triviktech.payloads.request.manager.ManagerRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInformationResponseDto;
+import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/api/v1/pms/manager")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -29,5 +32,14 @@ public interface ManagerController {
     ResponseEntity<ManagerResponseDto> profile(@AuthenticationPrincipal UserDetails manager);
 
     @GetMapping("/employee-list/{managerId}")
-    ResponseEntity<List<EmployeeInformationResponseDto>> listOfEmployeesForManager(@PathVariable String managerId);
+    ResponseEntity<List<EmployeeWithPmsStatus>> listOfEmployeesForManager(@PathVariable String managerId);
+
+    @GetMapping("/pending-pms-list/{managerId}")
+    ResponseEntity<List<EmployeeWithPmsStatus>> listOfPMSPendingEmployees(@PathVariable String managerId);
+
+    @GetMapping("/completed-pms-list/{managerId}")
+    ResponseEntity<List<EmployeeWithPmsStatus>> listOfPMSCompletedEmployees(@PathVariable String managerId);
+
+    @PatchMapping("/manager-review/{managerId}")
+    ResponseEntity<?> managerReview(@PathVariable String  managerId, @RequestBody KraKpiRequestDto data);
 }

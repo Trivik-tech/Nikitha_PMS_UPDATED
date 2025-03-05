@@ -8,6 +8,15 @@ public class KpiRequestDto {
     private Integer weightage;
     private Integer selfScore;
     private Integer managerScore;
+    private Integer review2;
+
+    public Integer getReview2() {
+        return review2;
+    }
+
+    public void setReview2(Integer review2) {
+        this.review2 = review2;
+    }
 
     public long getKpiId() {
         return kpiId;

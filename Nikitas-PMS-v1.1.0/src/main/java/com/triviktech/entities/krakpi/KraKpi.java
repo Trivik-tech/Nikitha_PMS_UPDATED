@@ -1,9 +1,11 @@
 package com.triviktech.entities.krakpi;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.triviktech.entities.employee.EmployeeInformation;
 import com.triviktech.entities.kra.KRA;
 import jakarta.persistence.*;
 
+import java.util.Date;
 import java.util.Set;
 
 @Entity
@@ -30,6 +32,78 @@ public class KraKpi {
 
     @Column(name = "is_manager_completed", nullable = false)
     private boolean managerCompleted;
+
+    @Column(name = "review_2")
+    private Boolean review2;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "due_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private Date dueDate;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "self_review_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private Date selfReviewDate;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "manager_review_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    private Date managerReviewDate;
+
+    @Column(name = "pms_initiated")
+    private Boolean pmsInitiated;
+
+    @Column(name = "manager_approval")
+    private Boolean managerApproval;
+
+    public Boolean getManagerApproval() {
+        return managerApproval;
+    }
+
+    public void setManagerApproval(Boolean managerApproval) {
+        this.managerApproval = managerApproval;
+    }
+
+    public Boolean getPmsInitiated() {
+        return pmsInitiated;
+    }
+
+    public void setPmsInitiated(Boolean pmsInitiated) {
+        this.pmsInitiated = pmsInitiated;
+    }
+
+    public Date getManagerReviewDate() {
+        return managerReviewDate;
+    }
+
+    public void setManagerReviewDate(Date managerReviewDate) {
+        this.managerReviewDate = managerReviewDate;
+    }
+
+    public Date getSelfReviewDate() {
+        return selfReviewDate;
+    }
+
+    public void setSelfReviewDate(Date selfReviewDate) {
+        this.selfReviewDate = selfReviewDate;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public Boolean getReview2() {
+        return review2;
+    }
+
+    public void setReview2(Boolean review2) {
+        this.review2 = review2;
+    }
 
     public Long getKraKpiId() {
         return kraKpiId;

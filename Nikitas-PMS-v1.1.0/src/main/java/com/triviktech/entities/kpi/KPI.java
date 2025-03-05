@@ -28,6 +28,28 @@ public class KPI {
     @JoinColumn(name = "kra_id")
     private KRA kra;
 
+    @Column(name = "average")
+    private Float average;
+
+    @Column(name = "review_2")
+    private Integer review2;
+
+    public Integer getReview2() {
+        return review2;
+    }
+
+    public void setReview2(Integer review2) {
+        this.review2 = review2;
+    }
+
+    public Float getAverage() {
+        return average;
+    }
+
+    public void setAverage(Float average) {
+        this.average = average;
+    }
+
     public Long getKpiId() {
         return kpiId;
     }

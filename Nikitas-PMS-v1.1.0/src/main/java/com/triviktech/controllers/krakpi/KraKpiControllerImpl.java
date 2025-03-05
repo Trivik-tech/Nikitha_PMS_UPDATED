@@ -17,8 +17,5 @@ public class KraKpiControllerImpl implements KraKpiController{
         this.kraKpiService = kraKpiService;
     }
 
-    @Override
-    public ResponseEntity<KraKpiResponseDto> register(KraKpiRequestDto kraKpiRequestDto) {
-        return new ResponseEntity<>(kraKpiService.registerKraKpi(kraKpiRequestDto), HttpStatus.CREATED);
-    }
+
 }

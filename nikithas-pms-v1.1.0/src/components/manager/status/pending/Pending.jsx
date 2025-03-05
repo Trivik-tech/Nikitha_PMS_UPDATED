@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Pending.css";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaHome } from "react-icons/fa";
 import logo from "../../../../assets/images/nikithas-logo.png";
-import Loader from '../../../modal/loader/Loader';
-import {useLocation } from "react-router-dom";
-
+import Loader from "../../../modal/loader/Loader";
+import { useLocation } from "react-router-dom";
+import { MdCallMade } from "react-icons/md";
 
 const teamMembers = [
   {
@@ -115,20 +115,20 @@ const teamMembers = [
   },
 ];
 
+
 export default function Pending() {
   const [teamList, setTeamList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  
+
   const location = useLocation();
   const navigate = useNavigate();
-  const entriesPerPage = 10; // Show fewer entries to ensure scrollable table
-  
-  useEffect(() => {
-    document.title = 'Nikithas PMS-Pending Assessment';
-}, [location.pathname]);
+  const entriesPerPage = 10;
 
+  useEffect(() => {
+    document.title = "Nikithas PMS-Pending Assessment";
+  }, [location.pathname]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -160,19 +160,15 @@ export default function Pending() {
     fetchData();
   }, [navigate]);
 
-  
   const filteredTeam = teamMembers.filter(
     (member) =>
       member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.email.toLowerCase().includes(searchTerm.toLowerCase())
+      member.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredTeam.length / entriesPerPage);
   const startIndex = (currentPage - 1) * entriesPerPage;
-  const currentEntries = filteredTeam.slice(
-    startIndex,
-    startIndex + entriesPerPage
-  );
+  const currentEntries = filteredTeam.slice(startIndex, startIndex + entriesPerPage);
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
@@ -182,10 +178,12 @@ export default function Pending() {
 
   return (
     <div className="pending-team-container">
-       {loading && <Loader />}
-      {/* Header with Title, Search Bar, and Logo */}
+      {loading && <Loader />}
       <div className="pending-header">
-        <h1>Assessment Pending List</h1>
+        <div className="pending-header-title">
+          <FaHome className="pending-home-icon" onClick={() => navigate('/manager-dashboard')} />
+          <h1>Assessment Pending List</h1>
+        </div>
         <div className="pending-search-bar">
           <FaSearch className="pending-search-icon" />
           <input
@@ -198,7 +196,6 @@ export default function Pending() {
         <img src={logo} alt="Company Logo" className="pending-company-logo" />
       </div>
 
-      {/* Scrollable Table Container */}
       <div className="pending-table-container">
         <table className="pending-team-table">
           <thead>
@@ -208,6 +205,7 @@ export default function Pending() {
               <th>Position</th>
               <th>Self</th>
               <th>Manager</th>
+              <th>Notify</th>
             </tr>
           </thead>
           <tbody>
@@ -224,18 +222,17 @@ export default function Pending() {
                 <td>{member.department}</td>
                 <td>{member.position}</td>
                 <td
-                  style={{
-                    color: member.self === "Completed" ? "green" : "orange",
-                  }}
+                  style={{ color: member.self === "Completed" ? "green" : "orange" }}
                 >
                   {member.self}
                 </td>
                 <td
-                  style={{
-                    color: member.manager === "Completed" ? "green" : "orange",
-                  }}
+                  style={{ color: member.manager === "Completed" ? "green" : "orange" }}
                 >
                   {member.manager}
+                </td>
+                <td className="pending-notify-icon">
+                  <MdCallMade className="notify-bell" />
                 </td>
               </tr>
             ))}
@@ -243,7 +240,6 @@ export default function Pending() {
         </table>
       </div>
 
-      {/* Pagination */}
       <div className="pending-pagination">
         <button
           onClick={() => handlePageChange(currentPage - 1)}
@@ -252,8 +248,7 @@ export default function Pending() {
           Prev
         </button>
         <span>
-          {" "}
-          Page {currentPage} of {totalPages}{" "}
+          Page {currentPage} of {totalPages}
         </span>
         <button
           onClick={() => handlePageChange(currentPage + 1)}
