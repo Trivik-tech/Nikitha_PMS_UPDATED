@@ -88,7 +88,7 @@ const PerformanceReview = () => {
             <table className="prf-table">
               <thead>
                 <tr>
-                  <th>KPI</th>
+                  <th>KPI's</th>
                   <th>Weightage</th>
                   <th>Self Rating</th>
                   <th>Review-1</th>
@@ -121,7 +121,7 @@ const PerformanceReview = () => {
               <tr>
                 <th>Category</th>
                 <th>Self Score</th>
-                <th>Manager Score</th>
+                
                 <th>Review 1</th>
                 <th>Review 2</th>
                 <th>Final Score</th>
@@ -131,7 +131,7 @@ const PerformanceReview = () => {
               <tr>
                 <td>Total Score</td>
                 <td>80.5</td>
-                <td>--</td>
+               
                 <td>--</td>
                 <td>--</td>
                 <td>--</td>

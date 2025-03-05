@@ -13,9 +13,9 @@ body {
 .complete-team-container {
   display: flex;
   flex-direction: column;
-  width: 90vw;
-  max-width: 1200px;
-  height: 90vh;
+  width: 97vw;
+  /* max-width: 1200px; */
+  height: 95vh;
   background: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
