@@ -20,8 +20,6 @@ public class EmployeeInformationResponseDto {
 
     private Date dateOfJoining;
 
-
-
     private String designation;
 
     private DepartmentResponseDto department;

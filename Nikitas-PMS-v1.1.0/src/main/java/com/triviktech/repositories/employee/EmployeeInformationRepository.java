@@ -13,4 +13,6 @@ public interface EmployeeInformationRepository extends JpaRepository<EmployeeInf
     List<EmployeeInformation> findAllByManager(Manager manager);
 
     Optional<EmployeeInformation> findByEmployeeIdAndManager(String employeeId, Manager manager);
+
+    Optional<EmployeeInformation> findByManager(Manager manager);
 }

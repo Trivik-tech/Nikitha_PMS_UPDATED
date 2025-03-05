@@ -12,7 +12,13 @@ import ManagerProfile from './components/manager/profile/ManagerProfile';
 import PerformanceReview from './components/manager/review/PerformanceReview';
 import Complete from './components/manager/status/complete/Complete';
 import Pending from './components/manager/status/pending/Pending';
+
 import EmployeeDetails from './components/hr/empdetails/EmployeeDetails';
+
+import HrProfile from './components/hr/profile/HrProfile';
+import StartPms from './components/hr/pms/StartPms';
+
+
 
 
 
@@ -35,7 +41,12 @@ function App() {
           <Route exact path="/manager-review" element={<PerformanceReview/>} />
           <Route exact path="/completed-assessments" element={<Complete/>} />
           <Route exact path="/pending-assessments" element={<Pending/>} />
+
           <Route exact path="/employee-details" element={<EmployeeDetails/>} />
+
+          <Route exact path="/hr-profile" element={<HrProfile/>} />
+          <Route exact path="/hr-startpms" element={<StartPms/>} />
+
 
 
           

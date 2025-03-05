@@ -5,6 +5,8 @@
     font-family: 'Arial', sans-serif;
 }
 
+
+
 body, html {
     width: 100vw;
     height: 100vh;
@@ -15,9 +17,9 @@ body, html {
     align-items: center;
 }
 
-.manager-container {
-    width: 97vw;
-    height: 95vh;
+.hr-container {
+    width: 90vw;
+    height: 90vh;
     background: white;
     padding: 20px;
     display: flex;
@@ -27,7 +29,7 @@ body, html {
     border-radius: 10px;
 }
 
-.manager-header {
+.hr-header {
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -35,29 +37,27 @@ body, html {
     padding: 10px;
 }
 
-.header-left {
+.hr-header-left {
     display: flex;
     align-items: center;
     gap: 15px;
 }
 
-.icon {
+.hr-icon {
     font-size: 24px;
     cursor: pointer;
     color: #333;
 }
 
-.manager-logo {
-    position: absolute;  /* Position it absolutely relative to .manager-container */
+.hr-logo {
+    position: absolute;
     top: 30px;
     right: 70px;
     height: 100px;
     z-index: 1;
 }
 
-
-/* Profile section */
-.manager-profile-card {
+.hr-profile-card {
     display: flex;
     align-items: center;
     gap: 20px;
@@ -66,68 +66,64 @@ body, html {
     border-bottom: 1px solid #ddd;
 }
 
-.profile-left {
+.hr-profile-left {
     display: flex;
     align-items: center;
 }
 
-.manager-profile-pic {
+.hr-profile-pic {
     width: 100px;
     height: 100px;
     border-radius: 50%;
-    /* border: 3px solid #ddd; */
 }
 
-.profile-right {
+.hr-profile-right {
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
 
-.designation, .location {
+.hr-designation, .hr-location {
     color: #555;
     font-size: 14px;
 }
 
-/* Personal & Professional Details */
-.manager-details {
+.hr-details {
     width: 100%;
     display: flex;
     justify-content: space-between;
     padding: 20px;
 }
 
-.manager-section {
+.hr-section {
     width: 48%;
 }
 
-.info-list {
+.hr-info-list {
     display: flex;
     flex-direction: column;
     gap: 10px;
     font-size: 14px;
+    margin-top: 10px;
 }
 
-.manager-contact-info h3 {
+.hr-contact-info h3 {
     margin-bottom: 10px;
     font-size: 18px;
     color: #333;
     border-bottom: 2px solid #ddd;
-    background-color:#f9f9f9 ;
+    background-color: #f9f9f9;
     padding-bottom: 5px;
     padding: 10px;
 }
 
-/* Contact Information */
-.manager-contact-info {
+.hr-contact-info {
     width: 100%;
     padding: 20px;
     text-align: left;
-    /* background-color: #f9f9f9 ; */
 }
 
-.contact-card {
-    /* background: #f9f9f9; */
+.hr-contact-card {
     padding: 15px;
     width: 30%;
     text-align: center;
@@ -138,89 +134,80 @@ body, html {
     margin: 10px;
 }
 
-/* Existing styles remain unchanged */
-
-/* Mobile Responsiveness */
 @media (max-width: 768px) {
-    /* Adjust container width */
-    .manager-container {
+    .hr-container {
         width: 95%;
         padding: 15px;
     }
 
-    /* Header adjustments */
-    .manager-header {
+    .hr-header {
         padding: 10px;
     }
 
-    .manager-logo {
+    .hr-logo {
         height: 50px;
     }
 
-    /* Back & Home icons */
-    .icon {
+    .hr-icon {
         font-size: 20px;
     }
 
-    /* Profile section: Stack image & details vertically */
-    .manager-profile-card {
+    .hr-profile-card {
         flex-direction: column;
         align-items: center;
         text-align: center;
         padding: 15px;
     }
 
-    .manager-profile-pic {
+    .hr-profile-pic {
         width: 90px;
         height: 90px;
     }
 
-    .profile-right {
+    .hr-profile-right {
         margin-top: 10px;
     }
 
-    /* Stack details vertically */
-    .manager-details {
+    .hr-details {
         flex-direction: column;
         gap: 20px;
         padding: 15px;
     }
 
-    .manager-section {
+    .hr-section {
         width: 100%;
     }
 
-    /* Contact Information */
-    .manager-contact-info {
+    .hr-contact-info {
         text-align: center;
         padding: 15px;
     }
-    .manager-contact-info h3{
+    .hr-contact-info h3{
         text-align: left;
     }
 
-    .contact-card {
+    .hr-contact-card {
         width: 90%;
         margin: 10px auto;
     }
 }
 
 @media (max-width: 600px) {
-    .manager-container {
+    .hr-container {
         width: 100%;
         padding: 10px;
     }
 
-    .icon {
+    .hr-icon {
         font-size: 18px;
     }
 
-    .manager-profile-pic {
+    .hr-profile-pic {
         width: 80px;
         height: 80px;
     }
 
-    .contact-card {
+    .hr-contact-card {
         width: 100%;
     }
 }

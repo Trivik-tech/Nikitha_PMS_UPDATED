@@ -11,9 +11,7 @@ public class KraResponseDto1 {
 
     private String kraName;
 
-    private boolean selfCompleted;
 
-    private boolean managerCompleted;
 
     private int weightage;
 
@@ -35,21 +33,7 @@ public class KraResponseDto1 {
         this.kraName = kraName;
     }
 
-    public boolean isSelfCompleted() {
-        return selfCompleted;
-    }
 
-    public void setSelfCompleted(boolean selfCompleted) {
-        this.selfCompleted = selfCompleted;
-    }
-
-    public boolean isManagerCompleted() {
-        return managerCompleted;
-    }
-
-    public void setManagerCompleted(boolean managerCompleted) {
-        this.managerCompleted = managerCompleted;
-    }
 
     public int getWeightage() {
         return weightage;
