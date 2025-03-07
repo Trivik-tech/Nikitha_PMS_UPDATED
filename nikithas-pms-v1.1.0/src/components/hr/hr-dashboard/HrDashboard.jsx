@@ -1,11 +1,14 @@
 import React from 'react';
 import { Bar, Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
-import './HrDashboard.css'; // Import the external CSS file
+import { Bell } from 'lucide-react';
+import './HrDashboard.css'; // Import external CSS
+import logo from '../../../assets/images/nikithas-logo.png';
+import profile from '../../../assets/images/profile1.jpg';
 
 // Registering chart.js components
 ChartJS.register(
-  CategoryScale, 
+  CategoryScale,
   LinearScale,
   BarElement,
   Title,
@@ -14,7 +17,7 @@ ChartJS.register(
   ArcElement
 );
 
-const Dashboard = () => {
+const HrDashboard = () => {
   // Bar chart data
   const barData = {
     labels: ['IT', 'HR', 'Finance', 'Marketing', 'Sales'],
@@ -43,60 +46,54 @@ const Dashboard = () => {
     datasets: [
       {
         data: [70, 30],
-        backgroundColor: ['#28a745', '#ffc107'],
+        backgroundColor: ['#28a745', '#ffa500'],
       },
     ],
   };
 
   return (
-    <div className="container">
-      <div className="sidebar">
-        <img src="profile.png" alt="Profile" className="profileImg" />
-        <h1 className="sidebarTitle">Hi!<br />Avinash S H</h1>
-        <div className="menu">
-          <a href="#" className="activeMenuLink">HR Dashboard</a>
-          <a href="#">Employee Details</a>
-          <a href="#">Employee Performance</a>
-          <a href="#">My Profile</a>
+    <div className="hr-dashboard-container">
+      <aside className="hr-dashboard-sidebar">
+        <div className="hr-dashboard-profile-container">
+          <img src={profile} alt="Profile" className="hr-dashboard-profileImg" />
+          <h2>Avinash S. H.</h2>
         </div>
-      </div>
-      <div className="content">
-        <div className="header">
-          <img src="logo.png" alt="Nikitha PMS" className="logo" />
-          <button className="logoutButton">Logout</button>
-        </div>
-        {/* <h1>Employee Assessment Status</h1> */}
-        <div className="statusCards">
-          <div className="statusCard">
-            <h5>Total Employees</h5>
-            <div className="count">1,254</div>
+        <ul>
+          <li><a href="#" className="active">HR Dashboard</a></li>
+          <li><a href="#">Employee Details</a></li>
+          <li><a href="#">Employee Performance</a></li>
+          <li><a href="#">My Profile</a></li>
+        </ul>
+      </aside>
+
+      <main className="hr-dashboard-main-content">
+        <header className="hr-dashboard-header">
+          <h1>HR PMS Dashboard</h1>
+          <img src={logo} alt="Nikitha PMS" className="hr-dashboard-logo" />
+          <div className="hr-dashboard-actions">
+            <Bell className="hr-dashboard-notification-icon" size={24} />
+            <button className="hr-dashboard-logoutButton">Logout</button>
           </div>
-          <div className="statusCard">
-            <h5>Completed Assessments</h5>
-            <div className="count">876</div>
-          </div>
-          <div className="statusCard">
-            <h5>Pending Assessments</h5>
-            <div className="count">375</div>
-          </div>
-          <div className="statusCard">
-            <h5>Completion Rate</h5>
-            <div className="count">69.8%</div>
-          </div>
-        </div>
-        <div className="charts">
-          <div className="chart">
-            
+        </header>
+
+        <section className="hr-dashboard-stats-container">
+          <div className="hr-dashboard-stat-card"><h2>Total Employees</h2><p>1,254</p></div>
+          <div className="hr-dashboard-stat-card"><h2>Completed Assessments</h2><p>876</p></div>
+          <div className="hr-dashboard-stat-card"><h2>Pending Assessments</h2><p>375</p></div>
+          <div className="hr-dashboard-stat-card"><h2>Completion Rate</h2><p>69.8%</p></div>
+        </section>
+
+        <section className="hr-dashboard-chart-container">
+          <div className="hr-dashboard-chart-box hr-dashboard-bar-chart">
             <Bar data={barData} options={{ responsive: true, scales: { y: { beginAtZero: true } } }} />
           </div>
-          <div className="chart">
-           
+          <div className="hr-dashboard-chart-box hr-dashboard-pie-chart">
             <Pie data={pieData} options={{ responsive: true }} />
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
 };
 
-export default Dashboard;
+export default HrDashboard;
