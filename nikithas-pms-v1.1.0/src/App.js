@@ -2,6 +2,8 @@
 import Login from './components/login-component/Login';
 import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 
+
+import HrDashboard from './components/hr/hr-dashboard/HrDashboard';
 import EmployeeDashboard from './components/employee/EmployeeDashboard';
 import ManagerDashboard from './components/manager/dashboard/ManagerDashboard';
 import Registration from './components/registration/Registration';
@@ -41,11 +43,13 @@ function App() {
           <Route exact path="/manager-review" element={<PerformanceReview/>} />
           <Route exact path="/completed-assessments" element={<Complete/>} />
           <Route exact path="/pending-assessments" element={<Pending/>} />
+          
 
           <Route exact path="/employee-details" element={<EmployeeDetails/>} />
 
           <Route exact path="/hr-profile" element={<HrProfile/>} />
           <Route exact path="/hr-startpms" element={<StartPms/>} />
+          <Route exact path="/hr-dashboard"  element={<HrDashboard/>}/>
 
 
 
