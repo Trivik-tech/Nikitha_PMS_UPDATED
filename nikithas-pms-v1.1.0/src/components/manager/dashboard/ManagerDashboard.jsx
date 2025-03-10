@@ -95,7 +95,7 @@ const ManagerDashboard = () => {
 
       <div className="main-content">
         <div className="dashboard-header">
-          <h1>Manager Dashboard</h1>
+          <h1>Manager PMS Dashboard</h1>
           <img src={logo} alt="Logo" className="dashboard-logo" />
           <div className="header-icons">
             <Bell className="notification-icon" onClick={() => setNotificationOpen(!notificationOpen)} />

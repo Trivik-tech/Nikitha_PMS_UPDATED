@@ -26,6 +26,7 @@ const teamMembers = [
 ];
 
 
+
 export default function TeamPage() {
   const [teamList, setTeamList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +50,7 @@ export default function TeamPage() {
       } catch (error) {
         if (error.response?.status === 401) {
           localStorage.removeItem("token");
-          navigate("/login");
+          navigate("/");
         }
       } finally {
         setLoading(false);
