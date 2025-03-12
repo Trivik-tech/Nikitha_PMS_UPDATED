@@ -1,0 +1,304 @@
+body {
+    min-height: 100vh;
+    background-color: var(--base-clr);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-clr);
+    margin: 0;
+    overflow: hidden;
+}
+
+.team-container {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 95vh;
+    background: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 8px;
+}
+
+/* HEADER SECTION */
+.header {
+    display: flex;
+    justify-content: space-between; /* Moves elements to opposite sides */
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 100;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+    color: #525252;
+    margin-left: 0;
+}
+
+.home-icon {
+    font-size: 40px;
+    color: #525252;
+    cursor: pointer;
+}
+
+/* SEARCH BAR & FILTER BUTTON */
+.search-filter-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-bar {
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: gray;
+}
+
+.search-bar input {
+    padding: 8px 10px 8px 30px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.filter-button {
+    background: none;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-left: 35%;
+  }
+  
+  .filter-button i {
+    margin-right: 8px;
+  }
+/* COMPANY LOGO & ADD BUTTON */
+.company-logo {
+    width: 130px;
+    height: auto;
+    object-fit: contain;
+    margin-right: 20px;
+    margin-bottom: 3%;
+}
+
+.add-button-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 9%;
+    margin-left: 6%;
+}
+
+.add-button {
+    background-color: #565756;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+.add-button:hover {
+    background-color: #333533;
+}
+
+/* TABLE STYLES */
+.table-container {
+    flex: 1;
+    overflow-y: auto;
+    max-height: calc(90vh - 180px);
+}
+
+.team-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.team-table th,
+.team-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.team-table th {
+    background: #f1f1f1;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* ICONS */
+.edit-icon,
+.delete-icon {
+    cursor: pointer;
+    margin: 0 8px;
+    font-size: 20px;
+}
+
+.edit-icon {
+    color: #007bff;
+}
+
+.delete-icon {
+    color: #dc3545;
+}
+
+.edit-icon:hover {
+    color: #0056b3;
+}
+
+.delete-icon:hover {
+    color: #a71d2a;
+}
+
+/* PAGINATION */
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    position: sticky;
+    bottom: 0;
+    background: white;
+    border-top: 1px solid #ddd;
+}
+
+.pagination button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.pagination button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.pagination span {
+    font-weight: bold;
+}
+
+/* RESPONSIVE DESIGN */
+
+/* Medium Screens (Tablets & Small Laptops) */
+@media (max-width: 1024px) {
+    .team-container {
+        width: 95vw;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 10px;
+    }
+
+    .search-bar {
+        width: 80%;
+        max-width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    .pagination {
+        justify-content: center;
+    }
+}
+
+/* Small Screens (Tablets & Large Phones) */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .search-bar {
+        width: 90%;
+    }
+
+    .team-table th,
+    .team-table td {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+    .add-button-container {
+        justify-content: center;
+        margin-top: 5%;
+    }
+
+    .pagination {
+        flex-direction: column;
+        gap: 5px;
+        align-items: center;
+    }
+}
+
+/* Mobile Screens */
+@media (max-width: 480px) {
+    .team-container {
+        width: 98vw;
+        height: auto;
+    }
+
+    .header-title {
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .home-icon {
+        font-size: 1.8rem;
+    }
+
+    .search-bar {
+        width: 100%;
+    }
+
+    .team-table th,
+    .team-table td {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .pagination {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .add-button {
+        width: 100%;
+        text-align: center;
+    }
+}
