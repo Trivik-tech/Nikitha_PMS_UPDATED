@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Chart, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie, getElementsAtEvent } from "react-chartjs-2";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, NavLink } from "react-router-dom";
 import { Users, NotebookPen, CheckCircle, Bell } from "lucide-react";
 import axios from "axios";
-import Notification from '../../modal/notification/Notification';
-import { NavLink } from 'react-router-dom';
+import Notification from "../../modal/notification/Notification";
 
 import "./ManagerDashboard.css";
 import logo from "../../../assets/images/nikithas-logo.png";
@@ -18,7 +17,7 @@ const ManagerDashboard = () => {
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [managerData, setManagerData] = useState(null);
 
-  const chartRef = useRef(); // <-- Add ref
+  const chartRef = useRef();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,7 +33,7 @@ const ManagerDashboard = () => {
         );
         setManagerData(response.data);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching manager data:", error);
       }
     };
     fetchData();
@@ -44,7 +43,7 @@ const ManagerDashboard = () => {
     labels: ["Completed", "Pending"],
     datasets: [
       {
-        data: [50, 50],
+        data: [75, 25],
         backgroundColor: ["#4CAF50", "#FF9800"],
         borderWidth: 1,
       },
@@ -59,19 +58,16 @@ const ManagerDashboard = () => {
     if (elements.length > 0) {
       const clickedIndex = elements[0].index;
       if (clickedIndex === 0) {
-        navigate("/completed-assessments"); // Completed
+        navigate("/completed-assessments");
       } else if (clickedIndex === 1) {
-        navigate("/pending-assessments"); // Pending
+        navigate("/pending-assessments");
       }
     }
   };
 
   return (
     <div className="dashboard-container">
-      <button
-        className="sidebar-toggle"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-      >
+      <button className="sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
         ☰
       </button>
 
@@ -79,16 +75,12 @@ const ManagerDashboard = () => {
         <div className="profile-container">
           <img src={profile} alt="Profile" className="profile-pic" />
           <h2>
-            {managerData?.firstName || "First Name"}{" "}
-            {managerData?.lastName || "Last Name"}
+            {managerData?.firstName || "First Name"} {managerData?.lastName || "Last Name"}
           </h2>
         </div>
         <ul>
           <li>
-            <NavLink
-              to="/manager-dashboard"
-              className={({ isActive }) => (isActive ? "active" : "")}
-            >
+            <NavLink to="/manager-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>
               Dashboard
             </NavLink>
           </li>
@@ -103,16 +95,11 @@ const ManagerDashboard = () => {
 
       <div className="main-content">
         <div className="dashboard-header">
-          <h1>Manager Dashboard</h1>
+          <h1>Manager PMS Dashboard</h1>
           <img src={logo} alt="Logo" className="dashboard-logo" />
           <div className="header-icons">
-            <Bell
-              className="notification-icon" 
-              onClick={() => setNotificationOpen(!notificationOpen)}
-            />
-            {notificationOpen && (
-              <Notification onClose={() => setNotificationOpen(false)} />
-            )}
+            <Bell className="notification-icon" onClick={() => setNotificationOpen(!notificationOpen)} />
+            {notificationOpen && <Notification onClose={() => setNotificationOpen(false)} />}
             <Link to="/" className="logout-btn">Logout</Link>
           </div>
         </div>
@@ -144,18 +131,12 @@ const ManagerDashboard = () => {
         <div className="chart-container">
           <h3 className="chart-title">Assessment Status</h3>
           <div className="chart-wrapper">
-            <Pie
-              ref={chartRef} // <-- Attach ref to Pie
-              data={data}
-              onClick={handleChartClick} // <-- Pass only event to handler
-            />
+            <Pie ref={chartRef} data={data} onClick={handleChartClick} />
           </div>
         </div>
       </div>
 
-      {notificationOpen && (
-        <Notification onClose={() => setNotificationOpen(false)} />
-      )}
+      {notificationOpen && <Notification onClose={() => setNotificationOpen(false)} />}
     </div>
   );
 };

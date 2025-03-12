@@ -11,8 +11,8 @@ body::-webkit-scrollbar {
 }
 
 .prf-container {
-    width: 90vw;
-    height: 90vh;
+    width: 97vw;
+    height: 95vh;
     overflow-y: auto;
     background-color: #fff;
     padding: 20px;

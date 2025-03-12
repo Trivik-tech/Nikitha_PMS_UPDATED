@@ -12,9 +12,9 @@ body {
 .team-container {
   display: flex;
   flex-direction: column;
-  width: 90vw;
-  max-width: 1200px;
-  height: 90vh;
+  width: 97vw !important;
+  /* max-width: 1200px; */
+  height: 95vh;
   background: white;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
@@ -48,11 +48,20 @@ body {
 }
 
 .home-icon {
-  font-size: 30px;
-  color:black;
+  font-size: 35px;
+  color: black;
   cursor: pointer;
 }
 
+/* Search & Filter Container */
+.search-filter-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+}
+
+/* Search Bar */
 .search-bar {
   position: relative;
 }
@@ -69,6 +78,29 @@ body {
   padding: 8px 10px 8px 30px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  width: 300px;
+}
+
+/* New Filter Button (Outside Search Bar) */
+.filter-button {
+  background: white;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.filter-button:hover {
+  background: #f1f1f1;
+}
+
+.filter-icon {
+  color: gray;
+  font-size: 16px;
 }
 
 .table-container {
@@ -84,7 +116,7 @@ body {
 
 .team-table th,
 .team-table td {
-  padding: 15px;
+ padding: 10px;
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
@@ -97,11 +129,12 @@ body {
 }
 
 .profile-pic {
-  width: 30px;
-  height: 30px;
+  width: 40px !important;
+  height: 40px !important;
   border-radius: 50%;
   margin-right: 10px;
   vertical-align: middle;
+  
 }
 
 .team-member {
