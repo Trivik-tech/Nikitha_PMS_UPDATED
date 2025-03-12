@@ -1,11 +1,10 @@
+/* Global Styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Arial', sans-serif;
 }
-
-
 
 body, html {
     width: 100vw;
@@ -17,6 +16,7 @@ body, html {
     align-items: center;
 }
 
+/* HR Container */
 .hr-container {
     width: 90vw;
     height: 90vh;
@@ -27,14 +27,18 @@ body, html {
     align-items: center;
     justify-content: flex-start;
     border-radius: 10px;
+    opacity: 0;
+    animation: fadeIn 0.8s ease-in-out forwards;
 }
 
+/* Header */
 .hr-header {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px;
+    animation: slideDown 0.8s ease-in-out;
 }
 
 .hr-header-left {
@@ -44,9 +48,15 @@ body, html {
 }
 
 .hr-icon {
-    font-size: 24px;
+    font-size: 30px;
     cursor: pointer;
     color: #333;
+    transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.hr-icon:hover {
+    transform: scale(1.1);
+    color: #007bff;
 }
 
 .hr-logo {
@@ -57,6 +67,7 @@ body, html {
     z-index: 1;
 }
 
+/* Profile Section */
 .hr-profile-card {
     display: flex;
     align-items: center;
@@ -64,6 +75,7 @@ body, html {
     padding: 20px;
     width: 100%;
     border-bottom: 1px solid #ddd;
+    animation: fadeInUp 0.8s ease-in-out;
 }
 
 .hr-profile-left {
@@ -75,6 +87,11 @@ body, html {
     width: 100px;
     height: 100px;
     border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
+}
+
+.hr-profile-pic:hover {
+    transform: scale(1.05);
 }
 
 .hr-profile-right {
@@ -86,8 +103,10 @@ body, html {
 .hr-designation, .hr-location {
     color: #555;
     font-size: 14px;
+    transition: color 0.3s ease-in-out;
 }
 
+/* Personal & Professional Details */
 .hr-details {
     width: 100%;
     display: flex;
@@ -104,7 +123,14 @@ body, html {
     flex-direction: column;
     gap: 10px;
     font-size: 14px;
-    margin-top: 10px;
+}
+
+/* Contact Information */
+.hr-contact-info {
+    width: 100%;
+    padding: 20px;
+    text-align: left;
+    animation: fadeInUp 0.8s ease-in-out;
 }
 
 .hr-contact-info h3 {
@@ -117,12 +143,7 @@ body, html {
     padding: 10px;
 }
 
-.hr-contact-info {
-    width: 100%;
-    padding: 20px;
-    text-align: left;
-}
-
+/* Contact Cards */
 .hr-contact-card {
     padding: 15px;
     width: 30%;
@@ -132,60 +153,64 @@ body, html {
     font-size: 14px;
     display: inline-block;
     margin: 10px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    animation: slideIn 0.7s ease-in-out;
 }
 
+.hr-contact-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
     .hr-container {
         width: 95%;
         padding: 15px;
     }
-
-    .hr-header {
-        padding: 10px;
-    }
-
-    .hr-logo {
-        height: 50px;
-    }
-
-    .hr-icon {
-        font-size: 20px;
-    }
-
     .hr-profile-card {
         flex-direction: column;
         align-items: center;
         text-align: center;
         padding: 15px;
     }
-
     .hr-profile-pic {
         width: 90px;
         height: 90px;
     }
-
-    .hr-profile-right {
-        margin-top: 10px;
-    }
-
     .hr-details {
         flex-direction: column;
         gap: 20px;
         padding: 15px;
     }
-
     .hr-section {
         width: 100%;
     }
-
     .hr-contact-info {
         text-align: center;
         padding: 15px;
     }
-    .hr-contact-info h3{
-        text-align: left;
-    }
-
     .hr-contact-card {
         width: 90%;
         margin: 10px auto;
@@ -197,16 +222,10 @@ body, html {
         width: 100%;
         padding: 10px;
     }
-
-    .hr-icon {
-        font-size: 18px;
-    }
-
     .hr-profile-pic {
         width: 80px;
         height: 80px;
     }
-
     .hr-contact-card {
         width: 100%;
     }

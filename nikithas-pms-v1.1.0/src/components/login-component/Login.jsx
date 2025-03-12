@@ -13,52 +13,43 @@ const Login = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const[title,setTitle]=useState('');
+  const [title, setTitle] = useState('');
 
   const navigation = useNavigate();
-
   const { username, password } = login;
 
   const onInputChange = (e) => {
     setLogin({ ...login, [e.target.name]: e.target.value });
   };
 
-  // Function to decide dashboard navigation based on role
-  const navigateTo = async (token) => {
-    try {
-      const response = await axios.get(`http://localhost:8080/api/v1/pms/auth/${token}`);
-      if (response.data.role === 'MANAGER') {
-        navigation('/manager-dashboard');
-      } else if (response.data.role === 'HR') {
-        navigation('/hr-dashboard');
-      } else if (response.data.role === 'EMPLOYEE') {
-        navigation('/employee-dashboard');
-      }
-    } catch (error) {
-      console.error('Error navigating:', error);
-    }
-  };
-
-  // Form submit handler with custom validation
-  const onSubmit = async (e) => {
+  const handleHardcodedLogin = (e) => {
     e.preventDefault();
-    setErrorMessage('');
-    setTitle('')
-    setShowModal(false);
-
-    // Collect validation errors
-    const errors = [];
-    if (!username.trim()) errors.push('Username is required.');
-    if (!password.trim()) errors.push('Password is required.');
-
-    // If any errors exist, show modal and stop login process
-    if (errors.length > 0) {
-      setErrorMessage(errors.join('\n'));
+    
+    if (!username.trim() || !password.trim()) {
+      setErrorMessage('Username and password are required.');
       setTitle('Login Error');
       setShowModal(true);
       return;
     }
 
+    if (username === 'MG1234' && password === '12345') {
+      navigation('/manager-dashboard');
+    } else if (username === 'HR1234' && password === '12345') {
+      navigation('/hr-dashboard');
+    } else if (username === 'EMP1234' && password === '12345') {
+      navigation('/employee-dashboard');
+    } else {
+      setErrorMessage('Invalid credentials. Please try again.');
+      setTitle('Login Error');
+      setShowModal(true);
+    }
+  };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage('');
+    setTitle('');
+    setShowModal(false);
     setLoading(true);
 
     try {
@@ -83,6 +74,21 @@ const Login = () => {
     }
   };
 
+  const navigateTo = async (token) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/v1/pms/auth/${token}`);
+      if (response.data.role === 'MANAGER') {
+        navigation('/manager-dashboard');
+      } else if (response.data.role === 'HR') {
+        navigation('/hr-dashboard');
+      } else if (response.data.role === 'EMPLOYEE') {
+        navigation('/employee-dashboard');
+      }
+    } catch (error) {
+      console.error('Error navigating:', error);
+    }
+  };
+
   const closeModal = () => {
     setShowModal(false);
   };
@@ -92,7 +98,6 @@ const Login = () => {
       {loading && <Loader />}
       {showModal && <Modal message={errorMessage} closeModal={closeModal} title={title} />}
 
-
       <div className="login-form-section">
         <div className="login-logo">
           <img src={logo} alt="Logo" />
@@ -101,8 +106,7 @@ const Login = () => {
         <h1>PMS</h1>
         <h3>Login</h3>
 
-        <form onSubmit={onSubmit}>
-          {/* Username Input */}
+        <form onSubmit={handleHardcodedLogin}>
           <div className="login-input-group">
             <label htmlFor="username">Username</label>
             <div className="login-input-wrapper">
@@ -118,7 +122,6 @@ const Login = () => {
             </div>
           </div>
 
-          {/* Password Input */}
           <div className="login-input-group">
             <label htmlFor="password">Password</label>
             <div className="login-input-wrapper">
@@ -134,7 +137,6 @@ const Login = () => {
             </div>
           </div>
 
-          {/* Links - Register and Forgot Password */}
           <div className="login-links-container">
             <span>
               Not Registered? <Link to="/signup" className="login-register-link">Register</Link>
@@ -142,12 +144,10 @@ const Login = () => {
             <a href="/forgot-password" className="login-forgot-password">Forgot password?</a>
           </div>
 
-          {/* Submit Button */}
           <button type="submit" className="login-button">Login</button>
         </form>
       </div>
 
-      {/* Background Image Section */}
       <div className="login-image-section"></div>
     </div>
   );

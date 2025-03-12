@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./Pending.css";
+import "./PendingList.css";
 import { FaSearch, FaHome } from "react-icons/fa";
 import logo from "../../../../assets/images/nikithas-logo.png";
 import Loader from "../../../modal/loader/Loader";
-import { useLocation } from "react-router-dom";
 import { MdCallMade } from "react-icons/md";
 
 const teamMembers = [
@@ -116,19 +115,16 @@ const teamMembers = [
 ];
 
 
-export default function Pending() {
+export default function PendingList() {
   const [teamList, setTeamList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-
-  const location = useLocation();
+  
   const navigate = useNavigate();
   const entriesPerPage = 10;
 
-  useEffect(() => {
-    document.title = "Nikithas PMS-Pending Assessment";
-  }, [location.pathname]);
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -137,10 +133,9 @@ export default function Pending() {
         navigate("/login");
         return;
       }
-
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/v1/pms/manager/profile",
+          "http://localhost:8080/api/v1/pms/hr/profile",
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -156,7 +151,6 @@ export default function Pending() {
         setLoading(false);
       }
     };
-
     fetchData();
   }, [navigate]);
 
@@ -177,15 +171,15 @@ export default function Pending() {
   };
 
   return (
-    <div className="pending-team-container">
+    <div className="hr-pending-team-container">
       {/* {loading && <Loader />} */}
-      <div className="pending-header">
-        <div className="pending-header-title">
-          <FaHome className="pending-home-icon" onClick={() => navigate('/manager-dashboard')} />
+      <div className="hr-pending-header">
+        <div className="hr-pending-header-title">
+          <FaHome className="hr-pending-home-icon" onClick={() => navigate('/hr-dashboard')} />
           <h1>Assessment Pending List</h1>
         </div>
-        <div className="pending-search-bar">
-          <FaSearch className="pending-search-icon" />
+        <div className="hr-pending-search-bar">
+          <FaSearch className="hr-pending-search-icon" />
           <input
             type="text"
             placeholder="Search team members..."
@@ -193,11 +187,10 @@ export default function Pending() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <img src={logo} alt="Company Logo" className="pending-company-logo" />
+        <img src={logo} alt="Company Logo" className="hr-pending-company-logo" />
       </div>
-
-      <div className="pending-table-container">
-        <table className="pending-team-table">
+      <div className="hr-pending-table-container">
+        <table className="hr-pending-team-table">
           <thead>
             <tr>
               <th>Name</th>
@@ -211,49 +204,30 @@ export default function Pending() {
           <tbody>
             {currentEntries.map((member, index) => (
               <tr key={index}>
-                <td className="pending-team-member">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="pending-profile-pic"
-                  />
+                <td className="hr-pending-team-member">
+                  <img src={member.image} alt={member.name} className="hr-pending-profile-pic" />
                   {member.name}
                 </td>
                 <td>{member.department}</td>
                 <td>{member.position}</td>
-                <td
-                  style={{ color: member.self === "Completed" ? "green" : "orange" }}
-                >
-                  {member.self}
-                </td>
-                <td
-                  style={{ color: member.manager === "Completed" ? "green" : "orange" }}
-                >
-                  {member.manager}
-                </td>
-                <td className="pending-notify-icon">
-                  <MdCallMade className="notify-bell" />
+                <td style={{ color: member.self === "Completed" ? "green" : "orange" }}>{member.self}</td>
+                <td style={{ color: member.manager === "Completed" ? "green" : "orange" }}>{member.manager}</td>
+                <td className="hr-pending-notify-icon">
+                  <MdCallMade className="hr-notify-bell" />
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
-      <div className="pending-pagination">
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
+      <div className="hr-pagination-container">
+        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
           Prev
         </button>
         <span>
           Page {currentPage} of {totalPages}
         </span>
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        >
+        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
           Next
         </button>
       </div>

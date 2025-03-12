@@ -77,7 +77,7 @@ export default function TeamPage() {
 
   return (
     <div className="manager-team-container">
-      {loading && <Loader />}
+      {/* {loading && <Loader />} */}
       <div className="manager-team-content">
         <div className="manager-team-header">
           <div className="manager-team-header-left">

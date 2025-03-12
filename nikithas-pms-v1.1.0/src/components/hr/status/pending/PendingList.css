@@ -1,0 +1,194 @@
+body {
+  min-height: 100vh;
+  background-color: var(--base-clr, #f4f4f9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-clr, #333);
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.hr-pending-team-container {
+  display: flex;
+  flex-direction: column;
+  width: 97vw;
+  height: 95vh;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: fadeInSlide 0.8s ease-out forwards;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hr-pending-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 15px 20px;
+  border-bottom: 1px solid #ddd;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.hr-pending-header-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hr-pending-home-icon {
+  font-size: 30px;
+  color: black;
+  cursor: pointer;
+  transition: color 0.3s, transform 0.3s ease;
+}
+
+.hr-pending-home-icon:hover {
+  color: #0056b3;
+  transform: scale(1.1);
+}
+
+.hr-pending-header h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.hr-pending-search-bar {
+  position: relative;
+  width: 40%;
+}
+
+.hr-pending-search-bar input {
+  width: 100%;
+  padding: 8px 10px 8px 30px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.hr-pending-search-bar input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+  outline: none;
+}
+
+.hr-pending-search-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: gray;
+}
+
+.hr-pending-company-logo {
+  height: 100px;
+}
+
+.hr-pending-table-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 20px;
+}
+
+.hr-pending-team-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.hr-pending-team-table th,
+.hr-pending-team-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+.hr-pending-team-table th{
+  background-color: lightgray;
+}
+
+.hr-pending-team-table tbody tr {
+  transition: background-color 0.3s ease;
+}
+
+.hr-pending-team-table tbody tr:hover {
+  background-color: #f8f9fc;
+}
+
+.hr-pending-team-member {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hr-pending-profile-pic {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.hr-pending-team-member:hover .hr-pending-profile-pic {
+  transform: scale(1.15);
+}
+
+.hr-pending-notify-icon {
+  text-align: center;
+  cursor: pointer;
+  font-size: 18px;
+  transition: transform 0.3s ease;
+}
+
+.hr-pending-notify-icon:hover {
+  transform: rotate(-10deg);
+}
+
+.hr-notify-bell {
+  color: blue;
+  cursor: pointer;
+}
+
+.hr-pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 15px 20px;
+  background: white;
+  border-top: 1px solid #ddd;
+}
+
+.hr-pagination-container button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  margin: 0 5px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.hr-pagination-container button:hover {
+  background: #0056b3;
+}
+
+.hr-pagination-container span {
+  font-size: 14px;
+  font-weight: bold;
+  margin: 0 10px;
+}
