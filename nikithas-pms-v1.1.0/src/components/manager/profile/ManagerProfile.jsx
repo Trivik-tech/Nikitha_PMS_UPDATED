@@ -6,6 +6,7 @@ import "./ManagerProfile.css";
 import logo from "../../../assets/images/nikithas-logo.png";
 import profile from "../../../assets/images/profile1.jpg";
 import Loader from '../../modal/loader/Loader';
+
 const ManagerProfile = () => {
   const [managerData, setManagerData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -43,14 +44,11 @@ const ManagerProfile = () => {
     fetchData();
   }, [navigate]);
 
-  
-
   return (
     <div className="manager-container">
-       {loading && <Loader/>}
+      {/* {loading && <Loader />} */}
       <header className="manager-header">
         <div className="header-left">
-          
           <Link to="/manager-dashboard" className="icon-link">
             <FaHome className="icon home-icon" />
           </Link>
@@ -58,23 +56,23 @@ const ManagerProfile = () => {
         <img src={logo} alt="Logo" className="manager-logo" />
       </header>
 
-      <div className="manager-profile-card">
+      <div className="manager-profile-card fade-in">
         <div className="profile-left">
-          <img src={profile} alt="Profile" className="manager-profile-pic" />
+          <img src={profile} alt="Profile" className="manager-profile-pic scale-in" />
         </div>
         <div className="profile-right">
-          <h2>{managerData?.firstName || "First Name"} {managerData?.lastName || "Last Name"}</h2>
+          <h2>{managerData?.firstName || "Ravindra"} {managerData?.lastName || "Kulkarni"}</h2>
           <p className="designation">Senior Software Engineer</p>
-          <p className="location">{managerData?.location.name || "Location"} ,{managerData?.location.state.name || "Location"}</p>
+          <p className="location">{managerData?.location?.name || "Bengaluru"}, {managerData?.location?.state?.name || "Karnataka"}</p>
         </div>
       </div>
 
-      <div className="manager-details">
+      <div className="manager-details fade-in">
         <div className="manager-section">
           <h3>Personal Information</h3>
           <div className="info-list">
-            <p><strong>First Name:</strong> {managerData?.firstName || "N/A"}</p>
-            <p><strong>Last Name:</strong> {managerData?.lastName || "N/A"}</p>
+            <p><strong>First Name:</strong> {managerData?.firstName || "Ravindra"}</p>
+            <p><strong>Last Name:</strong> {managerData?.lastName || "Kulkarni"}</p>
             <p><strong>Gender:</strong> Male</p>
             <p><strong>Blood Group:</strong> A+</p>
           </div>
@@ -83,22 +81,22 @@ const ManagerProfile = () => {
         <div className="manager-section">
           <h3>Professional Details</h3>
           <div className="info-list">
-            <p><strong>Department:</strong> {managerData?.department.name || "N/A"}</p>
-            <p><strong>Office Location:</strong> {managerData?.location.name || "N/A"}</p>
+            <p><strong>Department:</strong> {managerData?.department?.name || "Engineering"}</p>
+            <p><strong>Office Location:</strong> {managerData?.location?.name || "Bengaluru"}</p>
           </div>
         </div>
       </div>
 
-      <div className="manager-contact-info">
+      <div className="manager-contact-info fade-in">
         <h3>Contact Information</h3>
-        <div className="contact-card">
-          <p><strong>Email Address:</strong> {managerData?.email || "N/A"}</p>
+        <div className="contact-card hover-zoom">
+          <p><strong>Email Address:</strong> {managerData?.email || "ravindrakulkarni@gmail.com"}</p>
         </div>
-        <div className="contact-card">
-          <p><strong>Mobile Number:</strong> {managerData?.contactNumber || "N/A"}</p>
+        <div className="contact-card hover-zoom">
+          <p><strong>Mobile Number:</strong> {managerData?.contactNumber || "1234567895"}</p>
         </div>
-        <div className="contact-card">
-          <p><strong>Location:</strong> {managerData?.location.name || "N/A"} ,{managerData?.location.state.name} {managerData?.location.zipCode || "zip code"}</p>
+        <div className="contact-card hover-zoom">
+          <p><strong>Location:</strong> {managerData?.location?.name || "Bengaluru"}, {managerData?.location?.state?.name} {managerData?.location?.zipCode || "12345"}</p>
         </div>
       </div>
     </div>

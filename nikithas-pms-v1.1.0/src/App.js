@@ -19,6 +19,7 @@ import EmployeeDetails from './components/hr/empdetails/EmployeeDetails';
 
 import HrProfile from './components/hr/profile/HrProfile';
 import StartPms from './components/hr/pms/StartPms';
+import PendingList from './components/hr/status/pending/PendingList';
 
 
 
@@ -50,6 +51,7 @@ function App() {
           <Route exact path="/hr-profile" element={<HrProfile/>} />
           <Route exact path="/hr-startpms" element={<StartPms/>} />
           <Route exact path="/hr-dashboard"  element={<HrDashboard/>}/>
+          <Route exact path="/hr/pending-assessments"  element={<PendingList/>}/>
 
 
 

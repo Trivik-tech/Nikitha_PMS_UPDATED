@@ -13,12 +13,12 @@ body {
   display: flex;
   flex-direction: column;
   width: 97vw !important;
-  /* max-width: 1200px; */
   height: 95vh;
   background: white;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   overflow: hidden;
+  animation: fadeIn 0.8s ease-in-out;
 }
 
 .content {
@@ -26,6 +26,7 @@ body {
   flex-direction: column;
   flex: 1;
   padding: 20px;
+  animation: slideUp 0.6s ease-in-out;
 }
 
 .header {
@@ -38,6 +39,7 @@ body {
   z-index: 100;
   padding-bottom: 10px;
   border-bottom: 1px solid #ddd;
+  animation: slideDown 0.5s ease-in-out;
 }
 
 .header-title {
@@ -48,20 +50,25 @@ body {
 }
 
 .home-icon {
-  font-size: 35px;
+  font-size: 30px;
   color: black;
   cursor: pointer;
+  transition: transform 0.3s ease-in-out;
 }
 
-/* Search & Filter Container */
+.home-icon:hover {
+  transform: scale(1.1);
+  color: #0056b3;;
+}
+
 .search-filter-container {
   display: flex;
   align-items: center;
   gap: 10px;
   position: relative;
+  animation: fadeIn 0.8s ease-in-out;
 }
 
-/* Search Bar */
 .search-bar {
   position: relative;
 }
@@ -79,16 +86,20 @@ body {
   border: 1px solid #ccc;
   border-radius: 4px;
   width: 300px;
+  transition: box-shadow 0.3s ease-in-out;
 }
 
-/* New Filter Button (Outside Search Bar) */
+.search-bar input:focus {
+  box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.6);
+}
+
 .filter-button {
   background: white;
   border: 1px solid #ccc;
   padding: 8px 12px;
   border-radius: 4px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: background 0.3s, transform 0.3s ease-in-out;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -96,6 +107,7 @@ body {
 
 .filter-button:hover {
   background: #f1f1f1;
+  transform: scale(1.1);
 }
 
 .filter-icon {
@@ -107,6 +119,7 @@ body {
   flex: 1;
   overflow-y: auto;
   max-height: calc(90vh - 180px);
+  animation: fadeIn 0.8s ease-in-out;
 }
 
 .team-table {
@@ -116,7 +129,7 @@ body {
 
 .team-table th,
 .team-table td {
- padding: 10px;
+  padding: 10px;
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
@@ -126,6 +139,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 10;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
 .profile-pic {
@@ -134,7 +148,7 @@ body {
   border-radius: 50%;
   margin-right: 10px;
   vertical-align: middle;
-  
+  animation: zoomIn 0.5s ease-in-out;
 }
 
 .team-member {
@@ -144,16 +158,19 @@ body {
 
 .start-pms-button {
   background: blue;
-  color: rgb(255, 255, 255);
+  color: white;
   border: none;
-  padding: 5px 10px;
+  padding: 8px 10px;
   border-radius: 4px;
   cursor: pointer;
   text-decoration: none;
+  font-size: 15px;
+  transition: background 0.3s, transform 0.3s ease-in-out;
 }
 
 .start-pms-button:hover {
   background: #0056b3;
+  transform: scale(1.1);
 }
 
 .pagination {
@@ -166,6 +183,7 @@ body {
   bottom: 0;
   background: white;
   border-top: 1px solid #ddd;
+  animation: fadeIn 0.8s ease-in-out;
 }
 
 .pagination button {
@@ -175,6 +193,7 @@ body {
   padding: 8px 12px;
   border-radius: 4px;
   cursor: pointer;
+  transition: background 0.3s ease-in-out;
 }
 
 .pagination button:disabled {
@@ -186,8 +205,52 @@ body {
   font-weight: bold;
 }
 
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 .company-logo {
   width: 120px;
   height: auto;
   object-fit: contain;
+  animation: zoomIn 0.6s ease-in-out;
 }

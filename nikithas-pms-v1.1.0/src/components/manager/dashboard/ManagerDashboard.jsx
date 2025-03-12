@@ -75,7 +75,7 @@ const ManagerDashboard = () => {
         <div className="profile-container">
           <img src={profile} alt="Profile" className="profile-pic" />
           <h2>
-            {managerData?.firstName || "First Name"} {managerData?.lastName || "Last Name"}
+            {managerData?.firstName || "Ravindra"} {managerData?.lastName || "Kulkarni"}
           </h2>
         </div>
         <ul>

@@ -1,68 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import "./Complete.css";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaHome } from "react-icons/fa";
 import logo from '../../../../assets/images/nikithas-logo.png';
 
-import Loader from '../../../modal/loader/Loader';
-
 const teamMembers = [
-  { name: "Sarah Wilson", department: "Product Design", position: "Senior Designer", self: "Completed", manager:"Completed", image: "https://randomuser.me/api/portraits/women/1.jpg" },
-  { name: "John Doe", department: "Engineering", position: "Software Engineer", self: "Completed", manager:"Completed", image: "https://randomuser.me/api/portraits/men/1.jpg" },
-  { name: "Alex Johnson", department: "Marketing", position: "Content Strategist", self: "Completed", manager:"Completed", image: "https://randomuser.me/api/portraits/men/2.jpg" },
-  { name: "David Lee", department: "Sales", position: "Sales Director", self: "Completed", manager:"Completed", image: "https://randomuser.me/api/portraits/men/3.jpg" },
-  { name: "Emily Brown", department: "HR", position: "HR Manager", self: "Completed", manager:"Completed", image: "https://randomuser.me/api/portraits/women/2.jpg" },
-  { name: "Robert Taylor", department: "Engineering", position: "DevOps Engineer", self: "Completed", manager:"Completed", image: "https://randomuser.me/api/portraits/men/4.jpg" },
-  { name: "Lisa Wang", department: "Product Design", position: "UI/UX Designer", self: "Completed", manager:"Completed", image: "https://randomuser.me/api/portraits/women/3.jpg" },
-  { name: "James Wilson", department: "Marketing", position: "SEO Specialist", self: "Completed", manager:"Completed", image: "https://randomuser.me/api/portraits/men/5.jpg" },
-  { name: "Maria Garcia", department: "Sales", position: "Account Manager", self: "Completed", manager:"Completed", image: "https://randomuser.me/api/portraits/women/4.jpg" },
-  { name: "Thomas Anderson", department: "Engineering", position: "Backend Developer", self: "Completed", manager:"Completed", image: "https://randomuser.me/api/portraits/men/6.jpg" },
-  { name: "James Wilson", department: "Marketing", position: "SEO Specialist", self: "Completed", manager:"Completed", image: "https://randomuser.me/api/portraits/men/5.jpg" },
-  { name: "Maria Garcia", department: "Sales", position: "Account Manager", self: "Completed", manager:"Completed", image: "https://randomuser.me/api/portraits/women/4.jpg" },
-  { name: "Thomas Anderson", department: "Engineering", position: "Backend Developer", self: "Completed", manager:"Completed", image: "https://randomuser.me/api/portraits/men/6.jpg" },
+  { name: "Sarah Wilson", department: "Product Design", position: "Senior Designer", self: "Completed", manager: "Completed", image: "https://randomuser.me/api/portraits/women/1.jpg" },
+  { name: "John Doe", department: "Engineering", position: "Software Engineer", self: "Completed", manager: "Completed", image: "https://randomuser.me/api/portraits/men/1.jpg" },
+  { name: "Alex Johnson", department: "Marketing", position: "Content Strategist", self: "Completed", manager: "Completed", image: "https://randomuser.me/api/portraits/men/2.jpg" },
+  { name: "David Lee", department: "Sales", position: "Sales Director", self: "Completed", manager: "Completed", image: "https://randomuser.me/api/portraits/men/3.jpg" },
 ];
 
 export default function Complete() {
-  const [teamList, setTeamList] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
-  const entriesPerPage = 10;  // Show fewer entries to ensure scrollable table
+  const entriesPerPage = 6;
 
   useEffect(() => {
-    const fetchData = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-
-      try {
-        const response = await axios.get("http://localhost:8080/api/v1/pms/manager/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setTeamList(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        if (error.response?.status === 401) {
-          localStorage.removeItem("token");
-          navigate("/login");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [navigate]);
-
- 
+    document.body.classList.add("fade-in");
+    return () => document.body.classList.remove("fade-in");
+  }, []);
 
   const filteredTeam = teamMembers.filter(member =>
-    member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.email.toLowerCase().includes(searchTerm.toLowerCase())
+    member.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredTeam.length / entriesPerPage);
@@ -77,10 +38,11 @@ export default function Complete() {
 
   return (
     <div className="complete-team-container">
-       {loading && <Loader />}
-      {/* Header with Title, Search Bar, and Logo */}
       <div className="complete-header">
-        <h1>Assessment Completion List</h1>
+        <div className="complete-header-title">
+          <FaHome className="complete-home-icon" onClick={() => navigate('/manager-dashboard')} />
+          <h1>Assessment Completion List</h1>
+        </div>
         <div className="complete-search-bar">
           <FaSearch className="complete-search-icon" />
           <input
@@ -93,9 +55,8 @@ export default function Complete() {
         <img src={logo} alt="Company Logo" className="complete-company-logo" />
       </div>
 
-      {/* Scrollable Table Container */}
       <div className="complete-table-container">
-        <table className="complete-team-table" >
+        <table className="complete-team-table">
           <thead>
             <tr>
               <th>Name</th>
@@ -122,7 +83,6 @@ export default function Complete() {
         </table>
       </div>
 
-      {/* Pagination */}
       <div className="complete-pagination">
         <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
           Prev

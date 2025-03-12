@@ -15,6 +15,7 @@ body, html {
     align-items: center;
 }
 
+/* Main container */
 .manager-container {
     width: 97vw;
     height: 95vh;
@@ -25,8 +26,11 @@ body, html {
     align-items: center;
     justify-content: flex-start;
     border-radius: 10px;
+    opacity: 0;
+    animation: fadeIn 0.8s ease-in-out forwards;
 }
 
+/* Header */
 .manager-header {
     width: 100%;
     display: flex;
@@ -45,16 +49,21 @@ body, html {
     font-size: 24px;
     cursor: pointer;
     color: #333;
+    transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+.icon:hover {
+    transform: scale(1.1);
+    color: #007bff;
 }
 
 .manager-logo {
-    position: absolute;  /* Position it absolutely relative to .manager-container */
+    position: absolute;
     top: 30px;
     right: 70px;
     height: 100px;
     z-index: 1;
 }
-
 
 /* Profile section */
 .manager-profile-card {
@@ -64,6 +73,7 @@ body, html {
     padding: 20px;
     width: 100%;
     border-bottom: 1px solid #ddd;
+    animation: fadeInUp 0.8s ease-in-out;
 }
 
 .profile-left {
@@ -75,7 +85,11 @@ body, html {
     width: 100px;
     height: 100px;
     border-radius: 50%;
-    /* border: 3px solid #ddd; */
+    transition: transform 0.3s ease-in-out;
+}
+
+.manager-profile-pic:hover {
+    transform: scale(1.05);
 }
 
 .profile-right {
@@ -87,6 +101,7 @@ body, html {
 .designation, .location {
     color: #555;
     font-size: 14px;
+    transition: color 0.3s ease-in-out;
 }
 
 /* Personal & Professional Details */
@@ -108,26 +123,26 @@ body, html {
     font-size: 14px;
 }
 
-.manager-contact-info h3 {
-    margin-bottom: 10px;
-    font-size: 18px;
-    color: #333;
-    border-bottom: 2px solid #ddd;
-    background-color:#f9f9f9 ;
-    padding-bottom: 5px;
-    padding: 10px;
-}
-
 /* Contact Information */
 .manager-contact-info {
     width: 100%;
     padding: 20px;
     text-align: left;
-    /* background-color: #f9f9f9 ; */
+    animation: fadeInUp 0.8s ease-in-out;
 }
 
+.manager-contact-info h3 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #333;
+    border-bottom: 2px solid #ddd;
+    background-color: #f9f9f9;
+    padding-bottom: 5px;
+    padding: 10px;
+}
+
+/* Contact Cards */
 .contact-card {
-    /* background: #f9f9f9; */
     padding: 15px;
     width: 30%;
     text-align: center;
@@ -136,19 +151,38 @@ body, html {
     font-size: 14px;
     display: inline-block;
     margin: 10px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    animation: slideIn 0.7s ease-in-out;
 }
 
-/* Existing styles remain unchanged */
+.contact-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
-    /* Adjust container width */
     .manager-container {
         width: 95%;
         padding: 15px;
     }
 
-    /* Header adjustments */
     .manager-header {
         padding: 10px;
     }
@@ -157,12 +191,10 @@ body, html {
         height: 50px;
     }
 
-    /* Back & Home icons */
     .icon {
         font-size: 20px;
     }
 
-    /* Profile section: Stack image & details vertically */
     .manager-profile-card {
         flex-direction: column;
         align-items: center;
@@ -179,7 +211,6 @@ body, html {
         margin-top: 10px;
     }
 
-    /* Stack details vertically */
     .manager-details {
         flex-direction: column;
         gap: 20px;
@@ -190,12 +221,12 @@ body, html {
         width: 100%;
     }
 
-    /* Contact Information */
     .manager-contact-info {
         text-align: center;
         padding: 15px;
     }
-    .manager-contact-info h3{
+
+    .manager-contact-info h3 {
         text-align: left;
     }
 

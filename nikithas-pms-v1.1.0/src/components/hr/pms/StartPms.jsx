@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaSearch, FaHome, FaFilter } from "react-icons/fa";
 import logo from '../../../assets/images/nikithas-logo.png';
-import { Link } from "react-router-dom";
+
+import PmsInitiated from '../../modal/pms/PmsInitiated';
 import "./StartPms.css";
 
 const teamMembers = [
@@ -11,21 +12,13 @@ const teamMembers = [
   { id: "Emp003", name: "Alex Johnson", department: "Marketing", email: "alex.j@company.com", image: "https://randomuser.me/api/portraits/men/2.jpg" },
   { id: "Emp004", name: "David Lee", department: "Sales", email: "david.l@company.com", image: "https://randomuser.me/api/portraits/men/3.jpg" },
   { id: "Emp005", name: "Emily Brown", department: "HR", email: "emily.b@company.com", image: "https://randomuser.me/api/portraits/women/2.jpg" },
-  { id: "Emp006", name: "John Doe", department: "Engineering", email: "john.d@company.com", image: "https://randomuser.me/api/portraits/men/1.jpg" },
-  { id: "Emp007", name: "Sarah Wilson", department: "Product Design", email: "sarah.w@company.com", image: "https://randomuser.me/api/portraits/women/1.jpg" },
-  { id: "Emp008", name: "Alex Johnson", department: "Marketing", email: "alex.j@company.com", image: "https://randomuser.me/api/portraits/men/2.jpg" },
-  { id: "Emp009", name: "David Lee", department: "Sales", email: "david.l@company.com", image: "https://randomuser.me/api/portraits/men/3.jpg" },
-  { id: "Emp010", name: "Emily Brown", department: "HR", email: "emily.b@company.com", image: "https://randomuser.me/api/portraits/women/2.jpg" },
-  { id: "Emp011", name: "Emily Brown", department: "HR", email: "emily.b@company.com", image: "https://randomuser.me/api/portraits/women/2.jpg" },
-  { id: "Emp012", name: "Emily Brown", department: "HR", email: "emily.b@company.com", image: "https://randomuser.me/api/portraits/women/2.jpg" },
-  { id: "Emp013", name: "Emily Brown", department: "HR", email: "emily.b@company.com", image: "https://randomuser.me/api/portraits/women/2.jpg" },
-  { id: "Emp014", name: "Emily Brown", department: "HR", email: "emily.b@company.com", image: "https://randomuser.me/api/portraits/women/2.jpg" },
-  { id: "Emp015", name: "Emily Brown", department: "HR", email: "emily.b@company.com", image: "https://randomuser.me/api/portraits/women/2.jpg" },
 ];
 
 export default function StartPms() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState("");
   const navigate = useNavigate();
   const entriesPerPage = 10;
 
@@ -39,15 +32,17 @@ export default function StartPms() {
   const currentEntries = filteredTeam.slice(startIndex, startIndex + entriesPerPage);
 
   return (
-    <div className="team-container">
-      <div className="content">
-        <div className="header">
+    <div className="team-container fade-in">
+      <div className="content slide-up">
+        <div className="header slide-down">
           <div className="header-title">
-            <FaHome className="home-icon" />
-            <h1>Employee List</h1>
+            <Link to="/hr-dashboard"> 
+              <FaHome className="home-icon" />
+            </Link>
+            <h3>Employee List</h3>
           </div>
 
-          <div className="search-filter-container">
+          <div className="search-filter-container fade-in">
             <div className="search-bar">
               <FaSearch className="search-icon" />
               <input
@@ -57,14 +52,14 @@ export default function StartPms() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <button className="filter-button">
+            <button className="filter-button zoom-in">
               <FaFilter className="filter-icon" />
             </button>
           </div>
-          <img src={logo} alt="Company Logo" className="company-logo" />
+          <img src={logo} alt="Company Logo" className="company-logo zoom-in" />
         </div>
 
-        <div className="table-container">
+        <div className="table-container fade-in">
           <table className="team-table">
             <thead>
               <tr>
@@ -77,16 +72,24 @@ export default function StartPms() {
             </thead>
             <tbody>
               {currentEntries.map((member) => (
-                <tr key={member.id}>
+                <tr key={member.id} className="fade-in">
                   <td>{member.id}</td>
                   <td className="team-member">
-                    <img src={member.image} alt={member.name} className="profile-pic" />
+                    <img src={member.image} alt={member.name} className="profile-pic zoom-in" />
                     {member.name}
                   </td>
                   <td>{member.department}</td>
                   <td>{member.email}</td>
                   <td>
-                    <Link to="/manager-review" className="start-pms-button">Initiate PMS</Link>
+                    <button
+                      className="start-pms-button zoom-in"
+                      onClick={() => {
+                        setSelectedEmployee(member.name);
+                        setShowModal(true);
+                      }}
+                    >
+                      Initiate PMS
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -94,12 +97,14 @@ export default function StartPms() {
           </table>
         </div>
 
-        <div className="pagination">
+        <div className="pagination fade-in">
           <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>Prev</button>
           <span> Page {currentPage} of {totalPages} </span>
           <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>Next</button>
         </div>
       </div>
+      
+      {showModal && <PmsInitiated onClose={() => setShowModal(false)} employeeName={selectedEmployee} />}
     </div>
   );
 }

@@ -12,19 +12,25 @@ const HrProfile = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000); // Simulating API loading time
+  }, []);
+
   return (
-    <div className="hr-container">
-       {/* {loading && <Loader/>} */}
-      <header className="hr-header">
+    <div className="hr-container fade-in">
+      {/* {loading && <Loader />} */}
+      <header className="hr-header slide-down">
         <div className="hr-header-left">
-          <Link to="/manager-dashboard" className="hr-icon-link">
-            <FaHome className="hr-icon hr-home-icon" />
+          <Link to="/hr-dashboard" className="hr-icon-link">
+            <FaHome className="hr-icon hr-home-icon scale-hover" />
           </Link>
         </div>
         <img src={logo} alt="Logo" className="hr-logo" />
       </header>
 
-      <div className="hr-profile-card">
+      <div className="hr-profile-card scale-in">
         <div className="hr-profile-left">
           <img src={profile} alt="Profile" className="hr-profile-pic" />
         </div>
@@ -36,7 +42,7 @@ const HrProfile = () => {
       </div>
 
       <div className="hr-details">
-        <div className="hr-section">
+        <div className="hr-section slide-left">
           <h3>Personal Information</h3>
           <div className="hr-info-list">
             <p><strong>First Name:</strong> {managerData?.firstName || "Guru"}</p>
@@ -46,7 +52,7 @@ const HrProfile = () => {
           </div>
         </div>
 
-        <div className="hr-section">
+        <div className="hr-section slide-right">
           <h3>Professional Details</h3>
           <div className="hr-info-list">
             <p><strong>Reporting Manager:</strong> {managerData?.department.name || "Guru"}</p>
@@ -57,13 +63,13 @@ const HrProfile = () => {
 
       <div className="hr-contact-info">
         <h3>Contact Information</h3>
-        <div className="hr-contact-card">
+        <div className="hr-contact-card glow-hover">
           <p><strong>Email Address:</strong> {managerData?.email || "Guru@gmail.com"}</p>
         </div>
-        <div className="hr-contact-card">
+        <div className="hr-contact-card glow-hover">
           <p><strong>Mobile Number:</strong> {managerData?.contactNumber || "987654378"}</p>
         </div>
-        <div className="hr-contact-card">
+        <div className="hr-contact-card glow-hover">
           <p><strong>Location:</strong> {managerData?.location.name || "Bangalore, India"}, {managerData?.location.state.name} {managerData?.location.zipCode || "zip code"}</p>
         </div>
       </div>

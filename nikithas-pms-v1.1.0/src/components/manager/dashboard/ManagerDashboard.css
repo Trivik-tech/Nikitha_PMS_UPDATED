@@ -44,13 +44,29 @@ body, html {
 /* Profile Section */
 .profile-container {
   display: flex;
+  flex-direction: column;
   align-items: center;
+  text-align: center;
   gap: 10px;
   margin-bottom: 20px;
   opacity: 0;
   transform: translateY(-20px);
   animation: fadeInProfile 0.6s ease-out forwards;
 }
+
+.profile-container .profile-pic {
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.profile-container h2 {
+  font-size: 16px;
+  margin: 0;
+}
+
 
 @keyframes fadeInProfile {
   to {
@@ -59,20 +75,9 @@ body, html {
   }
 }
 
-.profile-pic {
-  width: 60px !important;
-  height: 60px !important;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-}
 
-/* Sidebar Links */
-.sidebar h2 {
-  font-size: 15px;
-  margin: 0;
-  line-height: 1.4;
-}
+
+
 
 .sidebar ul {
   list-style: none;
@@ -112,8 +117,8 @@ body, html {
 
 .active {
   font-weight: bold;
-  color: #007bff;
-  text-decoration: underline;
+  color: white;
+  background-color:#4CAF50; ;
 }
 
 /* Sidebar Toggle */
