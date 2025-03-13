@@ -205,7 +205,7 @@ body {
 }
 
 .pending-notify-icon:hover {
-  transform: rotate(-10deg);
+  transform: rotate(2deg);
 }
 
 .notify-bell {

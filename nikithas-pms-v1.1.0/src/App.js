@@ -20,9 +20,10 @@ import EmployeeDetails from './components/hr/empdetails/EmployeeDetails';
 import HrProfile from './components/hr/profile/HrProfile';
 import StartPms from './components/hr/pms/StartPms';
 
-import Employeelist from './components/hr/Employeelist/employeelist';
 
 import PendingList from './components/hr/status/pending/PendingList';
+import CompletedList from './components/hr/status/complete/CompletedList';
+import EmployeeList from './components/hr/employee-list/EmployeeList';
 
 
 
@@ -50,16 +51,18 @@ function App() {
           <Route exact path="/pending-assessments" element={<Pending/>} />
           
 
-          <Route exact path="/employee-details" element={<EmployeeDetails/>} />
+          <Route exact path="/add-employee" element={<EmployeeDetails/>} />
 
           <Route exact path="/hr-profile" element={<HrProfile/>} />
           <Route exact path="/hr-startpms" element={<StartPms/>} />
+          <Route exact path="/employee-list" element={<EmployeeList/>} />
 
-          <Route exact path='/employee-list' element={<Employeelist/>}/>
+          
           
 
           <Route exact path="/hr-dashboard"  element={<HrDashboard/>}/>
           <Route exact path="/hr/pending-assessments"  element={<PendingList/>}/>
+          <Route exact path="/hr/completed-assessments"  element={<CompletedList/>}/>
 
 
 

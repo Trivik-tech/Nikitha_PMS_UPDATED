@@ -7,6 +7,7 @@ import logo from "../../../../assets/images/nikithas-logo.png";
 import Loader from "../../../modal/loader/Loader";
 import { useLocation } from "react-router-dom";
 import { MdCallMade } from "react-icons/md";
+import Modal from '../../../modal/Modal';
 
 const teamMembers = [
   {
@@ -121,45 +122,55 @@ export default function Pending() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [title, setTitle] = useState('');
 
   const location = useLocation();
   const navigate = useNavigate();
   const entriesPerPage = 10;
 
-  useEffect(() => {
-    document.title = "Nikithas PMS-Pending Assessment";
-  }, [location.pathname]);
+  
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const token = localStorage.getItem("token");
+  //     if (!token) {
+  //       navigate("/login");
+  //       return;
+  //     }
 
-      try {
-        const response = await axios.get(
-          "http://localhost:8080/api/v1/pms/manager/profile",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setTeamList(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        if (error.response?.status === 401) {
-          localStorage.removeItem("token");
-          navigate("/login");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
+  //     try {
+  //       const response = await axios.get(
+  //         "http://localhost:8080/api/v1/pms/manager/profile",
+  //         {
+  //           headers: { Authorization: `Bearer ${token}` },
+  //         }
+  //       );
+  //       setTeamList(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //       if (error.response?.status === 401) {
+  //         localStorage.removeItem("token");
+  //         navigate("/login");
+  //       }
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchData();
-  }, [navigate]);
+  //   fetchData();
+  // }, [navigate]);
 
+  const notifyEmployee = (employeeName) => {
+    setErrorMessage(`Notification has been sent to ${employeeName}.`);
+    setTitle('Notification');
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
   const filteredTeam = teamMembers.filter(
     (member) =>
       member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -179,6 +190,7 @@ export default function Pending() {
   return (
     <div className="pending-team-container">
       {/* {loading && <Loader />} */}
+      {showModal && <Modal message={errorMessage} closeModal={closeModal} title={title} />}
       <div className="pending-header">
         <div className="pending-header-title">
           <FaHome className="pending-home-icon" onClick={() => navigate('/manager-dashboard')} />
@@ -232,7 +244,7 @@ export default function Pending() {
                   {member.manager}
                 </td>
                 <td className="pending-notify-icon">
-                  <MdCallMade className="notify-bell" />
+                <MdCallMade className="notify-bell" onClick={() => notifyEmployee(member.name)} />
                 </td>
               </tr>
             ))}

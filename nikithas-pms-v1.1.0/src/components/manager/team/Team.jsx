@@ -35,30 +35,30 @@ export default function TeamPage() {
   const navigate = useNavigate();
   const entriesPerPage = 6;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-      try {
-        const response = await axios.get("http://localhost:8080/api/v1/pms/manager/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setTeamList(response.data);
-      } catch (error) {
-        if (error.response?.status === 401) {
-          localStorage.removeItem("token");
-          navigate("/");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const token = localStorage.getItem("token");
+  //     if (!token) {
+  //       navigate("/login");
+  //       return;
+  //     }
+  //     try {
+  //       const response = await axios.get("http://localhost:8080/api/v1/pms/manager/profile", {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //       });
+  //       setTeamList(response.data);
+  //     } catch (error) {
+  //       if (error.response?.status === 401) {
+  //         localStorage.removeItem("token");
+  //         navigate("/");
+  //       }
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchData();
-  }, [navigate]);
+  //   fetchData();
+  // }, [navigate]);
 
   const filteredTeam = teamMembers.filter(member =>
     member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -114,7 +114,7 @@ export default function TeamPage() {
                 <tr key={index}>
                   <td className="manager-team-member">
                     <img src={member.image} alt={member.name} className="manager-team-profile-pic" />
-                    {member.name}
+                      {member.name}
                   </td>
                   <td>{member.department}</td>
                   <td>{member.position}</td>

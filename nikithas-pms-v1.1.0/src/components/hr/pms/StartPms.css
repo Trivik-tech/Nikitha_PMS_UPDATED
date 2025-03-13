@@ -9,7 +9,7 @@ body {
   overflow: hidden;
 }
 
-.team-container {
+.start-pms-container {
   display: flex;
   flex-direction: column;
   width: 97vw !important;
@@ -21,7 +21,7 @@ body {
   animation: fadeIn 0.8s ease-in-out;
 }
 
-.content {
+.start-pms-content {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -29,7 +29,7 @@ body {
   animation: slideUp 0.6s ease-in-out;
 }
 
-.header {
+.start-pms-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -42,26 +42,26 @@ body {
   animation: slideDown 0.5s ease-in-out;
 }
 
-.header-title {
+.start-pms-header-title {
   display: flex;
   align-items: center;
   gap: 10px;
   margin-left: 15px;
 }
 
-.home-icon {
+.start-pms-home-icon {
   font-size: 30px;
   color: black;
   cursor: pointer;
   transition: transform 0.3s ease-in-out;
 }
 
-.home-icon:hover {
+.start-pms-home-icon:hover {
   transform: scale(1.1);
-  color: #0056b3;;
+  color: #0056b3;
 }
 
-.search-filter-container {
+.start-pms-search-filter-container {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -69,11 +69,11 @@ body {
   animation: fadeIn 0.8s ease-in-out;
 }
 
-.search-bar {
+.start-pms-search-bar {
   position: relative;
 }
 
-.search-icon {
+.start-pms-search-icon {
   position: absolute;
   left: 10px;
   top: 50%;
@@ -81,7 +81,7 @@ body {
   color: gray;
 }
 
-.search-bar input {
+.start-pms-search-bar input {
   padding: 8px 10px 8px 30px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -89,11 +89,11 @@ body {
   transition: box-shadow 0.3s ease-in-out;
 }
 
-.search-bar input:focus {
+.start-pms-search-bar input:focus {
   box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.6);
 }
 
-.filter-button {
+.start-pms-filter-button {
   background: white;
   border: 1px solid #ccc;
   padding: 8px 12px;
@@ -105,36 +105,36 @@ body {
   justify-content: center;
 }
 
-.filter-button:hover {
+.start-pms-filter-button:hover {
   background: #f1f1f1;
   transform: scale(1.1);
 }
 
-.filter-icon {
+.start-pms-filter-icon {
   color: gray;
   font-size: 16px;
 }
 
-.table-container {
+.start-pms-table-container {
   flex: 1;
   overflow-y: auto;
   max-height: calc(90vh - 180px);
   animation: fadeIn 0.8s ease-in-out;
 }
 
-.team-table {
+.start-pms-team-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.team-table th,
-.team-table td {
+.start-pms-team-table th,
+.start-pms-team-table td {
   padding: 10px;
   text-align: left;
   border-bottom: 1px solid #ddd;
 }
 
-.team-table th {
+.start-pms-team-table th {
   background: #f1f1f1;
   position: sticky;
   top: 0;
@@ -142,7 +142,7 @@ body {
   animation: fadeIn 0.5s ease-in-out;
 }
 
-.profile-pic {
+.start-pms-profile-pic {
   width: 40px !important;
   height: 40px !important;
   border-radius: 50%;
@@ -151,7 +151,7 @@ body {
   animation: zoomIn 0.5s ease-in-out;
 }
 
-.team-member {
+.start-pms-team-member {
   display: flex;
   align-items: center;
 }
@@ -173,7 +173,7 @@ body {
   transform: scale(1.1);
 }
 
-.pagination {
+.start-pms-pagination {
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -186,7 +186,7 @@ body {
   animation: fadeIn 0.8s ease-in-out;
 }
 
-.pagination button {
+.start-pms-pagination button {
   background: #007bff;
   color: white;
   border: none;
@@ -196,59 +196,16 @@ body {
   transition: background 0.3s ease-in-out;
 }
 
-.pagination button:disabled {
+.start-pms-pagination button:disabled {
   background: #ccc;
   cursor: not-allowed;
 }
 
-.pagination span {
+.start-pms-pagination span {
   font-weight: bold;
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideDown {
-  from {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes zoomIn {
-  from {
-    transform: scale(0.9);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.company-logo {
+.start-pms-company-logo {
   width: 120px;
   height: auto;
   object-fit: contain;

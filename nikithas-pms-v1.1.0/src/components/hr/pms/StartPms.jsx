@@ -19,6 +19,7 @@ export default function StartPms() {
   const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState("");
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
   const navigate = useNavigate();
   const entriesPerPage = 10;
 
@@ -32,19 +33,19 @@ export default function StartPms() {
   const currentEntries = filteredTeam.slice(startIndex, startIndex + entriesPerPage);
 
   return (
-    <div className="team-container fade-in">
-      <div className="content slide-up">
-        <div className="header slide-down">
-          <div className="header-title">
+    <div className="start-pms-container">
+      <div className="start-pms-content">
+        <div className="start-pms-header">
+          <div className="start-pms-header-title">
             <Link to="/hr-dashboard"> 
-              <FaHome className="home-icon" />
+              <FaHome className="start-pms-home-icon" />
             </Link>
             <h3>Employee List</h3>
           </div>
 
-          <div className="search-filter-container fade-in">
-            <div className="search-bar">
-              <FaSearch className="search-icon" />
+          <div className="start-pms-search-filter-container">
+            <div className="start-pms-search-bar">
+              <FaSearch className="start-pms-search-icon" />
               <input
                 type="text"
                 placeholder="Search team members..."
@@ -52,15 +53,15 @@ export default function StartPms() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <button className="filter-button zoom-in">
-              <FaFilter className="filter-icon" />
+            <button className="start-pms-filter-button">
+              <FaFilter className="start-pms-filter-icon" />
             </button>
           </div>
-          <img src={logo} alt="Company Logo" className="company-logo zoom-in" />
+          <img src={logo} alt="Company Logo" className="start-pms-company-logo" />
         </div>
 
-        <div className="table-container fade-in">
-          <table className="team-table">
+        <div className="start-pms-table-container">
+          <table className="start-pms-team-table">
             <thead>
               <tr>
                 <th>Id</th>
@@ -72,19 +73,20 @@ export default function StartPms() {
             </thead>
             <tbody>
               {currentEntries.map((member) => (
-                <tr key={member.id} className="fade-in">
+                <tr key={member.id}>
                   <td>{member.id}</td>
-                  <td className="team-member">
-                    <img src={member.image} alt={member.name} className="profile-pic zoom-in" />
+                  <td className="start-pms-team-member">
+                    <img src={member.image} alt={member.name} className="start-pms-profile-pic" />
                     {member.name}
                   </td>
                   <td>{member.department}</td>
                   <td>{member.email}</td>
                   <td>
                     <button
-                      className="start-pms-button zoom-in"
+                      className="start-pms-button"
                       onClick={() => {
                         setSelectedEmployee(member.name);
+                        setSelectedEmployeeId(member.id);
                         setShowModal(true);
                       }}
                     >
@@ -97,14 +99,15 @@ export default function StartPms() {
           </table>
         </div>
 
-        <div className="pagination fade-in">
+        <div className="start-pms-pagination">
           <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>Prev</button>
           <span> Page {currentPage} of {totalPages} </span>
           <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>Next</button>
         </div>
       </div>
       
-      {showModal && <PmsInitiated onClose={() => setShowModal(false)} employeeName={selectedEmployee} />}
+      {showModal && <PmsInitiated onClose={() => setShowModal(false)} employeeName={selectedEmployee} employeeId={selectedEmployeeId} />}
+
     </div>
   );
 }

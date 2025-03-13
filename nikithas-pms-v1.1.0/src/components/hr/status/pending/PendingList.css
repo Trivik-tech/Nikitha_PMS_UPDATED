@@ -70,17 +70,22 @@ body {
   font-weight: 600;
 }
 
+/* Ensure search bar styles are correct */
+/* Adjusted search bar styling */
 .hr-pending-search-bar {
   position: relative;
-  width: 40%;
+  width: 30%; /* Reduced width */
+  display: flex;
+  align-items: center;
 }
 
 .hr-pending-search-bar input {
-  width: 100%;
-  padding: 8px 10px 8px 30px;
+  width: 80%; /* Reduced input field width */
+  padding: 10px 35px; /* Keep space for the search icon */
   border: 1px solid #ccc;
   border-radius: 4px;
   transition: border-color 0.3s, box-shadow 0.3s;
+  font-size: 14px;
 }
 
 .hr-pending-search-bar input:focus {
@@ -89,13 +94,17 @@ body {
   outline: none;
 }
 
+/* Proper placement of the search icon inside input */
 .hr-pending-search-icon {
   position: absolute;
-  right: 10px;
+  left: 45px; /* Align icon inside input */
   top: 50%;
   transform: translateY(-50%);
   color: gray;
+  font-size: 16px;
 }
+
+
 
 .hr-pending-company-logo {
   height: 100px;

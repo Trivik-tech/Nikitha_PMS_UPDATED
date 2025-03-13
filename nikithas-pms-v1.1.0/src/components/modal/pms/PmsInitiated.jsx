@@ -1,12 +1,13 @@
 import React from "react";
 import "./PmsInitiated.css";
 
-const PmsInitiated = ({ onClose, employeeName }) => {
+const PmsInitiated = ({ onClose, employeeName,employeeId }) => {
   return (
     <div className="pms-modal-overlay">
       <div className="pms-modal">
         <h3>PMS Initiated Successfully</h3>
-        <p>The performance management system has been initiated for <strong>{employeeName}</strong>.</p>
+        <p>The performance management system has been initiated for <strong>{employeeName}</strong> ({employeeId}).</p>
+
         <button className="pms-modal-close" onClick={onClose}>Close</button>
       </div>
     </div>

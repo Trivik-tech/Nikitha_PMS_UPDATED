@@ -137,7 +137,7 @@ body {
 
 
 .manager-team-table td {
-  padding: 11px;
+  padding: 12px;
   text-align: left;
   border-bottom: 1px solid #ddd;
   white-space: nowrap;
@@ -282,7 +282,10 @@ body {
     transform: translateY(0);
   }
 }
-
+.manager-team-member{
+  display: flex;
+  align-items: center;
+}
 /* Header background and alignment */
 .manager-team-table thead th {
   background: #f1f1f1;

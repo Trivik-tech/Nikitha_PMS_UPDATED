@@ -30,12 +30,7 @@ body::-webkit-scrollbar {
     padding: 10px 0;
 }
 
-.icon-link {
-    font-size: 24px;
-    color: #4f46e5;
-    text-decoration: none;
-    margin-right: auto; /* Pushes the title and logo to the right */
-}
+
 
 .prf-title {
     flex-grow: 1;
@@ -45,9 +40,9 @@ body::-webkit-scrollbar {
     margin-left: 10px;
 }
 
-.prf-logo {
+.prf-company-logo {
     height: 100px;
-    margin-left: auto; /* Pushes logo to far right */
+   
 }
 
 /* Other styles can remain the same */
@@ -61,14 +56,18 @@ body::-webkit-scrollbar {
 }
 
 .prf-filters label {
-    font-size: 14px;
+    font-size: 15px;
+    
+    font-weight: bold;
+    
 }
 
 .prf-filters input {
-    padding: 5px;
+    padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
     width: 180px; 
+    margin-top: 5px;
 }
 
 /* Sections Container */
@@ -215,18 +214,40 @@ body::-webkit-scrollbar {
     margin-top: 15px;
 }
 
-.prf-draft-btn, .prf-submit-review-btn {
+.prf-draft-btn, 
+.prf-submit-review-btn {
     padding: 8px 16px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .prf-submit-review-btn {
     background-color: #4f46e5;
     color: white;
 }
+.per-icon.home-icon {
+    font-size: 30px; /* You can adjust the size here */
+    color: black;
+}
+
+.per-icon.home-icon:hover {
+    color: #3730a3; /* Darker shade for hover */
+    transform: translateY(-2px);
+}
+.prf-submit-review-btn:hover {
+    background-color: #3730a3; /* Darker shade for hover */
+    transform: translateY(-2px);
+}
 
 .prf-draft-btn {
     background-color: #e0e0e0;
+    color: black;
 }
+
+.prf-draft-btn:hover {
+    background-color: #bdbdbd; /* Darker shade for hover */
+    transform: translateY(-2px);
+}
+

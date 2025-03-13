@@ -45,8 +45,8 @@ const HrProfile = () => {
         <div className="hr-section slide-left">
           <h3>Personal Information</h3>
           <div className="hr-info-list">
-            <p><strong>First Name:</strong> {managerData?.firstName || "Guru"}</p>
-            <p><strong>Last Name:</strong> {managerData?.lastName || "Nath"}</p>
+            <p><strong>First Name:</strong> {managerData?.firstName || "Avinash"}</p>
+            <p><strong>Last Name:</strong> {managerData?.lastName || "SH"}</p>
             <p><strong>Gender:</strong> Male</p>
             <p><strong>Blood Group:</strong> A+</p>
           </div>
@@ -55,7 +55,7 @@ const HrProfile = () => {
         <div className="hr-section slide-right">
           <h3>Professional Details</h3>
           <div className="hr-info-list">
-            <p><strong>Reporting Manager:</strong> {managerData?.department.name || "Guru"}</p>
+            <p><strong>Reporting Manager:</strong> {managerData?.department.name || "Ravindra Kulkarni"}</p>
             <p><strong>Office Location:</strong> {managerData?.location.name || "Bangalore"}</p>
           </div>
         </div>
@@ -64,13 +64,13 @@ const HrProfile = () => {
       <div className="hr-contact-info">
         <h3>Contact Information</h3>
         <div className="hr-contact-card glow-hover">
-          <p><strong>Email Address:</strong> {managerData?.email || "Guru@gmail.com"}</p>
+          <p><strong>Email Address:</strong> {managerData?.email || "Avinath@gmail.com"}</p>
         </div>
         <div className="hr-contact-card glow-hover">
           <p><strong>Mobile Number:</strong> {managerData?.contactNumber || "987654378"}</p>
         </div>
         <div className="hr-contact-card glow-hover">
-          <p><strong>Location:</strong> {managerData?.location.name || "Bangalore, India"}, {managerData?.location.state.name} {managerData?.location.zipCode || "zip code"}</p>
+          <p><strong>Location:</strong> {managerData?.location.name || "Bangalore, India"}, {managerData?.location.state.name} {managerData?.location.zipCode || "15684"}</p>
         </div>
       </div>
     </div>

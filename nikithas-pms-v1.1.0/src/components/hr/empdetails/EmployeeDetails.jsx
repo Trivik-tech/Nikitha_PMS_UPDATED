@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./EmployeeList.css";
+import "./EmployeeDetails.css";
 
 
 const EmployeeDetails = () => {
@@ -7,7 +7,7 @@ const EmployeeDetails = () => {
 
   return (
     <div className="container">
-      <h2 className="header">Employee Details</h2>
+      <h2 className="header">Employee Registration</h2>
 
       {/* Tabs */}
       <div className="tabs">

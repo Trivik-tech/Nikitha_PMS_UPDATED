@@ -1,10 +1,14 @@
-import React from "react";
+import { React, useState } from "react";
 import "./PerformanceReview.css";
 import logo from "../../../assets/images/nikithas-logo.png"; // Make sure the path is correct
 import { FaHome } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import Modal from "../../modal/Modal";
 
 const PerformanceReview = () => {
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [title, setTitle] = useState("");
   const sections = [
     {
       title: "Technical Excellence",
@@ -49,28 +53,55 @@ const PerformanceReview = () => {
     },
   ];
 
+  const reviewSubmit = () => {
+    setErrorMessage("PMS Review is successfully completed.");
+    setTitle("PMS Review");
+    setShowModal(true);
+  };
+  const draftSave = () => {
+    setErrorMessage("PMS Review has been saved as a draft.");
+    setTitle("PMS Review");
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
   return (
     <div className="prf-container">
+      {showModal && (
+        <Modal message={errorMessage} closeModal={closeModal} title={title} />
+      )}
       <header className="prf-header">
         <div className="prf-title-section">
           {/* Home icon on the left */}
           <Link to="/manager-dashboard" className="icon-link">
-            <FaHome className="icon home-icon" />
+            <FaHome className="per-icon home-icon" />
           </Link>
 
           {/* Centered Title */}
           <h1 className="prf-title">Performance Review Form</h1>
 
           {/* Logo on the right */}
-          <img src={logo} alt="Company Logo" className="prf-logo" />
+          <img src={logo} alt="Company Logo" className="prf-company-logo" />
         </div>
 
         <div className="prf-filters">
           <label>
-            Review Period: <input type="date" /> - <input type="date" />
+            Due Date: <input type="text" value="20/3/2025" readOnly/>
           </label>
           <label>
-            Employee: <input type="text" value="Senior Software Engineer" readOnly />
+            Self Review Date: <input type="text" value="14/3/2025" readOnly/>
+          </label>
+          <label>
+            Manager Review Date: <input type="text" readOnly />
+          </label>
+          <label>
+            Employee Name: <input type="text" value="Avinash SH" readOnly />
+          </label>
+          <label>
+            Designation:
+            <input type="text" value="Senior Software Engineer" readOnly />
           </label>
           <label>
             Department: <input type="text" value="Engineering" readOnly />
@@ -91,7 +122,11 @@ const PerformanceReview = () => {
                   <th>KPI's</th>
                   <th>Weightage</th>
                   <th>Self Rating</th>
-                  <th>Review-1</th>
+                  <th>
+                    <span style={{ color: "red", fontSize: "20px" }}>*</span>
+                    Review-1
+                  </th>
+
                   <th>Review-2</th>
                   <th>Average</th>
                 </tr>
@@ -101,10 +136,18 @@ const PerformanceReview = () => {
                   <tr key={idx}>
                     <td>{item}</td>
                     <td>4</td>
-                    <td><input type="text" /></td>
-                    <td><input type="text" /></td>
-                    <td><input type="text" /></td>
-                    <td><input type="text" readOnly /></td>
+                    <td>
+                      <input type="text" />
+                    </td>
+                    <td>
+                      <input type="text" />
+                    </td>
+                    <td>
+                      <input type="text" />
+                    </td>
+                    <td>
+                      <input type="text" readOnly />
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -121,7 +164,7 @@ const PerformanceReview = () => {
               <tr>
                 <th>Category</th>
                 <th>Self Score</th>
-                
+
                 <th>Review 1</th>
                 <th>Review 2</th>
                 <th>Final Score</th>
@@ -131,7 +174,7 @@ const PerformanceReview = () => {
               <tr>
                 <td>Total Score</td>
                 <td>80.5</td>
-               
+
                 <td>--</td>
                 <td>--</td>
                 <td>--</td>
@@ -147,8 +190,12 @@ const PerformanceReview = () => {
         </div>
 
         <div className="prf-actions">
-          <button className="prf-draft-btn">Save as Draft</button>
-          <button className="prf-submit-review-btn">Submit Review</button>
+          <button className="prf-draft-btn" onClick={draftSave}>
+            Save as Draft
+          </button>
+          <button className="prf-submit-review-btn" onClick={reviewSubmit}>
+            Submit Review
+          </button>
         </div>
       </div>
     </div>

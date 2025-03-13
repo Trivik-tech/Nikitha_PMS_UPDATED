@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./PendingList.css";
 import { FaSearch, FaHome } from "react-icons/fa";
-import logo from "../../../../assets/images/nikithas-logo.png";
-import Loader from "../../../modal/loader/Loader";
 import { MdCallMade } from "react-icons/md";
+import logo from "../../../../assets/images/nikithas-logo.png";
+import Modal from "../../../modal/Modal";
 
 const teamMembers = [
   {
@@ -114,55 +114,28 @@ const teamMembers = [
   },
 ];
 
-
 export default function PendingList() {
-  const [teamList, setTeamList] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [title, setTitle] = useState("");
+
   const navigate = useNavigate();
   const entriesPerPage = 10;
-
-  
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-      try {
-        const response = await axios.get(
-          "http://localhost:8080/api/v1/pms/hr/profile",
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setTeamList(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        if (error.response?.status === 401) {
-          localStorage.removeItem("token");
-          navigate("/login");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [navigate]);
 
   const filteredTeam = teamMembers.filter(
     (member) =>
       member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      member.department.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredTeam.length / entriesPerPage);
   const startIndex = (currentPage - 1) * entriesPerPage;
-  const currentEntries = filteredTeam.slice(startIndex, startIndex + entriesPerPage);
+  const currentEntries = filteredTeam.slice(
+    startIndex,
+    startIndex + entriesPerPage
+  );
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
@@ -170,12 +143,27 @@ export default function PendingList() {
     }
   };
 
+  const notifyEmployee = (employeeName) => {
+    setErrorMessage(`Notification has been sent to ${employeeName}.`);
+    setTitle("Notification");
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
   return (
     <div className="hr-pending-team-container">
-      {/* {loading && <Loader />} */}
+      {showModal && (
+        <Modal message={errorMessage} closeModal={closeModal} title={title} />
+      )}
       <div className="hr-pending-header">
         <div className="hr-pending-header-title">
-          <FaHome className="hr-pending-home-icon" onClick={() => navigate('/hr-dashboard')} />
+          <FaHome
+            className="hr-pending-home-icon"
+            onClick={() => navigate("/hr-dashboard")}
+          />
           <h1>Assessment Pending List</h1>
         </div>
         <div className="hr-pending-search-bar">
@@ -187,7 +175,11 @@ export default function PendingList() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <img src={logo} alt="Company Logo" className="hr-pending-company-logo" />
+        <img
+          src={logo}
+          alt="Company Logo"
+          className="hr-pending-company-logo"
+        />
       </div>
       <div className="hr-pending-table-container">
         <table className="hr-pending-team-table">
@@ -205,15 +197,34 @@ export default function PendingList() {
             {currentEntries.map((member, index) => (
               <tr key={index}>
                 <td className="hr-pending-team-member">
-                  <img src={member.image} alt={member.name} className="hr-pending-profile-pic" />
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    className="hr-pending-profile-pic"
+                  />
                   {member.name}
                 </td>
                 <td>{member.department}</td>
                 <td>{member.position}</td>
-                <td style={{ color: member.self === "Completed" ? "green" : "orange" }}>{member.self}</td>
-                <td style={{ color: member.manager === "Completed" ? "green" : "orange" }}>{member.manager}</td>
+                <td
+                  style={{
+                    color: member.self === "Completed" ? "green" : "orange",
+                  }}
+                >
+                  {member.self}
+                </td>
+                <td
+                  style={{
+                    color: member.manager === "Completed" ? "green" : "orange",
+                  }}
+                >
+                  {member.manager}
+                </td>
                 <td className="hr-pending-notify-icon">
-                  <MdCallMade className="hr-notify-bell" />
+                  <MdCallMade
+                    className="notify-bell"
+                    onClick={() => notifyEmployee(member.name)}
+                  />
                 </td>
               </tr>
             ))}
@@ -221,13 +232,19 @@ export default function PendingList() {
         </table>
       </div>
       <div className="hr-pagination-container">
-        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
           Prev
         </button>
         <span>
           Page {currentPage} of {totalPages}
         </span>
-        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
           Next
         </button>
       </div>

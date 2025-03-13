@@ -66,7 +66,9 @@ const HrDashboard = () => {
     onClick: (event, elements) => {
       if (elements.length > 0) {
         const elementIndex = elements[0].index;
-        if (elementIndex === 1) { // Clicking on 'Pending'
+        if (elementIndex === 0) { // Clicking on 'Completed'
+          navigate('/hr/completed-assessments');
+        } else if (elementIndex === 1) { // Clicking on 'Pending'
           navigate('/hr/pending-assessments');
         }
       }
@@ -83,7 +85,7 @@ const HrDashboard = () => {
           </div>
           <ul>
             <li><Link to="/hr-dashboard" className="active">HR Dashboard</Link></li>
-            <li><Link to="/employee-details">Employee Details</Link></li>
+            <li><Link to="/employee-list">Employee List</Link></li>
             <li><Link to="/hr-startpms">Employee Performance</Link></li>
             <li><Link to="/hr-profile">My Profile</Link></li>
           </ul>
