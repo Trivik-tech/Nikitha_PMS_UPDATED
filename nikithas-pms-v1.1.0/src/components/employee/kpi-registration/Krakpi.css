@@ -1,8 +1,6 @@
 /* Container styling */
 .container {
-padding: 20px;
-
-  
+  padding: 20px;
   margin: auto;
 }
 
@@ -42,10 +40,18 @@ padding: 20px;
   display: flex;
   gap: 10px;
   margin-bottom: 10px;
+  align-items: center;
 }
 
-.kra-header input {
-  flex: 1;
+.kra-input {
+  flex: 3; /* 3/4 width */
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.weightage-input {
+  flex: 1; /* 1/4 width */
   padding: 6px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -56,10 +62,11 @@ padding: 20px;
   display: flex;
   gap: 10px;
   margin-bottom: 5px;
+  align-items: center;
 }
 
-.kpi-box input {
-  flex: 1;
+.kpi-input {
+  flex: 3; /* 3/4 width */
   padding: 6px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -73,12 +80,13 @@ button {
   border-radius: 4px;
 }
 
-.add-kra, .add-kpi {
+.add-kra,
+.add-kpi {
   background-color: #28a745;
   color: white;
-  
 }
-.add-kra{
+
+.add-kra {
   margin-top: 20px;
 }
 
@@ -104,9 +112,8 @@ button {
   margin-top: 20px;
 }
 
-
 .form-box {
-  margin-top: 50px; /* Adds space above the form */
+  margin-top: 50px;
   border: 1px solid #ddd;
   padding: 20px;
   border-radius: 8px;
