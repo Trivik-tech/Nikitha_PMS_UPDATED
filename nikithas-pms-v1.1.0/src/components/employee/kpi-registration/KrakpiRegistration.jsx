@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./Krakpi.css"; // Import the CSS file
+import logo from "../../../assets/images/nikithas-logo.png"; // Import logo
 
 export default function KRAKPIForm() {
   const [kras, setKras] = useState([
@@ -38,7 +39,11 @@ export default function KRAKPIForm() {
   return (
     <div className="container">
       <div className="form-box">
+        {/* Logo added above the heading */}
+        <img src={logo} alt="Company Logo" className="krakpi-logo" />
+        
         <h2>Employee's KRA/KPI Registration Form</h2>
+
         <div className="employee-info">
           <input type="text" placeholder="Enter employee name" />
           <input type="text" placeholder="Enter employee code" />

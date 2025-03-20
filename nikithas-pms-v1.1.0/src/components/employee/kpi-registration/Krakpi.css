@@ -14,7 +14,7 @@
 
 /* Employee Info Inputs */
 .employee-info {
-  margin-top: 30px;
+  margin-top: 50px;
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
@@ -119,3 +119,24 @@ button {
   border-radius: 8px;
   background: #f9f9f9;
 }
+
+/* Logo Styling - Positioning it at the top right */
+.krakpi-logo {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 120px; /* Adjust as needed */
+  height: auto;
+  
+}
+
+/* Adjust the form-box to make space for the logo */
+.form-box {
+  position: relative;
+  padding-top: 60px; /* Adds space so logo doesn't overlap */
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
