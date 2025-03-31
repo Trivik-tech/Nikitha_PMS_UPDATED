@@ -52,7 +52,7 @@ export default function EmployeeList() {
               <FaHome className="employee-list-home-icon" />
             </Link>
             
-            <h1>Employee List</h1>
+            <h1 className="hr-module-employee-list-text">Employee List</h1>
             <div className="employee-list-search-bar">
               <FaSearch className="employee-list-search-icon" />
               <input

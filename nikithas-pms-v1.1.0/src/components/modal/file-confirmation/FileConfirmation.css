@@ -1,0 +1,95 @@
+/* Overlay for the modal */
+.file-confirmation-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);  /* Slightly lighter background for a more modern look */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal container styling */
+.file-confirmation-modal {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 10px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);  /* Soft shadow for depth */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Title styling */
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Modal content text styling */
+.modal-content {
+  margin-bottom: 25px;
+  color: #555;
+}
+
+/* Button container styling */
+.modal-buttons {
+  display: flex;
+  justify-content: space-evenly;
+  gap: 15px;
+}
+
+/* Button styling */
+.modal-button {
+  padding: 10px 25px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Added transition for smooth button interactions */
+  width: 45%;
+}
+
+/* Confirm button styling */
+.modal-button.confirm {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.modal-button.confirm:hover {
+  background-color: #45a049;
+  transform: translateY(-2px); /* Slight lift on hover */
+}
+
+/* Cancel button styling */
+.modal-button.cancel {
+  background-color: #f44336;
+  color: white;
+}
+
+.modal-button.cancel:hover {
+  background-color: #e53935;
+  transform: translateY(-2px); /* Slight lift on hover */
+}
+
+/* For better readability and spacing in smaller screen sizes */
+@media (max-width: 400px) {
+  .file-confirmation-modal {
+    width: 90%;
+    padding: 20px;
+  }
+
+  .modal-title {
+    font-size: 1.25rem;
+  }
+
+  .modal-button {
+    font-size: 0.9rem;
+    padding: 8px 20px;
+  }
+}

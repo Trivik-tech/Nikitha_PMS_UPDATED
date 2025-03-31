@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 
 
 import HrDashboard from './components/hr/hr-dashboard/HrDashboard';
-import EmployeeDashboard from './components/employee/EmployeeDashboard';
+import EmployeeDashboard from './components/employee/employee-dashboard/EmployeeDashboard';
 import ManagerDashboard from './components/manager/dashboard/ManagerDashboard';
 import Registration from './components/registration/Registration';
 
@@ -24,6 +24,7 @@ import StartPms from './components/hr/pms/StartPms';
 import PendingList from './components/hr/status/pending/PendingList';
 import CompletedList from './components/hr/status/complete/CompletedList';
 import EmployeeList from './components/hr/employee-list/EmployeeList';
+import Performance from './components/employee/performance/Performance';
 
 
 
@@ -63,6 +64,8 @@ function App() {
           <Route exact path="/hr-dashboard"  element={<HrDashboard/>}/>
           <Route exact path="/hr/pending-assessments"  element={<PendingList/>}/>
           <Route exact path="/hr/completed-assessments"  element={<CompletedList/>}/>
+          <Route exact path="/employee-performance"  element={<Performance/>}/>
+
 
 
 

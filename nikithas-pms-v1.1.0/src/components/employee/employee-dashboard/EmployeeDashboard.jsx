@@ -1,8 +1,9 @@
-import React from 'react';
+import {React ,useState}from 'react';
 import { Link } from 'react-router-dom';
 import './EmployeeDashboard.css';
-import logo from '../../assets/images/nikithas-logo.png';
+import logo from '../../../assets/images/nikithas-logo.png';
 import { Bell } from 'lucide-react';
+import Notification from '../../modal/notification/Notification'
 
 const employeeData = {
   id: 'EMP00123',
@@ -19,7 +20,9 @@ const employeeData = {
   }
 };
 
+
 const EmployeeDashboard = () => {
+  const [notificationOpen, setNotificationOpen] = useState(false);
   return (
     <div className="employee-dashboard-container">
       {/* Sidebar */}
@@ -31,7 +34,8 @@ const EmployeeDashboard = () => {
         <ul>
           <li><Link to="/employee-dashboard" className="active">My Dashboard</Link></li>
           <li><Link to="/start-pms">Start PMS</Link></li>
-          <li><Link to="/performance">My Performance</Link></li>
+          <li><Link to="/employee-performance">My Performance</Link></li>
+          <li><Link to="/employee-performance">Register KRA|KPI</Link></li>
         </ul>
       </aside>
 
@@ -43,21 +47,23 @@ const EmployeeDashboard = () => {
             <img src={logo} alt="Nikitha PMS" />
           </div>
           <div className="employee-dashboard-actions">
-            <Bell className="employee-dashboard-notificationButton" />
+          <Bell className="employee-dashboard-notificationButton" onClick={() => setNotificationOpen(!notificationOpen)} />
+            {notificationOpen && <Notification onClose={() => setNotificationOpen(false)} />}
+           
             <Link to="/" className="employee-logout-btn">Logout</Link>
           </div>
         </header>
 
         <section className="employee-info-container">
           <div className="employee-info">
-            <h3>Primary Details</h3>
+            <h3 className='employee-dashboard-info-h3'>Primary Details</h3>
             <p><strong>Employee ID:</strong> {employeeData.id}</p>
             <p><strong>Employee Name:</strong> {employeeData.name}</p>
             <p><strong>Location:</strong> {employeeData.location}</p>
           </div>
 
           <div className="reporting-manager">
-            <h3>Reporting Manager</h3>
+            <h3 className='employee-dashboard-info-h3'>Reporting Manager</h3>
             <div className="manager-info">
               <img src={employeeData.manager.image} alt="Manager" className="manager-img" />
               <div>
@@ -69,7 +75,7 @@ const EmployeeDashboard = () => {
           </div>
 
           <div className="employee-info">
-            <h3>Contact Information</h3>
+            <h3 className='employee-dashboard-info-h3'>Contact Information</h3>
             <p><strong>Email:</strong> {employeeData.email}</p>
             <p><strong>Phone:</strong> {employeeData.phone}</p>
             <p><strong>Department:</strong> {employeeData.department}</p>

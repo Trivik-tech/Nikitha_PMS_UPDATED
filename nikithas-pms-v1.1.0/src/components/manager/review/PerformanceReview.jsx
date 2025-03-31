@@ -67,6 +67,10 @@ const PerformanceReview = () => {
   const closeModal = () => {
     setShowModal(false);
   };
+
+  const printHandler=()=>{
+    
+  }
   return (
     <div className="prf-container">
       {showModal && (
@@ -190,6 +194,9 @@ const PerformanceReview = () => {
         </div>
 
         <div className="prf-actions">
+        <button className="prf-print-btn" onClick={printHandler}>
+            Print
+          </button>
           <button className="prf-draft-btn" onClick={draftSave}>
             Save as Draft
           </button>

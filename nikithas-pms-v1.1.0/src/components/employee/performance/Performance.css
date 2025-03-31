@@ -1,0 +1,202 @@
+/* Basic Styles */
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+}
+
+.employee-module-container {
+  width: 98vw;
+  height: 95vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.employee-module-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.employee-module-header h1 {
+  font-size: 25px;
+  color: #333;
+  margin-left: 10px; /* Added space for the home icon */
+}
+
+.employee-module-home-icon {
+  font-size: 30px; /* Size of the home icon */
+  color: #333;
+  margin-right: 10px; /* Add space between the icon and text */
+  cursor: pointer;
+}
+
+.employee-module-home-icon:hover {
+  color: #4CAF50; /* Change color on hover */
+}
+
+.employee-module-header img {
+  position: absolute;
+  right: 5px;
+  top: 1px;
+  height: 80px;
+}
+
+/* Section Styles */
+.employee-module-section {
+  margin-bottom: 30px;
+}
+
+.employee-module-section h2 {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+/* KRA Section Styling */
+.employee-module-kra {
+  margin-bottom: 20px;
+}
+
+.employee-module-kra-title {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.employee-module-kra-details {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.employee-module-rating {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Progress Bar Styling */
+.employee-module-progress-bar {
+  background-color: #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 10px 0;
+  height: 10px;
+}
+
+.employee-module-progress-bar span {
+  display: block;
+  height: 100%;
+}
+
+.employee-module-self-rating {
+  background-color: #4CAF50;
+  width: 86%;
+}
+
+.employee-module-manager-rating {
+  background-color: #2196F3;
+  width: 82%;
+}
+
+/* Overall Performance Section */
+.employee-module-overall-performance {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.employee-module-overall-performance span {
+  font-size: 14px;
+  color: #555;
+}
+
+.employee-module-blue-progress {
+  background-color: #2196F3;
+  border-radius: 8px;
+  margin: 15px 0;
+  height: 15px;
+  width: 100%;
+  position: relative;
+}
+
+.employee-module-blue-progress span {
+  background-color: #2196F3;
+  display: block;
+  height: 100%;
+  width: 80%;
+  border-radius: 8px;
+}
+
+/* Full-screen responsive design */
+@media (max-width: 768px) {
+  .employee-module-container {
+      padding: 10px;
+  }
+
+  .employee-module-header h1 {
+      font-size: 18px;
+  }
+
+  .employee-module-section h2 {
+      font-size: 16px;
+  }
+
+  .employee-module-kra-title {
+      font-size: 15px;
+  }
+
+  .employee-module-kra-details {
+      font-size: 13px;
+  }
+
+  .employee-module-rating span {
+      font-size: 13px;
+  }
+
+  .employee-module-header img {
+      right: 10px;
+      top: 5px;
+      height: 35px;
+  }
+}
+
+/* Print Button Styling */
+.employee-module-print-btn {
+  padding: 10px 20px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+  margin-top: 20px; /* Add space between content and button */
+  width: 150px; /* Optional: adjust the width of the button */
+}
+
+/* Hover effect for the button */
+.employee-module-print-btn:hover {
+  background-color: #1976D2;
+}
+
+/* Focused state for accessibility */
+.employee-module-print-btn:focus {
+  outline: none;
+}

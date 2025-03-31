@@ -215,6 +215,7 @@ body::-webkit-scrollbar {
 }
 
 .prf-draft-btn, 
+.prf-print-btn,
 .prf-submit-review-btn {
     padding: 8px 16px;
     border: none;
@@ -248,6 +249,15 @@ body::-webkit-scrollbar {
 
 .prf-draft-btn:hover {
     background-color: #bdbdbd; /* Darker shade for hover */
+    transform: translateY(-2px);
+}
+
+.prf-print-btn{
+    background-color: skyblue;
+    color: black;
+}
+.prf-print-btn:hover {
+    background-color: rgb(177, 216, 231); /* Darker shade for hover */
     transform: translateY(-2px);
 }
 
