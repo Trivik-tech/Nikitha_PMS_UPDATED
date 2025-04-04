@@ -27,7 +27,6 @@ body::-webkit-scrollbar {
     justify-content: space-between;
     width: 100%;
     position: relative;
-    padding: 0;
 }
 
 .icon-link {
@@ -53,8 +52,8 @@ body::-webkit-scrollbar {
 .manager-approve-filters {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
-    margin: 10px 0;
+    gap: 10px;
+    margin: 20px 0;
 }
 
 .manager-approve-filters label {
@@ -66,6 +65,7 @@ body::-webkit-scrollbar {
     border: 1px solid #ddd;
     border-radius: 4px;
     width: 180px; 
+    margin-top: 10PX;
 }
 
 .manager-approve-sections {

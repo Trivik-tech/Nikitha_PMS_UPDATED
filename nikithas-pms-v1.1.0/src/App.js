@@ -26,7 +26,7 @@ import PendingList from './components/hr/status/pending/PendingList';
 import CompletedList from './components/hr/status/complete/CompletedList';
 import EmployeeList from './components/hr/employee-list/EmployeeList';
 import Performance from './components/employee/performance/Performance';
-
+import EmployeeReview from './components/employee/emplyoee-review/EmployeeReview'
 
 
 
@@ -70,6 +70,7 @@ function App() {
 
 
           <Route exact path="/approve-pms" element={<Approve/>} />
+          <Route exact path="/self-review" element={<EmployeeReview/>} />
 
 
 
