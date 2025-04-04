@@ -1,0 +1,243 @@
+/* Global Styles */
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  animation: fadeIn 1s ease-out; /* Animation for page load */
+}
+
+/* Employee Module Container */
+.employee-module-container {
+  width: 98vw;
+  height: 95vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  overflow-y: auto;
+  animation: slideIn 0.5s ease-out; /* Animation for container */
+}
+
+/* Header Section */
+.employee-module-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+  animation: fadeInUp 0.5s ease-out; /* Fade-in animation for header */
+}
+
+.employee-module-header h1 {
+  font-size: 25px;
+  color: #333;
+  margin-left: 10px;
+  opacity: 0;
+  animation: fadeInText 1s ease-out forwards; /* Text fade-in animation */
+}
+
+.employee-module-home-icon {
+  font-size: 30px;
+  color: #333;
+  margin-right: 10px;
+  cursor: pointer;
+  opacity: 0;
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.employee-module-home-icon:hover {
+  color: #4CAF50;
+}
+
+.employee-module-header img {
+  position: absolute;
+  right: 5px;
+  top: 0px;
+  height: 100px;
+  animation: fadeInRight 1s ease-out forwards; /* Animation for logo */
+}
+
+/* Section Styling */
+.employee-module-section {
+  margin-bottom: 30px;
+  opacity: 0;
+  animation: fadeInSection 0.5s ease-out forwards; /* Animation for sections */
+}
+
+.employee-module-section h2 {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.employee-module-kra {
+  margin-bottom: 20px;
+}
+
+.employee-module-kra-title {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+  transition: all 0.3s ease;
+}
+
+.employee-module-kra-title:hover {
+  color: #2196F3; /* Hover effect on KRA title */
+}
+
+.employee-module-kra-details {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.employee-module-rating {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #333;
+}
+
+/* Progress Bar */
+.employee-module-progress-bar {
+  background-color: #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 10px 0;
+  height: 10px;
+  animation: progressBarAnimation 1s ease-out; /* Progress bar animation */
+}
+
+.employee-module-progress-bar span {
+  display: block;
+  height: 100%;
+}
+
+.employee-module-self-rating {
+  background-color: #4CAF50;
+  width: 86%;
+}
+
+.employee-module-manager-rating {
+  background-color: #2196F3;
+  width: 82%;
+}
+
+/* Overall Performance Section */
+.employee-module-overall-performance {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.employee-module-overall-performance span {
+  font-size: 14px;
+  color: #555;
+}
+
+.employee-module-blue-progress {
+  background-color: #2196F3;
+  border-radius: 8px;
+  margin: 15px 0;
+  height: 15px;
+  width: 100%;
+  position: relative;
+}
+
+.employee-module-blue-progress span {
+  background-color: #2196F3;
+  display: block;
+  height: 100%;
+  width: 80%;
+  border-radius: 8px;
+}
+
+/* Print Button */
+.employee-module-print-btn {
+  padding: 10px 20px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+  width: 150px;
+}
+
+.employee-module-print-btn:hover {
+  background-color: #1976D2;
+}
+
+.employee-module-print-btn:focus {
+  outline: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInText {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInSection {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes progressBarAnimation {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}

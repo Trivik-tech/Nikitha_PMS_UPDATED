@@ -40,7 +40,7 @@ export default function StartPms() {
             <Link to="/hr-dashboard"> 
               <FaHome className="start-pms-home-icon" />
             </Link>
-            <h3>Employee List</h3>
+            <h2>Employee List</h2>
           </div>
 
           <div className="start-pms-search-filter-container">
@@ -53,9 +53,9 @@ export default function StartPms() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <button className="start-pms-filter-button">
+            {/* <button className="start-pms-filter-button">
               <FaFilter className="start-pms-filter-icon" />
-            </button>
+            </button> */}
           </div>
           <img src={logo} alt="Company Logo" className="start-pms-company-logo" />
         </div>

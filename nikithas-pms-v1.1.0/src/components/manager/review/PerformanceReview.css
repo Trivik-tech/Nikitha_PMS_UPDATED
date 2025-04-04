@@ -19,6 +19,7 @@ body::-webkit-scrollbar {
     box-sizing: border-box;
     font-family: Arial, sans-serif;
     border-radius: 10px;
+    animation: fadeIn 0.3s ease-in-out; /* Faster Fade In */
 }
 
 .prf-title-section {
@@ -28,9 +29,8 @@ body::-webkit-scrollbar {
     width: 100%;
     position: relative;
     padding: 10px 0;
+    animation: slideUp 0.3s ease-out; /* Faster Slide Up effect */
 }
-
-
 
 .prf-title {
     flex-grow: 1;
@@ -38,28 +38,30 @@ body::-webkit-scrollbar {
     font-size: 30px;
     font-weight: bold;
     margin-left: 10px;
+    opacity: 0;
+    animation: fadeIn 0.3s ease-in-out 0s forwards; /* Immediate fade-in */
 }
 
 .prf-company-logo {
     height: 100px;
-   
+    opacity: 0;
+    animation: fadeIn 0.3s ease-in-out 0s forwards; /* Immediate fade-in */
 }
 
-/* Other styles can remain the same */
-
-
+/* Filter section animations */
 .prf-filters {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
     margin: 10px 0;
+    opacity: 0;
+    animation: fadeIn 0.3s ease-in-out 0s forwards; /* Immediate fade-in */
 }
 
 .prf-filters label {
     font-size: 15px;
-    
     font-weight: bold;
-    
+    animation: fadeIn 0.3s ease-in-out 0s forwards; /* Immediate fade-in */
 }
 
 .prf-filters input {
@@ -68,6 +70,11 @@ body::-webkit-scrollbar {
     border-radius: 4px;
     width: 180px; 
     margin-top: 5px;
+    transition: border-color 0.3s ease;
+}
+
+.prf-filters input:focus {
+    border-color: #4f46e5;
 }
 
 /* Sections Container */
@@ -80,9 +87,23 @@ body::-webkit-scrollbar {
     border: 1px solid #ddd;
     border-radius: 8px;
     overflow: hidden;
+    opacity: 0;
+    animation: fadeIn 0.3s ease-in-out 0s forwards; /* Immediate fade-in */
+    transition: transform 0.2s ease;
 }
 
-/* Section Header */
+.prf-section:hover {
+    transform: translateY(-5px); /* Subtle hover effect */
+}
+.per-icon.home-icon{
+    font-size: 30px;
+    color: black;
+}
+.per-icon.home-icon:hover{
+    color: #0056b3;
+    transform: scale(1.1);
+}
+
 .prf-section-header {
     background-color: #f7f7f7;
     display: flex;
@@ -103,21 +124,13 @@ body::-webkit-scrollbar {
     color: #666;
 }
 
-.prf-submit-btn {
-    background-color: #4f46e5;
-    color: #fff;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
 /* Table Styles - Fixed Column Widths */
 .prf-table {
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed; /* Important for column alignment */
     background-color: #fff;
+    transition: all 0.2s ease;
 }
 
 .prf-table th, .prf-table td {
@@ -174,6 +187,7 @@ body::-webkit-scrollbar {
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 8px;
+    animation: fadeIn 0.3s ease-in-out 0s forwards; /* Immediate fade-in */
 }
 
 /* Overall Score Table */
@@ -204,6 +218,11 @@ body::-webkit-scrollbar {
     border: 1px solid #ddd;
     border-radius: 4px;
     resize: none;
+    transition: all 0.2s ease;
+}
+
+.prf-overall-remarks textarea:focus {
+    border-color: #4f46e5;
 }
 
 /* Actions Section */
@@ -212,9 +231,11 @@ body::-webkit-scrollbar {
     justify-content: flex-end;
     gap: 10px;
     margin-top: 15px;
+    animation: fadeIn 0.3s ease-in-out 0s forwards; /* Immediate fade-in */
 }
 
 .prf-draft-btn, 
+.prf-print-btn,
 .prf-submit-review-btn {
     padding: 8px 16px;
     border: none;
@@ -227,17 +248,9 @@ body::-webkit-scrollbar {
     background-color: #4f46e5;
     color: white;
 }
-.per-icon.home-icon {
-    font-size: 30px; /* You can adjust the size here */
-    color: black;
-}
 
-.per-icon.home-icon:hover {
-    color: #3730a3; /* Darker shade for hover */
-    transform: translateY(-2px);
-}
 .prf-submit-review-btn:hover {
-    background-color: #3730a3; /* Darker shade for hover */
+    background-color: #3730a3;
     transform: translateY(-2px);
 }
 
@@ -247,7 +260,37 @@ body::-webkit-scrollbar {
 }
 
 .prf-draft-btn:hover {
-    background-color: #bdbdbd; /* Darker shade for hover */
+    background-color: #bdbdbd;
     transform: translateY(-2px);
 }
 
+.prf-print-btn {
+    background-color: skyblue;
+    color: black;
+}
+
+.prf-print-btn:hover {
+    background-color: rgb(177, 216, 231);
+    transform: translateY(-2px);
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    0% {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

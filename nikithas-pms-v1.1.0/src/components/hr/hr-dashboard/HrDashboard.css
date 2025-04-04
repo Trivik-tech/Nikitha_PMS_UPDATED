@@ -12,7 +12,10 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin: 0;
+    padding: 0;
 }
+
 
 /* Dashboard container */
 .hr-dashboard-container {
@@ -23,12 +26,14 @@ body {
 
 /* Sidebar styles */
 .hr-dashboard-sidebar {
-    width: 220px;
+    width: 250px !important;
     background-color: #fff;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     padding: 20px;
-    height: 95vh;
-    margin: 15px;
+    height: 94vh;
+    margin-top: 24px;
+    margin-left: 15px;
+    /* margin: 15px; */
     border-radius: 5px;
     transition: transform 0.3s ease-in-out;
 }
@@ -40,6 +45,7 @@ body {
     margin-bottom: 20px;
     text-align: center;
 }
+
 
 .hr-dashboard-profileImg {
     width: 60px;
@@ -85,7 +91,7 @@ body {
 /* Main Content */
 .hr-dashboard-main-content {
     flex-grow: 1;
-    padding: 17px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -162,6 +168,7 @@ body {
     margin-bottom: 15px;
 }
 
+/* Stats Card Layout */
 .hr-dashboard-stat-card {
     background-color: #fff;
     padding: 15px;
@@ -169,10 +176,32 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 100%;
     margin: 0 4px;
-    text-align: center;
+    text-align: left; /* Align text to the left */
+    display: flex; /* Flexbox layout */
+    align-items: center; /* Align items vertically centered */
+    gap: 15px; /* Space between icon and text */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Adjusting Icon Style */
+.stat-card-icon.user {
+    font-size: 30px;
+    color: #0b95f1; /* Default color for icons */
+}
+.stat-card-icon.complete {
+    font-size: 30px;
+    color: #0bf13d; /* Default color for icons */
+}
+.stat-card-icon.pending {
+    font-size: 30px;
+    color: #f1a10b; /* Default color for icons */
+}
+.stat-card-icon.rate {
+    font-size: 30px;
+    color: #0be2f1; /* Default color for icons */
+}
+
+/* Ensuring the text is aligned correctly */
 .hr-dashboard-stat-card h2 {
     font-size: 18px;
     margin-bottom: 8px;
@@ -183,11 +212,11 @@ body {
     font-weight: bold;
 }
 
-/* Hover effect for stat cards */
-.hr-dashboard-stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.hr-dashboard-stat-card:hover{
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 
 /* Chart Container - Ensures Side-by-Side Layout */
 .hr-dashboard-chart-container {
@@ -262,7 +291,7 @@ body {
         width: 250px;
     }
     .hr-dashboard-main-content {
-        padding: 30px;
+        padding: 20px;
     }
 }
 
@@ -395,4 +424,10 @@ body {
     align-items: center;
     background-color: rgba(0, 0, 0, 0.5);
    
+}
+
+.stat-card-icon {
+    font-size: 30px;
+    color: #4CAF50; /* Default color for icons */
+    margin-bottom: 8px;
 }

@@ -1,18 +1,20 @@
+/* Notification Modal Overlay */
 .notification-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  /* Blurred, transparent background */
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(5px);
+  background: rgba(0, 0, 0, 0.4); /* Semi-transparent background */
+  backdrop-filter: blur(5px); /* Background blur effect */
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 1000; /* Ensure modal is on top */
+  overflow: hidden; /* Prevent scrolling behind the modal */
 }
 
+/* Notification Modal */
 .notification-modal {
   width: 600px;
   background: #fff;
@@ -25,8 +27,10 @@
   font-family: Arial, sans-serif;
   animation: fadeIn 0.3s ease-out;
   overflow: hidden;
+  z-index: 1050; /* Ensure modal content is above overlay */
 }
 
+/* Modal Header */
 .modal-header {
   display: flex;
   align-items: center;
@@ -36,7 +40,7 @@
 }
 
 .close-btn {
-  font-size: 24px; /* Make close button larger */
+  font-size: 24px; /* Larger close button */
   font-weight: bold;
   cursor: pointer;
   background: none;
@@ -46,10 +50,10 @@
 }
 
 .close-btn:hover {
-  color: red;
+  color: red; /* Change close button color on hover */
 }
 
-/* Filter dropdown styling */
+/* Filter Dropdown Styling */
 .modal-header .filter-dropdown {
   padding: 6px 6px;
   font-size: 14px;
@@ -60,7 +64,7 @@
   margin-left: 30px;
 }
 
-/* Tabs styling */
+/* Tabs Styling */
 .tabs {
   display: flex;
   gap: 15px;
@@ -91,7 +95,7 @@
   left: 0;
 }
 
-/* Notification list */
+/* Notification List */
 .notification-list {
   flex-grow: 1;
   max-height: 300px;
@@ -140,7 +144,7 @@
   color: #999;
 }
 
-/* Footer buttons */
+/* Footer Buttons */
 .modal-footer {
   border-top: 1px solid #ddd;
   padding-top: 10px;
@@ -158,7 +162,7 @@
   font-size: 13px;
 }
 
-/* Full details popup */
+/* Full Details Popup */
 .notification-details-popup {
   position: fixed;
   top: 50%;

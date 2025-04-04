@@ -7,6 +7,7 @@ body {
     color: var(--text-clr);
     margin: 0;
     overflow: hidden;
+    padding: 0;
 }
 
 .employee-list-container {
@@ -35,12 +36,11 @@ body {
     justify-content: space-between;
     align-items: center;
     position: sticky;
-    top: 0;
+   
     background: white;
     z-index: 100;
-    padding: 10px 20px;
     border-bottom: 1px solid #ddd;
-    white-space: nowrap;
+    height: 25%;
     width: 100%;
     animation: slideDown 0.5s ease-in-out;
 }
@@ -54,8 +54,12 @@ body {
     margin-left: 0;
 }
 
+.hr-module-employee-list-text{
+    font-size: 25px;
+}
+
 .employee-list-home-icon {
-    font-size: 40px;
+    font-size: 30px;
     color: #525252;
     cursor: pointer;
     transition: transform 0.3s ease-in-out;
@@ -81,7 +85,7 @@ body {
 
 .employee-list-search-icon {
     position: absolute;
-    left: 10px;
+    left: 47%;
     top: 50%;
     transform: translateY(-50%);
     color: gray;
@@ -92,6 +96,7 @@ body {
     border: 1px solid #ccc;
     border-radius: 4px;
     width: 300px;
+    margin-left: 15rem;
     transition: box-shadow 0.3s ease-in-out;
 }
 
@@ -259,6 +264,7 @@ body {
     }
 
     .employee-list-search-bar {
+        display: flex;
         width: 80%;
         max-width: 100%;
         margin-top: 0.5rem;

@@ -72,20 +72,27 @@ body {
 /* Updated search bar styles */
 .complete-search-bar {
   position: relative;
-  width: 40%;
+  width: 30%;
+ 
 }
 
 .complete-search-bar input {
-  width: 100%;
+  width: 50%;
   padding: 8px 10px 8px 35px; /* Adjust left padding for icon */
   border: 1px solid #ccc;
   border-radius: 4px;
   transition: box-shadow 0.3s ease-in-out;
+  
+}
+.complete-search-bar input:focus{
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+  outline: none;
 }
 
 .complete-search-icon {
   position: absolute;
-  left: 10px;
+  right: 92%;
   top: 50%;
   transform: translateY(-50%);
   color: #888;

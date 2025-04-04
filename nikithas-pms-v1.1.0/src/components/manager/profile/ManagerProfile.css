@@ -27,6 +27,8 @@ body, html {
     justify-content: flex-start;
     border-radius: 10px;
     opacity: 0;
+    /* box-shadow: -2px 2px px rgb(94, 94, 94); */
+    
     animation: fadeIn 0.8s ease-in-out forwards;
 }
 
@@ -50,6 +52,10 @@ body, html {
     cursor: pointer;
     color: #333;
     transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+.icon.home-icon{
+    font-size: 30px;
+    color: black;
 }
 
 .icon:hover {

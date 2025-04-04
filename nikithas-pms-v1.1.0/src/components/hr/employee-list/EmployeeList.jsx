@@ -50,9 +50,9 @@ export default function EmployeeList() {
           <div className="employee-list-header-title">
             <Link to="/hr-dashboard" className="icon-link">
               <FaHome className="employee-list-home-icon" />
-            </Link>
+            </Link> 
             
-            <h1>Employee List</h1>
+            <h1 className="hr-module-employee-list-text">Employee List</h1>
             <div className="employee-list-search-bar">
               <FaSearch className="employee-list-search-icon" />
               <input
@@ -64,9 +64,9 @@ export default function EmployeeList() {
             </div>
           </div>
           <div className="employee-list-search-filter-container">
-            <button className="employee-list-filter-button" onClick={handleSort}>
+            {/* <button className="employee-list-filter-button" onClick={handleSort}>
               <i className="fas fa-filter"></i> Filter
-            </button>
+            </button> */}
           </div>
           <div className="employee-list-add-button-container">
             <Link to="/add-employee" className="employee-list-add-button"> Add Employee</Link> 
