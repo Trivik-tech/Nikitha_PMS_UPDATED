@@ -69,8 +69,9 @@ const PerformanceReview = () => {
   };
 
   const printHandler=()=>{
-    
+    // Placeholder for print functionality
   }
+
   return (
     <div className="prf-container">
       {showModal && (

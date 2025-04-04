@@ -1,11 +1,13 @@
-/* Basic Styles */
+/* Global Styles */
 body {
   font-family: 'Roboto', sans-serif;
   margin: 0;
   padding: 0;
   background-color: #f9f9f9;
+  animation: fadeIn 1s ease-out; /* Animation for page load */
 }
 
+/* Employee Module Container */
 .employee-module-container {
   width: 98vw;
   height: 95vh;
@@ -18,43 +20,53 @@ body {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   padding: 20px;
   overflow-y: auto;
+  animation: slideIn 0.5s ease-out; /* Animation for container */
 }
 
+/* Header Section */
 .employee-module-header {
   display: flex;
   justify-content: flex-start;
   align-items: center;
   margin-bottom: 20px;
   position: relative;
+  animation: fadeInUp 0.5s ease-out; /* Fade-in animation for header */
 }
 
 .employee-module-header h1 {
   font-size: 25px;
   color: #333;
-  margin-left: 10px; /* Added space for the home icon */
+  margin-left: 10px;
+  opacity: 0;
+  animation: fadeInText 1s ease-out forwards; /* Text fade-in animation */
 }
 
 .employee-module-home-icon {
-  font-size: 30px; /* Size of the home icon */
+  font-size: 30px;
   color: #333;
-  margin-right: 10px; /* Add space between the icon and text */
+  margin-right: 10px;
   cursor: pointer;
+  opacity: 0;
+  animation: fadeIn 0.8s ease-out forwards;
 }
 
 .employee-module-home-icon:hover {
-  color: #4CAF50; /* Change color on hover */
+  color: #4CAF50;
 }
 
 .employee-module-header img {
   position: absolute;
   right: 5px;
-  top: 1px;
-  height: 80px;
+  top: 0px;
+  height: 100px;
+  animation: fadeInRight 1s ease-out forwards; /* Animation for logo */
 }
 
-/* Section Styles */
+/* Section Styling */
 .employee-module-section {
   margin-bottom: 30px;
+  opacity: 0;
+  animation: fadeInSection 0.5s ease-out forwards; /* Animation for sections */
 }
 
 .employee-module-section h2 {
@@ -65,7 +77,6 @@ body {
   padding-bottom: 5px;
 }
 
-/* KRA Section Styling */
 .employee-module-kra {
   margin-bottom: 20px;
 }
@@ -74,6 +85,11 @@ body {
   font-weight: bold;
   color: #333;
   margin-bottom: 5px;
+  transition: all 0.3s ease;
+}
+
+.employee-module-kra-title:hover {
+  color: #2196F3; /* Hover effect on KRA title */
 }
 
 .employee-module-kra-details {
@@ -89,13 +105,14 @@ body {
   color: #333;
 }
 
-/* Progress Bar Styling */
+/* Progress Bar */
 .employee-module-progress-bar {
   background-color: #e0e0e0;
   border-radius: 8px;
   overflow: hidden;
   margin: 10px 0;
   height: 10px;
+  animation: progressBarAnimation 1s ease-out; /* Progress bar animation */
 }
 
 .employee-module-progress-bar span {
@@ -143,40 +160,7 @@ body {
   border-radius: 8px;
 }
 
-/* Full-screen responsive design */
-@media (max-width: 768px) {
-  .employee-module-container {
-      padding: 10px;
-  }
-
-  .employee-module-header h1 {
-      font-size: 18px;
-  }
-
-  .employee-module-section h2 {
-      font-size: 16px;
-  }
-
-  .employee-module-kra-title {
-      font-size: 15px;
-  }
-
-  .employee-module-kra-details {
-      font-size: 13px;
-  }
-
-  .employee-module-rating span {
-      font-size: 13px;
-  }
-
-  .employee-module-header img {
-      right: 10px;
-      top: 5px;
-      height: 35px;
-  }
-}
-
-/* Print Button Styling */
+/* Print Button */
 .employee-module-print-btn {
   padding: 10px 20px;
   background-color: #2196F3;
@@ -187,16 +171,73 @@ body {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease;
-  margin-top: 20px; /* Add space between content and button */
-  width: 150px; /* Optional: adjust the width of the button */
+  margin-top: 20px;
+  width: 150px;
 }
 
-/* Hover effect for the button */
 .employee-module-print-btn:hover {
   background-color: #1976D2;
 }
 
-/* Focused state for accessibility */
 .employee-module-print-btn:focus {
   outline: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInText {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInSection {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes progressBarAnimation {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
 }

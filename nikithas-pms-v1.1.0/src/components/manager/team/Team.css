@@ -79,6 +79,7 @@ body {
 /* Search bar */
 .manager-team-search-bar {
   position: relative;
+  width: 30%;
 }
 
 .manager-team-search-icon {
@@ -93,6 +94,7 @@ body {
   padding: 8px 10px 8px 30px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 

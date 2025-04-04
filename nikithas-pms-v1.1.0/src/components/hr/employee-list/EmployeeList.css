@@ -36,12 +36,11 @@ body {
     justify-content: space-between;
     align-items: center;
     position: sticky;
-    /* top: 0; */
+   
     background: white;
     z-index: 100;
-    /* padding: 5px 10px; */
     border-bottom: 1px solid #ddd;
-    white-space: nowrap;
+    height: 25%;
     width: 100%;
     animation: slideDown 0.5s ease-in-out;
 }
@@ -86,7 +85,7 @@ body {
 
 .employee-list-search-icon {
     position: absolute;
-    left: 10px;
+    left: 47%;
     top: 50%;
     transform: translateY(-50%);
     color: gray;
@@ -97,6 +96,7 @@ body {
     border: 1px solid #ccc;
     border-radius: 4px;
     width: 300px;
+    margin-left: 15rem;
     transition: box-shadow 0.3s ease-in-out;
 }
 
@@ -264,6 +264,7 @@ body {
     }
 
     .employee-list-search-bar {
+        display: flex;
         width: 80%;
         max-width: 100%;
         margin-top: 0.5rem;

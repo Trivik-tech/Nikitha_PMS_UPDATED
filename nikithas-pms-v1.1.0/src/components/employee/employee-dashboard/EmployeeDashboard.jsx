@@ -1,9 +1,9 @@
-import {React ,useState}from 'react';
+import { React, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './EmployeeDashboard.css';
 import logo from '../../../assets/images/nikithas-logo.png';
 import { Bell } from 'lucide-react';
-import Notification from '../../modal/notification/Notification'
+import Notification from '../../modal/notification/Notification';
 
 const employeeData = {
   id: 'EMP00123',
@@ -16,15 +16,15 @@ const employeeData = {
   manager: {
     name: 'Ravin',
     position: 'VP of Product',
-    image: 'https://assets.onecompiler.app/4344tsra5/43brpvuah/1000115238.jpg', 
+    image: 'https://assets.onecompiler.app/4344tsra5/43brpvuah/1000115238.jpg',
   }
 };
-
 
 const EmployeeDashboard = () => {
   const [notificationOpen, setNotificationOpen] = useState(false);
   return (
     <div className="employee-dashboard-container">
+      {notificationOpen && <Notification onClose={() => setNotificationOpen(false)} />}
       {/* Sidebar */}
       <aside className="employee-dashboard-sidebar">
         <div className="employee-profile-container">
@@ -47,9 +47,8 @@ const EmployeeDashboard = () => {
             <img src={logo} alt="Nikitha PMS" />
           </div>
           <div className="employee-dashboard-actions">
-          <Bell className="employee-dashboard-notificationButton" onClick={() => setNotificationOpen(!notificationOpen)} />
-            {notificationOpen && <Notification onClose={() => setNotificationOpen(false)} />}
-           
+            <Bell className="employee-dashboard-notificationButton" onClick={() => setNotificationOpen(!notificationOpen)} />
+            
             <Link to="/" className="employee-logout-btn">Logout</Link>
           </div>
         </header>

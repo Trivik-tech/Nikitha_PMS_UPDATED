@@ -30,7 +30,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between; /* Align the content to the edges */
-    margin-bottom: 20px;
+    /* margin-bottom: 20px; */
 }
 
 .hr-module-add-employee-company-icon {

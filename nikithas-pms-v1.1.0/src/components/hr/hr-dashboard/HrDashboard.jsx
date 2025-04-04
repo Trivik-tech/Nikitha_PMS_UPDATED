@@ -1,4 +1,5 @@
 import { React, useState, useEffect } from 'react';
+import { FaUsers, FaClipboardCheck, FaExclamationTriangle, FaChartLine } from 'react-icons/fa';
 import { Bar, Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import { Bell } from 'lucide-react';
@@ -103,18 +104,22 @@ const HrDashboard = () => {
 
           <section className="hr-dashboard-stats-container fade-in-up">
             <div className="hr-dashboard-stat-card">
+              <FaUsers className="stat-card-icon user" />
               <h2>Total Employees</h2>
               <p>1,254</p>
             </div>
             <div className="hr-dashboard-stat-card">
+              <FaClipboardCheck className="stat-card-icon complete" />
               <h2>Completed Assessments</h2>
               <p>876</p>
             </div>
             <div className="hr-dashboard-stat-card">
+              <FaExclamationTriangle className="stat-card-icon pending" />
               <h2>Pending Assessments</h2>
               <p>375</p>
             </div>
             <div className="hr-dashboard-stat-card">
+              <FaChartLine className="stat-card-icon rate" />
               <h2>Completion Rate</h2>
               <p>69.8%</p>
             </div>

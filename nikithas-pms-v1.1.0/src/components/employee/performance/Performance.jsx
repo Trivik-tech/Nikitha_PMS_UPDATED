@@ -13,12 +13,12 @@ const Performance = () => {
     <div className="employee-module-container">
       <div className="employee-module-header">
         <div className="employee-module-home-icon">
-        <Link to="/employee-dashboard" className="icon-link">
+          <Link to="/employee-dashboard" className="icon-link">
             <FaHome className="per-icon home-icon" />
           </Link>
         </div>
         <h1>Performance Summary</h1>
-        <img src={logo} alt="Logo" />
+        <img src={logo} alt="Logo" className='employee-module-company-logo' />
       </div>
 
       {/* KRA Section for 2023 */}
