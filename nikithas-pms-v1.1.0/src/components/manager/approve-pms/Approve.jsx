@@ -1,10 +1,13 @@
-import React from "react";
+import {React,useState} from "react";
 import "./Approve.css";
 import logo from "../../../assets/images/nikithas-logo.png"; // Make sure the path is correct
 import { FaHome } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import PmsApprove from '../../../components/modal/approve-pms/PmsApprove'
 
 const Approve = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [approvalStatus, setApprovalStatus] = useState(""); 
   const sections = [
     {
       title: "Technical Excellence",
@@ -48,6 +51,20 @@ const Approve = () => {
       items: ["Learning & Development"],
     },
   ];
+
+  const handleApproveClick = () => {
+    setApprovalStatus("approve");
+    setIsModalOpen(true);
+  };
+
+  const handleRejectClick = () => {
+    setApprovalStatus("reject");
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="manager-approve-container">
@@ -99,9 +116,16 @@ const Approve = () => {
       
 
       <div className="manager-approve-actions">
-      <button className="manager-approve-submit-review-btn">Approve</button>
-      <button className="manager-approve-submit-review-btn-reject">Reject</button>
+        <button className="manager-approve-submit-review-btn" onClick={handleApproveClick}>Approve</button>
+        <button className="manager-approve-submit-review-btn-reject" onClick={handleRejectClick}>Reject</button>
       </div>
+
+      {/* Modal for Approval/Rejection */}
+      <PmsApprove 
+        isOpen={isModalOpen} 
+        onClose={closeModal} 
+        status={approvalStatus} 
+      />
 
       <div className="manager-approve-approval">
         

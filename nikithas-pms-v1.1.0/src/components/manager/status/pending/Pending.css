@@ -3,6 +3,7 @@ body {
   background-color: var(--base-clr, #f4f4f9);
   display: flex;
   justify-content: center;
+  overflow: hidden;
   align-items: center;
   color: var(--text-clr, #333);
   margin: 0;
@@ -211,4 +212,5 @@ body {
 .notify-bell {
   color: blue;
   cursor: pointer;
+  font-size: 25px;
 }

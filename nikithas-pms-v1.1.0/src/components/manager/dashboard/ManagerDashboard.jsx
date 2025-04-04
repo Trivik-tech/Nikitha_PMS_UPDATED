@@ -88,6 +88,9 @@ const ManagerDashboard = () => {
             <Link to={`/my-team/${managerData?.managerId}`}>My Team</Link>
           </li>
           <li>
+            <Link to="/approve-pms">Approve PMS</Link>
+          </li>
+          <li>
             <Link to="/manager-profile">My Profile</Link>
           </li>
         </ul>
@@ -95,7 +98,7 @@ const ManagerDashboard = () => {
 
       <div className="main-content">
         <div className="dashboard-header">
-          <h1>Manager PMS Dashboard</h1>
+          <h1>Manager PMS Dashboard</h1>  
           <img src={logo} alt="Logo" className="dashboard-logo" />
           <div className="header-icons">
             <Bell className="notification-icon" onClick={() => setNotificationOpen(!notificationOpen)} />

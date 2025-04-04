@@ -9,7 +9,7 @@ body {
 
 /* Employee Module Container */
 .employee-module-container {
-  width: 98vw;
+  width: 95vw;
   height: 95vh;
   display: flex;
   flex-direction: column;

@@ -219,7 +219,7 @@ const EmployeeDetails = () => {
       {/* Buttons */}
       <div className="hr-module-add-employee-button-container">
         <button onClick={uploadData} className="hr-module-add-employee-button primary">Upload</button>
-        <button className="hr-module-add-employee-button secondary">Edit</button>
+        {/* <button className="hr-module-add-employee-button secondary">Edit</button> */}
         <button onClick={handleSaveAndContinue} className="hr-module-add-employee-button">Save & Continue</button>
       </div>
     </div>

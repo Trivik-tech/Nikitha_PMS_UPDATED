@@ -1,16 +1,16 @@
 import React from 'react';
+import './Modal.css';  // Import the new CSS for the modal styling
 
-const Modal = ({ message, closeModal ,title}) => {
-    return (
-        <div className="login-modal-overlay" style={{background: "rgba(0, 0, 0, 0.4)", // Semi-transparent background
-            backdropFilter: "blur(8px)"}}>
-            <div className="login-modal-content">
-                <h2>{title}</h2>
-                <p>{message}</p>
-                <button onClick={closeModal}>Close</button>
-            </div>
-        </div>
-    );
+const Modal = ({ message, closeModal, title }) => {
+  return (
+    <div className="global-modal-overlay" onClick={closeModal}>
+      <div className="global-modal-content" onClick={(e) => e.stopPropagation()}>
+        <h2>{title}</h2>
+        <p>{message}</p>
+        <button className="global-close-btn" onClick={closeModal}>Close</button>
+      </div>
+    </div>
+  );
 };
 
 export default Modal;
