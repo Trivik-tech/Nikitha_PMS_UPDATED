@@ -25,13 +25,29 @@ const Login = () => {
   const handleHardcodedLogin = (e) => {
     e.preventDefault();
     
-    if (!username.trim() || !password.trim()) {
+    // Handle validation for username and password fields individually
+    if (!username.trim() && !password.trim()) {
       setErrorMessage('Username and password are required.');
       setTitle('Login Error');
       setShowModal(true);
       return;
     }
 
+    if (!username.trim()) {
+      setErrorMessage('Username is required.');
+      setTitle('Login Error');
+      setShowModal(true);
+      return;
+    }
+
+    if (!password.trim()) {
+      setErrorMessage('Password is required.');
+      setTitle('Login Error');
+      setShowModal(true);
+      return;
+    }
+
+    // Check hardcoded login credentials
     if (username === 'MG1234' && password === '12345') {
       navigation('/manager-dashboard');
     } else if (username === 'HR1234' && password === '12345') {

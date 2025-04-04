@@ -8,6 +8,7 @@ import Loader from "../../../modal/loader/Loader";
 import { useLocation } from "react-router-dom";
 import { MdCallMade } from "react-icons/md";
 import Modal from '../../../modal/Modal';
+import { MdNotificationsActive } from "react-icons/md";
 
 const teamMembers = [
   {
@@ -244,7 +245,7 @@ export default function Pending() {
                   {member.manager}
                 </td>
                 <td className="pending-notify-icon">
-                <MdCallMade className="notify-bell" onClick={() => notifyEmployee(member.name)} />
+                <MdNotificationsActive className="notify-bell" onClick={() => notifyEmployee(member.name)} />
                 </td>
               </tr>
             ))}
