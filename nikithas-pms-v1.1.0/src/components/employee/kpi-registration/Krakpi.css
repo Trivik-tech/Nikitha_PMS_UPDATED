@@ -1,0 +1,150 @@
+/* Container styling */
+.container {
+  padding: 20px;
+  padding-top: 1px;
+  /* margin: ; */
+}
+
+/* Form box */
+.form-box {
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  background: #f9f9f9;
+  margin-top: 2px;
+
+}
+
+/* Employee Info Inputs */
+.employee-info {
+  margin-top: 50pxpx;
+  display: flex;
+  gap: 10px;
+  margin-top: 50px;
+}
+
+.employee-info input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 20px;
+}
+
+/* KRA Section */
+.kra-box {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.kra-header {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.kra-input {
+  flex: 3; /* 3/4 width */
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.weightage-input {
+  flex: 1; /* 1/4 width */
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* KPI Section */
+.kpi-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 5px;
+  align-items: center;
+}
+
+.kpi-input {
+  flex: 3; /* 3/4 width */
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Buttons */
+button {
+  padding: 8px 12px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.add-kra,
+.add-kpi {
+  background-color: #28a745;
+  color: white;
+}
+
+.add-kra {
+  margin-top: 20px;
+}
+
+.remove-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.draft-btn {
+  background-color: #ffc107;
+  color: black;
+}
+
+.submit-btn {
+  background-color: darkblue;
+  color: white;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.form-box {
+  margin-top: 50px;
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+/* Logo Styling - Positioning it at the top right */
+.krakpi-logo {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 120px; /* Adjust as needed */
+  height: auto;
+  
+  
+}
+
+/* Adjust the form-box to make space for the logo */
+.form-box {
+  position: relative;
+  padding-top: 60px; /* Adds space so logo doesn't overlap */
+  border: 1px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+
+
+

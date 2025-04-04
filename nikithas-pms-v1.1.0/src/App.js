@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import HrDashboard from './components/hr/hr-dashboard/HrDashboard';
 import EmployeeDashboard from './components/employee/employee-dashboard/EmployeeDashboard';
 import ManagerDashboard from './components/manager/dashboard/ManagerDashboard';
-import Registration from './components/registration/Registration';
+import Registration from './components/registration/Registration'; 
 
 import Team from './components/manager/team/Team';
 
@@ -25,8 +25,13 @@ import Approve from './components/manager/approve-pms/Approve';
 import PendingList from './components/hr/status/pending/PendingList';
 import CompletedList from './components/hr/status/complete/CompletedList';
 import EmployeeList from './components/hr/employee-list/EmployeeList';
+
 import Performance from './components/employee/performance/Performance';
 import EmployeeReview from './components/employee/emplyoee-review/EmployeeReview'
+
+import KrakpiRegistration from './components/employee/kpi-registration/KrakpiRegistration';
+
+
 
 
 
@@ -35,7 +40,7 @@ import EmployeeReview from './components/employee/emplyoee-review/EmployeeReview
 
 
 function App() {
-  return (
+  return ( 
     <div className="App">
        <Router>
         <Routes>
@@ -65,7 +70,10 @@ function App() {
           <Route exact path="/hr-dashboard"  element={<HrDashboard/>}/>
           <Route exact path="/hr/pending-assessments"  element={<PendingList/>}/>
           <Route exact path="/hr/completed-assessments"  element={<CompletedList/>}/>
+
           <Route exact path="/employee-performance"  element={<Performance/>}/>
+          <Route exact path="/add-krakpi"  element={<KrakpiRegistration/>}/>
+
 
 
 
