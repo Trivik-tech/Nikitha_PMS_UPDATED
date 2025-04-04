@@ -1,9 +1,8 @@
-
-body, html {
-  overflow: auto; /* Enables scrolling */
-  height: 100vh; /* Full viewport height */
-  margin: 0;
-  padding: 0;
+/* Container styling */
+.container {
+  padding: 20px;
+  padding-top: 1px;
+  /* margin: ; */
 }
 
 /* Form box */
@@ -12,23 +11,10 @@ body, html {
   padding: 20px;
   border-radius: 8px;
   background: #f9f9f9;
-  width: 98vw;
-  height: 95vh;
-  overflow-y: auto; /* Enables vertical scrolling */
-  /* max-height: 90vh; /* Prevents it from exceeding the viewport * */
-}
-.form-box::-webkit-scrollbar {
-  width: 8px;
+  margin-top: 2px;
+
 }
 
-.form-box::-webkit-scrollbar-thumb {
-  background: #888; /* Darker scrollbar */
-  border-radius: 4px;
-}
-
-.form-box::-webkit-scrollbar-thumb:hover {
-  background: #555; /* Slightly darker on hover */
-}
 /* Employee Info Inputs */
 .employee-info {
   margin-top: 50pxpx;
@@ -158,4 +144,7 @@ button {
   border-radius: 8px;
   background: #f9f9f9;
 }
+
+
+
 
