@@ -37,7 +37,7 @@ export default function KRAKPIForm() {
   };
 
   return (
-    <div className="container">
+    // <div className="container">
       <div className="form-box">
         {/* Logo added above the heading */}
         <img src={logo} alt="Company Logo" className="krakpi-logo" />
@@ -81,6 +81,6 @@ export default function KRAKPIForm() {
           <button className="submit-btn">Submit</button>
         </div>
       </div>
-    </div>
+    // </div>
   );
 }
