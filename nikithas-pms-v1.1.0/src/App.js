@@ -17,6 +17,7 @@ import EmployeeDetails from './components/hr/empdetails/EmployeeDetails';
 
 import HrProfile from './components/hr/profile/HrProfile';
 import StartPms from './components/hr/pms/StartPms';
+import Approve from './components/manager/approve-pms/Approve';
 
 
 
@@ -46,6 +47,8 @@ function App() {
 
           <Route exact path="/hr-profile" element={<HrProfile/>} />
           <Route exact path="/hr-startpms" element={<StartPms/>} />
+
+          <Route exact path="/approve-pms" element={<Approve/>} />
 
 
 
