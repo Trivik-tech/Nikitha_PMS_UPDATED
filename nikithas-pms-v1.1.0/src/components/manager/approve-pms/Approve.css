@@ -101,13 +101,29 @@ body::-webkit-scrollbar {
 }
 
 .manager-approve-submit-btn {
-    background-color: #4f46e5;
-    color: #fff;
+   
     border: none;
     padding: 6px 12px;
     border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
+.manager-approve-submit-btn.approve-btn{
+  background-color: #4f46e5;
+  color: #fff;
+}
+.manager-approve-submit-btn.reject-btn{
+  background-color: red;
+  color: #fff;
+}
+.manager-approve-submit-btn.reject-btn:hover{
+  transform: scale(1.1);
+}
+.manager-approve-submit-btn.approve-btn:hover{
+  transform: scale(1.1);
+}
+
+
 
 .manager-approve-table {
     width: 100%;

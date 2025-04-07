@@ -1,13 +1,15 @@
-import {React,useState} from "react";
+import React, { useState } from "react";
 import "./Approve.css";
 import logo from "../../../assets/images/nikithas-logo.png"; // Make sure the path is correct
 import { FaHome } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import PmsApprove from '../../../components/modal/approve-pms/PmsApprove'
+import Modal from "../../../components/modal/Modal"; // Ensure the correct path
 
 const Approve = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [approvalStatus, setApprovalStatus] = useState(""); 
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [title, setTitle] = useState("");
+
   const sections = [
     {
       title: "Technical Excellence",
@@ -53,21 +55,26 @@ const Approve = () => {
   ];
 
   const handleApproveClick = () => {
-    setApprovalStatus("approve");
-    setIsModalOpen(true);
+    setErrorMessage("PMS has been approved successfully.");
+    setTitle("PMS Approve");
+    setShowModal(true); // Show modal when "Approve" is clicked
   };
 
   const handleRejectClick = () => {
-    setApprovalStatus("reject");
-    setIsModalOpen(true);
+    setErrorMessage("PMS has been rejected successfully.");
+    setTitle("PMS Reject");
+    setShowModal(true); // Show modal when "Reject" is clicked
   };
 
   const closeModal = () => {
-    setIsModalOpen(false);
+    setShowModal(false); // Close modal
   };
 
   return (
     <div className="manager-approve-container">
+      {showModal && (
+        <Modal message={errorMessage} closeModal={closeModal} title={title} />
+      )}
       <header className="manager-approve-header">
         <div className="manager-approve-title-section">
           <Link to="/manager-dashboard" className="icon-link">
@@ -113,22 +120,13 @@ const Approve = () => {
         ))}
       </div>
 
-      
-
       <div className="manager-approve-actions">
-        <button className="manager-approve-submit-review-btn" onClick={handleApproveClick}>Approve</button>
-        <button className="manager-approve-submit-review-btn-reject" onClick={handleRejectClick}>Reject</button>
-      </div>
-
-      {/* Modal for Approval/Rejection */}
-      <PmsApprove 
-        isOpen={isModalOpen} 
-        onClose={closeModal} 
-        status={approvalStatus} 
-      />
-
-      <div className="manager-approve-approval">
-        
+        <button className="manager-approve-submit-btn approve-btn" onClick={handleApproveClick}>
+          Approve
+        </button>
+        <button className="manager-approve-submit-btn reject-btn" onClick={handleRejectClick}>
+          Reject
+        </button>
       </div>
     </div>
   );

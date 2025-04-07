@@ -79,7 +79,7 @@ const PerformanceReview = () => {
       )}
       <header className="employee-module-review-header">
         <div className="employee-module-review-title-section">
-          <Link to="/manager-dashboard" className="icon-link">
+          <Link to="/employee-dashboard" className="icon-link">
             <FaHome className="employee-module-review-icon home-icon" />
           </Link>
           <h1 className="employee-module-review-title">Performance Review Form</h1>
