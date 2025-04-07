@@ -95,6 +95,14 @@ body::-webkit-scrollbar {
 .employee-module-review-section:hover {
     transform: translateY(-5px);
 }
+.employee-module-review-icon.home-icon{
+    font-size: 30px;
+    color: black;
+}
+.employee-module-review-icon.home-icon:hover{
+    color: #0056b3;
+    transform: scale(1.1);
+}
 
 .employee-module-review-section-header {
     background-color: #f7f7f7;

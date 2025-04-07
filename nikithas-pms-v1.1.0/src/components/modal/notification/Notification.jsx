@@ -59,11 +59,6 @@ const Notification = ({ onClose }) => {
           ))}
         </div>
 
-        {/* <div className="modal-footer">
-          <button className="mark-all-read">Mark all as read</button>
-          <button className="clear-all">Clear all notifications</button>
-        </div> */}
-
         {/* Full Details Popup */}
         {selectedNotification && (
           <div className="notification-details-popup">
