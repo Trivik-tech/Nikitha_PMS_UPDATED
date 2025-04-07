@@ -44,11 +44,11 @@ export default function KRAKPIForm() {
         
         <h2>Employee's KRA/KPI Registration Form</h2>
 
-        <div className="employee-info">
+        {/* <div className="employee-info">
           <input type="text" placeholder="Enter employee name" />
           <input type="text" placeholder="Enter employee code" />
           <input type="text" placeholder="Enter designation" />
-        </div>
+        </div> */}
 
         <button className="add-kra" onClick={addKRA}>
           Add New KRA

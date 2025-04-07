@@ -2,6 +2,8 @@
 .container {
   padding: 20px;
   padding-top: 1px;
+  width: 95vw;
+  height: 95vh;
   /* margin: ; */
 }
 
@@ -16,7 +18,7 @@
 }
 
 /* Employee Info Inputs */
-.employee-info {
+/* .employee-info {
   margin-top: 50pxpx;
   display: flex;
   gap: 10px;
@@ -29,7 +31,7 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-top: 20px;
-}
+} */
 
 /* KRA Section */
 .kra-box {
@@ -144,6 +146,19 @@ button {
   border-radius: 8px;
   background: #f9f9f9;
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+.container {
+  padding: 20px;
+  padding-top: 1px;
+  width: 95vw;
+  height: 95vh;
+  overflow-y: auto; /* This enables vertical scroll */
+}
+
 
 
 
