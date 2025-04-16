@@ -56,7 +56,7 @@ public class LoginServiceImpl implements LoginService{
             if(employee.isPresent()){
                 EmployeeInformation employeeInformation = employee.get();
                 if(BCrypt.checkpw(login.getPassword(),employeeInformation.getPassword())){
-                    return jwtService.generateToken(employeeInformation.getEmployeeId(),employeeInformation.getRole());
+                    return jwtService.generateToken(employeeInformation.getEmpId(),employeeInformation.getRole());
                 }
             }
 

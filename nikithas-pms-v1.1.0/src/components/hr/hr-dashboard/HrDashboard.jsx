@@ -3,13 +3,13 @@ import { FaUsers, FaClipboardCheck, FaExclamationTriangle, FaChartLine } from 'r
 import { Bar, Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import { Bell } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './HrDashboard.css';
 
 import logo from '../../../assets/images/nikithas-logo.png';
 import profile from '../../../assets/images/profile1.jpg';
 import Notification from "../../modal/notification/Notification";
+import axios from 'axios';
 
 // Register chart.js components
 ChartJS.register(
@@ -26,9 +26,27 @@ const HrDashboard = () => {
   const navigate = useNavigate();
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [animate, setAnimate] = useState(false);
+  const [totalEmployees, setTotalEmployees] = useState(null);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     setTimeout(() => setAnimate(true), 200);
+  }, []);
+
+  useEffect(() => {
+    const loadTotalEmployees = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/api/v1/pms/hr/total-employees");
+        setTotalEmployees(response.data);
+        setError(false);
+      } catch (error) {
+        console.error("Error fetching total employees:", error.message);
+        setTotalEmployees({ totalEmployees: 0 });
+        setError(true);
+      }
+    };
+
+    loadTotalEmployees();
   }, []);
 
   const barData = {
@@ -67,9 +85,9 @@ const HrDashboard = () => {
     onClick: (event, elements) => {
       if (elements.length > 0) {
         const elementIndex = elements[0].index;
-        if (elementIndex === 0) { // Clicking on 'Completed'
+        if (elementIndex === 0) {
           navigate('/hr/completed-assessments');
-        } else if (elementIndex === 1) { // Clicking on 'Pending'
+        } else if (elementIndex === 1) {
           navigate('/hr/pending-assessments');
         }
       }
@@ -106,7 +124,7 @@ const HrDashboard = () => {
             <div className="hr-dashboard-stat-card">
               <FaUsers className="stat-card-icon user" />
               <h2>Total Employees</h2>
-              <p>1,254</p>
+              <p>{totalEmployees?.totalEmployees}</p>
             </div>
             <div className="hr-dashboard-stat-card">
               <FaClipboardCheck className="stat-card-icon complete" />
@@ -124,6 +142,12 @@ const HrDashboard = () => {
               <p>69.8%</p>
             </div>
           </section>
+
+          {/* {error && (
+            <p style={{ color: 'red', marginTop: '10px' }}>
+              ⚠ Unable to fetch employee data. Server might be down.
+            </p>
+          )} */}
 
           <section className="hr-dashboard-chart-container fade-in-up">
             <h2 className="hr-dashboard-assessment-heading">Assessment Status</h2>

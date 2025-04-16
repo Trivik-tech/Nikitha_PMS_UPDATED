@@ -203,126 +203,129 @@ public class ManagerServiceImpl implements ManagerService{
     @Override
     public List<EmployeeWithPmsStatus> listOfEmployeesForManager(String managerId) {
 
-        try {
-            Manager manager = managerRepository.findById(managerId)
-                    .orElseThrow(() -> new ManagerNotFoundException(managerId));
-
-            List<EmployeeInformation> allByManager = employeeInformationRepository.findAllByManager(manager);
-
-            return allByManager.stream()
-                    .map(employee -> {
-                        Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
-                        KraKpi kraKpi;
-                        if(kraKpiOptional.isPresent()){
-                            kraKpi = kraKpiOptional.get();
-                            kraKpi.setPmsInitiated(true);
-
-                        }else{
-                            kraKpi = new KraKpi();
-                            kraKpi.setPmsInitiated(false);
-                            kraKpi.setManagerCompleted(false);
-                            kraKpi.setSelfCompleted(false);
-                        }
-                        return new EmployeeWithKraKpi(employee, kraKpi);
-
-
-                    })
-                    .filter(pair -> pair.kraKpi.getPmsInitiated())  // Filter only if PMS is initiated
-                    .map(pair -> {
-                        EmployeeInformation employee = pair.employee;
-                        KraKpi kraKpi = pair.kraKpi;
-
-                        EmployeeWithPmsStatus response = entityDtoConversion.entityToDtoConversion(employee, EmployeeWithPmsStatus.class);
-                        response.setManagerCompleted(kraKpi.isManagerCompleted());
-                        response.setSelfCompleted(kraKpi.isSelfCompleted());
-                        response.setPmsInitiated(kraKpi.getPmsInitiated());
-                        response.setDepartment(entityDtoConversion.entityToDtoConversion(employee.getDepartment(), DepartmentResponseDto.class));
-
-                        return response;
-                    })
-                    .toList();
-
-        } catch (Exception e) {
-            logger.error("Error retrieving employees for manager ID {}: {}", managerId, e.getMessage());
-            throw e;
-        }
+//        try {
+//            Manager manager = managerRepository.findById(managerId)
+//                    .orElseThrow(() -> new ManagerNotFoundException(managerId));
+//
+//            List<EmployeeInformation> allByManager = employeeInformationRepository.findAllByManager(manager);
+//
+//            return allByManager.stream()
+//                    .map(employee -> {
+//                        Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+//                        KraKpi kraKpi;
+//                        if(kraKpiOptional.isPresent()){
+//                            kraKpi = kraKpiOptional.get();
+//                            kraKpi.setPmsInitiated(true);
+//
+//                        }else{
+//                            kraKpi = new KraKpi();
+//                            kraKpi.setPmsInitiated(false);
+//                            kraKpi.setManagerCompleted(false);
+//                            kraKpi.setSelfCompleted(false);
+//                        }
+//                        return new EmployeeWithKraKpi(employee, kraKpi);
+//
+//
+//                    })
+//                    .filter(pair -> pair.kraKpi.getPmsInitiated())  // Filter only if PMS is initiated
+//                    .map(pair -> {
+//                        EmployeeInformation employee = pair.employee;
+//                        KraKpi kraKpi = pair.kraKpi;
+//
+//                        EmployeeWithPmsStatus response = entityDtoConversion.entityToDtoConversion(employee, EmployeeWithPmsStatus.class);
+//                        response.setManagerCompleted(kraKpi.isManagerCompleted());
+//                        response.setSelfCompleted(kraKpi.isSelfCompleted());
+//                        response.setPmsInitiated(kraKpi.getPmsInitiated());
+//                        response.setDepartment(entityDtoConversion.entityToDtoConversion(employee.getDepartment(), DepartmentResponseDto.class));
+//
+//                        return response;
+//                    })
+//                    .toList();
+//
+//        } catch (Exception e) {
+//            logger.error("Error retrieving employees for manager ID {}: {}", managerId, e.getMessage());
+//            throw e;
+//        }
+        return null;
     }
 
     @Override
     public List<EmployeeWithPmsStatus> listOfPMSCompletedEmployees(String managerId) {
-        Manager manager = managerRepository.findById(managerId).orElseThrow(() -> new ManagerNotFoundException(managerId));
-        List<EmployeeInformation> allEmployees = employeeInformationRepository.findAllByManager(manager);
-        return allEmployees.stream()
-                .map(employee -> {
-                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
-                    KraKpi kraKpi;
-                    if(kraKpiOptional.isPresent()){
-                        kraKpi = kraKpiOptional.get();
-                        kraKpi.setPmsInitiated(true);
+//        Manager manager = managerRepository.findById(managerId).orElseThrow(() -> new ManagerNotFoundException(managerId));
+//        List<EmployeeInformation> allEmployees = employeeInformationRepository.findAllByManager(manager);
+//        return allEmployees.stream()
+//                .map(employee -> {
+//                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+//                    KraKpi kraKpi;
+//                    if(kraKpiOptional.isPresent()){
+//                        kraKpi = kraKpiOptional.get();
+//                        kraKpi.setPmsInitiated(true);
+//
+//                    }else{
+//                        kraKpi = new KraKpi();
+//                        kraKpi.setPmsInitiated(false);
+//                        kraKpi.setManagerCompleted(false);
+//                        kraKpi.setSelfCompleted(false);
+//                    }
+//                    return new EmployeeWithKraKpi(employee, kraKpi);
+//
+//
+//                })
+//                .filter(pair -> pair.kraKpi.getPmsInitiated() && pair.kraKpi.isManagerCompleted() && pair.kraKpi.isSelfCompleted())  // Filter only if PMS is initiated
+//                .map(pair -> {
+//                    EmployeeInformation employee = pair.employee;
+//                    KraKpi kraKpi = pair.kraKpi;
+//
+//                    EmployeeWithPmsStatus response = entityDtoConversion.entityToDtoConversion(employee, EmployeeWithPmsStatus.class);
+//                    response.setManagerCompleted(kraKpi.isManagerCompleted());
+//                    response.setSelfCompleted(kraKpi.isSelfCompleted());
+//                    response.setPmsInitiated(kraKpi.getPmsInitiated());
+//                    response.setDepartment(entityDtoConversion.entityToDtoConversion(employee.getDepartment(), DepartmentResponseDto.class));
+//
+//                    return response;
+//                })
+//                .toList();
 
-                    }else{
-                        kraKpi = new KraKpi();
-                        kraKpi.setPmsInitiated(false);
-                        kraKpi.setManagerCompleted(false);
-                        kraKpi.setSelfCompleted(false);
-                    }
-                    return new EmployeeWithKraKpi(employee, kraKpi);
-
-
-                })
-                .filter(pair -> pair.kraKpi.getPmsInitiated() && pair.kraKpi.isManagerCompleted() && pair.kraKpi.isSelfCompleted())  // Filter only if PMS is initiated
-                .map(pair -> {
-                    EmployeeInformation employee = pair.employee;
-                    KraKpi kraKpi = pair.kraKpi;
-
-                    EmployeeWithPmsStatus response = entityDtoConversion.entityToDtoConversion(employee, EmployeeWithPmsStatus.class);
-                    response.setManagerCompleted(kraKpi.isManagerCompleted());
-                    response.setSelfCompleted(kraKpi.isSelfCompleted());
-                    response.setPmsInitiated(kraKpi.getPmsInitiated());
-                    response.setDepartment(entityDtoConversion.entityToDtoConversion(employee.getDepartment(), DepartmentResponseDto.class));
-
-                    return response;
-                })
-                .toList();
-
+        return null;
     }
 
     @Override
     public List<EmployeeWithPmsStatus> listOfPMSPendingEmployees(String managerId) {
-        Manager manager = managerRepository.findById(managerId).orElseThrow(() -> new ManagerNotFoundException(managerId));
-        List<EmployeeInformation> allEmployees = employeeInformationRepository.findAllByManager(manager);
-        return allEmployees.stream()
-                .map(employee -> {
-                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
-                    KraKpi kraKpi;
-                    if(kraKpiOptional.isPresent()){
-                        kraKpi = kraKpiOptional.get();
-                        kraKpi.setPmsInitiated(true);
-
-                    }else{
-                        kraKpi = new KraKpi();
-                        kraKpi.setPmsInitiated(false);
-                        kraKpi.setManagerCompleted(false);
-                        kraKpi.setSelfCompleted(false);
-                    }
-                    return new EmployeeWithKraKpi(employee, kraKpi);
-
-
-                })
-                .filter(pair -> pair.kraKpi.getPmsInitiated() && (!pair.kraKpi.isManagerCompleted() || !pair.kraKpi.isSelfCompleted()))  // Filter only if PMS is initiated
-                .map(pair -> {
-                    EmployeeInformation employee = pair.employee;
-                    KraKpi kraKpi = pair.kraKpi;
-
-                    EmployeeWithPmsStatus response = entityDtoConversion.entityToDtoConversion(employee, EmployeeWithPmsStatus.class);
-                    response.setManagerCompleted(kraKpi.isManagerCompleted());
-                    response.setSelfCompleted(kraKpi.isSelfCompleted());
-                    response.setPmsInitiated(kraKpi.getPmsInitiated());
-                    response.setDepartment(entityDtoConversion.entityToDtoConversion(employee.getDepartment(), DepartmentResponseDto.class));
-
-                    return response;
-                })
-                .toList();
+//        Manager manager = managerRepository.findById(managerId).orElseThrow(() -> new ManagerNotFoundException(managerId));
+//        List<EmployeeInformation> allEmployees = employeeInformationRepository.findAllByManager(manager);
+//        return allEmployees.stream()
+//                .map(employee -> {
+//                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+//                    KraKpi kraKpi;
+//                    if(kraKpiOptional.isPresent()){
+//                        kraKpi = kraKpiOptional.get();
+//                        kraKpi.setPmsInitiated(true);
+//
+//                    }else{
+//                        kraKpi = new KraKpi();
+//                        kraKpi.setPmsInitiated(false);
+//                        kraKpi.setManagerCompleted(false);
+//                        kraKpi.setSelfCompleted(false);
+//                    }
+//                    return new EmployeeWithKraKpi(employee, kraKpi);
+//
+//
+//                })
+//                .filter(pair -> pair.kraKpi.getPmsInitiated() && (!pair.kraKpi.isManagerCompleted() || !pair.kraKpi.isSelfCompleted()))  // Filter only if PMS is initiated
+//                .map(pair -> {
+//                    EmployeeInformation employee = pair.employee;
+//                    KraKpi kraKpi = pair.kraKpi;
+//
+//                    EmployeeWithPmsStatus response = entityDtoConversion.entityToDtoConversion(employee, EmployeeWithPmsStatus.class);
+//                    response.setManagerCompleted(kraKpi.isManagerCompleted());
+//                    response.setSelfCompleted(kraKpi.isSelfCompleted());
+//                    response.setPmsInitiated(kraKpi.getPmsInitiated());
+//                    response.setDepartment(entityDtoConversion.entityToDtoConversion(employee.getDepartment(), DepartmentResponseDto.class));
+//
+//                    return response;
+//                })
+//                .toList();
+        return null;
     }
 
     // Helper record to carry both Employee and KraKpi together in the stream

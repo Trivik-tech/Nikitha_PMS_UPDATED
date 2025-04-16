@@ -23,7 +23,7 @@ public class EmployeeDetailsService implements UserDetailsService {
         EmployeeInformation employeeInformation = employeeInformationRepository.findById(username).orElseThrow(() -> new EmployeeNotFoundException(username));
 
         return User.builder()
-                .username(employeeInformation.getEmployeeId())
+                .username(employeeInformation.getEmpId())
                 .password(employeeInformation.getPassword()).roles(employeeInformation.getRole()).build();
 
     }
