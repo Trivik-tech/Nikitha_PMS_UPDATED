@@ -17,7 +17,7 @@ const Performance = () => {
             <FaHome className="per-icon home-icon" />
           </Link>
         </div>
-        <h1>Performance Summary</h1>
+        <h1 className='employee-module-per-page-title'>Performance Summary</h1>
         <img src={logo} alt="Logo" className='employee-module-company-logo' />
       </div>
 

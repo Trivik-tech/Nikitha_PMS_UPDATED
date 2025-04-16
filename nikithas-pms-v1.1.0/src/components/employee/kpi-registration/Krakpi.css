@@ -1,40 +1,65 @@
-/* Container styling */
-.container {
+html {
+  scroll-behavior: smooth;
+}
+
+/* Fullscreen Wrapper */
+.employee-module-fullscreen-wrapper {
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  background-color: #f2f2f2;
+  padding: 10px;
+}
+
+/* Scrollable content box */
+.employee-module-container {
   padding: 20px;
   padding-top: 1px;
-  width: 95vw;
-  height: 95vh;
-  /* margin: ; */
+  width: 97vw;
+  min-height: 95vh;
+  padding: 30px;
 }
 
-/* Form box */
-.form-box {
-  border: 1px solid #ddd;
-  padding: 20px;
-  border-radius: 8px;
-  background: #f9f9f9;
-  margin-top: 2px;
-
+/* Header */
+.employee-module-header-title {
+  position: relative;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
-/* Employee Info Inputs */
-/* .employee-info {
-  margin-top: 50pxpx;
-  display: flex;
-  gap: 10px;
-  margin-top: 50px;
+.employee-module-page-title{
+  text-align: left;
+  margin-left: 50px;
 }
 
-.employee-info input {
-  flex: 1;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-top: 20px;
-} */
+
+/* Logo */
+.employee-module-logo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 120px;
+  height: auto;
+}
+
+/* Home Icon */
+.employee-module-home-icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  cursor: pointer;
+  color: #333;
+  transition: transform 0.3s ease;
+}
+
+.employee-module-home-icon:hover {
+  transform: scale(1.1);
+  color: #0659b3;
+}
 
 /* KRA Section */
-.kra-box {
+.employee-module-kra-box {
   border: 1px solid #ccc;
   padding: 10px;
   margin-top: 10px;
@@ -42,37 +67,37 @@
   background: #fff;
 }
 
-.kra-header {
+.employee-module-kra-header {
   display: flex;
   gap: 10px;
   margin-bottom: 10px;
   align-items: center;
 }
 
-.kra-input {
-  flex: 3; /* 3/4 width */
-  padding: 6px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.weightage-input {
-  flex: 1; /* 1/4 width */
+.employee-module-kra-input {
+  flex: 3;
   padding: 6px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
 /* KPI Section */
-.kpi-box {
+.employee-module-kpi-box {
   display: flex;
   gap: 10px;
   margin-bottom: 5px;
   align-items: center;
 }
 
-.kpi-input {
-  flex: 3; /* 3/4 width */
+.employee-module-kpi-input {
+  flex: 3;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.employee-module-weightage-input {
+  flex: 1;
   padding: 6px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -84,82 +109,35 @@ button {
   border: none;
   cursor: pointer;
   border-radius: 4px;
+  width: 120px;
 }
 
-.add-kra,
-.add-kpi {
+.employee-module-add-kra,
+.employee-module-add-kpi {
   background-color: #28a745;
   color: white;
-}
-
-.add-kra {
   margin-top: 20px;
+  width: 150px;
 }
 
-.remove-btn {
+.employee-module-remove-btn {
   background-color: #dc3545;
   color: white;
 }
 
-.draft-btn {
+.employee-module-draft-btn {
   background-color: #ffc107;
   color: black;
 }
 
-.submit-btn {
+.employee-module-submit-btn {
   background-color: darkblue;
   color: white;
 }
 
-.action-buttons {
+.employee-module-action-buttons {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
   margin-top: 20px;
 }
-
-.form-box {
-  margin-top: 50px;
-  border: 1px solid #ddd;
-  padding: 20px;
-  border-radius: 8px;
-  background: #f9f9f9;
-}
-
-/* Logo Styling - Positioning it at the top right */
-.krakpi-logo {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  width: 120px; /* Adjust as needed */
-  height: auto;
-  
-  
-}
-
-/* Adjust the form-box to make space for the logo */
-.form-box {
-  position: relative;
-  padding-top: 60px; /* Adds space so logo doesn't overlap */
-  border: 1px solid #ddd;
-  padding: 20px;
-  border-radius: 8px;
-  background: #f9f9f9;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-.container {
-  padding: 20px;
-  padding-top: 1px;
-  width: 95vw;
-  height: 95vh;
-  overflow-y: auto; /* This enables vertical scroll */
-}
-
-
-
-
-

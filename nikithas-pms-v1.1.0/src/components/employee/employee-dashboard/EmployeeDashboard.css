@@ -239,17 +239,18 @@ body {
 }
 
 /* Contact Manager Button */
-.contact-manager-btn {
+.employee-module-contact-manager-btn {
     background-color: #007bff;
     color: white;
     border: none;
     padding: 6px 12px;
     border-radius: 4px;
     cursor: pointer;
+    width: 150px;
     transition: background 0.3s ease;
 }
 
-.contact-manager-btn:hover {
+.employee-module-contact-manager-btn:hover {
     background-color: #0056b3;
 }
 
