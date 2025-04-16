@@ -2,7 +2,6 @@ package com.triviktech.entities.employee;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.triviktech.entities.department.Department;
-import com.triviktech.entities.manager.Manager;
 import com.triviktech.entities.project.Project;
 import jakarta.persistence.*;
 
@@ -14,24 +13,21 @@ import java.util.Set;
 public class EmployeeInformation {
 
     @Id
-    @Column(name = "employee_id", nullable = false)
-    private String employeeId;
+    @Column(name = "employee_id")
+    private String empId;
 
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
+    @Column(name = "name")
+    private String name;
 
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
+    @Column(name = "mobile_number")
+    private String mobileNumber;
 
-    @Column(name = "contact_number", nullable = false)
-    private Long contactNumber;
-
-    @Column(name = "date_of_joining", nullable = false)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    @Column(name = "date_of_joining")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private Date dateOfJoining;
 
-    @Column(name = "designation", nullable = false)
-    private String designation;
+    @Column(name = "current_designation")
+    private String currentDesignation;
 
     @ManyToMany
     private Set<Project> projects;
@@ -40,103 +36,79 @@ public class EmployeeInformation {
     @JoinColumn(name = "department_id")
     private Department department;
 
-    @ManyToOne
-    @JoinColumn(name = "manager_manager_id", nullable = false) // Automatically associate with a manager
-    private Manager manager; // This will link the employee to the manager
-
-    @Column(name = "role", nullable = false)
+    @Column(name = "role")
     private String role;
 
-    @Column(name = "password", nullable = false, length = 500)
+    @Column(name = "password", length = 500)
     private String password;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    private Date dob;
+
+    @Column(name = "branch")
+    private String branch;
+
+    @Column(name = "category")
+    private String category;
+
+    @Column(name = "last_working_day")
+    private String lastWorkingDay;
+
+    @Column(name = "official_email_id")
+    private String officialEmailId;
+
+    @Column(name = "email_id", length = 1000)
+    private String emailId;
+
+    @Column(name = "reporting_manager")
+    private String reportingManager;
 
     // Getters and Setters
-    public String getPassword() {
-        return password;
-    }
+    public String getReportingManager() { return reportingManager; }
+    public void setReportingManager(String reportingManager) { this.reportingManager = reportingManager; }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    public String getEmailId() { return emailId; }
+    public void setEmailId(String emailId) { this.emailId = emailId; }
 
-    public String getEmployeeId() {
-        return employeeId;
-    }
+    public String getOfficialEmailId() { return officialEmailId; }
+    public void setOfficialEmailId(String officialEmailId) { this.officialEmailId = officialEmailId; }
 
-    public void setEmployeeId(String employeeId) {
-        this.employeeId = employeeId;
-    }
+    public String getLastWorkingDay() { return lastWorkingDay; }
+    public void setLastWorkingDay(String lastWorkingDay) { this.lastWorkingDay = lastWorkingDay; }
 
-    public String getFirstName() {
-        return firstName;
-    }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+    public String getBranch() { return branch; }
+    public void setBranch(String branch) { this.branch = branch; }
 
-    public String getLastName() {
-        return lastName;
-    }
+    public Date getDob() { return dob; }
+    public void setDob(Date dob) { this.dob = dob; }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
-    public Long getContactNumber() {
-        return contactNumber;
-    }
+    public String getEmpId() { return empId; }
+    public void setEmpId(String empId) { this.empId = empId; }
 
-    public void setContactNumber(Long contactNumber) {
-        this.contactNumber = contactNumber;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public Date getDateOfJoining() {
-        return dateOfJoining;
-    }
+    public String getMobileNumber() { return mobileNumber; }
+    public void setMobileNumber(String mobileNumber) { this.mobileNumber = mobileNumber; }
 
-    public void setDateOfJoining(Date dateOfJoining) {
-        this.dateOfJoining = dateOfJoining;
-    }
+    public Date getDateOfJoining() { return dateOfJoining; }
+    public void setDateOfJoining(Date dateOfJoining) { this.dateOfJoining = dateOfJoining; }
 
-    public String getDesignation() {
-        return designation;
-    }
+    public String getCurrentDesignation() { return currentDesignation; }
+    public void setCurrentDesignation(String currentDesignation) { this.currentDesignation = currentDesignation; }
 
-    public void setDesignation(String designation) {
-        this.designation = designation;
-    }
+    public Set<Project> getProjects() { return projects; }
+    public void setProjects(Set<Project> projects) { this.projects = projects; }
 
-    public Set<Project> getProjects() {
-        return projects;
-    }
+    public Department getDepartment() { return department; }
+    public void setDepartment(Department department) { this.department = department; }
 
-    public void setProjects(Set<Project> projects) {
-        this.projects = projects;
-    }
-
-    public Department getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(Department department) {
-        this.department = department;
-    }
-
-    public Manager getManager() {
-        return manager;
-    }
-
-    public void setManager(Manager manager) {
-        this.manager = manager;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 }

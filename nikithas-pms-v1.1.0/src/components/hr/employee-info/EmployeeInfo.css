@@ -1,0 +1,222 @@
+/* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body, html {
+    width: 100vw;
+    height: 100vh;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Wrapper - Card Style with spacing */
+.hr-module-employee-info-wrapper {
+    width: 95vw;
+    height: 95vh;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+/* Header */
+.hr-module-employee-info-header {
+    width: 100%;
+    height: 60px; /* Reduced header height */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px; /* Reduced padding */
+}
+
+.hr-module-header-left {
+    display: flex;
+    align-items: center;
+}
+.hr-module-home-icon{
+    font-size: 30px;
+}
+
+.hr-module-home-link {
+    color: #333;
+    font-size: 24px; /* Reduced font size */
+    transition: color 0.3s ease-in-out;
+}
+
+.hr-module-home-link:hover {
+    color: #007bff;
+}
+
+.hr-module-logo {
+    /* height: 100px; Reduced logo height */
+    width: 100px;
+    z-index: 1;
+}
+
+/* Profile Card */
+.hr-module-employee-info-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Adjusted gap for better content fit */
+}
+
+.hr-module-profile-card {
+    display: flex;
+    gap: 15px;
+    padding: 12px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 6px; /* Reduced margin */
+}
+
+.hr-module-profile-left {
+    flex-shrink: 0;
+}
+
+.hr-module-profile-pic {
+    width: 80px; /* Reduced profile picture size */
+    height: 80px;
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
+}
+
+.hr-module-profile-pic:hover {
+    transform: scale(1.05);
+}
+
+.hr-module-profile-right {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .hr-module-info-row {
+    display: flex;
+    /* justify-content: space-between; Distribute space between items */
+    align-items: center; /* Align items vertically centered */
+  }
+  
+  .hr-module-designation, .hr-module-location {
+    margin-right: 8px; /* Add some space between the elements */
+    margin-top: 10px;
+  }
+  
+  .hr-module-designation {
+    font-weight: bold;
+  }
+  
+  .hr-module-location {
+    font-style: italic;
+  }
+  
+/* Information Sections */
+.hr-module-info-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.hr-module-info-section-container {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.hr-module-info-section {
+    background-color: #fff;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    flex: 1;
+}
+
+.hr-module-info-section h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #333;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
+}
+
+.hr-module-info-section ul {
+    list-style-type: none;
+    padding-left: 0;
+    font-size: 14px;
+}
+
+.hr-module-info-section li {
+    margin-bottom: 8px;
+}
+
+.hr-module-info-section strong {
+    font-weight: bold;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .hr-module-employee-info-wrapper {
+        width: 90vw; 
+        padding: 15px;
+    }
+
+    .hr-module-profile-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .hr-module-profile-pic {
+        width: 70px;
+        height: 70px; /* Smaller profile image on mobile */
+    }
+
+    .hr-module-info-sections {
+        padding: 10px;
+    }
+
+    .hr-module-info-section-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .hr-module-info-section {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 600px) {
+    .hr-module-employee-info-wrapper {
+        width: 100%;
+        padding: 15px;
+        margin: 15px;
+    }
+
+    .hr-module-profile-pic {
+        width: 60px;
+        height: 60px; /* Smaller profile picture on mobile */
+    }
+}

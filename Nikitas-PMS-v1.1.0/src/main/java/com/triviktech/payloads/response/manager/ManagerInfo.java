@@ -1,78 +1,38 @@
-package com.triviktech.entities.manager;
+package com.triviktech.payloads.response.manager;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.triviktech.entities.address.Location;
-import com.triviktech.entities.department.Department;
-import com.triviktech.entities.project.Project;
-import com.triviktech.entities.employee.EmployeeInformation; // Import EmployeeInformation entity
-import jakarta.persistence.*;
-import lombok.*;
+
 
 import java.util.Date;
 import java.util.Set;
 
-@Entity
-@Table(name = "manager")
-public class Manager {
+public class ManagerInfo {
 
-    @Id
-    @Column(name = "manager_id")
     private String managerId;
 
-    @Column(name = "first_name")
     private String name;
 
-    @Column(name = "email", length = 500)
     private String emailId;
 
-    @Column(name = "mobile_number")
     private String mobileNumber;
 
-    @Temporal(TemporalType.DATE)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
-    @Column(name = "dob")
     private Date dob;
 
-    @Column(name = "role")
     private String role;
 
-    @ManyToOne
-    @JoinColumn(name = "location_id")
-    private Location location;
+    private String department;
 
-    @ManyToOne
-    @JoinColumn(name = "department_id", nullable = true)
-    private Department department;
-
-    @ManyToMany
-    private Set<Project> projects;
-
-
-
-    @Column(name = "password", length = 500)
-    private String password;
-
-    @Column(name = "current_designation")
     private String currentDesignation;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "date_of_joining")
     private Date dateOfJoining;
 
-    @Column(name = "branch")
     private String branch;
 
-    @Column(name = "category")
     private String category;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "last_working_date")
     private Date lastWorkingDate;
 
-    @Column(name = "official_email_id", length = 500)
     private String officialEmailId;
 
-    @Column(name = "reporting_manager")
     private String reportingManager;
 
     public String getManagerId() {
@@ -123,38 +83,12 @@ public class Manager {
         this.role = role;
     }
 
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public Department getDepartment() {
+    public String getDepartment() {
         return department;
     }
 
-    public void setDepartment(Department department) {
+    public void setDepartment(String department) {
         this.department = department;
-    }
-
-    public Set<Project> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(Set<Project> projects) {
-        this.projects = projects;
-    }
-
-
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getCurrentDesignation() {
