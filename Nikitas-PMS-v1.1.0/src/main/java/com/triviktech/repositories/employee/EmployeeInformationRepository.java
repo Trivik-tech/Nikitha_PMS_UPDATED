@@ -4,15 +4,14 @@ import com.triviktech.entities.employee.EmployeeInformation;
 import com.triviktech.entities.manager.Manager;
 import org.hibernate.query.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface EmployeeInformationRepository extends JpaRepository<EmployeeInformation, String> {
 
-    List<EmployeeInformation> findAllByManager(Manager manager);
 
-    Optional<EmployeeInformation> findByEmployeeIdAndManager(String employeeId, Manager manager);
-
-    Optional<EmployeeInformation> findByManager(Manager manager);
+    @Query("SELECT e from EmployeeInformation e WHERE e.empId LIKE %:search% OR e.name LIKE %:search% OR e.department.name LIKE %:search% OR e.reportingManager LIKE %:search% OR e.role LIKE %:search% OR e.category LIKE %:search%")
+    List<EmployeeInformation> searchEmployees(String search);
 }

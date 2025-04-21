@@ -148,86 +148,86 @@ public class KraKpiServiceImpl implements KraKpiService{
 
     @Override
     public String managerReview(String managerId, KraKpiRequestDto data) {
-        Manager manager = managerRepository.findById(managerId)
-                .orElseThrow(() -> new ManagerNotFoundException(managerId));
-
-        EmployeeInformation employee = employeeInformationRepository.findByEmployeeIdAndManager(data.getEmployeeId(), manager)
-                .orElseThrow(() -> new EmployeeNotFoundException("Employee Not Found"));
-
-        KraKpi kraKpi = kraKpiRepository.findByEmployeeInformationAndKraKpiId(employee, data.getKraKpiId())
-                .orElseThrow(() -> new RuntimeException("Couldn't find kraKpi data"));
-
-        // Update KraKpi level fields
-        kraKpi.setRemark(data.getRemark());
-        kraKpi.setSelfCompleted(data.isSelfCompleted());
-        kraKpi.setManagerCompleted(data.isManagerCompleted());
-        kraKpi.setDueDate(data.getDueDate());
-        kraKpi.setManagerReviewDate(data.getManagerReviewDate());
-        kraKpi.setSelfReviewDate(data.getSelfReviewDate());
-        kraKpi.setPmsInitiated(data.getPmsInitiated());
-        kraKpi.setReview2(data.isReview2());
-        kraKpi.setManagerApproval(data.getManagerApproval());
-
-        // Track existing KRAs for potential removal
-        Set<KRA> existingKras = kraKpi.getKra();
-        Set<KRA> updatedKras = new HashSet<>();
-
-        for (KraRequestDto kraDto : data.getKra()) {
-            // Try to find existing KRA, or create new if not found
-            KRA kra = existingKras.stream()
-                    .filter(existingKra -> existingKra.getKraId() == kraDto.getKraId())
-                    .findFirst()
-                    .orElse(new KRA());  // New KRA if not found
-
-            kra.setKraKpi(kraKpi);
-            kra.setKraName(kraDto.getKraName());
-            kra.setWeightage(kraDto.getWeightage());
-
-            // Update KPIs within this KRA
-            Set<KPI> existingKpis = kra.getKpi() != null ? kra.getKpi() : new HashSet<>();
-            Set<KPI> updatedKpis = new HashSet<>();
-
-            for (KpiRequestDto kpiDto : kraDto.getKpi()) {
-                // Try to find existing KPI or create new
-                KPI kpi = existingKpis.stream()
-                        .filter(existingKpi -> existingKpi.getKpiId() == kpiDto.getKpiId())
-                        .findFirst()
-                        .orElse(new KPI());  // New KPI if not found
-
-                kpi.setKra(kra);  // Set parent
-                kpi.setDescription(kpiDto.getDescription());
-                kpi.setWeightage(kpiDto.getWeightage());
-                kpi.setSelfScore(kpiDto.getSelfScore());
-                kpi.setManagerScore(kpiDto.getManagerScore());
-                kpi.setAverage((float) (kpiDto.getSelfScore() + kpiDto.getManagerScore()) / 2);
-                kpi.setReview2(kpiDto.getReview2());
-
-                updatedKpis.add(kpi);
-            }
-
-            // Remove KPIs that were not in the new request (to handle deletions)
-            existingKpis.removeIf(existingKpi ->
-                    updatedKpis.stream().noneMatch(updatedKpi -> updatedKpi.getKpiId() == existingKpi.getKpiId())
-            );
-
-            // Combine updated and remaining existing KPIs
-            existingKpis.addAll(updatedKpis);
-            kra.setKpi(existingKpis);
-
-            updatedKras.add(kra);
-        }
-
-        // Remove KRAs that are no longer in the request (handle deletion if needed)
-        existingKras.removeIf(existingKra ->
-                updatedKras.stream().noneMatch(updatedKra -> updatedKra.getKraId() == existingKra.getKraId())
-        );
-
-        // Combine updated and remaining existing KRAs
-        existingKras.addAll(updatedKras);
-        kraKpi.setKra(existingKras);
-
-        // Save the entire structure (KraKpi -> KRA -> KPI)
-        kraKpiRepository.saveAndFlush(kraKpi);
+//        Manager manager = managerRepository.findById(managerId)
+//                .orElseThrow(() -> new ManagerNotFoundException(managerId));
+//
+////        EmployeeInformation employee = employeeInformationRepository.findByEmpIdAndManager(data.getEmployeeId(), manager)
+////                .orElseThrow(() -> new EmployeeNotFoundException("Employee Not Found"));
+//
+////        KraKpi kraKpi = kraKpiRepository.findByEmployeeInformationAndKraKpiId(employee, data.getKraKpiId())
+////                .orElseThrow(() -> new RuntimeException("Couldn't find kraKpi data"));
+//
+//        // Update KraKpi level fields
+//        kraKpi.setRemark(data.getRemark());
+//        kraKpi.setSelfCompleted(data.isSelfCompleted());
+//        kraKpi.setManagerCompleted(data.isManagerCompleted());
+//        kraKpi.setDueDate(data.getDueDate());
+//        kraKpi.setManagerReviewDate(data.getManagerReviewDate());
+//        kraKpi.setSelfReviewDate(data.getSelfReviewDate());
+//        kraKpi.setPmsInitiated(data.getPmsInitiated());
+//        kraKpi.setReview2(data.isReview2());
+//        kraKpi.setManagerApproval(data.getManagerApproval());
+//
+//        // Track existing KRAs for potential removal
+//        Set<KRA> existingKras = kraKpi.getKra();
+//        Set<KRA> updatedKras = new HashSet<>();
+//
+//        for (KraRequestDto kraDto : data.getKra()) {
+//            // Try to find existing KRA, or create new if not found
+//            KRA kra = existingKras.stream()
+//                    .filter(existingKra -> existingKra.getKraId() == kraDto.getKraId())
+//                    .findFirst()
+//                    .orElse(new KRA());  // New KRA if not found
+//
+//            kra.setKraKpi(kraKpi);
+//            kra.setKraName(kraDto.getKraName());
+//            kra.setWeightage(kraDto.getWeightage());
+//
+//            // Update KPIs within this KRA
+//            Set<KPI> existingKpis = kra.getKpi() != null ? kra.getKpi() : new HashSet<>();
+//            Set<KPI> updatedKpis = new HashSet<>();
+//
+//            for (KpiRequestDto kpiDto : kraDto.getKpi()) {
+//                // Try to find existing KPI or create new
+//                KPI kpi = existingKpis.stream()
+//                        .filter(existingKpi -> existingKpi.getKpiId() == kpiDto.getKpiId())
+//                        .findFirst()
+//                        .orElse(new KPI());  // New KPI if not found
+//
+//                kpi.setKra(kra);  // Set parent
+//                kpi.setDescription(kpiDto.getDescription());
+//                kpi.setWeightage(kpiDto.getWeightage());
+//                kpi.setSelfScore(kpiDto.getSelfScore());
+//                kpi.setManagerScore(kpiDto.getManagerScore());
+//                kpi.setAverage((float) (kpiDto.getSelfScore() + kpiDto.getManagerScore()) / 2);
+//                kpi.setReview2(kpiDto.getReview2());
+//
+//                updatedKpis.add(kpi);
+//            }
+//
+//            // Remove KPIs that were not in the new request (to handle deletions)
+//            existingKpis.removeIf(existingKpi ->
+//                    updatedKpis.stream().noneMatch(updatedKpi -> updatedKpi.getKpiId() == existingKpi.getKpiId())
+//            );
+//
+//            // Combine updated and remaining existing KPIs
+//            existingKpis.addAll(updatedKpis);
+//            kra.setKpi(existingKpis);
+//
+//            updatedKras.add(kra);
+//        }
+//
+//        // Remove KRAs that are no longer in the request (handle deletion if needed)
+//        existingKras.removeIf(existingKra ->
+//                updatedKras.stream().noneMatch(updatedKra -> updatedKra.getKraId() == existingKra.getKraId())
+//        );
+//
+//        // Combine updated and remaining existing KRAs
+//        existingKras.addAll(updatedKras);
+//        kraKpi.setKra(existingKras);
+//
+//        // Save the entire structure (KraKpi -> KRA -> KPI)
+//        kraKpiRepository.saveAndFlush(kraKpi);
 
         return "KRA/KPI review updated successfully";
     }

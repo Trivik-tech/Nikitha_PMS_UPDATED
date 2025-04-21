@@ -30,6 +30,8 @@ import Performance from './components/employee/performance/Performance';
 import EmployeeReview from './components/employee/emplyoee-review/EmployeeReview'
 
 import KrakpiRegistration from './components/employee/kpi-registration/KrakpiRegistration';
+import EmployeeInfo from './components/hr/employee-info/EmployeeInfo';
+
 
 
 
@@ -79,6 +81,9 @@ function App() {
 
           <Route exact path="/approve-pms" element={<Approve/>} />
           <Route exact path="/self-review" element={<EmployeeReview/>} />
+          <Route exact path="/employee-info/:id" element={<EmployeeInfo/>} />
+          
+
 
 
 

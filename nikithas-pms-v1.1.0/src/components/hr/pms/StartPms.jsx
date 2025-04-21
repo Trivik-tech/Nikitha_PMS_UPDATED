@@ -1,18 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaSearch, FaHome, FaFilter } from "react-icons/fa";
-import logo from '../../../assets/images/nikithas-logo.png';
+import { FaSearch, FaHome } from "react-icons/fa";
+import axios from "axios";
+import logo from "../../../assets/images/nikithas-logo.png";
 
-import PmsInitiated from '../../modal/pms/PmsInitiated';
+import PmsInitiated from "../../modal/pms/PmsInitiated";
 import "./StartPms.css";
-
-const teamMembers = [
-  { id: "Emp001", name: "John Doe", department: "Engineering", email: "john.d@company.com", image: "https://randomuser.me/api/portraits/men/1.jpg" },
-  { id: "Emp002", name: "Sarah Wilson", department: "Product Design", email: "sarah.w@company.com", image: "https://randomuser.me/api/portraits/women/1.jpg" },
-  { id: "Emp003", name: "Alex Johnson", department: "Marketing", email: "alex.j@company.com", image: "https://randomuser.me/api/portraits/men/2.jpg" },
-  { id: "Emp004", name: "David Lee", department: "Sales", email: "david.l@company.com", image: "https://randomuser.me/api/portraits/men/3.jpg" },
-  { id: "Emp005", name: "Emily Brown", department: "HR", email: "emily.b@company.com", image: "https://randomuser.me/api/portraits/women/2.jpg" },
-];
 
 export default function StartPms() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,24 +13,77 @@ export default function StartPms() {
   const [showModal, setShowModal] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState("");
   const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
+  const [team, setTeam] = useState([]);
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [hasServerError, setHasServerError] = useState(false);
+
   const navigate = useNavigate();
+
+  const fetchEmployees = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/api/v1/pms/hr/all-employees");
+      const employees = response.data;
+      console.log(employees)
+      setTeam(employees);
+      setHasServerError(false);
+    } catch (error) {
+      console.error("Error fetching employee data:", error.message);
+      setHasServerError(true);
+    }
+  };
+
+  useEffect(() => {
+    fetchEmployees();
+  }, []);
+
   const entriesPerPage = 10;
 
-  const filteredTeam = teamMembers.filter(member =>
-    member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredTeam = team.filter((member) =>
+    (member.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+    (member.email?.toLowerCase() || "").includes(searchTerm.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredTeam.length / entriesPerPage);
   const startIndex = (currentPage - 1) * entriesPerPage;
   const currentEntries = filteredTeam.slice(startIndex, startIndex + entriesPerPage);
 
+  const handleSort = () => {
+    const sorted = [...team].sort((a, b) => {
+      return sortOrder === "asc"
+        ? (a.name || "").localeCompare(b.name || "")
+        : (b.name || "").localeCompare(a.name || "");
+    });
+    setTeam(sorted);
+    setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+  };
+
+  const searchEmployees = async (e) => {
+    const search = e.target.value;
+    if (!search.trim()) {
+      fetchEmployees();
+      return;
+    }
+
+    try {
+      const response = await axios.get(`http://localhost:8080/api/v1/pms/hr/all-employees/${search}`);
+      const employees = response.data;
+      // console.log(response.data)
+
+      setTeam(employees);
+      setHasServerError(false); // search worked
+    } catch (error) {
+      console.error("Search failed:", error.message);
+      setHasServerError(true); // could not reach server
+    }
+  };
+  
+
   return (
     <div className="start-pms-container">
       <div className="start-pms-content">
         <div className="start-pms-header">
           <div className="start-pms-header-title">
-            <Link to="/hr-dashboard"> 
+            <Link to="/hr-dashboard">
               <FaHome className="start-pms-home-icon" />
             </Link>
             <h2>Employee List</h2>
@@ -48,45 +94,46 @@ export default function StartPms() {
               <FaSearch className="start-pms-search-icon" />
               <input
                 type="text"
-                placeholder="Search team members..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search employees..."
+                // value={searchTerm}
+                onChange={(e)=> searchEmployees(e)}
               />
             </div>
-            {/* <button className="start-pms-filter-button">
-              <FaFilter className="start-pms-filter-icon" />
-            </button> */}
           </div>
           <img src={logo} alt="Company Logo" className="start-pms-company-logo" />
         </div>
 
         <div className="start-pms-table-container">
           <table className="start-pms-team-table">
-            <thead>
+          <thead>
               <tr>
-                <th>Id</th>
+                <th onClick={handleSort} style={{ cursor: "pointer" }}>Id</th>
                 <th>Name</th>
                 <th>Department</th>
                 <th>Email</th>
+                <th>Role</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {currentEntries.map((member) => (
-                <tr key={member.id}>
-                  <td>{member.id}</td>
-                  <td className="start-pms-team-member">
-                    <img src={member.image} alt={member.name} className="start-pms-profile-pic" />
-                    {member.name}
-                  </td>
-                  <td>{member.department}</td>
-                  <td>{member.email}</td>
+                <tr
+                  key={member.id}
+                  onClick={() => navigate(`/employee-info/${member.empId || member.managerId}`)}
+                  style={{ cursor: "pointer" }}
+                >
+                  <td>{member.empId || "-"}</td>
+                  <td>{member.name || "-"}</td>
+                  <td>{member.department || "-"}</td>
+                  <td>{member.officialEmailId || "-"}</td>
+                  <td>{member.role || "-"}</td>
                   <td>
                     <button
                       className="start-pms-button"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation(); 
                         setSelectedEmployee(member.name);
-                        setSelectedEmployeeId(member.id);
+                        setSelectedEmployeeId(member.empId);
                         setShowModal(true);
                       }}
                     >
@@ -100,14 +147,23 @@ export default function StartPms() {
         </div>
 
         <div className="start-pms-pagination">
-          <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>Prev</button>
+          <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+            Prev
+          </button>
           <span> Page {currentPage} of {totalPages} </span>
-          <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>Next</button>
+          <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
+            Next
+          </button>
         </div>
       </div>
-      
-      {showModal && <PmsInitiated onClose={() => setShowModal(false)} employeeName={selectedEmployee} employeeId={selectedEmployeeId} />}
 
+      {showModal && (
+        <PmsInitiated
+          onClose={() => setShowModal(false)}
+          employeeName={selectedEmployee}
+          employeeId={selectedEmployeeId}
+        />
+      )}
     </div>
   );
 }

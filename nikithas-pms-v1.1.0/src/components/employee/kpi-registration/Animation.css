@@ -1,0 +1,43 @@
+/* Fade-in for container */
+.employee-module-fade-in {
+    animation: employee-module-fade 0.5s ease-in;
+  }
+  
+  @keyframes employee-module-fade {
+    from {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Slide-in for KRA/KPI boxes */
+  .employee-module-slide-in {
+    animation: employee-module-slideIn 0.4s ease-out;
+  }
+  
+  @keyframes employee-module-slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  /* Button hover effect */
+  .employee-module-btn-hover {
+    transition: all 0.3s ease;
+  }
+  
+  .employee-module-btn-hover:hover {
+    transform: scale(1.05);
+    background-color: #0059b3 !important; /* or any accent color */
+    color: white !important;
+  }
+  

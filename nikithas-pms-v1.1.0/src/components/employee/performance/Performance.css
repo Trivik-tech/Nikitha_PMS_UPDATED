@@ -36,7 +36,7 @@ body {
 .employee-module-header h1 {
   font-size: 25px;
   color: #333;
-  margin-left: 10px;
+  margin-left: 50px;
   opacity: 0;
   animation: fadeInText 1s ease-out forwards; /* Text fade-in animation */
 }

@@ -14,7 +14,7 @@ const employeeData = {
   phone: '+91 9448576762',
   department: 'HR Department',
   manager: {
-    name: 'Ravin',
+    name: 'Ravindra Kulkarni',
     position: 'VP of Product',
     image: 'https://assets.onecompiler.app/4344tsra5/43brpvuah/1000115238.jpg',
   }
@@ -33,9 +33,9 @@ const EmployeeDashboard = () => {
         </div>
         <ul>
           <li><Link to="/employee-dashboard" className="active">My Dashboard</Link></li>
-          <li><Link to="/start-pms">Start PMS</Link></li>
+          <li><Link to="/self-review">Start PMS</Link></li>
           <li><Link to="/employee-performance">My Performance</Link></li>
-          <li><Link to="/employee-performance">Register KRA|KPI</Link></li>
+          <li><Link to="/add-krakpi">Register KRA|KPI</Link></li>
         </ul>
       </aside>
 
@@ -68,7 +68,7 @@ const EmployeeDashboard = () => {
               <div>
                 <p><strong>Reports to:</strong> {employeeData.manager.name}</p>
                 <p>{employeeData.manager.position}</p>
-                <button className="contact-manager-btn">Contact Manager</button>
+                <button className="employee-module-contact-manager-btn">Contact Manager</button>
               </div>
             </div>
           </div>

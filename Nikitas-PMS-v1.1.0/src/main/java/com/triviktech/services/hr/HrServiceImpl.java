@@ -4,34 +4,42 @@ import com.triviktech.entities.address.Country;
 import com.triviktech.entities.address.Location;
 import com.triviktech.entities.address.State;
 import com.triviktech.entities.department.Department;
+import com.triviktech.entities.employee.EmployeeInformation;
 import com.triviktech.entities.hr.HR;
 import com.triviktech.entities.manager.Manager;
 import com.triviktech.entities.project.Project;
-import com.triviktech.exception.address.StateNotFoundException;
-import com.triviktech.exception.department.DepartmentNotFoundException;
 import com.triviktech.exception.hr.HRNotFoundException;
-import com.triviktech.exception.manager.ManagerNotFoundException;
-import com.triviktech.exception.project.ProjectNotFoundException;
+import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.address.CountryResponseDto;
 import com.triviktech.payloads.response.address.LocationResponseDto;
 import com.triviktech.payloads.response.address.StateResponseDto;
 import com.triviktech.payloads.response.department.DepartmentResponseDto;
+import com.triviktech.payloads.response.employee.EmployeeInfo;
+import com.triviktech.payloads.response.employeeslist.EmployeesList;
+import com.triviktech.payloads.response.global.Response;
 import com.triviktech.payloads.response.hr.HrResponseDto;
+import com.triviktech.payloads.response.manager.ManagerInfo;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
 import com.triviktech.payloads.response.project.ProjectResponseDto;
 import com.triviktech.repositories.address.LocationRepository;
 import com.triviktech.repositories.address.StateRepository;
 import com.triviktech.repositories.department.DepartmentRepository;
+import com.triviktech.repositories.employee.EmployeeInformationRepository;
 import com.triviktech.repositories.hr.HRRepository;
 import com.triviktech.repositories.manager.ManagerRepository;
 import com.triviktech.repositories.project.ProjectRepository;
+import com.triviktech.utilities.entitydtoconversion.EntityDtoConversion;
+import com.triviktech.utilities.xlsxsupport.XlsxSupport;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,9 +52,11 @@ public class HrServiceImpl implements HrService{
     private final ProjectRepository projectRepository;
     private final ManagerRepository managerRepository;
     private final ModelMapper modelMapper;
+    private final EntityDtoConversion entityDtoConversion;
+    private final EmployeeInformationRepository employeeInformationRepository;
 
 
-    public HrServiceImpl(HRRepository hrRepository, StateRepository stateRepository, LocationRepository locationRepository, DepartmentRepository departmentRepository, ProjectRepository projectRepository, ManagerRepository managerRepository, ModelMapper modelMapper) {
+    public HrServiceImpl(HRRepository hrRepository, StateRepository stateRepository, LocationRepository locationRepository, DepartmentRepository departmentRepository, ProjectRepository projectRepository, ManagerRepository managerRepository, ModelMapper modelMapper, EntityDtoConversion entityDtoConversion, EmployeeInformationRepository employeeInformationRepository) {
         this.hrRepository = hrRepository;
         this.stateRepository = stateRepository;
         this.locationRepository = locationRepository;
@@ -54,6 +64,8 @@ public class HrServiceImpl implements HrService{
         this.projectRepository = projectRepository;
         this.managerRepository = managerRepository;
         this.modelMapper = modelMapper;
+        this.entityDtoConversion = entityDtoConversion;
+        this.employeeInformationRepository = employeeInformationRepository;
     }
 
     @Override
@@ -147,6 +159,170 @@ return null;
 
         return hrResponseDto;
     }
+
+    @Override
+    public List<Object> uploadEmployeesData(MultipartFile file) throws IOException {
+        List<Employee> employees = XlsxSupport.convertXlsxToListOfEmployee(file.getInputStream());
+
+        // Filter out invalid or blank employee rows
+        employees = employees.stream()
+                .filter(emp -> emp != null &&
+                        emp.getName() != null && !emp.getName().trim().isEmpty() &&
+                        emp.getDepartment() != null && !emp.getDepartment().trim().isEmpty())
+                .collect(Collectors.toList());
+
+        // Cache existing departments
+        Map<String, Department> departmentCache = departmentRepository.findAll().stream()
+                .collect(Collectors.toConcurrentMap(Department::getName, d -> d));
+
+        // Extract departments from Excel
+        Set<String> allDeptNames = employees.stream()
+                .map(Employee::getDepartment)
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(name -> !name.isEmpty())
+                .collect(Collectors.toSet());
+
+        // Create and save new departments if needed
+        List<Department> newDepartments = allDeptNames.stream()
+                .filter(dept -> !departmentCache.containsKey(dept))
+                .map(name -> {
+                    Department d = new Department();
+                    d.setName(name);
+                    return d;
+                })
+                .collect(Collectors.toList());
+
+        if (!newDepartments.isEmpty()) {
+            List<Department> savedDepts = departmentRepository.saveAll(newDepartments);
+            savedDepts.forEach(d -> departmentCache.put(d.getName(), d));
+        }
+
+        String hashedPassword = BCrypt.hashpw("trivik", BCrypt.gensalt(10));
+
+        // Save all employees including managers into EmployeeInformation
+        List<EmployeeInformation> allEmployeeInfos = employees.stream()
+                .map(emp -> {
+                    EmployeeInformation info = new EmployeeInformation();
+                    info.setEmpId(emp.getEmpId());
+                    info.setName(emp.getName());
+                    info.setBranch(emp.getBranch());
+                    info.setDob(emp.getDob());
+                    info.setCurrentDesignation(emp.getCurrentDesignation());
+                    info.setDateOfJoining(emp.getDateOfJoining());
+                    info.setEmailId(emp.getEmailId());
+                    info.setOfficialEmailId(emp.getOfficialEmailId());
+                    info.setMobileNumber(emp.getMobileNumber());
+                    info.setPassword(hashedPassword);
+                    info.setRole("Manager".equalsIgnoreCase(emp.getCategory()) ? "MANAGER" : "EMPLOYEE");
+                    info.setCategory(emp.getCategory());
+                    info.setReportingManager(emp.getReportingManager());
+                    info.setDepartment(departmentCache.get(emp.getDepartment()));
+                    return info;
+                })
+                .collect(Collectors.toList());
+
+        // Save into repository
+        if (!allEmployeeInfos.isEmpty()) {
+            employeeInformationRepository.saveAll(allEmployeeInfos);
+        }
+
+        // Count managers and employees
+        long managerCount = allEmployeeInfos.stream()
+                .filter(e -> "MANAGER".equalsIgnoreCase(e.getRole()))
+                .count();
+
+        long employeeCount = allEmployeeInfos.size() - managerCount;
+
+        return List.of(
+                "Managers Saved: " + managerCount,
+                "Employees Saved: " + employeeCount
+        );
+    }
+
+
+
+    @Override
+    public List<EmployeeInfo> getAllEmployees() {
+        List<EmployeeInformation> allRecords = employeeInformationRepository.findAll();
+
+
+
+        // Convert all EmployeeInformation to EmployeeInfo
+        return allRecords.parallelStream()
+                .map(employee -> {
+                    EmployeeInfo info = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+
+                    // Set department name safely
+                    if (employee.getDepartment() != null) {
+                        info.setDepartment(employee.getDepartment().getName());
+                    } else {
+                        info.setDepartment("N/A");
+                    }
+
+                    // Set reporting manager safely
+                    if (employee.getReportingManager() != null && !employee.getReportingManager().isEmpty()) {
+                        info.setReportingManager(employee.getReportingManager());
+                    } else {
+                        info.setReportingManager("N/A");
+                    }
+
+                    return info;
+                }).toList();
+
+    }
+
+
+    @Override
+    public EmployeeInfo getEmployeeById(String employeeId) {
+
+
+            EmployeeInformation employee = employeeInformationRepository.findById(employeeId).orElse(null);
+            EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+            employeeInfo.setReportingManager(employee.getReportingManager());
+            employeeInfo.setDepartment(employee.getDepartment().getName());
+
+        return employeeInfo;
+
+    }
+
+    @Override
+    public Integer totalEmployees() {
+
+        return employeeInformationRepository.findAll().size();
+
+    }
+
+    @Override
+    public List<EmployeeInfo> searchEmployee(String search) {
+
+        List<EmployeeInformation> employees = employeeInformationRepository.searchEmployees(search);
+
+        // Convert EmployeeInformation to EmployeeInfo with null safety
+        return employees.parallelStream().map(employee -> {
+            EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+
+            // Set department name safely
+            if (employee.getDepartment() != null) {
+                employeeInfo.setDepartment(employee.getDepartment().getName());
+            } else {
+                employeeInfo.setDepartment("N/A");
+            }
+
+            // Set reporting manager safely
+            if (employee.getReportingManager() != null) {
+                employeeInfo.setReportingManager(employee.getReportingManager());
+            } else {
+                employeeInfo.setReportingManager("N/A");
+            }
+
+            return employeeInfo;
+        }).collect(Collectors.toList());
+
+    }
+
+
+
 
 
     private HrResponseDto mapToHrResponseDto(HR hr){
