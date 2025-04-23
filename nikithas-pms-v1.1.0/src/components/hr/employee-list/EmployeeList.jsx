@@ -84,7 +84,7 @@ export default function EmployeeList() {
 
     try {
       console.log(employeeToDelete)
-      await axios.delete(`http://localhost:8080/api/v1/pms/hr/delete/${employeeToDelete}`);
+      await axios.delete(`http://localhost:8080/api/v1/pms/hr/delete-employee/${employeeToDelete}`);
       console.log(`Employee with ID ${employeeToDelete} deleted`);
       setEmployeeToDelete(null);
       setModalOpen(false);
