@@ -4,6 +4,7 @@ import { FaSearch, FaHome, FaEdit, FaTrash } from "react-icons/fa";
 import logo from "../../../assets/images/nikithas-logo.png";
 import "./EmployeeList.css";
 import axios from "axios";
+import DeleteConfirmation from "../../modal/delete-confirmation/DeleteConfirmation"
 
 export default function EmployeeList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -11,20 +12,20 @@ export default function EmployeeList() {
   const [team, setTeam] = useState([]);
   const [sortOrder, setSortOrder] = useState("asc");
   const [hasServerError, setHasServerError] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [employeeToDelete, setEmployeeToDelete] = useState(null);
+  const [employeeName, setEmployeeName] = useState(null);
   const navigate = useNavigate();
 
   const fetchEmployees = async () => {
     try {
       const response = await axios.get("http://localhost:8080/api/v1/pms/hr/all-employees");
-      const employees= response.data;
-
-      // console.log(employees)
-
+      const employees = response.data;
       setTeam(employees);
-      setHasServerError(false); // server responded fine
+      setHasServerError(false);
     } catch (error) {
       console.error("Error fetching employee data:", error.message);
-      setHasServerError(true); // mark server error
+      setHasServerError(true);
     }
   };
 
@@ -63,26 +64,35 @@ export default function EmployeeList() {
     try {
       const response = await axios.get(`http://localhost:8080/api/v1/pms/hr/all-employees/${search}`);
       const employees = response.data;
-      // console.log(response.data)
-
       setTeam(employees);
-      setHasServerError(false); // search worked
+      setHasServerError(false);
     } catch (error) {
       console.error("Search failed:", error.message);
-      setHasServerError(true); // could not reach server
+      setHasServerError(true);
     }
   };
 
-  const deleteEmployee=async(id)=>{
-    try{
-      console.log(id)
-      fetchEmployees();
-    }catch(error){
-console.log(error)
-    }
+  const handleDeleteClick = (id,employeeName) => {
+    setEmployeeToDelete(id);
+    setEmployeeName(employeeName)
     
+    setModalOpen(true);
+  };
 
-  }
+  const deleteEmployee = async () => {
+    if (!employeeToDelete) return;
+
+    try {
+      console.log(employeeToDelete)
+      await axios.delete(`http://localhost:8080/api/v1/pms/hr/delete/${employeeToDelete}`);
+      console.log(`Employee with ID ${employeeToDelete} deleted`);
+      setEmployeeToDelete(null);
+      setModalOpen(false);
+      fetchEmployees();
+    } catch (error) {
+      console.error("Error deleting employee:", error.message);
+    }
+  };
 
   return (
     <div className="employee-list-container">
@@ -98,8 +108,7 @@ console.log(error)
               <input
                 type="text"
                 placeholder="Search employees..."
-                onChange={(e)=>searchEmployees(e)}
-                // value={searchTerm}
+                onChange={(e) => searchEmployees(e)}
               />
             </div>
           </div>
@@ -115,9 +124,7 @@ console.log(error)
 
         {hasServerError && (
           <div className="employee-list-error-message">
-            {/* <p style={{ color: "red", textAlign: "center" }}>
-              Unable to fetch data. Please ensure the server is running.
-            </p> */}
+            {/* Show error if needed */}
           </div>
         )}
 
@@ -147,7 +154,11 @@ console.log(error)
                   <td>{member.role || "-"}</td>
                   <td onClick={(e) => e.stopPropagation()}>
                     <FaEdit className="employee-list-edit-icon" title="Edit" />
-                    <FaTrash className="employee-list-delete-icon"  onClick={()=>deleteEmployee(member.empId)} title="Delete" />
+                    <FaTrash
+                      className="employee-list-delete-icon"
+                      title="Delete"
+                      onClick={() => handleDeleteClick(member.empId,member.name)}
+                    />
                   </td>
                 </tr>
               ))}
@@ -163,6 +174,18 @@ console.log(error)
           </div>
         )}
       </div>
+
+      {/* Modal */}
+      <DeleteConfirmation
+        isOpen={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+          setEmployeeToDelete(null);
+        }}
+        onConfirm={deleteEmployee}
+        name={employeeName}
+        id={employeeToDelete}
+      />
     </div>
   );
 }
