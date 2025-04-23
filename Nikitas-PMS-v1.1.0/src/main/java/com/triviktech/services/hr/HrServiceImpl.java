@@ -200,45 +200,56 @@ return null;
 
         String hashedPassword = BCrypt.hashpw("trivik", BCrypt.gensalt(10));
 
-        // Save all employees including managers into EmployeeInformation
-        List<EmployeeInformation> allEmployeeInfos = employees.stream()
-                .map(emp -> {
-                    EmployeeInformation info = new EmployeeInformation();
-                    info.setEmpId(emp.getEmpId());
-                    info.setName(emp.getName());
-                    info.setBranch(emp.getBranch());
-                    info.setDob(emp.getDob());
-                    info.setCurrentDesignation(emp.getCurrentDesignation());
-                    info.setDateOfJoining(emp.getDateOfJoining());
-                    info.setEmailId(emp.getEmailId());
-                    info.setOfficialEmailId(emp.getOfficialEmailId());
-                    info.setMobileNumber(emp.getMobileNumber());
-                    info.setPassword(hashedPassword);
-                    info.setRole("Manager".equalsIgnoreCase(emp.getCategory()) ? "MANAGER" : "EMPLOYEE");
-                    info.setCategory(emp.getCategory());
-                    info.setReportingManager(emp.getReportingManager());
-                    info.setDepartment(departmentCache.get(emp.getDepartment()));
-                    return info;
-                })
-                .collect(Collectors.toList());
+        // Fetch existing employees from DB by empId
+        Set<String> empIds = employees.stream()
+                .map(Employee::getEmpId)
+                .collect(Collectors.toSet());
 
-        // Save into repository
-        if (!allEmployeeInfos.isEmpty()) {
-            employeeInformationRepository.saveAll(allEmployeeInfos);
+        Map<String, EmployeeInformation> existingEmpMap = employeeInformationRepository.findByEmpIdIn(empIds).stream()
+                .collect(Collectors.toMap(EmployeeInformation::getEmpId, e -> e));
+
+        List<EmployeeInformation> toSave = new ArrayList<>();
+
+        for (Employee emp : employees) {
+            EmployeeInformation info = existingEmpMap.getOrDefault(emp.getEmpId(), new EmployeeInformation());
+
+            // Set/update fields
+            info.setEmpId(emp.getEmpId());
+            info.setName(emp.getName());
+            info.setBranch(emp.getBranch());
+            info.setDob(emp.getDob());
+            info.setCurrentDesignation(emp.getCurrentDesignation());
+            info.setDateOfJoining(emp.getDateOfJoining());
+            info.setEmailId(emp.getEmailId());
+            info.setOfficialEmailId(emp.getOfficialEmailId());
+            info.setMobileNumber(emp.getMobileNumber());
+            info.setPassword(info.getEmpId() == null ? hashedPassword : info.getPassword()); // Set only if new
+            info.setRole("Manager".equalsIgnoreCase(emp.getCategory()) ? "MANAGER" : "EMPLOYEE");
+            info.setCategory(emp.getCategory());
+            info.setReportingManager(emp.getReportingManager());
+            info.setDepartment(departmentCache.get(emp.getDepartment()));
+
+            toSave.add(info);
+        }
+
+        // Save updated or new employee information
+        if (!toSave.isEmpty()) {
+            employeeInformationRepository.saveAll(toSave);
         }
 
         // Count managers and employees
-        long managerCount = allEmployeeInfos.stream()
+        long managerCount = toSave.stream()
                 .filter(e -> "MANAGER".equalsIgnoreCase(e.getRole()))
                 .count();
 
-        long employeeCount = allEmployeeInfos.size() - managerCount;
+        long employeeCount = toSave.size() - managerCount;
 
         return List.of(
-                "Managers Saved: " + managerCount,
-                "Employees Saved: " + employeeCount
+                "Managers Processed: " + managerCount,
+                "Employees Processed: " + employeeCount
         );
     }
+
 
 
 

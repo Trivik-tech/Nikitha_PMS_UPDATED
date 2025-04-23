@@ -73,6 +73,17 @@ export default function EmployeeList() {
     }
   };
 
+  const deleteEmployee=async(id)=>{
+    try{
+      console.log(id)
+      fetchEmployees();
+    }catch(error){
+console.log(error)
+    }
+    
+
+  }
+
   return (
     <div className="employee-list-container">
       <div className="employee-list-content">
@@ -136,7 +147,7 @@ export default function EmployeeList() {
                   <td>{member.role || "-"}</td>
                   <td onClick={(e) => e.stopPropagation()}>
                     <FaEdit className="employee-list-edit-icon" title="Edit" />
-                    <FaTrash className="employee-list-delete-icon" title="Delete" />
+                    <FaTrash className="employee-list-delete-icon"  onClick={()=>deleteEmployee(member.empId)} title="Delete" />
                   </td>
                 </tr>
               ))}
