@@ -7,6 +7,7 @@ import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employeeslist.EmployeesList;
 import com.triviktech.payloads.response.global.Response;
 import com.triviktech.payloads.response.hr.HrResponseDto;
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -30,5 +31,6 @@ public interface HrService {
 
     List<EmployeeInfo> searchEmployee(String search);
 
+    Map<String,String> deleteEmployee(String employeeId);
 
 }

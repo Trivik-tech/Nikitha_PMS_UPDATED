@@ -40,5 +40,12 @@ public interface HRController {
     @GetMapping("/all-employees/{search}")
     ResponseEntity<List<EmployeeInfo>> searchEmployee(@PathVariable String search);
 
+    @DeleteMapping("/ {employeeId}")
+    ResponseEntity<Map<String,String>> deleteEmployee(@PathVariable String employeeId);
+
+
+
+
+
 
 }
