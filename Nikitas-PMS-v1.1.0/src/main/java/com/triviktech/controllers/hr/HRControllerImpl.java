@@ -63,4 +63,10 @@ public class HRControllerImpl implements HRController{
     public  ResponseEntity<List<EmployeeInfo>> searchEmployee(String search) {
         return ResponseEntity.ok(hrService.searchEmployee(search));
     }
+
+    @Override
+    public ResponseEntity<Map<String, String>> deleteEmployee(String employeeId) {
+        Map<String, String> msg = hrService.deleteEmployee(employeeId);
+        return ResponseEntity.ok(msg);
+    }
 }

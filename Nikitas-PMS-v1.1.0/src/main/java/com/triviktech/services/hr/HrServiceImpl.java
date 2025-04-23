@@ -332,8 +332,25 @@ return null;
 
     }
 
+    @Override
+    public Map<String, String> deleteEmployee(String employeeId) {
+        Map<String, String> response = new HashMap<>();
+        Optional<EmployeeInformation>  employeeById = employeeInformationRepository.findById(employeeId);
+        if(employeeById.isPresent()){
+            EmployeeInformation employeeInformation = employeeById.get();
+            employeeInformationRepository.delete(employeeInformation);
+            response.put("message","Employee deleted with ID  " + employeeId );
+            return response;
+        }
+        else {
+            response.put("message","Employee Not found ");
+            return response;
+
+        }
 
 
+
+    }
 
 
     private HrResponseDto mapToHrResponseDto(HR hr){
