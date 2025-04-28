@@ -10,6 +10,8 @@ import com.triviktech.entities.manager.Manager;
 import com.triviktech.entities.project.Project;
 import com.triviktech.exception.address.StateNotFoundException;
 import com.triviktech.exception.department.DepartmentNotFoundException;
+import com.triviktech.exception.employee.EmployeeNotFoundException;
+import com.triviktech.exception.krakpi.KraKpiNotFoundException;
 import com.triviktech.exception.manager.ManagerAlreadyExistsException;
 import com.triviktech.exception.manager.ManagerNotFoundException;
 import com.triviktech.exception.project.ProjectNotFoundException;
@@ -29,6 +31,7 @@ import com.triviktech.repositories.krakpi.KraKpiRepository;
 import com.triviktech.repositories.manager.ManagerRepository;
 import com.triviktech.repositories.project.ProjectRepository;
 import com.triviktech.utilities.entitydtoconversion.EntityDtoConversion;
+import jakarta.websocket.DeploymentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -326,6 +329,26 @@ public class ManagerServiceImpl implements ManagerService{
 //                })
 //                .toList();
         return null;
+    }
+
+    @Override
+    public void getEmployeeKarKpi(String managerName, String employeeId) {
+        Optional<EmployeeInformation> employeeData = employeeInformationRepository.findByReportingManagerAndEmpId(managerName, employeeId);
+           if(employeeData.isPresent()){
+               EmployeeInformation employee = employeeData.get();
+               Optional<KraKpi> kraKpi = kraKpiRepository.findByEmployeeInformation(employee);
+                if (kraKpi.isPresent()){
+                    KraKpi kraKpi1 = kraKpi.get();
+                }
+                else{
+                    throw new KraKpiNotFoundException("Kra Kpi not found for employee with ID " + employeeId);
+                }
+
+           }
+           else{
+               throw new EmployeeNotFoundException(employeeId);
+               
+           }
     }
 
     // Helper record to carry both Employee and KraKpi together in the stream

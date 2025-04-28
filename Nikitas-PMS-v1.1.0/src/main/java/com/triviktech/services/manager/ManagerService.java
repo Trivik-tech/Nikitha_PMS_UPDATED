@@ -19,4 +19,6 @@ public interface ManagerService {
 
     List<EmployeeWithPmsStatus> listOfPMSCompletedEmployees(String managerId);
     List<EmployeeWithPmsStatus> listOfPMSPendingEmployees(String managerId);
+
+    void getEmployeeKarKpi(String managerName, String employeeId);
 }
