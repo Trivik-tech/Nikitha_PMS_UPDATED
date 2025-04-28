@@ -33,4 +33,7 @@ public interface HrService {
 
     Map<String,String> deleteEmployee(String employeeId);
 
+    EmployeeInfo updateEmployee(String empId, Employee employee);
+
+
 }
