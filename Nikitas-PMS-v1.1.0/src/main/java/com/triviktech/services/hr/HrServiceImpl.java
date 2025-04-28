@@ -352,6 +352,39 @@ return null;
 
     }
 
+    @Override
+    public EmployeeInfo updateEmployee(String empId, Employee employee) {
+        Optional<EmployeeInformation> savedEmployee = employeeInformationRepository.findById(empId);
+        if(savedEmployee.isPresent()) {
+            EmployeeInformation employee1 = savedEmployee.get();
+            employee1.setBranch(employee.getBranch());
+            employee1.setCategory(employee.getCategory());
+            employee1.setDob(employee.getDob());
+            employee1.setName(employee.getName());
+            employee1.setCurrentDesignation(employee.getCurrentDesignation());
+            employee1.setDateOfJoining(employee.getDateOfJoining());
+            employee1.setEmailId(employee.getEmailId());
+//            employee1.setLastWorkingDay(employee.getLastWorkingDate());
+            employee1.setCurrentDesignation(employee.getCurrentDesignation());
+            employee1.setMobileNumber(employee.getMobileNumber());
+            employee1.setOfficialEmailId(employee.getOfficialEmailId());
+           employee1.setReportingManager(employee.getReportingManager());
+          // employee1.setLastWorkingDate(employee.getLastWorkingDate());
+
+            Department department = employee1.getDepartment();
+            department.setName(employee.getDepartment());;
+            employee1.setDepartment(department);
+
+            EmployeeInformation save = employeeInformationRepository.save(employee1);
+            EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(save, EmployeeInfo.class);
+            return employeeInfo;
+
+
+        }
+        
+        return null;
+    }
+
 
     private HrResponseDto mapToHrResponseDto(HR hr){
         return modelMapper.map(hr, HrResponseDto.class);

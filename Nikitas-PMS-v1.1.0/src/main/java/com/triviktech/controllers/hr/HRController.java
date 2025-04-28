@@ -43,6 +43,8 @@ public interface HRController {
     @DeleteMapping("/delete-employee/{employeeId}")
     ResponseEntity<Map<String,String>> deleteEmployee(@PathVariable String employeeId);
 
+    @PutMapping("/update-employee/{empId}")
+    ResponseEntity<EmployeeInfo>updateEmployee(@PathVariable String empId,@RequestBody Employee employee);
 
 
 
