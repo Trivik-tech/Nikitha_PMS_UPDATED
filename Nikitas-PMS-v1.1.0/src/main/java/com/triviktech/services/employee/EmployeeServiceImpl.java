@@ -3,6 +3,7 @@ package com.triviktech.services.employee;
 import com.triviktech.entities.employee.EmployeeInformation;
 import com.triviktech.entities.project.Project;
 import com.triviktech.exception.department.DepartmentNotFoundException;
+import com.triviktech.exception.employee.EmployeeNotFoundException;
 import com.triviktech.exception.manager.ManagerNotFoundException;
 import com.triviktech.exception.project.ProjectNotFoundException;
 import com.triviktech.payloads.request.employee.EmployeeInformationRequestDto;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -93,6 +95,18 @@ public class EmployeeServiceImpl implements EmployeeService{
             return employeeInformationResponseDto;
 
         }).toList();
+
+    }
+
+    @Override
+    public void Profile(String employeeId) {
+        Optional<EmployeeInformation> byId = employeeInformationRepository.findById(employeeId);
+          if(byId.isPresent()) {
+            EmployeeInformation employeeInformation = byId.get();
+            return;
+        }else{
+            throw new EmployeeNotFoundException(employeeId);
+        }
 
     }
 
