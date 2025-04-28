@@ -42,4 +42,14 @@ public class KraRequestDto {
     public void setKpi(Set<KpiRequestDto> kpi) {
         this.kpi = kpi;
     }
+
+    @Override
+    public String toString() {
+        return "KraRequestDto{" +
+                "kraId=" + kraId +
+                ", kraName='" + kraName + '\'' +
+                ", weightage=" + weightage +
+                ", kpi=" + kpi +
+                '}';
+    }
 }

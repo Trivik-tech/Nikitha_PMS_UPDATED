@@ -12,11 +12,11 @@ public class KraKpiRequestDto {
     private String remark;
     private Set<KraRequestDto> kra;
     private boolean review2;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private Date dueDate;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private Date selfReviewDate;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
+    @JsonFormat(pattern = "dd/MM/yyyy")
     private Date managerReviewDate;
     private Boolean pmsInitiated;
     private Boolean managerApproval;
@@ -121,5 +121,24 @@ public class KraKpiRequestDto {
 
     public void setManagerCompleted(boolean managerCompleted) {
         this.managerCompleted = managerCompleted;
+    }
+
+
+    @Override
+    public String toString() {
+        return "KraKpiRequestDto{" +
+                "kraKpiId=" + kraKpiId +
+                ", employeeId='" + employeeId + '\'' +
+                ", remark='" + remark + '\'' +
+                ", kra=" + kra +
+                ", review2=" + review2 +
+                ", dueDate=" + dueDate +
+                ", selfReviewDate=" + selfReviewDate +
+                ", managerReviewDate=" + managerReviewDate +
+                ", pmsInitiated=" + pmsInitiated +
+                ", managerApproval=" + managerApproval +
+                ", selfCompleted=" + selfCompleted +
+                ", managerCompleted=" + managerCompleted +
+                '}';
     }
 }

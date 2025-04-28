@@ -41,6 +41,8 @@ public class EmployeeControllerImpl implements EmployeeController{
 
     @Override
     public ResponseEntity<KraKpiResponseDto> kraKpiRegistrationForEmployee(KraKpiRequestDto kraKpiRequestDto) {
-        return new ResponseEntity<>(kraKpiService.registerKraKpi(kraKpiRequestDto),HttpStatus.CREATED);
+        KraKpiResponseDto kraKpiResponseDto = kraKpiService.registerKraKpi(kraKpiRequestDto);
+        return new ResponseEntity<>(kraKpiResponseDto,HttpStatus.CREATED);
+
     }
 }

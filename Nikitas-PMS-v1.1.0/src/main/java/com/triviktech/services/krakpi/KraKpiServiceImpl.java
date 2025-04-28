@@ -10,6 +10,7 @@ import com.triviktech.exception.manager.ManagerNotFoundException;
 import com.triviktech.payloads.request.kpi.KpiRequestDto;
 import com.triviktech.payloads.request.kra.KraRequestDto;
 import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
+import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeResponseDto;
 import com.triviktech.payloads.response.kpi.KpiResponseDto;
 import com.triviktech.payloads.response.kra.KraResponseDto1;
@@ -90,7 +91,13 @@ public class KraKpiServiceImpl implements KraKpiService{
                 kpi.setSelfScore(kpiDto.getSelfScore());
                 kpi.setManagerScore(kpiDto.getManagerScore());
                 kpi.setDescription(kpiDto.getDescription());
-                float average=(kpiDto.getManagerScore()+kpiDto.getSelfScore())/2;
+                float average;
+                if(kpiDto.getReview2()!=0){
+                    average= (float) (kpiDto.getManagerScore() + kpiDto.getSelfScore() + kpiDto.getReview2()) /3;
+                }else{
+                    average= (float) (kpiDto.getManagerScore() + kpiDto.getSelfScore()) /2;
+                }
+
                 kpi.setAverage(average);
                 kpi.setReview2(kpiDto.getReview2());
                 // Save KPI separately to prevent ID issues
@@ -107,7 +114,7 @@ public class KraKpiServiceImpl implements KraKpiService{
 
         // Convert Entity to DTO
         KraKpiResponseDto kraKpiResponseDto = entityDtoConversion.entityToDtoConversion(kraKpi, KraKpiResponseDto.class);
-        kraKpiResponseDto.setEmployee(entityDtoConversion.entityToDtoConversion(kraKpi.getEmployeeInformation(), EmployeeResponseDto.class));
+        kraKpiResponseDto.setEmployee(entityDtoConversion.entityToDtoConversion(kraKpi.getEmployeeInformation(), EmployeeInfo.class));
 
         Set<KraResponseDto1> kraList = kraKpi.getKra().stream().map(kra -> {
             KraResponseDto1 kraResponseDto1 = entityDtoConversion.entityToDtoConversion(kra, KraResponseDto1.class);
@@ -131,7 +138,7 @@ public class KraKpiServiceImpl implements KraKpiService{
 
         KraKpi krakpi = kraKpiRepository.findByEmployeeInformation(employee).orElseThrow(()->new RuntimeException("Could not find"));
         KraKpiResponseDto response = entityDtoConversion.entityToDtoConversion(krakpi, KraKpiResponseDto.class);
-        response.setEmployee(entityDtoConversion.entityToDtoConversion(employee, EmployeeResponseDto.class));
+        response.setEmployee(entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class));
         Set<KraResponseDto1> kraList = krakpi.getKra().stream().map(kra -> {
             KraResponseDto1 kraResponseDto1 = entityDtoConversion.entityToDtoConversion(kra, KraResponseDto1.class);
 

@@ -36,17 +36,17 @@ public class KraKpi {
     @Column(name = "review_2")
     private Boolean review2;
 
-    @Temporal(TemporalType.DATE)
+
     @Column(name = "due_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private Date dueDate;
 
-    @Temporal(TemporalType.DATE)
+
     @Column(name = "self_review_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private Date selfReviewDate;
 
-    @Temporal(TemporalType.DATE)
+
     @Column(name = "manager_review_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private Date managerReviewDate;

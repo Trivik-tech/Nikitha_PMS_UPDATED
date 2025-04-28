@@ -12,6 +12,7 @@ import java.util.List;
 
 
 @RequestMapping("/api/v1/pms/employee")
+@CrossOrigin(origins = "http://localhost:3000")
 public interface EmployeeController {
 
     @PostMapping("/register-employee")
@@ -27,4 +28,6 @@ public interface EmployeeController {
 
     @PostMapping("/register-kra-kpi")
     ResponseEntity<KraKpiResponseDto> kraKpiRegistrationForEmployee(@RequestBody KraKpiRequestDto kraKpiRequestDto);
+
+
 }

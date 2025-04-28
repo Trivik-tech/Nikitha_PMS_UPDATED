@@ -1,5 +1,6 @@
 package com.triviktech.payloads.response.krakpi;
 
+import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeResponseDto;
 
 import com.triviktech.payloads.response.kra.KraResponseDto1;
@@ -12,7 +13,7 @@ public class KraKpiResponseDto {
     private long id;
     private String remark;
 
-    private EmployeeResponseDto employee;
+    private EmployeeInfo employee;
 
     private Set<KraResponseDto1> kra;
 
@@ -106,11 +107,11 @@ public class KraKpiResponseDto {
         this.remark = remark;
     }
 
-    public EmployeeResponseDto getEmployee() {
+    public EmployeeInfo getEmployee() {
         return employee;
     }
 
-    public void setEmployee(EmployeeResponseDto employee) {
+    public void setEmployee(EmployeeInfo employee) {
         this.employee = employee;
     }
 

@@ -57,4 +57,16 @@ public class KpiRequestDto {
     public void setManagerScore(Integer managerScore) {
         this.managerScore = managerScore;
     }
+
+    @Override
+    public String toString() {
+        return "KpiRequestDto{" +
+                "kpiId=" + kpiId +
+                ", description='" + description + '\'' +
+                ", weightage=" + weightage +
+                ", selfScore=" + selfScore +
+                ", managerScore=" + managerScore +
+                ", review2=" + review2 +
+                '}';
+    }
 }

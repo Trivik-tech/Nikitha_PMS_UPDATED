@@ -2,17 +2,18 @@ import React, { useState } from "react";
 import "./Krakpi.css";
 import logo from "../../../assets/images/nikithas-logo.png";
 import { FaHome } from "react-icons/fa";
-import "./Animation.css"; // Animation classes live here ✅
+import "./Animation.css";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const Krakpi = () => {
   const [kraList, setKraList] = useState([
     {
-      kra: "",
-      kraWeightage: "", // 👈 Added field
-      kpis: [
+      kraName: "",
+      weightage: "",
+      kpi: [
         {
-          kpi: "",
+          description: "",
           weightage: "",
         },
       ],
@@ -21,19 +22,19 @@ const Krakpi = () => {
 
   const handleKRAChange = (index, value) => {
     const updatedList = [...kraList];
-    updatedList[index].kra = value;
+    updatedList[index].kraName = value;
     setKraList(updatedList);
   };
 
   const handleKRAWeightageChange = (index, value) => {
     const updatedList = [...kraList];
-    updatedList[index].kraWeightage = value;
+    updatedList[index].weightage = value;
     setKraList(updatedList);
   };
 
   const handleKPIChange = (kraIndex, kpiIndex, field, value) => {
     const updatedList = [...kraList];
-    updatedList[kraIndex].kpis[kpiIndex][field] = value;
+    updatedList[kraIndex].kpi[kpiIndex][field] = value;
     setKraList(updatedList);
   };
 
@@ -41,11 +42,11 @@ const Krakpi = () => {
     setKraList([
       ...kraList,
       {
-        kra: "",
-        kraWeightage: "",
-        kpis: [
+        kraName: "",
+        weightage: "",
+        kpi: [
           {
-            kpi: "",
+            description: "",
             weightage: "",
           },
         ],
@@ -61,8 +62,8 @@ const Krakpi = () => {
 
   const addKPI = (kraIndex) => {
     const updatedList = [...kraList];
-    updatedList[kraIndex].kpis.push({
-      kpi: "",
+    updatedList[kraIndex].kpi.push({
+      description: "",
       weightage: "",
     });
     setKraList(updatedList);
@@ -70,18 +71,54 @@ const Krakpi = () => {
 
   const removeKPI = (kraIndex, kpiIndex) => {
     const updatedList = [...kraList];
-    updatedList[kraIndex].kpis.splice(kpiIndex, 1);
+    updatedList[kraIndex].kpi.splice(kpiIndex, 1);
     setKraList(updatedList);
   };
 
-  const handleSubmit = () => {
-    console.log("Submitting Data:", kraList);
-    alert("KRA/KPI Submitted Successfully!");
+  const handleSubmit = async () => {
+    try {
+      const payload = {
+        employeeId: "CNT117",
+        remark: "",
+        selfCompleted: false,
+        managerCompleted: false,
+        dueDate: "", // Updated format
+        managerReviewDate: null,
+        selfReviewDate: null,
+        pmsInitiated: false,
+        review2: false,
+        managerApproval: false,
+        kra: kraList.map((kra) => ({
+          kraName: kra.kraName,
+          weightage: kra.weightage,
+          kpi: kra.kpi.map((kpiItem) => ({
+            description: kpiItem.description,
+            weightage: kpiItem.weightage,
+            selfScore: 0,
+            managerScore: 0,
+            review2: 0,
+          })),
+        })),
+      };
+      
+      
+      console.log(payload)
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/pms/employee/register-kra-kpi",
+        payload
+      );
+      
+      console.log("Submitted successfully:", response.data);
+      alert("KRA/KPI submitted successfully!");
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("Submission failed. Please check the console for errors.");
+    }
   };
 
   const handleDraft = () => {
     console.log("Saving as Draft:", kraList);
-    alert("KRA/KPI Saved as Draft!");
+    alert("KRA/KPI saved as draft!");
   };
 
   return (
@@ -91,8 +128,14 @@ const Krakpi = () => {
           <Link to="/employee-dashboard" className="icon-link">
             <FaHome className="employee-module-home-icon" />
           </Link>
-          <h2 className="employee-module-page-title">Employee's KRA/KPI Registration Form</h2>
-          <img src={logo} alt="Company Logo" className="employee-module-logo" />
+          <h2 className="employee-module-page-title">
+            Employee's KRA/KPI Registration Form
+          </h2>
+          <img
+            src={logo}
+            alt="Company Logo"
+            className="employee-module-logo"
+          />
         </div>
 
         <button
@@ -111,14 +154,14 @@ const Krakpi = () => {
               <input
                 type="text"
                 placeholder="Enter KRA"
-                value={kraItem.kra}
+                value={kraItem.kraName}
                 onChange={(e) => handleKRAChange(kraIndex, e.target.value)}
                 className="employee-module-kra-input"
               />
               <input
                 type="text"
                 placeholder="Enter KRA Weightage"
-                value={kraItem.kraWeightage}
+                value={kraItem.weightage}
                 onChange={(e) =>
                   handleKRAWeightageChange(kraIndex, e.target.value)
                 }
@@ -132,7 +175,7 @@ const Krakpi = () => {
               </button>
             </div>
 
-            {kraItem.kpis.map((kpiItem, kpiIndex) => (
+            {kraItem.kpi.map((kpiItem, kpiIndex) => (
               <div
                 className="employee-module-kpi-box employee-module-slide-in"
                 key={kpiIndex}
@@ -140,9 +183,14 @@ const Krakpi = () => {
                 <input
                   type="text"
                   placeholder="Enter KPI"
-                  value={kpiItem.kpi}
+                  value={kpiItem.description}
                   onChange={(e) =>
-                    handleKPIChange(kraIndex, kpiIndex, "kpi", e.target.value)
+                    handleKPIChange(
+                      kraIndex,
+                      kpiIndex,
+                      "description",
+                      e.target.value
+                    )
                   }
                   className="employee-module-kpi-input"
                 />
@@ -164,7 +212,7 @@ const Krakpi = () => {
                   className="employee-module-remove-btn employee-module-btn-hover"
                   onClick={() => removeKPI(kraIndex, kpiIndex)}
                 >
-                  Remove KPI 
+                  Remove KPI
                 </button>
               </div>
             ))}

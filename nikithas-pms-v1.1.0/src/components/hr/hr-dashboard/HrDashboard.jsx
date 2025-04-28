@@ -50,7 +50,7 @@ const HrDashboard = () => {
   }, []);
 
   const barData = {
-    labels: ['IT', 'HR', 'Finance', 'Marketing', 'Sales'],
+    labels: ['IT', 'HR', 'Finance', 'Marketing', 'Sales',],
     datasets: [
       {
         label: 'Total Employees',
