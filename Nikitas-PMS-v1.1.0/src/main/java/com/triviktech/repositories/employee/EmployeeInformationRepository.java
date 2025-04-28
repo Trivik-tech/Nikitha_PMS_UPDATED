@@ -18,5 +18,7 @@ public interface EmployeeInformationRepository extends JpaRepository<EmployeeInf
     List<EmployeeInformation> searchEmployees(String search);
 
     List<EmployeeInformation> findByEmpIdIn(Set<String> empIds);
+
+    Optional<EmployeeInformation> findByReportingManagerAndEmpId(String managerName, String employeeId);
 }
 
