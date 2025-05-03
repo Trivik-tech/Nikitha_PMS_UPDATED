@@ -3,6 +3,7 @@ package com.triviktech.controllers.employee;
 import com.triviktech.constants.AppConstants;
 import com.triviktech.payloads.request.employee.EmployeeInformationRequestDto;
 import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
+import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeInformationResponseDto;
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
 import org.springframework.http.ResponseEntity;
@@ -29,5 +30,7 @@ public interface EmployeeController {
     @PostMapping("/register-kra-kpi")
     ResponseEntity<KraKpiResponseDto> kraKpiRegistrationForEmployee(@RequestBody KraKpiRequestDto kraKpiRequestDto);
 
+    @GetMapping("/profile/{employeeId}")
+    ResponseEntity<EmployeeInfo> profile(@PathVariable String employeeId);
 
 }

@@ -12,7 +12,7 @@ public interface EmployeeService {
     EmployeeInformationResponseDto registerEmployee(EmployeeInformationRequestDto employeeInformationRequestDto);
     List<EmployeeInformationResponseDto> listOfEmployees(int pageSize,int pageNumber);
 
-    public void Profile(String employeeId);
+    EmployeeInfo profile(String employeeId);
 
     }
 

@@ -8,6 +8,7 @@ import com.triviktech.exception.manager.ManagerNotFoundException;
 import com.triviktech.exception.project.ProjectNotFoundException;
 import com.triviktech.payloads.request.employee.EmployeeInformationRequestDto;
 import com.triviktech.payloads.response.department.DepartmentResponseDto;
+import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeInformationResponseDto;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
 import com.triviktech.payloads.response.project.ProjectResponseDto;
@@ -99,11 +100,13 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Override
-    public void Profile(String employeeId) {
+    public EmployeeInfo profile(String employeeId) {
         Optional<EmployeeInformation> byId = employeeInformationRepository.findById(employeeId);
           if(byId.isPresent()) {
             EmployeeInformation employeeInformation = byId.get();
-            return;
+              EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employeeInformation, EmployeeInfo.class);
+              employeeInfo.setDepartment(employeeInformation.getDepartment().getName());
+              return  employeeInfo;
         }else{
             throw new EmployeeNotFoundException(employeeId);
         }

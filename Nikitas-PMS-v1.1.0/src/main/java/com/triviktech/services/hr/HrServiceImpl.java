@@ -8,6 +8,7 @@ import com.triviktech.entities.employee.EmployeeInformation;
 import com.triviktech.entities.hr.HR;
 import com.triviktech.entities.manager.Manager;
 import com.triviktech.entities.project.Project;
+import com.triviktech.exception.employee.EmployeeNotFoundException;
 import com.triviktech.exception.hr.HRNotFoundException;
 import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
@@ -37,6 +38,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -353,10 +356,20 @@ return null;
     }
 
     @Override
+
     public EmployeeInfo updateEmployee(String empId, Employee employee) {
         Optional<EmployeeInformation> savedEmployee = employeeInformationRepository.findById(empId);
-        if(savedEmployee.isPresent()) {
+
+        if (savedEmployee.isPresent()) {
             EmployeeInformation employee1 = savedEmployee.get();
+
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+
+            // Convert date fields to String
+
+            String lwdStr = employee.getLastWorkingDate() != null ? formatter.format(employee.getLastWorkingDate()) : null;
+
+            // Set values
             employee1.setBranch(employee.getBranch());
             employee1.setCategory(employee.getCategory());
             employee1.setDob(employee.getDob());
@@ -364,26 +377,26 @@ return null;
             employee1.setCurrentDesignation(employee.getCurrentDesignation());
             employee1.setDateOfJoining(employee.getDateOfJoining());
             employee1.setEmailId(employee.getEmailId());
-//            employee1.setLastWorkingDay(employee.getLastWorkingDate());
-            employee1.setCurrentDesignation(employee.getCurrentDesignation());
+            employee1.setLastWorkingDay(lwdStr);
             employee1.setMobileNumber(employee.getMobileNumber());
             employee1.setOfficialEmailId(employee.getOfficialEmailId());
-           employee1.setReportingManager(employee.getReportingManager());
-          // employee1.setLastWorkingDate(employee.getLastWorkingDate());
+            employee1.setReportingManager(employee.getReportingManager());
 
+            // Set department name
             Department department = employee1.getDepartment();
-            department.setName(employee.getDepartment());;
+            department.setName(employee.getDepartment());
             employee1.setDepartment(department);
 
+            // Save and convert to DTO
             EmployeeInformation save = employeeInformationRepository.save(employee1);
             EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(save, EmployeeInfo.class);
+
             return employeeInfo;
-
-
         }
-        
-        return null;
+
+        throw new EmployeeNotFoundException(empId);
     }
+
 
 
     private HrResponseDto mapToHrResponseDto(HR hr){
