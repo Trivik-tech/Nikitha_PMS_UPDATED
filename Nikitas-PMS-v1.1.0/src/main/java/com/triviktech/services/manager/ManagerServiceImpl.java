@@ -20,7 +20,11 @@ import com.triviktech.payloads.response.address.CountryResponseDto;
 import com.triviktech.payloads.response.address.LocationResponseDto;
 import com.triviktech.payloads.response.address.StateResponseDto;
 import com.triviktech.payloads.response.department.DepartmentResponseDto;
+import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
+import com.triviktech.payloads.response.kpi.KpiResponseDto;
+import com.triviktech.payloads.response.kra.KraResponseDto1;
+import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
 import com.triviktech.payloads.response.project.ProjectResponseDto;
 import com.triviktech.repositories.address.LocationRepository;
@@ -332,13 +336,38 @@ public class ManagerServiceImpl implements ManagerService{
     }
 
     @Override
-    public void getEmployeeKarKpi(String managerName, String employeeId) {
+    public KraKpiResponseDto getEmployeeKarKpi(String managerName, String employeeId) {
         Optional<EmployeeInformation> employeeData = employeeInformationRepository.findByReportingManagerAndEmpId(managerName, employeeId);
            if(employeeData.isPresent()){
                EmployeeInformation employee = employeeData.get();
                Optional<KraKpi> kraKpi = kraKpiRepository.findByEmployeeInformation(employee);
                 if (kraKpi.isPresent()){
                     KraKpi kraKpi1 = kraKpi.get();
+                    KraKpiResponseDto kraKpiResponseDto = entityDtoConversion.entityToDtoConversion(kraKpi1, KraKpiResponseDto.class);
+                    EmployeeInformation employeeInformation = kraKpi1.getEmployeeInformation();
+                    EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employeeInformation, EmployeeInfo.class);
+                    employeeInfo.setDepartment(employeeInformation.getDepartment().getName());
+                    kraKpiResponseDto.setEmployee(employeeInfo);
+
+                    Set<KraResponseDto1> kras = kraKpi1.getKra().stream().map(kra -> {
+                        KraResponseDto1 kraResponseDto = entityDtoConversion.entityToDtoConversion(kra, KraResponseDto1.class);
+
+                        Set<KpiResponseDto> kpis = kra.getKpi().stream().map(kpi -> {
+                            KpiResponseDto kpiResponseDto = entityDtoConversion.entityToDtoConversion(kpi, KpiResponseDto.class);
+
+                            return kpiResponseDto;
+
+                        }).collect(Collectors.toSet());
+
+                        kraResponseDto.setKpi(kpis);
+                        return kraResponseDto;
+
+                    }).collect(Collectors.toSet());
+
+                    kraKpiResponseDto.setKra(kras);
+
+                    return kraKpiResponseDto;
+
                 }
                 else{
                     throw new KraKpiNotFoundException("Kra Kpi not found for employee with ID " + employeeId);
@@ -346,6 +375,7 @@ public class ManagerServiceImpl implements ManagerService{
 
            }
            else{
+
                throw new EmployeeNotFoundException(employeeId);
                
            }
