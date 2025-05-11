@@ -6,7 +6,7 @@ import com.triviktech.entities.address.State;
 import com.triviktech.entities.department.Department;
 import com.triviktech.entities.employee.EmployeeInformation;
 import com.triviktech.entities.hr.HR;
-import com.triviktech.entities.manager.Manager;
+
 import com.triviktech.entities.project.Project;
 import com.triviktech.exception.employee.EmployeeNotFoundException;
 import com.triviktech.exception.hr.HRNotFoundException;
@@ -15,13 +15,11 @@ import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.address.CountryResponseDto;
 import com.triviktech.payloads.response.address.LocationResponseDto;
 import com.triviktech.payloads.response.address.StateResponseDto;
-import com.triviktech.payloads.response.department.DepartmentResponseDto;
+
 import com.triviktech.payloads.response.employee.EmployeeInfo;
-import com.triviktech.payloads.response.employeeslist.EmployeesList;
-import com.triviktech.payloads.response.global.Response;
+
 import com.triviktech.payloads.response.hr.HrResponseDto;
-import com.triviktech.payloads.response.manager.ManagerInfo;
-import com.triviktech.payloads.response.manager.ManagerResponseDto;
+
 import com.triviktech.payloads.response.project.ProjectResponseDto;
 import com.triviktech.repositories.address.LocationRepository;
 import com.triviktech.repositories.address.StateRepository;
@@ -41,8 +39,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -260,8 +257,6 @@ return null;
     public List<EmployeeInfo> getAllEmployees() {
         List<EmployeeInformation> allRecords = employeeInformationRepository.findAll();
 
-
-
         // Convert all EmployeeInformation to EmployeeInfo
         return allRecords.parallelStream()
                 .map(employee -> {
@@ -346,8 +341,7 @@ return null;
             return response;
         }
         else {
-            response.put("message","Employee Not found ");
-            return response;
+           throw new EmployeeNotFoundException(employeeId);
 
         }
 
@@ -399,6 +393,8 @@ return null;
 
 
 
+
+
     private HrResponseDto mapToHrResponseDto(HR hr){
         return modelMapper.map(hr, HrResponseDto.class);
     }
@@ -415,9 +411,7 @@ return null;
         return modelMapper.map(location, LocationResponseDto.class);
     }
 
-    private DepartmentResponseDto mapToDepartmentResponseDto(Department department){
-        return modelMapper.map(department, DepartmentResponseDto.class);
-    }
+
 
     private ProjectResponseDto mapToProjectResponseDto(Project project){
         return modelMapper.map(project,ProjectResponseDto.class);
@@ -425,8 +419,6 @@ return null;
 
     }
 
-    private ManagerResponseDto mapToManagerResponseDto(Manager manager){
-        return modelMapper.map(manager, ManagerResponseDto.class);
-    }
+
 
 }

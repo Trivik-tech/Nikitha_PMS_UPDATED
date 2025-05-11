@@ -4,6 +4,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.triviktech.exception.address.CountryNotFoundException;
 import com.triviktech.exception.address.StateNotFoundException;
 import com.triviktech.exception.department.DepartmentNotFoundException;
+import com.triviktech.exception.employee.EmployeeNotFoundException;
 import com.triviktech.exception.manager.ManagerAlreadyExistsException;
 import com.triviktech.exception.manager.ManagerNotFoundException;
 import com.triviktech.exception.project.ProjectNotFoundException;
@@ -101,6 +102,14 @@ public class GlobalExceptionHandler {
         ExceptionMessage exceptionMessage=new ExceptionMessage();
         exceptionMessage.setMessage(exception.getMessage());
         return new ResponseEntity<>(exceptionMessage, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(EmployeeNotFoundException.class)
+    public ResponseEntity<ExceptionMessage> handleEmployeeNotFoundException(EmployeeNotFoundException exception){
+
+        ExceptionMessage exceptionMessage=new ExceptionMessage();
+        exceptionMessage.setMessage(exception.getMessage());
+        return new ResponseEntity<>(exceptionMessage,HttpStatus.NOT_FOUND);
     }
 
 }
