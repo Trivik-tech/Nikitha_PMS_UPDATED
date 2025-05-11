@@ -2,6 +2,7 @@ package com.triviktech.controllers.manager;
 
 import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
 import com.triviktech.payloads.request.manager.ManagerRequestDto;
+import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeInformationResponseDto;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
@@ -77,5 +78,10 @@ public class ManagerControllerImpl implements ManagerController{
     @Override
     public ResponseEntity<?> managerReview(String managerId, KraKpiRequestDto data) {
         return ResponseEntity.ok(kraKpiService.managerReview(managerId,data));
+    }
+
+    @Override
+    public ResponseEntity<List<EmployeeInfo>> getManagerTeam(String reportingManager) {
+        return  ResponseEntity.ok(managerService.findAllByReportingManager(reportingManager));
     }
 }

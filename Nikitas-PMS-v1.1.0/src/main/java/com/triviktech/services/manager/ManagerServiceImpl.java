@@ -18,6 +18,7 @@ import com.triviktech.payloads.response.address.CountryResponseDto;
 import com.triviktech.payloads.response.address.LocationResponseDto;
 import com.triviktech.payloads.response.address.StateResponseDto;
 import com.triviktech.payloads.response.department.DepartmentResponseDto;
+import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
 import com.triviktech.payloads.response.project.ProjectResponseDto;
@@ -247,6 +248,18 @@ public class ManagerServiceImpl implements ManagerService{
 //            throw e;
 //        }
         return null;
+    }
+
+    @Override
+    public List<EmployeeInfo> findAllByReportingManager(String reportingManager) {
+        List<EmployeeInformation> allEmployees = employeeInformationRepository.findAllByReportingManager(reportingManager);
+        List<EmployeeInfo> collect = allEmployees.stream().map(employee -> {
+            EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+            employeeInfo.setDepartment(employee.getDepartment().getName());
+            return employeeInfo;
+
+        }).collect(Collectors.toList());
+        return collect;
     }
 
     @Override

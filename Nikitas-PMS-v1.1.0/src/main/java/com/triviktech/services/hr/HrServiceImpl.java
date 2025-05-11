@@ -352,6 +352,35 @@ return null;
 
     }
 
+    @Override
+    public Map<String, Object> getdepartment() {
+        List<Department> allDpt = departmentRepository.findAll();
+
+
+//        get onlydepartment name
+//        List<String> departmentNames = allDpt.stream()
+//                .map(Department::getName)
+//                .collect(Collectors.toList());
+
+        List<String> departmentNames = allDpt.stream().map(department -> {
+            String name = department.getName();
+            return name;
+        }).collect(Collectors.toList());
+
+//
+        return Map.of("departments",departmentNames);
+    }
+
+    @Override
+    public List<Long> getEmployeeCountByDepartment() {
+        List<Object[]> result = employeeInformationRepository.countEmployeesByDepartment();
+
+        return result.stream()
+                .map(row -> (Long) row[1]) // row[1] is the count
+                .collect(Collectors.toList());
+    }
+
+
 
     private HrResponseDto mapToHrResponseDto(HR hr){
         return modelMapper.map(hr, HrResponseDto.class);

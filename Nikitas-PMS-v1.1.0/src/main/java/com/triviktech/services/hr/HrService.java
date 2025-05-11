@@ -33,4 +33,13 @@ public interface HrService {
 
     Map<String,String> deleteEmployee(String employeeId);
 
+    Map<String,Object>  getdepartment();
+
+
+    List<Long>  getEmployeeCountByDepartment();
+
+
+
+
+
 }

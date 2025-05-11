@@ -2,6 +2,7 @@ package com.triviktech.controllers.manager;
 
 import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
 import com.triviktech.payloads.request.manager.ManagerRequestDto;
+import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeInformationResponseDto;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
@@ -42,4 +43,8 @@ public interface ManagerController {
 
     @PatchMapping("/manager-review/{managerId}")
     ResponseEntity<?> managerReview(@PathVariable String  managerId, @RequestBody KraKpiRequestDto data);
+
+
+    @GetMapping("/manager-team/{reportingManager}")
+    ResponseEntity<List<EmployeeInfo> > getManagerTeam(@PathVariable String reportingManager);
 }

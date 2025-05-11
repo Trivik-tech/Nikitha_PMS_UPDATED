@@ -69,4 +69,20 @@ public class HRControllerImpl implements HRController{
         Map<String, String> msg = hrService.deleteEmployee(employeeId);
         return ResponseEntity.ok(msg);
     }
+
+    @Override
+    public ResponseEntity<Map<String, Object>> getDepartment() {
+        Map<String, Object> getdepartment = hrService.getdepartment();
+        return ResponseEntity.ok(getdepartment);
+    }
+
+    @Override
+    public ResponseEntity<Map<String, List<Long>>> employeeCount() {
+        List<Long> employeeCounts = hrService.getEmployeeCountByDepartment();
+
+        Map<String, List<Long>> response = Map.of("employees", employeeCounts);
+
+        return ResponseEntity.ok(response);
+    }
+
 }
