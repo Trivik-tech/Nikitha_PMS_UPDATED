@@ -71,13 +71,13 @@ public class HRControllerImpl implements HRController{
     }
 
     @Override
-<<<<<<< HEAD
+
     public ResponseEntity<EmployeeInfo> updateEmployee(String empId, Employee employee) {
         EmployeeInfo employeeInfo = hrService.updateEmployee(empId, employee);
         return ResponseEntity.ok(employeeInfo);
     }
 
-=======
+
     public ResponseEntity<Map<String, Object>> getDepartment() {
         Map<String, Object> getdepartment = hrService.getdepartment();
         return ResponseEntity.ok(getdepartment);
@@ -91,6 +91,13 @@ public class HRControllerImpl implements HRController{
 
         return ResponseEntity.ok(response);
     }
->>>>>>> arpita
+
+    @Override
+    public ResponseEntity<Map<String, Integer>> keyMatrix() {
+        Map<String, Integer>  employeeKeyMatrix = hrService.assessmentKeyMatrix();
+         return  ResponseEntity.ok(employeeKeyMatrix);
+
+    }
+
 
 }
