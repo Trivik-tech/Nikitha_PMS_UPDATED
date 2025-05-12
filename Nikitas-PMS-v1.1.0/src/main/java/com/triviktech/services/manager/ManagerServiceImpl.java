@@ -257,6 +257,18 @@ public class ManagerServiceImpl implements ManagerService{
     }
 
     @Override
+    public List<EmployeeInfo> findAllByReportingManager(String reportingManager) {
+        List<EmployeeInformation> allEmployees = employeeInformationRepository.findAllByReportingManager(reportingManager);
+        List<EmployeeInfo> collect = allEmployees.stream().map(employee -> {
+            EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+            employeeInfo.setDepartment(employee.getDepartment().getName());
+            return employeeInfo;
+
+        }).collect(Collectors.toList());
+        return collect;
+    }
+
+    @Override
     public List<EmployeeWithPmsStatus> listOfPMSCompletedEmployees(String managerId) {
 //        Manager manager = managerRepository.findById(managerId).orElseThrow(() -> new ManagerNotFoundException(managerId));
 //        List<EmployeeInformation> allEmployees = employeeInformationRepository.findAllByManager(manager);

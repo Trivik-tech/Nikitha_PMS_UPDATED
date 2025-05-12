@@ -71,10 +71,26 @@ public class HRControllerImpl implements HRController{
     }
 
     @Override
+<<<<<<< HEAD
     public ResponseEntity<EmployeeInfo> updateEmployee(String empId, Employee employee) {
         EmployeeInfo employeeInfo = hrService.updateEmployee(empId, employee);
         return ResponseEntity.ok(employeeInfo);
     }
 
+=======
+    public ResponseEntity<Map<String, Object>> getDepartment() {
+        Map<String, Object> getdepartment = hrService.getdepartment();
+        return ResponseEntity.ok(getdepartment);
+    }
+
+    @Override
+    public ResponseEntity<Map<String, List<Long>>> employeeCount() {
+        List<Long> employeeCounts = hrService.getEmployeeCountByDepartment();
+
+        Map<String, List<Long>> response = Map.of("employees", employeeCounts);
+
+        return ResponseEntity.ok(response);
+    }
+>>>>>>> arpita
 
 }

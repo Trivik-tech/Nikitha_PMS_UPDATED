@@ -6,10 +6,7 @@ import org.hibernate.query.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public interface EmployeeInformationRepository extends JpaRepository<EmployeeInformation, String> {
 
@@ -19,6 +16,15 @@ public interface EmployeeInformationRepository extends JpaRepository<EmployeeInf
 
     List<EmployeeInformation> findByEmpIdIn(Set<String> empIds);
 
+<<<<<<< HEAD
     Optional<EmployeeInformation> findByReportingManagerAndEmpId(String managerName, String employeeId);
+=======
+    @Query("SELECT e.department.name, COUNT(e) FROM EmployeeInformation e GROUP BY e.department.name")
+    List<Object[]> countEmployeesByDepartment();
+
+
+    List<EmployeeInformation> findAllByReportingManager(String reportingManager);
+
+>>>>>>> arpita
 }
 

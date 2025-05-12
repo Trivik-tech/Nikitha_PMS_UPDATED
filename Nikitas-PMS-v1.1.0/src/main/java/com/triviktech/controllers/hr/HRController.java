@@ -43,10 +43,20 @@ public interface HRController {
     @DeleteMapping("/delete-employee/{employeeId}")
     ResponseEntity<Map<String,String>> deleteEmployee(@PathVariable String employeeId);
 
+<<<<<<< HEAD
     @PutMapping("/update-employee/{empId}")
     ResponseEntity<EmployeeInfo>updateEmployee(@PathVariable String empId,@RequestBody Employee employee);
 
 
+=======
+    @GetMapping("/get-departments")
+    ResponseEntity<Map<String,Object>>   getDepartment();
+
+
+    @GetMapping("/employee-count-by-department")
+    ResponseEntity<Map<String, List<Long>>>   employeeCount();
+
+>>>>>>> arpita
 
 
 

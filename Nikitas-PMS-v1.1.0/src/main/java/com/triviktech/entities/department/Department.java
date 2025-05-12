@@ -69,4 +69,6 @@ public class Department {
     public void setHr(HR hr) {
         this.hr = hr;
     }
+
+
 }
