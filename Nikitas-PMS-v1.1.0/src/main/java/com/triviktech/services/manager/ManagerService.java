@@ -7,6 +7,7 @@ import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ManagerService {
 
@@ -25,4 +26,8 @@ public interface ManagerService {
     List<EmployeeWithPmsStatus> listOfPMSPendingEmployees(String managerId);
 
     KraKpiResponseDto getEmployeeKarKpi(String managerName, String employeeId);
+
+    Map <String, String> approveKra (Map<String, Boolean> approve, String employeeId, String reportingManager);
+
+
 }

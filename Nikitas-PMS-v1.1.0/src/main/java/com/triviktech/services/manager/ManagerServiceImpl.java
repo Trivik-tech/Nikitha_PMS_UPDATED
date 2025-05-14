@@ -41,11 +41,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.util.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -391,6 +388,27 @@ public class ManagerServiceImpl implements ManagerService{
                throw new EmployeeNotFoundException(employeeId);
                
            }
+    }
+
+    @Override
+    public Map<String, String> approveKra(Map<String, Boolean> approve, String employeeId, String reportingManager) {
+        Optional<EmployeeInformation> employeeData = employeeInformationRepository.findByReportingManagerAndEmpId(reportingManager, employeeId);
+        if(employeeData.isPresent()){
+            EmployeeInformation employee = employeeData.get();
+            Optional<KraKpi> kraKpi = kraKpiRepository.findByEmployeeInformation(employee);
+            if(kraKpi.isPresent()){
+                KraKpi kraKpi1 = kraKpi.get();
+                kraKpi1.setManagerApproval(approve.get("status"));
+                kraKpiRepository.save(kraKpi1);
+            }
+            else{
+                throw new KraKpiNotFoundException("Kar Kpi not found for employee");
+            }
+        }
+        else{
+            throw new EmployeeNotFoundException(employeeId);
+        }
+        return Map.of("status", "KraKpi approved successfully");
     }
 
     // Helper record to carry both Employee and KraKpi together in the stream
