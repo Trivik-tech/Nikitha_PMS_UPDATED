@@ -47,4 +47,7 @@ public interface ManagerController {
     @GetMapping("/kra-kpi/{managerName}/{employeeId}")
     ResponseEntity<KraKpiResponseDto> getKraKpis(@PathVariable String managerName,  @PathVariable String employeeId);
 
+    @PatchMapping("/approve-krakpi/{employeeId}/{reportingManager}")
+    ResponseEntity<Map<String, String>> approveKraKpi(@PathVariable String employeeId, @PathVariable String reportingManager, @RequestBody Map<String, Boolean> approve);
+
 }

@@ -84,4 +84,9 @@ public class ManagerControllerImpl implements ManagerController{
     public ResponseEntity<KraKpiResponseDto> getKraKpis(String managerName, String employeeId) {
         return ResponseEntity.ok(managerService.getEmployeeKarKpi(managerName, employeeId));
     }
+
+    @Override
+    public ResponseEntity<Map<String, String>> approveKraKpi(String employeeId, String reportingManager, Map<String, Boolean> approve) {
+        return ResponseEntity.ok(managerService.approveKra(approve, employeeId, reportingManager));
+    }
 }
