@@ -5,6 +5,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import { Bell } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import './HrDashboard.css';
+import './Responsive.css';
 
 import logo from '../../../assets/images/nikithas-logo.png';
 import profile from '../../../assets/images/profile1.jpg';
@@ -28,6 +29,7 @@ const HrDashboard = () => {
   const [animate, setAnimate] = useState(false);
   const [totalEmployees, setTotalEmployees] = useState(null);
   const [error, setError] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
     setTimeout(() => setAnimate(true), 200);
@@ -50,7 +52,7 @@ const HrDashboard = () => {
   }, []);
 
   const barData = {
-    labels: ['IT', 'HR', 'Finance', 'Marketing', 'Sales',],
+    labels: ['IT', 'HR', 'Finance', 'Marketing', 'Sales'],
     datasets: [
       {
         label: 'Total Employees',
@@ -91,13 +93,13 @@ const HrDashboard = () => {
           navigate('/hr/pending-assessments');
         }
       }
-    }
+    },
   };
 
   return (
     <>
       <div className="hr-dashboard-container">
-        <aside className="hr-dashboard-sidebar slide-in">
+        <aside className={`hr-dashboard-sidebar ${sidebarOpen ? 'open' : 'closed'} slide-in`}>
           <div className="hr-dashboard-profile-container">
             <img src={profile} alt="Profile" className="hr-dashboard-profileImg" />
             <h2 className="hr-dashboard-profile-name">Avinash S. H.</h2>
@@ -112,7 +114,10 @@ const HrDashboard = () => {
 
         <main className="hr-dashboard-main-content">
           <header className="hr-dashboard-header fade-in-down">
-            <h1>HR PMS Dashboard</h1>
+            <div className="hr-dashboard-header-left">
+              <button className="hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
+              <h1>HR PMS Dashboard</h1>
+            </div>
             <img src={logo} alt="Nikitha PMS" className="hr-dashboard-logo" />
             <div className="hr-dashboard-actions">
               <Bell className="notification-icon" onClick={() => setNotificationOpen(!notificationOpen)} />
@@ -142,12 +147,6 @@ const HrDashboard = () => {
               <p>69.8%</p>
             </div>
           </section>
-
-          {/* {error && (
-            <p style={{ color: 'red', marginTop: '10px' }}>
-              ⚠ Unable to fetch employee data. Server might be down.
-            </p>
-          )} */}
 
           <section className="hr-dashboard-chart-container fade-in-up">
             <h2 className="hr-dashboard-assessment-heading">Assessment Status</h2>
