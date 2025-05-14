@@ -127,6 +127,7 @@ body {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed; /* Ensures consistent column widths */
+  text-align: center;
 }
 
 /* Sticky header */
@@ -135,6 +136,7 @@ body {
   top: 0;
   background: #f1f1f1;
   z-index: 10;
+  
 }
 
 
@@ -145,6 +147,7 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: center;
 }
 .manager-team-table th{
   padding: 12px;
@@ -153,6 +156,7 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: center;
 
 }
 

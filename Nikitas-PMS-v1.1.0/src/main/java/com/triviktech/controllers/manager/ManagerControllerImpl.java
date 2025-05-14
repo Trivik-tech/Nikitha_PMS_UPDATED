@@ -61,8 +61,8 @@ public class ManagerControllerImpl implements ManagerController{
     }
 
     @Override
-    public ResponseEntity<List<EmployeeWithPmsStatus>> listOfEmployeesForManager(String managerId) {
-        return ResponseEntity.ok(managerService.listOfEmployeesForManager(managerId));
+    public ResponseEntity<List<EmployeeWithPmsStatus>> listOfEmployeesForManager(String reportingManager) {
+        return ResponseEntity.ok(managerService.listOfEmployeesForManager(reportingManager));
     }
 
     @Override

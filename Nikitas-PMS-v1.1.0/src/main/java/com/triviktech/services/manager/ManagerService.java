@@ -16,7 +16,7 @@ public interface ManagerService {
 
     ManagerResponseDto findManagerById(String managerId);
 
-    List<EmployeeWithPmsStatus> listOfEmployeesForManager(String managerId);
+    List<EmployeeWithPmsStatus> listOfEmployeesForManager(String reportingManager);
 
     List<EmployeeWithPmsStatus> listOfPMSCompletedEmployees(String managerId);
     List<EmployeeWithPmsStatus> listOfPMSPendingEmployees(String managerId);

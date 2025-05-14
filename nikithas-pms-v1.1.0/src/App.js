@@ -79,7 +79,7 @@ function App() {
 
 
 
-          <Route exact path="/approve-pms" element={<Approve/>} />
+          <Route exact path="/approve-pms/:id" element={<Approve/>} />
           <Route exact path="/self-review" element={<EmployeeReview/>} />
           <Route exact path="/employee-info/:id" element={<EmployeeInfo/>} />
           

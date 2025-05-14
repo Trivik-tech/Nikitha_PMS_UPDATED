@@ -1,58 +1,47 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Approve.css";
 import logo from "../../../assets/images/nikithas-logo.png"; // Make sure the path is correct
 import { FaHome } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Modal from "../../../components/modal/Modal"; // Ensure the correct path
+import axios from "axios";
 
 const Approve = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
+  const [krakpi,setKraKpis]=useState([]);
+ const [name,setName]=useState("")
+ const [designation,setDesignation]=useState("")
+ const [department,setDepartment]=useState("")
+ const [manager,setManager]=useState("")
 
-  const sections = [
-    {
-      title: "Technical Excellence",
-      weightage: 20,
-      items: [
-        "Code Quality & Standards",
-        "Code Documentation",
-        "Technical Documentation",
-        "POC & Demonstrations",
-        "Technical Presentations",
-      ],
-    },
-    {
-      title: "Project Delivery",
-      weightage: 25,
-      items: [
-        "Delivery Milestones",
-        "Sprint Execution",
-        "Release Readiness",
-        "Process Compliance",
-      ],
-    },
-    {
-      title: "Team Collaboration",
-      weightage: 25,
-      items: [
-        "Knowledge Sharing",
-        "Inter/Intra Team Collaboration",
-        "Peer Reviews",
-        "Conflict Resolution",
-      ],
-    },
-    {
-      title: "Leadership & Mentoring",
-      weightage: 15,
-      items: ["Mentoring Team Members", "Providing Feedback", "Ownership"],
-    },
-    {
-      title: "Professional Development",
-      weightage: 10,
-      items: ["Learning & Development"],
-    },
-  ];
+  const emplId=useParams();
+
+  
+useEffect(()=>{
+  const loadKraKpis= async()=>{
+
+    try{
+      console.log(emplId)
+
+      const result =await axios.get(`http://localhost:8080/api/v1/pms/manager/kra-kpi/Pradeep Prahalada Rao Kubair/${emplId.id}`)
+      console.log(result.data)
+      setKraKpis(result.data.kra)
+      setName(result.data.employee.name)
+      setDesignation(result.data.employee.currentDesignation)
+      setDepartment(result.data.employee.department)
+      setManager(result.data.employee.reportingManager)
+    
+    }catch(error){
+      console.error(error)
+    }
+
+  }
+
+  loadKraKpis()
+},[])
+  
 
   const handleApproveClick = () => {
     setErrorMessage("PMS has been approved successfully.");
@@ -85,20 +74,20 @@ const Approve = () => {
         </div>
 
         <div className="manager-approve-filters">
-          <label>Employee ID: <input type="text" value="EMP123" readOnly /></label>
-          <label>Employee Name: <input type="text" value="John Doe" readOnly /></label>
-          <label>Designation: <input type="text" value="Senior Software Engineer" readOnly /></label>
-          <label>Department: <input type="text" value="Engineering" readOnly /></label>
-          <label>Manager: <input type="text" value="Jane Smith" readOnly /></label>
+          <label>Employee ID: <input type="text" value={emplId.id} readOnly /></label>
+          <label>Employee Name: <input type="text" value={name} readOnly /></label>
+          <label>Designation: <input type="text" value={designation} readOnly /></label>
+          <label>Department: <input type="text" value={department} readOnly /></label>
+          <label>Manager: <input type="text" value={manager} readOnly /></label>
         </div>
       </header>
 
       <div className="manager-approve-sections">
-        {sections.map((section, index) => (
+        {krakpi.map((data, index) => (
           <div key={index} className="manager-approve-section">
             <div className="manager-approve-section-header">
-              <h3>KRA - {section.title}</h3>
-              <span>Weightage: {section.weightage}</span>
+              <h3>KRA - {data.kraName}</h3>
+              <span>Weightage: {data.weightage}</span>
             </div>
             <table className="manager-approve-table">
               <thead>
@@ -108,10 +97,10 @@ const Approve = () => {
                 </tr>
               </thead>
               <tbody>
-                {section.items.map((item, idx) => (
+                {data.kpi.map((item, idx) => (
                   <tr key={idx}>
-                    <td>{item}</td>
-                    <td>4</td>
+                    <td>{item.description}</td>
+                    <td>{item.weightage}</td>
                   </tr>
                 ))}
               </tbody>

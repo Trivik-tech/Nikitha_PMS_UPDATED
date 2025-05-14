@@ -1,5 +1,6 @@
 package com.triviktech.services.hr;
 
+import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 

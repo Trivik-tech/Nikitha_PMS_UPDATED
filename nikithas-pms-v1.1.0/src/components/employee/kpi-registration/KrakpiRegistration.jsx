@@ -78,7 +78,7 @@ const Krakpi = () => {
   const handleSubmit = async () => {
     try {
       const payload = {
-        employeeId: "CNT117",
+        employeeId: "CNT139",
         remark: "",
         selfCompleted: false,
         managerCompleted: false,
