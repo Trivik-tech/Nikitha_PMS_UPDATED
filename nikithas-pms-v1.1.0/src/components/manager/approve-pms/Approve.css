@@ -58,14 +58,19 @@ body::-webkit-scrollbar {
 
 .manager-approve-filters label {
     font-size: 14px;
+    text-align: center;
+    font-weight: bold;
 }
 
 .manager-approve-filters input {
     padding: 5px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    width: 180px; 
+    width: 220px; 
     margin-top: 10PX;
+    text-align: center;
+    background-color: #ebe9e9;
+    font-weight: bold;
 }
 
 .manager-approve-sections {

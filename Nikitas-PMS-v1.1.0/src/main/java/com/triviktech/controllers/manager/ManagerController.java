@@ -33,8 +33,8 @@ public interface ManagerController {
     @GetMapping("/profile")
     ResponseEntity<ManagerResponseDto> profile(@AuthenticationPrincipal UserDetails manager);
 
-    @GetMapping("/employee-list/{managerId}")
-    ResponseEntity<List<EmployeeWithPmsStatus>> listOfEmployeesForManager(@PathVariable String managerId);
+    @GetMapping("/employee-list/{reportingManager}")
+    ResponseEntity<List<EmployeeWithPmsStatus>> listOfEmployeesForManager(@PathVariable String reportingManager);
 
     @GetMapping("/pending-pms-list/{managerId}")
     ResponseEntity<List<EmployeeWithPmsStatus>> listOfPMSPendingEmployees(@PathVariable String managerId);

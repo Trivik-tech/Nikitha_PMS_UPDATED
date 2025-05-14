@@ -87,9 +87,7 @@ const ManagerDashboard = () => {
           <li>
             <Link to={`/my-team/${managerData?.managerId}`}>My Team</Link>
           </li>
-          <li>
-            <Link to="/approve-pms">Approve PMS</Link>
-          </li>
+          
           <li>
             <Link to="/manager-profile">My Profile</Link>
           </li>

@@ -4,12 +4,11 @@ import com.triviktech.payloads.response.department.DepartmentResponseDto;
 
 public class EmployeeWithPmsStatus {
 
-    private String employeeId;
+    private String empId;
 
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String designation;
+    private String name;
+    private String officialEmailId;
+    private String currentDesignation;
 
     private DepartmentResponseDto department;
 
@@ -17,44 +16,36 @@ public class EmployeeWithPmsStatus {
     private boolean managerCompleted;
     private boolean pmsInitiated;
 
-    public String getEmployeeId() {
-        return employeeId;
+    public String getEmpId() {
+        return empId;
     }
 
-    public void setEmployeeId(String employeeId) {
-        this.employeeId = employeeId;
+    public void setEmpId(String empId) {
+        this.empId = empId;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getOfficialEmailId() {
+        return officialEmailId;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setOfficialEmailId(String officialEmailId) {
+        this.officialEmailId = officialEmailId;
     }
 
-    public String getEmail() {
-        return email;
+    public String getCurrentDesignation() {
+        return currentDesignation;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getDesignation() {
-        return designation;
-    }
-
-    public void setDesignation(String designation) {
-        this.designation = designation;
+    public void setCurrentDesignation(String currentDesignation) {
+        this.currentDesignation = currentDesignation;
     }
 
     public DepartmentResponseDto getDepartment() {
