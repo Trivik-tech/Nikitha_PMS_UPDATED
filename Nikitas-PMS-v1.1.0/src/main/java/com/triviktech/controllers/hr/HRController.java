@@ -59,6 +59,9 @@ public interface HRController {
     @GetMapping("/keyMatrix")
     ResponseEntity <Map<String, Integer> >keyMatrix();
 
+    @GetMapping("/employee-list")
+    ResponseEntity<List<EmployeeInfo>> employeeListWithKraKpi();
+
 
 
 
