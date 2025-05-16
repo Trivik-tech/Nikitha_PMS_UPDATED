@@ -46,19 +46,53 @@ useEffect(()=>{
   const handleApproveClick = () => {
     setErrorMessage("PMS has been approved successfully.");
     setTitle("PMS Approve");
-    setShowModal(true); // Show modal when "Approve" is clicked
+    setShowModal(true);
+    approvekrakpi() // Show modal when "Approve" is clicked
   };
 
   const handleRejectClick = () => {
     setErrorMessage("PMS has been rejected successfully.");
     setTitle("PMS Reject");
-    setShowModal(true); // Show modal when "Reject" is clicked
+    setShowModal(true);
+    rejectKraKpi() // Show modal when "Reject" is clicked
   };
 
   const closeModal = () => {
     setShowModal(false); // Close modal
   };
 
+  const approvekrakpi= async()=>{
+    const approve = {
+      approveStatus: true
+    }
+
+    try{
+ 
+
+     const result = await axios.patch(`http://localhost:8080/api/v1/pms/manager/approve-krakpi/${emplId.id}/Pradeep Prahalada Rao Kubair`, approve)
+    console.log(result.data)
+    }
+    catch(error){
+
+      console.error(error)
+    }
+  }
+  const rejectKraKpi = async ()=>{
+    const approve = {
+      approveStatus: false
+    }
+
+    try{
+ 
+
+     const result = await axios.patch(`http://localhost:8080/api/v1/pms/manager/approve-krakpi/${emplId.id}/Pradeep Prahalada Rao Kubair`, approve)
+    console.log(result.data)
+    }
+    catch(error){
+
+      console.error(error)
+    }
+  }
   return (
     <div className="manager-approve-container">
       {showModal && (

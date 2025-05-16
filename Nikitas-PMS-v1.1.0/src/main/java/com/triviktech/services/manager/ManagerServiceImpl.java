@@ -360,13 +360,20 @@ public class ManagerServiceImpl implements ManagerService{
 
     @Override
     public Map<String, String> approveKra(Map<String, Boolean> approve, String employeeId, String reportingManager) {
+        Map<String, String> response = new HashMap<>();
         Optional<EmployeeInformation> employeeData = employeeInformationRepository.findByReportingManagerAndEmpId(reportingManager, employeeId);
         if(employeeData.isPresent()){
             EmployeeInformation employee = employeeData.get();
             Optional<KraKpi> kraKpi = kraKpiRepository.findByEmployeeInformation(employee);
             if(kraKpi.isPresent()){
                 KraKpi kraKpi1 = kraKpi.get();
-                kraKpi1.setManagerApproval(approve.get("status"));
+                kraKpi1.setManagerApproval(approve.get("approveStatus"));
+                if(approve.get("approveStatus")){
+                    response.put("status", "kra kpi approved successfully");
+                }
+                else{
+                    response.put("status", "kra kpi rejected successfully");
+                }
                 kraKpiRepository.save(kraKpi1);
             }
             else{
@@ -376,7 +383,7 @@ public class ManagerServiceImpl implements ManagerService{
         else{
             throw new EmployeeNotFoundException(employeeId);
         }
-        return Map.of("status", "KraKpi approved successfully");
+        return response ;
     }
 
     // Helper record to carry both Employee and KraKpi together in the stream
