@@ -77,6 +77,11 @@ public class HRControllerImpl implements HRController{
         return ResponseEntity.ok(employeeInfo);
     }
 
+    @Override
+    public ResponseEntity<List<EmployeeInfo>> employeeListWithKraKpiApproved() {
+        return ResponseEntity.ok(hrService.employeesWithKraKpiApproval());
+    }
+
 
     public ResponseEntity<Map<String, Object>> getDepartment() {
         Map<String, Object> getdepartment = hrService.getdepartment();

@@ -30,19 +30,15 @@ public interface HrService {
 
     Map<String,String> deleteEmployee(String employeeId);
 
-
     EmployeeInfo updateEmployee(String empId, Employee employee);
 
     Map<String,Object>  getdepartment();
-
 
     List<Long>  getEmployeeCountByDepartment();
 
     Map<String, Integer> assessmentKeyMatrix();
 
-
-
-
+    List<EmployeeInfo> employeesWithKraKpiApproval();
 
 
 }

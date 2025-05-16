@@ -7,9 +7,11 @@ import com.triviktech.entities.department.Department;
 import com.triviktech.entities.employee.EmployeeInformation;
 import com.triviktech.entities.hr.HR;
 
+import com.triviktech.entities.krakpi.KraKpi;
 import com.triviktech.entities.project.Project;
 import com.triviktech.exception.employee.EmployeeNotFoundException;
 import com.triviktech.exception.hr.HRNotFoundException;
+import com.triviktech.exception.krakpi.KraKpiNotFoundException;
 import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.address.CountryResponseDto;
@@ -44,7 +46,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class HrServiceImpl implements HrService{
+public class HrServiceImpl implements HrService {
 
     private final HRRepository hrRepository;
     private final StateRepository stateRepository;
@@ -59,6 +61,7 @@ public class HrServiceImpl implements HrService{
 
 
     public HrServiceImpl(HRRepository hrRepository, StateRepository stateRepository, LocationRepository locationRepository, DepartmentRepository departmentRepository, ProjectRepository projectRepository, ManagerRepository managerRepository, ModelMapper modelMapper, EntityDtoConversion entityDtoConversion, EmployeeInformationRepository employeeInformationRepository, KraKpiRepository kraKpiRepository) {
+
         this.hrRepository = hrRepository;
         this.stateRepository = stateRepository;
         this.locationRepository = locationRepository;
@@ -130,7 +133,7 @@ public class HrServiceImpl implements HrService{
 //        hrResponseDto.setManagers(managerResponseDtos);
 
 //        return hrResponseDto;
-return null;
+        return null;
 
     }
 
@@ -254,8 +257,6 @@ return null;
     }
 
 
-
-
     @Override
     public List<EmployeeInfo> getAllEmployees() {
         List<EmployeeInformation> allRecords = employeeInformationRepository.findAll();
@@ -289,10 +290,10 @@ return null;
     public EmployeeInfo getEmployeeById(String employeeId) {
 
 
-            EmployeeInformation employee = employeeInformationRepository.findById(employeeId).orElse(null);
-            EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
-            employeeInfo.setReportingManager(employee.getReportingManager());
-            employeeInfo.setDepartment(employee.getDepartment().getName());
+        EmployeeInformation employee = employeeInformationRepository.findById(employeeId).orElse(null);
+        EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+        employeeInfo.setReportingManager(employee.getReportingManager());
+        employeeInfo.setDepartment(employee.getDepartment().getName());
 
         return employeeInfo;
 
@@ -336,24 +337,21 @@ return null;
     @Override
     public Map<String, String> deleteEmployee(String employeeId) {
         Map<String, String> response = new HashMap<>();
-        Optional<EmployeeInformation>  employeeById = employeeInformationRepository.findById(employeeId);
-        if(employeeById.isPresent()){
+        Optional<EmployeeInformation> employeeById = employeeInformationRepository.findById(employeeId);
+        if (employeeById.isPresent()) {
             EmployeeInformation employeeInformation = employeeById.get();
             employeeInformationRepository.delete(employeeInformation);
-            response.put("message","Employee deleted with ID  " + employeeId );
+            response.put("message", "Employee deleted with ID  " + employeeId);
             return response;
-        }
-        else {
-           throw new EmployeeNotFoundException(employeeId);
+        } else {
+            throw new EmployeeNotFoundException(employeeId);
 
         }
-
 
 
     }
 
     @Override
-
     public EmployeeInfo updateEmployee(String empId, Employee employee) {
         Optional<EmployeeInformation> savedEmployee = employeeInformationRepository.findById(empId);
 
@@ -393,23 +391,36 @@ return null;
 
         throw new EmployeeNotFoundException(empId);
     }
+    @Override
     public Map<String, Object> getdepartment() {
         List<Department> allDpt = departmentRepository.findAll();
 
+        List<String> departmentNames = allDpt.stream()
+                .map(Department::getName)
+                .collect(Collectors.toList());
+        return Map.of("departments", departmentNames);
 
-//        get onlydepartment name
-//        List<String> departmentNames = allDpt.stream()
-//                .map(Department::getName)
-//                .collect(Collectors.toList());
-
-        List<String> departmentNames = allDpt.stream().map(department -> {
-            String name = department.getName();
-            return name;
-        }).collect(Collectors.toList());
-
-//
-        return Map.of("departments",departmentNames);
     }
+
+    @Override
+    public List<EmployeeInfo> employeesWithKraKpiApproval() {
+        List<EmployeeInformation> allEmployees = employeeInformationRepository.findAll();
+
+        return allEmployees.stream()
+                .map(employee -> {
+                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+
+                    if (kraKpiOptional.isPresent() && Boolean.TRUE.equals(kraKpiOptional.get().getManagerApproval())) {
+                        EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+                        employeeInfo.setDepartment(employee.getDepartment().getName());
+                        return employeeInfo;
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
 
     @Override
     public List<Long> getEmployeeCountByDepartment() {
@@ -432,7 +443,6 @@ return null;
                         kraKpi -> kraKpi.isManagerCompleted() && kraKpi.isSelfCompleted(),
                         Collectors.counting()
                 ));
-
         return Map.of(
                 "completed", result.getOrDefault(true, 0L).intValue(),
                 "pending", result.getOrDefault(false, 0L).intValue()
@@ -440,25 +450,7 @@ return null;
     }
 
 
-    private CountryResponseDto mapToCountryResponseDto(Country country){
-        return modelMapper.map(country, CountryResponseDto.class);
-    }
 
-    private StateResponseDto mapToStateResponseDto(State state){
-        return modelMapper.map(state, StateResponseDto.class);
-    }
-
-    private LocationResponseDto mapToLocationResponseDto(Location location){
-        return modelMapper.map(location, LocationResponseDto.class);
-    }
-
-
-
-    private ProjectResponseDto mapToProjectResponseDto(Project project){
-        return modelMapper.map(project,ProjectResponseDto.class);
-
-
-    }
 
 
 
