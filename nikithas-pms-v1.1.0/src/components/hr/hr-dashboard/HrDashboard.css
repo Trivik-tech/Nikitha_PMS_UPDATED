@@ -1,4 +1,4 @@
-/* Reset styles */
+/* Existing desktop/laptop styles remain unchanged */
 * {
     margin: 0;
     padding: 0;
@@ -16,15 +16,12 @@ body {
     padding: 0;
 }
 
-
-/* Dashboard container */
 .hr-dashboard-container {
     display: flex;
     width: 100vw;
     height: 100vh;
 }
 
-/* Sidebar styles */
 .hr-dashboard-sidebar {
     width: 250px !important;
     background-color: #fff;
@@ -33,9 +30,9 @@ body {
     height: 94vh;
     margin-top: 24px;
     margin-left: 15px;
-    /* margin: 15px; */
     border-radius: 5px;
     transition: transform 0.3s ease-in-out;
+    z-index: 1001;
 }
 
 .hr-dashboard-profile-container {
@@ -45,8 +42,6 @@ body {
     margin-bottom: 20px;
     text-align: center;
 }
-
-
 .hr-dashboard-profileImg {
     width: 60px;
     height: 60px;
@@ -54,24 +49,19 @@ body {
     margin-bottom: 8px;
     object-fit: cover;
 }
-
-.hr-dashboard-sidebar h2 {
+.hr-dashboard-profile-container h2 {
     font-size: 15px;
-    font-weight: bold;
     color: #333;
     margin-top: 10px;
+    font-weight: bold;
 }
-
-/* Sidebar links */
 .hr-dashboard-sidebar ul {
     list-style-type: none;
     padding: 0;
 }
-
 .hr-dashboard-sidebar ul li {
     margin-bottom: 12px;
 }
-
 .hr-dashboard-sidebar ul li a {
     text-decoration: none;
     color: #333;
@@ -79,8 +69,8 @@ body {
     display: block;
     padding: 8px;
     transition: 0.3s;
+    font-weight: 500;
 }
-
 .hr-dashboard-sidebar ul li a:hover, 
 .hr-dashboard-sidebar ul li a.active {
     background-color: #4CAF50;
@@ -88,7 +78,6 @@ body {
     border-radius: 4px;
 }
 
-/* Main Content */
 .hr-dashboard-main-content {
     flex-grow: 1;
     padding: 10px;
@@ -97,7 +86,6 @@ body {
     align-items: center;
 }
 
-/* Dashboard Header */
 .hr-dashboard-header {
     display: flex;
     justify-content: space-between;
@@ -111,13 +99,11 @@ body {
     width: 100%;
     position: relative;
 }
-
 .hr-dashboard-header h1 {
     font-size: 20px;
     font-weight: bold;
     color: #333;
 }
-
 .hr-dashboard-logo {
     width: 120px;
     height: auto;
@@ -125,13 +111,11 @@ body {
     left: 50%;
     transform: translateX(-50%);
 }
-
 .hr-dashboard-actions {
     display: flex;
     align-items: center;
     gap: 15px;
 }
-
 .hr-dashboard-notificationButton {
     background: none;
     border: none;
@@ -140,11 +124,9 @@ body {
     color: #333;
     transition: color 0.3s ease;
 }
-
 .hr-dashboard-notificationButton:hover {
     color: #4CAF50;
 }
-
 .hr-dashboard-logoutButton {
     background-color: black;
     color: white;
@@ -155,20 +137,15 @@ body {
     text-decoration: none;
     transition: background 0.3s ease;
 }
-
 .hr-dashboard-logoutButton:hover {
     background-color: #c82333;
 }
-
-/* Stats Container */
 .hr-dashboard-stats-container {
     display: flex;
     justify-content: space-between;
     width: 100%;
     margin-bottom: 15px;
 }
-
-/* Stats Card Layout */
 .hr-dashboard-stat-card {
     background-color: #fff;
     padding: 15px;
@@ -176,49 +153,22 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 100%;
     margin: 0 4px;
-    text-align: left; /* Align text to the left */
-    display: flex; /* Flexbox layout */
-    align-items: center; /* Align items vertically centered */
-    gap: 15px; /* Space between icon and text */
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 15px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-
-/* Adjusting Icon Style */
-.stat-card-icon.user {
-    font-size: 30px;
-    color: #0b95f1; /* Default color for icons */
-}
-.stat-card-icon.complete {
-    font-size: 30px;
-    color: #0bf13d; /* Default color for icons */
-}
-.stat-card-icon.pending {
-    font-size: 30px;
-    color: #f1a10b; /* Default color for icons */
-}
-.stat-card-icon.rate {
-    font-size: 30px;
-    color: #0be2f1; /* Default color for icons */
-}
-
-/* Ensuring the text is aligned correctly */
-.hr-dashboard-stat-card h2 {
-    font-size: 18px;
-    margin-bottom: 8px;
-}
-
-.hr-dashboard-stat-card p {
-    font-size: 16px;
-    font-weight: bold;
-}
-
+.stat-card-icon.user { font-size: 30px; color: #0b95f1; }
+.stat-card-icon.complete { font-size: 30px; color: #0bf13d; }
+.stat-card-icon.pending { font-size: 30px; color: #f1a10b; }
+.stat-card-icon.rate { font-size: 30px; color: #0be2f1; }
+.hr-dashboard-stat-card h2 { font-size: 18px; margin-bottom: 8px; }
+.hr-dashboard-stat-card p { font-size: 16px; font-weight: bold; }
 .hr-dashboard-stat-card:hover{
     transform: scale(1.02);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-
-
-/* Chart Container - Ensures Side-by-Side Layout */
 .hr-dashboard-chart-container {
     display: flex;
     justify-content: space-between;
@@ -231,8 +181,6 @@ body {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     position: relative;
 }
-
-/* Assessment Status Heading Inside Chart Container */
 .hr-dashboard-assessment-heading {
     position: absolute;
     top: 10px;
@@ -246,8 +194,6 @@ body {
     text-align: center;
     z-index: 10;
 }
-
-/* Individual Chart Styling */
 .hr-dashboard-chart-box {
     flex: 1;
     display: flex;
@@ -257,177 +203,37 @@ body {
     height: 380px;
     min-width: 300px;
 }
-
-/* Additional Styles */
-.hr-dashboard-profile-container h2 {
-    font-weight: bold;
-    color: #333;
-}
-
-/* Profile Name Alignment */
-.hr-dashboard-profile-container h2 {
-    margin-top: 10px;
-    font-size: 15px;
-    color: #333;
-}
-
-/* Sidebar links */
-.hr-dashboard-sidebar ul li a {
-    font-weight: 500;
-}
-
 .hr-dashboard-actions .notification-icon {
     font-size: 22px;
     cursor: pointer;
 }
-
-/* Improved Chart Responsiveness */
-@media screen and (max-width: 1600px) {
-    .hr-dashboard-container {
-        flex-direction: row;
-        justify-content: space-between;
-    }
-    .hr-dashboard-sidebar {
-        width: 250px;
-    }
-    .hr-dashboard-main-content {
-        padding: 20px;
-    }
-}
-
-@media screen and (max-width: 1400px) {
-    .hr-dashboard-container {
-        flex-direction: row;
-        justify-content: space-between;
-    }
-    .hr-dashboard-sidebar {
-        width: 220px;
-    }
-    .hr-dashboard-main-content {
-        padding: 25px;
-    }
-}
-
-@media screen and (max-width: 1200px) {
-    .hr-dashboard-container {
-        flex-direction: column;
-    }
-    .hr-dashboard-sidebar {
-        width: 200px;
-        margin: 10px 0;
-    }
-    .hr-dashboard-main-content {
-        padding: 20px;
-    }
-}
-
-@media screen and (max-width: 1024px) {
-    .hr-dashboard-chart-container {
-        flex-direction: column;
-    }
-}
-
-@media screen and (max-width: 768px) {
-    .hr-dashboard-sidebar {
-        width: 100%;
-        height: auto;
-        margin: 0;
-    }
-
-    .hr-dashboard-profile-container {
-        flex-direction: row;
-    }
-
-    .hr-dashboard-profileImg {
-        width: 50px;
-        height: 50px;
-    }
-
-    .hr-dashboard-header h1 {
-        font-size: 18px;
-    }
-
-    .hr-dashboard-stats-container {
-        flex-direction: column;
-    }
-
-    .hr-dashboard-stat-card {
-        width: 100%;
-        margin-bottom: 10px;
-    }
-
-    .hr-dashboard-actions {
-        flex-direction: column;
-    }
-}
-
-@media screen and (max-width: 480px) {
-    .hr-dashboard-sidebar {
-        display: none;
-    }
-
-    .hr-dashboard-main-content {
-        padding: 15px;
-    }
-
-    .hr-dashboard-header h1 {
-        font-size: 16px;
-    }
-}
-
-/* --- Animation Keyframes and Classes --- */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideIn {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
-}
-
-.fade-in {
-  animation: fadeIn 0.8s ease-in-out both;
-}
-
-.fade-in-down {
-  animation: fadeInDown 0.8s ease-out both;
-}
-
-.fade-in-up {
-  animation: fadeInUp 0.8s ease-out both;
-}
-
-.slide-in {
-  animation: slideIn 0.5s ease-out both;
-}
-
-/* --- Notification Modal Wrapper Styles --- */
 .notification-modal-wrapper {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: rgba(0, 0, 0, 0.5);
-   
+    z-index: 1500;
 }
-
 .stat-card-icon {
     font-size: 30px;
-    color: #4CAF50; /* Default color for icons */
+    color: #4CAF50;
     margin-bottom: 8px;
+}
+
+/* Animation Keyframes */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+.fade-in { animation: fadeIn 0.8s ease-in-out both; }
+.fade-in-down { animation: fadeInDown 0.8s ease-out both; }
+.fade-in-up { animation: fadeInUp 0.8s ease-out both; }
+.slide-in { animation: slideIn 0.5s ease-out both; }
+
+/* Overlay for mobile sidebar */
+.hr-dashboard-sidebar-overlay {
+    display: none;
 }

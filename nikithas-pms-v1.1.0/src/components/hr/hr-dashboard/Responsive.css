@@ -1,129 +1,81 @@
-/* HrDashboard.responsive.css */
+/* ...keep your existing responsive CSS... */
 
-/* Collapse sidebar and stack layout on smaller screens */
 @media (max-width: 768px) {
+  /* ...existing mobile styles... */
+
   .hr-dashboard-container {
     flex-direction: column;
-  }
-
-  .hr-dashboard-sidebar {
-    width: 100%;
-    position: relative;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
-    padding: 10px 0;
-  }
-
-  .hr-dashboard-sidebar ul {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    padding: 0;
-    list-style: none;
-  }
-
-  .hr-dashboard-sidebar li {
-    margin: 0;
+    min-height: 100vh;
+    height: 100dvh;
+    overflow-x: hidden;
+    /* allow vertical scrolling on mobile */
+    overflow-y: auto;
   }
 
   .hr-dashboard-main-content {
-    margin-left: 0;
+    margin-left: 0 !important;
     padding: 10px;
+    width: 100%;
+    align-items: stretch;
+    /* allow scrolling of main contents independently if needed */
+    overflow-y: auto;
+    max-height: 100dvh;
   }
 
-  .hr-dashboard-header {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    text-align: center;
-  }
-
-  .hr-dashboard-stats-container {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-    padding: 0 10px;
+  /* Make main content scrollable if too tall */
+  body, html {
+    height: 100dvh;
+    overflow: auto;
   }
 
   .hr-dashboard-chart-container {
     flex-direction: column;
-    align-items: center;
+    gap: 12px;
+    align-items: stretch;
+    padding: 8px;
+    min-width: 0;
+    width: 100%;
+    margin-bottom: 12px;
+    /* Ensure it doesn't overflow horizontally */
+    overflow-x: auto;
   }
 
   .hr-dashboard-chart-box {
     width: 100% !important;
-    margin: 10px 0;
+    min-width: 0 !important;
+    height: 260px !important;
+    margin: 0 auto 8px auto;
+    padding: 0;
+    /* Allow scrolling if chart overflows on smaller screens */
+    overflow-x: auto;
   }
 
   .hr-dashboard-bar-chart canvas,
   .hr-dashboard-pie-chart canvas {
     max-width: 100% !important;
-  }
-
-  .hr-dashboard-actions {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-  }
-
-  .hr-dashboard-logo {
-    width: 100px;
-  }
-
-  .notification-icon {
-    width: 24px;
-    height: 24px;
-  }
-
-  .hr-dashboard-profile-container h2 {
-    font-size: 1rem;
-  }
-}
-
-/* Hamburger Button */
-.hamburger {
-  font-size: 24px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  margin-right: 10px;
-  display: none;
-}
-
-/* Only show hamburger on small screens */
-@media (max-width: 768px) {
-  .hamburger {
+    height: 180px !important;
+    /* Ensure charts are scrollable horizontally if overflow */
     display: block;
   }
 
-  .hr-dashboard-sidebar {
-    position: absolute;
-    top: 60px; /* below the header */
-    left: 0;
-    width: 200px;
-    background: white;
-    height: calc(100% - 60px);
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-    z-index: 1000;
+  /* If sidebar is open, prevent background scroll */
+  .hr-dashboard-sidebar.open ~ .hr-dashboard-main-content,
+  .hr-dashboard-sidebar.open ~ main {
+    overflow: hidden;
+    max-height: 100dvh;
   }
+}
 
-  .hr-dashboard-sidebar.closed {
-    transform: translateX(-100%);
+/* Desktop: allow vertical scroll for main content if needed */
+@media (min-width: 769px) {
+  .hr-dashboard-container {
+    height: 100vh;
+    min-height: 0;
+    overflow: hidden;
   }
-
-  .hr-dashboard-sidebar.open {
-    transform: translateX(0);
-  }
-
   .hr-dashboard-main-content {
-    margin-left: 0;
-    width: 100%;
-  }
-
-  .hr-dashboard-header-left {
-    display: flex;
-    align-items: center;
+    overflow-y: auto;
+    height: 100vh;
+    min-height: 0;
   }
 }
