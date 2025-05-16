@@ -7,9 +7,11 @@ import com.triviktech.entities.department.Department;
 import com.triviktech.entities.employee.EmployeeInformation;
 import com.triviktech.entities.hr.HR;
 
+import com.triviktech.entities.krakpi.KraKpi;
 import com.triviktech.entities.project.Project;
 import com.triviktech.exception.employee.EmployeeNotFoundException;
 import com.triviktech.exception.hr.HRNotFoundException;
+import com.triviktech.exception.krakpi.KraKpiNotFoundException;
 import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.address.CountryResponseDto;
@@ -26,6 +28,7 @@ import com.triviktech.repositories.address.StateRepository;
 import com.triviktech.repositories.department.DepartmentRepository;
 import com.triviktech.repositories.employee.EmployeeInformationRepository;
 import com.triviktech.repositories.hr.HRRepository;
+import com.triviktech.repositories.krakpi.KraKpiRepository;
 import com.triviktech.repositories.manager.ManagerRepository;
 import com.triviktech.repositories.project.ProjectRepository;
 import com.triviktech.utilities.entitydtoconversion.EntityDtoConversion;
@@ -54,9 +57,11 @@ public class HrServiceImpl implements HrService{
     private final ModelMapper modelMapper;
     private final EntityDtoConversion entityDtoConversion;
     private final EmployeeInformationRepository employeeInformationRepository;
+    private final KraKpiRepository kraKpiRepository;
 
 
-    public HrServiceImpl(HRRepository hrRepository, StateRepository stateRepository, LocationRepository locationRepository, DepartmentRepository departmentRepository, ProjectRepository projectRepository, ManagerRepository managerRepository, ModelMapper modelMapper, EntityDtoConversion entityDtoConversion, EmployeeInformationRepository employeeInformationRepository) {
+    public HrServiceImpl(HRRepository hrRepository, StateRepository stateRepository, LocationRepository locationRepository, DepartmentRepository departmentRepository, ProjectRepository projectRepository, ManagerRepository managerRepository, ModelMapper modelMapper, EntityDtoConversion entityDtoConversion, EmployeeInformationRepository employeeInformationRepository,
+                         KraKpiRepository kraKpiRepository) {
         this.hrRepository = hrRepository;
         this.stateRepository = stateRepository;
         this.locationRepository = locationRepository;
@@ -66,6 +71,7 @@ public class HrServiceImpl implements HrService{
         this.modelMapper = modelMapper;
         this.entityDtoConversion = entityDtoConversion;
         this.employeeInformationRepository = employeeInformationRepository;
+        this.kraKpiRepository = kraKpiRepository;
     }
 
     @Override
@@ -391,8 +397,24 @@ return null;
         throw new EmployeeNotFoundException(empId);
     }
 
+    @Override
+    public List<EmployeeInfo> employeesWithKraKpiApproval() {
+        List<EmployeeInformation> allEmployees = employeeInformationRepository.findAll();
 
+        return allEmployees.stream()
+                .map(employee -> {
+                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
 
+                    if (kraKpiOptional.isPresent() && Boolean.TRUE.equals(kraKpiOptional.get().getManagerApproval())) {
+                        EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+                        employeeInfo.setDepartment(employee.getDepartment().getName());
+                        return employeeInfo;
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
 
 
     private HrResponseDto mapToHrResponseDto(HR hr){

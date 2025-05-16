@@ -46,6 +46,9 @@ public interface HRController {
     @PutMapping("/update-employee/{empId}")
     ResponseEntity<EmployeeInfo>updateEmployee(@PathVariable String empId,@RequestBody Employee employee);
 
+    @GetMapping("/employee-list")
+    ResponseEntity<List<EmployeeInfo>> employeeListWithKraKpiApproved();
+
 
 
 

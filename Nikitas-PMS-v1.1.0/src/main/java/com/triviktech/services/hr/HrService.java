@@ -32,5 +32,6 @@ public interface HrService {
 
     EmployeeInfo updateEmployee(String empId, Employee employee);
 
+    List<EmployeeInfo> employeesWithKraKpiApproval();
 
 }
