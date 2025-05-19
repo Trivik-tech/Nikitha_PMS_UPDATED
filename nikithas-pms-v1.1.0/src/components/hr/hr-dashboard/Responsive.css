@@ -72,10 +72,21 @@
     margin-top: 16px;
   }
 
-  .hamburger {
-    font-size: 24px;
-    padding: 8px 12px;
-  }
+ .hamburger {
+  position: fixed;
+  top: 10px;
+  left: -15px;;
+  z-index: 1002;
+  font-size: 28px;
+  background: none;       /* ✅ No background */
+  border: none;           /* ✅ No border */
+  padding: 8px;           /* ✅ Minimal padding for touch target */
+  margin: 0;              /* ✅ No margin */
+  color: #333;            /* Optional: icon color */
+  cursor: pointer;
+}
+
+
 
   .hr-dashboard-stat-card {
     width: 100%;               /* ✅ Make each stat card full width */
@@ -92,7 +103,7 @@
 
   .hr-dashboard-stats-container {
     flex-direction: column !important; /* ✅ Stack cards vertically */
-    gap: 12px;                         /* ✅ Add spacing between cards */
+    gap: 5px;                         /* ✅ Add spacing between cards */
     align-items: stretch;             /* ✅ Make cards full width */
   }
   .hr-dashboard-logo-container {
@@ -105,7 +116,9 @@
 .hr-dashboard-logo {
   max-width: 140px;
   height: auto;
-  margin-bottom: 8px;
+  margin-bottom: 200px;
+  margin-top: -10px;
+  
 }
 
 .hr-dashboard-title {
@@ -114,6 +127,11 @@
   margin: 0;
   text-align: center;
 }
+ .hr-dashboard-assessment-heading {
+    font-size: 1.1rem;  /* Reduce size as needed */
+    white-space: nowrap;  /* Prevent line break */
+    text-align: center;   /* Optional: center align */
+  }
 
 @media screen and (max-width: 768px) {
   .hr-dashboard-header {

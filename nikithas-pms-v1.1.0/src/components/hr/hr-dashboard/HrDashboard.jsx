@@ -108,18 +108,7 @@ const HrDashboard = () => {
             className="hamburger"
             aria-label="Toggle sidebar"
             onClick={() => setSidebarOpen((prev) => !prev)}
-            style={{
-              position: 'fixed',
-              top: '10px',
-              left: '10px',
-              zIndex: 1002,
-              background: 'white',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              padding: '6px 12px',
-              fontSize: '20px',
-              cursor: 'pointer'
-            }}
+          
           >
             ☰
           </button>
