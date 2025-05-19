@@ -139,13 +139,16 @@ const HrDashboard = () => {
         {renderSidebarOverlay()}
 
         <main className="hr-dashboard-main-content">
-          <header className="hr-dashboard-header fade-in-down">
-            <h1 className="hr-dashboard-title">HR PMS Dashboard</h1>
-            <img src={logo} alt="Nikitha PMS" className="hr-dashboard-logo" />
-            <div className="hr-dashboard-actions">
-              <Bell className="notification-icon" onClick={() => setNotificationOpen(!notificationOpen)} />
-            </div>
-          </header>
+         <header className="hr-dashboard-header fade-in-down">
+  <div className="hr-dashboard-logo-container">
+    <img src={logo} alt="Nikitha PMS" className="hr-dashboard-logo" />
+    <h1 className="hr-dashboard-title">HR PMS Dashboard</h1>
+  </div>
+  <div className="hr-dashboard-actions">
+    <Bell className="notification-icon" onClick={() => setNotificationOpen(!notificationOpen)} />
+  </div>
+</header>
+
 
           <section className="hr-dashboard-stats-container fade-in-up">
             <div className="hr-dashboard-stat-card">
