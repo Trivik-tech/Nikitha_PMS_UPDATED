@@ -1,3 +1,4 @@
+// HrDashboard.jsx
 import { React, useState, useEffect } from 'react';
 import { FaUsers, FaClipboardCheck, FaExclamationTriangle, FaChartLine } from 'react-icons/fa';
 import { Bar, Pie } from 'react-chartjs-2';
@@ -12,7 +13,6 @@ import profile from '../../../assets/images/profile1.jpg';
 import Notification from "../../modal/notification/Notification";
 import axios from 'axios';
 
-// Register chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -30,14 +30,11 @@ const HrDashboard = () => {
   const [error, setError] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
 
-  // Only toggle sidebar for mobile
+  const isMobile = () => window.innerWidth <= 768;
+
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth > 768) {
-        setSidebarOpen(true);
-      } else {
-        setSidebarOpen(false);
-      }
+      setSidebarOpen(window.innerWidth  > 768);
     };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -85,32 +82,48 @@ const HrDashboard = () => {
     },
   };
 
-  const isMobile = () => window.innerWidth <= 768;
-
-  // Overlay for mobile when sidebar is open
   const renderSidebarOverlay = () =>
     isMobile() && sidebarOpen ? (
       <div
         className="hr-dashboard-sidebar-overlay"
         onClick={() => setSidebarOpen(false)}
         aria-label="Close sidebar"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          zIndex: 999
+        }}
       />
     ) : null;
 
   return (
     <>
       <div className="hr-dashboard-container">
-        {/* Hamburger for mobile only */}
         {isMobile() && (
           <button
             className="hamburger"
             aria-label="Toggle sidebar"
             onClick={() => setSidebarOpen((prev) => !prev)}
+            style={{
+              position: 'fixed',
+              top: '10px',
+              left: '10px',
+              zIndex: 1002,
+              background: 'white',
+              border: '1px solid #ccc',
+              borderRadius: '4px',
+              padding: '6px 12px',
+              fontSize: '20px',
+              cursor: 'pointer'
+            }}
           >
             ☰
           </button>
         )}
-        {/* Sidebar */}
         <aside className={`hr-dashboard-sidebar${sidebarOpen ? ' open' : ' closed'}${isMobile() ? ' mobile' : ''}`}>
           <div className="hr-dashboard-profile-container">
             <img src={profile} alt="Profile" className="hr-dashboard-profileImg" />
