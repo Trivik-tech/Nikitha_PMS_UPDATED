@@ -9,7 +9,9 @@
     min-height: 100vh;         /* ✅ Ensures full viewport height initially */
     overflow-x: hidden;
     overflow-y: auto;          /* ✅ Enables vertical scrolling */
+    
   }
+  
 
   .hr-dashboard {
     display: flex;             /* ✅ Added: Ensure flex context */
@@ -29,7 +31,8 @@
     transform: translateX(-100%);
     transition: transform 0.3s ease;
     overflow-y: auto;          /* ✅ Allows scrolling inside sidebar if content overflows */
-    pointer-events: none;      /* ✅ Prevents sidebar from blocking scroll/touch when hidden */
+    pointer-events: none; 
+    overflow-x: hidden;     /* ✅ Prevents sidebar from blocking scroll/touch when hidden */
   }
 
   .hr-dashboard-sidebar.open {
@@ -94,6 +97,9 @@
     justify-content: space-between;
     align-items: center;
     height: 90px;
+    text-align: center;
+    padding: 5px;
+    
   }
 
   .hr-dashboard-profile-container {
@@ -105,6 +111,7 @@
     flex-direction: column !important; /* ✅ Stack cards vertically */
     gap: 5px;                         /* ✅ Add spacing between cards */
     align-items: stretch;             /* ✅ Make cards full width */
+    padding-top: -10px;
   }
   .hr-dashboard-logo-container {
   display: flex;
