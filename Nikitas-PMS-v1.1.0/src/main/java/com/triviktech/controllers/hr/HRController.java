@@ -59,8 +59,12 @@ public interface HRController {
     @GetMapping("/keyMatrix")
     ResponseEntity <Map<String, Integer> >keyMatrix();
 
-    @GetMapping("/employee-list")
-    ResponseEntity<List<EmployeeInfo>> employeeListWithKraKpi();
+    @PatchMapping("/pms-initiated/{employeeId}")
+    ResponseEntity<Map<String,String>> pmsInitiated(@PathVariable String employeeId,@RequestBody Map<String,Boolean> pms);
+
+
+    @GetMapping("/employee-with-pms-initiated")
+    ResponseEntity<List<EmployeeInfo>> pmsInitiatedEmployees();
 
 
 

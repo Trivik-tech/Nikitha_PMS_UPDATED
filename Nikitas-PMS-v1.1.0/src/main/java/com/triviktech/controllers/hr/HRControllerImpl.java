@@ -106,8 +106,13 @@ public class HRControllerImpl implements HRController{
     }
 
     @Override
-    public ResponseEntity<List<EmployeeInfo>> employeeListWithKraKpi() {
-        return ResponseEntity.ok(hrService.employeesWithKraKpiApproval());
+    public ResponseEntity<Map<String, String>> pmsInitiated(String employeeId, Map<String, Boolean> pms) {
+        return ResponseEntity.ok(hrService.initiatePms(employeeId,pms));
+    }
+
+    @Override
+    public ResponseEntity<List<EmployeeInfo>> pmsInitiatedEmployees() {
+        return ResponseEntity.ok(hrService.pmsInitiatedEmployees());
     }
 
 

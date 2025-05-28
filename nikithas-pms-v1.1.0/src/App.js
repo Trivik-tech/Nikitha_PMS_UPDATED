@@ -55,7 +55,7 @@ function App() {
           <Route exact path="/my-team/:managerid" element={<Team/>} />
 
           <Route exact path="/manager-profile" element={<ManagerProfile/>} />
-          <Route exact path="/manager-review" element={<PerformanceReview/>} />
+          <Route exact path="/manager-review/:id/:manager" element={<PerformanceReview/>} />
           <Route exact path="/completed-assessments" element={<Complete/>} />
           <Route exact path="/pending-assessments" element={<Pending/>} />
           
@@ -80,7 +80,7 @@ function App() {
 
 
           <Route exact path="/approve-pms/:id" element={<Approve/>} />
-          <Route exact path="/self-review" element={<EmployeeReview/>} />
+          <Route exact path="/self-review/:id" element={<EmployeeReview/>} />
           <Route exact path="/employee-info/:id" element={<EmployeeInfo/>} />
           
 

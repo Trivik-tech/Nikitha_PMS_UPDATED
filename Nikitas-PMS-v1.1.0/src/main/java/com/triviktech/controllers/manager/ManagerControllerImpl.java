@@ -77,8 +77,8 @@ public class ManagerControllerImpl implements ManagerController{
     }
 
     @Override
-    public ResponseEntity<?> managerReview(String managerId, KraKpiRequestDto data) {
-        return ResponseEntity.ok(kraKpiService.managerReview(managerId,data));
+    public ResponseEntity<Map<String,String>> managerReview(String managerName,String employeeId, KraKpiRequestDto data) {
+        return ResponseEntity.ok(managerService.managerReview(managerName,employeeId,data));
     }
 
     @Override

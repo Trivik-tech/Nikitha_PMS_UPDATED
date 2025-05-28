@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./Team.css";
 import { FaSearch, FaHome } from "react-icons/fa";
 import logo from "../../../assets/images/nikithas-logo.png";
-import { Link } from "react-router-dom";
-import Loader from "../../modal/loader/Loader";
+// import Loader from "../../modal/loader/Loader";
 
 export default function TeamPage() {
   const [teamList, setTeamList] = useState([]);
@@ -14,52 +13,32 @@ export default function TeamPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
   const entriesPerPage = 6;
+  const intervalRef = useRef(null);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const token = localStorage.getItem("token");
-  //     if (!token) {
-  //       navigate("/login");
-  //       return;
-  //     }
-  //     try {
-  //       const response = await axios.get("http://localhost:8080/api/v1/pms/manager/profile", {
-  //         headers: { Authorization: `Bearer ${token}` },
-  //       });
-  //       setTeamList(response.data);
-  //     } catch (error) {
-  //       if (error.response?.status === 401) {
-  //         localStorage.removeItem("token");
-  //         navigate("/");
-  //       }
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchData();
-  // }, [navigate]);
+  const loadTeam = async () => {
+    try {
+      const result = await axios.get(
+        "http://localhost:8080/api/v1/pms/manager/employee-list/Pradeep Prahalada Rao Kubair"
+      );
+      setTeamList(result.data);
+      // console.log(result.data)
+    } catch (error) {
+      console.error("Error fetching team list:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const loadTeam = async () => {
-      try {
-        const result = await axios.get(
-          "http://localhost:8080/api/v1/pms/manager/employee-list/Pradeep Prahalada Rao Kubair"
-        );
-        console.log(result.data);
-        setTeamList(result.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
     loadTeam();
+    intervalRef.current = setInterval(loadTeam, 1000);
+    return () => clearInterval(intervalRef.current);
   }, []);
 
   const filteredTeam = teamList.filter(
     (member) =>
-      member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.email.toLowerCase().includes(searchTerm.toLowerCase())
+      member.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      member.officialEmailId?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredTeam.length / entriesPerPage);
@@ -92,7 +71,7 @@ export default function TeamPage() {
               type="text"
               placeholder="Search team members..."
               value={searchTerm}
-              
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <img
@@ -115,24 +94,47 @@ export default function TeamPage() {
               </tr>
             </thead>
             <tbody>
-              {currentEntries.map((member) => (
-                <tr
-                  key={member.id}
-                  onClick={() => navigate(`/approve-pms/${member.empId}`)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <td>{member.empId || "-"}</td>
-                  <td>{member.name || "-"}</td>
-                  <td>{member.department.name || "-"}</td>
-                  <td>{member.currentDesignation}</td>
-                  <td>{member.officialEmailId || "-"}</td>
-                  <td onClick={(e) => e.stopPropagation()}>
-                    <Link to="/manager-review" className="manager-team-start-pms-button">
-                      Start PMS
-                    </Link>
+              {currentEntries.length > 0 ? (
+                currentEntries.map((member) => {
+                  const isPmsEnabled =
+                    member.selfCompleted === true &&
+                    member.pmsInitiated === true &&
+                    member.managerCompleted===null
+                    
+                  return (
+                    <tr
+                      key={member.empId}
+                      onClick={() => navigate(`/approve-pms/${member.empId}`)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <td>{member.empId || "-"}</td>
+                      <td>{member.name || "-"}</td>
+                      <td>{member.department?.name || "-"}</td>
+                      <td>{member.currentDesignation || "-"}</td>
+                      <td>{member.officialEmailId || "-"}</td>
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <Link
+                          to={`/manager-review/${member.empId}/Pradeep Prahalada Rao Kubair`}
+                          className={`manager-team-start-pms-button ${
+                            isPmsEnabled ? "" : "disabled"
+                          }`}
+                          onClick={(e) => {
+                            if (!isPmsEnabled) e.preventDefault();
+                          }}
+                        >
+                          Start PMS
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="6" style={{ textAlign: "center" }}>
+                    {loading ? "Loading team..." : "No team members found."}
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

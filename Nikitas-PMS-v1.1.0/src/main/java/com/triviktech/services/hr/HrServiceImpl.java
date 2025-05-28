@@ -421,6 +421,24 @@ public class HrServiceImpl implements HrService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Map<String, String> initiatePms(String employeeId,Map<String,Boolean> pms) {
+        Optional<EmployeeInformation> employeeById = employeeInformationRepository.findById(employeeId);
+        if(employeeById.isPresent()){
+            EmployeeInformation employee = employeeById.get();
+            Optional<KraKpi> krakpi = kraKpiRepository.findByEmployeeInformation(employee);
+            if(krakpi.isPresent()){
+                KraKpi kraKpi = krakpi.get();
+                kraKpi.setPmsInitiated(pms.get("pms_initiated"));
+                kraKpiRepository.save(kraKpi);
+            }else {
+                throw new KraKpiNotFoundException("Kra Kpi not found for employee with id "+employeeId);
+            }
+        }else{
+            throw new EmployeeNotFoundException(employeeId);
+        }
+        return Map.of("status","Pms Initiated successfully");
+    }
 
     @Override
     public List<Long> getEmployeeCountByDepartment() {
@@ -450,8 +468,54 @@ public class HrServiceImpl implements HrService {
     }
 
 
+    @Override
+    public List<EmployeeInfo> pmsInitiatedEmployees() {
+        return employeeInformationRepository.findAll().stream()
+                .map(employee -> {
+                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+                    if (kraKpiOptional.isPresent()) {
+                        KraKpi kraKpi = kraKpiOptional.get();
+                        boolean managerApproval = Boolean.TRUE.equals(kraKpi.getManagerApproval());
+                        boolean selfCompleted = kraKpi.isSelfCompleted();
+                        boolean managerCompleted = kraKpi.isManagerCompleted();
+
+                        // Include if managerApproval is true and NOT (selfCompleted && managerCompleted)
+                        if (managerApproval && !(selfCompleted && managerCompleted)) {
+                            EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+                            employeeInfo.setDepartment(employee.getDepartment().getName());
+                            return employeeInfo;
+                        }
+                    }
+                    return null; // Skip this employee
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<String, String> employeeRegistration(Employee employee) {
+
+        // Creating response object
+        Map<String,String> response=new HashMap<>();
+
+        // Converting Employee Dto class to EmployeeInformation entity class
+        EmployeeInformation employeeInformation = entityDtoConversion.dtoToEntityConversion(employee, EmployeeInformation.class);
+        Department department = departmentRepository.findByName(employee.getDepartment());
+        employeeInformation.setDepartment(department);
+
+        // converting date into string
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        String lwdStr = employee.getLastWorkingDate() != null ? formatter.format(employee.getLastWorkingDate()) : null;
+        employeeInformation.setLastWorkingDay(lwdStr);
+
+        EmployeeInformation saved = employeeInformationRepository.save(employeeInformation);
 
 
+        String mesg=saved!=null?"Employee Registration Successful":"Employee Registration Failed";
+
+        response.put("status",mesg);
+        return response;
+    }
 
 
 }

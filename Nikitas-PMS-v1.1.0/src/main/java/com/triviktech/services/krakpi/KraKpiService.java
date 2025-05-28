@@ -13,6 +13,7 @@ public interface KraKpiService {
 
     KraKpiResponseDto kraKpiForEmployee(String employeeId);
 
-    String managerReview(String managerId, KraKpiRequestDto data);
+
+    Map<String,String> employeeReview(KraKpiRequestDto kraKpiRequestDto,String employeeId);
 
 }

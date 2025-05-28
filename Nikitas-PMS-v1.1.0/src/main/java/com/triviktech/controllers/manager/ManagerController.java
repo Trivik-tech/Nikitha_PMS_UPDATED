@@ -42,15 +42,12 @@ public interface ManagerController {
     @GetMapping("/completed-pms-list/{managerId}")
     ResponseEntity<List<EmployeeWithPmsStatus>> listOfPMSCompletedEmployees(@PathVariable String managerId);
 
-    @PatchMapping("/manager-review/{managerId}")
-    ResponseEntity<?> managerReview(@PathVariable String  managerId, @RequestBody KraKpiRequestDto data);
+    @PatchMapping("/manager-review/{managerName}/{employeeId}")
+    ResponseEntity<Map<String,String>> managerReview(@PathVariable String  managerName,@PathVariable String employeeId, @RequestBody KraKpiRequestDto data);
 
 
     @GetMapping("/kra-kpi/{managerName}/{employeeId}")
     ResponseEntity<KraKpiResponseDto> getKraKpis(@PathVariable String managerName,  @PathVariable String employeeId);
-
-
-
 
     @GetMapping("/manager-team/{reportingManager}")
     ResponseEntity<List<EmployeeInfo> > getManagerTeam(@PathVariable String reportingManager);

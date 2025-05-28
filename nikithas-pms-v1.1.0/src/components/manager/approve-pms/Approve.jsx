@@ -10,89 +10,84 @@ const Approve = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
-  const [krakpi,setKraKpis]=useState([]);
- const [name,setName]=useState("")
- const [designation,setDesignation]=useState("")
- const [department,setDepartment]=useState("")
- const [manager,setManager]=useState("")
+  const [krakpi, setKraKpis] = useState([]);
+  const [name, setName] = useState("");
+  const [designation, setDesignation] = useState("");
+  const [department, setDepartment] = useState("");
+  const [manager, setManager] = useState("");
 
-  const emplId=useParams();
+  const emplId = useParams();
 
-  
-useEffect(()=>{
-  const loadKraKpis= async()=>{
+  useEffect(() => {
+    const loadKraKpis = async () => {
+      try {
+        console.log(emplId);
 
-    try{
-      console.log(emplId)
+        const result = await axios.get(
+          `http://localhost:8080/api/v1/pms/manager/kra-kpi/Pradeep Prahalada Rao Kubair/${emplId.id}`
+        );
+        console.log(result.data);
+        setKraKpis(result.data.kra);
+        setName(result.data.employee.name);
+        setDesignation(result.data.employee.currentDesignation);
+        setDepartment(result.data.employee.department);
+        setManager(result.data.employee.reportingManager);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
-      const result =await axios.get(`http://localhost:8080/api/v1/pms/manager/kra-kpi/Pradeep Prahalada Rao Kubair/${emplId.id}`)
-      console.log(result.data)
-      setKraKpis(result.data.kra)
-      setName(result.data.employee.name)
-      setDesignation(result.data.employee.currentDesignation)
-      setDepartment(result.data.employee.department)
-      setManager(result.data.employee.reportingManager)
-    
-    }catch(error){
-      console.error(error)
-    }
-
-  }
-
-  loadKraKpis()
-},[])
-  
+    loadKraKpis();
+  }, []);
 
   const handleApproveClick = () => {
-    setErrorMessage("PMS has been approved successfully.");
-    setTitle("PMS Approve");
-    setShowModal(true);
-    approvekrakpi() // Show modal when "Approve" is clicked
+    approvekrakpi(); // Show modal when "Approve" is clicked
   };
 
   const handleRejectClick = () => {
-    setErrorMessage("PMS has been rejected successfully.");
-    setTitle("PMS Reject");
-    setShowModal(true);
-    rejectKraKpi() // Show modal when "Reject" is clicked
+    rejectKraKpi(); // Show modal when "Reject" is clicked
   };
 
   const closeModal = () => {
     setShowModal(false); // Close modal
   };
 
-  const approvekrakpi= async()=>{
+  const approvekrakpi = async () => {
     const approve = {
-      approveStatus: true
-    }
+      approveStatus: true,
+    };
 
-    try{
- 
-
-     const result = await axios.patch(`http://localhost:8080/api/v1/pms/manager/approve-krakpi/${emplId.id}/Pradeep Prahalada Rao Kubair`, approve)
-    console.log(result.data)
+    try {
+      const result = await axios.patch(
+        `http://localhost:8080/api/v1/pms/manager/approve-krakpi/${emplId.id}/Pradeep Prahalada Rao Kubair`,
+        approve
+      );
+      console.log(result.data);
+      setErrorMessage("PMS has been approved successfully.");
+      setTitle("PMS Approve");
+      setShowModal(true);
+    } catch (error) {
+      console.error(error);
     }
-    catch(error){
-
-      console.error(error)
-    }
-  }
-  const rejectKraKpi = async ()=>{
+  };
+  const rejectKraKpi = async () => {
     const approve = {
-      approveStatus: false
-    }
+      approveStatus: false,
+    };
 
-    try{
- 
-
-     const result = await axios.patch(`http://localhost:8080/api/v1/pms/manager/approve-krakpi/${emplId.id}/Pradeep Prahalada Rao Kubair`, approve)
-    console.log(result.data)
+    try {
+      const result = await axios.patch(
+        `http://localhost:8080/api/v1/pms/manager/approve-krakpi/${emplId.id}/Pradeep Prahalada Rao Kubair`,
+        approve
+      );
+      console.log(result.data);
+      setErrorMessage("PMS has been rejected successfully.");
+      setTitle("PMS Reject");
+      setShowModal(true);
+    } catch (error) {
+      console.error(error);
     }
-    catch(error){
-
-      console.error(error)
-    }
-  }
+  };
   return (
     <div className="manager-approve-container">
       {showModal && (
@@ -108,11 +103,21 @@ useEffect(()=>{
         </div>
 
         <div className="manager-approve-filters">
-          <label>Employee ID: <input type="text" value={emplId.id} readOnly /></label>
-          <label>Employee Name: <input type="text" value={name} readOnly /></label>
-          <label>Designation: <input type="text" value={designation} readOnly /></label>
-          <label>Department: <input type="text" value={department} readOnly /></label>
-          <label>Manager: <input type="text" value={manager} readOnly /></label>
+          <label>
+            Employee ID: <input type="text" value={emplId.id} readOnly />
+          </label>
+          <label>
+            Employee Name: <input type="text" value={name} readOnly />
+          </label>
+          <label>
+            Designation: <input type="text" value={designation} readOnly />
+          </label>
+          <label>
+            Department: <input type="text" value={department} readOnly />
+          </label>
+          <label>
+            Manager: <input type="text" value={manager} readOnly />
+          </label>
         </div>
       </header>
 
@@ -144,10 +149,16 @@ useEffect(()=>{
       </div>
 
       <div className="manager-approve-actions">
-        <button className="manager-approve-submit-btn approve-btn" onClick={handleApproveClick}>
+        <button
+          className="manager-approve-submit-btn approve-btn"
+          onClick={handleApproveClick}
+        >
           Approve
         </button>
-        <button className="manager-approve-submit-btn reject-btn" onClick={handleRejectClick}>
+        <button
+          className="manager-approve-submit-btn reject-btn"
+          onClick={handleRejectClick}
+        >
           Reject
         </button>
       </div>

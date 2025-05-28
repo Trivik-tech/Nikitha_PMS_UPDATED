@@ -39,6 +39,11 @@ public interface HrService {
     Map<String, Integer> assessmentKeyMatrix();
 
     List<EmployeeInfo> employeesWithKraKpiApproval();
+    Map<String,String> initiatePms(String employeeId,Map<String,Boolean> pms);
+
+   List<EmployeeInfo> pmsInitiatedEmployees();
+
+   Map<String,String> employeeRegistration(Employee employee);
 
 
 }

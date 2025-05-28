@@ -12,9 +12,9 @@ public class EmployeeWithPmsStatus {
 
     private DepartmentResponseDto department;
 
-    private boolean selfCompleted;
-    private boolean managerCompleted;
-    private boolean pmsInitiated;
+    private Boolean selfCompleted;
+    private Boolean managerCompleted;
+    private Boolean pmsInitiated;
 
     public String getEmpId() {
         return empId;
@@ -56,27 +56,27 @@ public class EmployeeWithPmsStatus {
         this.department = department;
     }
 
-    public boolean isSelfCompleted() {
+    public Boolean getSelfCompleted() {
         return selfCompleted;
     }
 
-    public void setSelfCompleted(boolean selfCompleted) {
+    public void setSelfCompleted(Boolean selfCompleted) {
         this.selfCompleted = selfCompleted;
     }
 
-    public boolean isManagerCompleted() {
+    public Boolean getManagerCompleted() {
         return managerCompleted;
     }
 
-    public void setManagerCompleted(boolean managerCompleted) {
+    public void setManagerCompleted(Boolean managerCompleted) {
         this.managerCompleted = managerCompleted;
     }
 
-    public boolean isPmsInitiated() {
+    public Boolean getPmsInitiated() {
         return pmsInitiated;
     }
 
-    public void setPmsInitiated(boolean pmsInitiated) {
+    public void setPmsInitiated(Boolean pmsInitiated) {
         this.pmsInitiated = pmsInitiated;
     }
 }

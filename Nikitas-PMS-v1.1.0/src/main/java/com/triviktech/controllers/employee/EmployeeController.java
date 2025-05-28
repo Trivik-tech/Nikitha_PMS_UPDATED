@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RequestMapping("/api/v1/pms/employee")
@@ -32,5 +33,8 @@ public interface EmployeeController {
 
     @GetMapping("/profile/{employeeId}")
     ResponseEntity<EmployeeInfo> profile(@PathVariable String employeeId);
+
+    @PutMapping("/self-review/{employeeId}")
+    ResponseEntity<Map<String,String >> selfReview(@RequestBody KraKpiRequestDto kraKpiRequestDto,@PathVariable String employeeId);
 
 }

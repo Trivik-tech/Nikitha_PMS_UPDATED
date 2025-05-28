@@ -307,3 +307,11 @@ body {
   box-sizing: border-box;
   scrollbar-gutter: stable;
 }
+.manager-team-start-pms-button.disabled {
+  pointer-events: none;
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
