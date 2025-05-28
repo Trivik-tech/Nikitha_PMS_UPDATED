@@ -1,21 +1,28 @@
 package com.triviktech.payloads.response.employee;
 
+import com.triviktech.entities.department.Department;
 import com.triviktech.payloads.response.department.DepartmentResponseDto;
 
 public class EmployeeWithPmsStatus {
 
     private String employeeId;
 
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String designation;
+    private String Name;
+    private String Position;
 
-    private DepartmentResponseDto department;
+    public String getPosition() {
+        return Position;
+    }
 
-    private boolean selfCompleted;
-    private boolean managerCompleted;
-    private boolean pmsInitiated;
+    public void setPosition(String position) {
+        Position = position;
+    }
+
+    private Department department;
+
+    private String selfCompleted;
+    private String managerCompleted;
+    private String pmsInitiated;
 
     public String getEmployeeId() {
         return employeeId;
@@ -25,67 +32,43 @@ public class EmployeeWithPmsStatus {
         this.employeeId = employeeId;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return Name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setName(String Name) {
+        this.Name = Name;
     }
 
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getDesignation() {
-        return designation;
-    }
-
-    public void setDesignation(String designation) {
-        this.designation = designation;
-    }
-
-    public DepartmentResponseDto getDepartment() {
+    public Department getDepartment() {
         return department;
     }
 
-    public void setDepartment(DepartmentResponseDto department) {
+    public void setDepartment(Department department) {
         this.department = department;
     }
 
-    public boolean isSelfCompleted() {
+    public String isSelfCompleted() {
         return selfCompleted;
     }
 
-    public void setSelfCompleted(boolean selfCompleted) {
+    public void setSelfCompleted(String selfCompleted) {
         this.selfCompleted = selfCompleted;
     }
 
-    public boolean isManagerCompleted() {
+    public String isManagerCompleted() {
         return managerCompleted;
     }
 
-    public void setManagerCompleted(boolean managerCompleted) {
+    public void setManagerCompleted(String managerCompleted) {
         this.managerCompleted = managerCompleted;
     }
 
-    public boolean isPmsInitiated() {
+    public String isPmsInitiated() {
         return pmsInitiated;
     }
 
-    public void setPmsInitiated(boolean pmsInitiated) {
+    public void setPmsInitiated(String pmsInitiated) {
         this.pmsInitiated = pmsInitiated;
     }
 }

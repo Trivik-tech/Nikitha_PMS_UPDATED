@@ -18,4 +18,6 @@ public interface LoginController {
     @GetMapping("/{token}")
     ResponseEntity<Map<String,String>> getRole(@PathVariable String token);
 
+    
+
 }

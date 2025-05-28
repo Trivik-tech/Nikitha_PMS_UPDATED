@@ -3,6 +3,7 @@ package com.triviktech.controllers.hr;
 import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
+import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employeeslist.EmployeesList;
 import com.triviktech.payloads.response.global.Response;
 import com.triviktech.payloads.response.hr.HrResponseDto;
@@ -40,5 +41,10 @@ public interface HRController {
     @GetMapping("/all-employees/{search}")
     ResponseEntity<List<EmployeeInfo>> searchEmployee(@PathVariable String search);
 
+    @GetMapping("/completed")
+    ResponseEntity<List<EmployeeWithPmsStatus>> getCompletedPmsForHR();
+
+    @GetMapping("/pending")
+    ResponseEntity<List<EmployeeWithPmsStatus>> getPendingPmsForHR();
 
 }

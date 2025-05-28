@@ -6,6 +6,7 @@ import com.triviktech.entities.address.State;
 import com.triviktech.entities.department.Department;
 import com.triviktech.entities.employee.EmployeeInformation;
 import com.triviktech.entities.hr.HR;
+import com.triviktech.entities.krakpi.KraKpi;
 import com.triviktech.entities.manager.Manager;
 import com.triviktech.entities.project.Project;
 import com.triviktech.exception.hr.HRNotFoundException;
@@ -16,6 +17,7 @@ import com.triviktech.payloads.response.address.LocationResponseDto;
 import com.triviktech.payloads.response.address.StateResponseDto;
 import com.triviktech.payloads.response.department.DepartmentResponseDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
+import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employeeslist.EmployeesList;
 import com.triviktech.payloads.response.global.Response;
 import com.triviktech.payloads.response.hr.HrResponseDto;
@@ -27,10 +29,13 @@ import com.triviktech.repositories.address.StateRepository;
 import com.triviktech.repositories.department.DepartmentRepository;
 import com.triviktech.repositories.employee.EmployeeInformationRepository;
 import com.triviktech.repositories.hr.HRRepository;
+import com.triviktech.repositories.krakpi.KraKpiRepository;
 import com.triviktech.repositories.manager.ManagerRepository;
 import com.triviktech.repositories.project.ProjectRepository;
 import com.triviktech.utilities.entitydtoconversion.EntityDtoConversion;
 import com.triviktech.utilities.xlsxsupport.XlsxSupport;
+
+import org.checkerframework.checker.units.qual.K;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -43,7 +48,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
-public class HrServiceImpl implements HrService{
+public class HrServiceImpl implements HrService {
 
     private final HRRepository hrRepository;
     private final StateRepository stateRepository;
@@ -54,9 +59,13 @@ public class HrServiceImpl implements HrService{
     private final ModelMapper modelMapper;
     private final EntityDtoConversion entityDtoConversion;
     private final EmployeeInformationRepository employeeInformationRepository;
+    private final KraKpiRepository kraKpiRepository;
 
-
-    public HrServiceImpl(HRRepository hrRepository, StateRepository stateRepository, LocationRepository locationRepository, DepartmentRepository departmentRepository, ProjectRepository projectRepository, ManagerRepository managerRepository, ModelMapper modelMapper, EntityDtoConversion entityDtoConversion, EmployeeInformationRepository employeeInformationRepository) {
+    public HrServiceImpl(HRRepository hrRepository, StateRepository stateRepository,
+            LocationRepository locationRepository, DepartmentRepository departmentRepository,
+            KraKpiRepository kraKpiRepository,
+            ProjectRepository projectRepository, ManagerRepository managerRepository, ModelMapper modelMapper,
+            EntityDtoConversion entityDtoConversion, EmployeeInformationRepository employeeInformationRepository) {
         this.hrRepository = hrRepository;
         this.stateRepository = stateRepository;
         this.locationRepository = locationRepository;
@@ -66,68 +75,78 @@ public class HrServiceImpl implements HrService{
         this.modelMapper = modelMapper;
         this.entityDtoConversion = entityDtoConversion;
         this.employeeInformationRepository = employeeInformationRepository;
+        this.kraKpiRepository = kraKpiRepository;
     }
 
     @Override
     public HrResponseDto registerHr(HrRequestDto hrRequestDto) {
 
-//        HR hr=new HR();
-//        hr.setHrId(hrRequestDto.getHrId());
-//        hr.setFirstName(hrRequestDto.getFirstName());
-//        hr.setLastName(hrRequestDto.getLastName());
-//        hr.setEmail(hrRequestDto.getEmail());
-//        hr.setContactNumber(hrRequestDto.getContactNumber());
-//        hr.setDateOfBirth(hrRequestDto.getDateOfBirth());
-//        hr.setRole(hrRequestDto.getRole());
-//        hr.setPassword(BCrypt.hashpw(hrRequestDto.getPassword(),BCrypt.gensalt(10)));
-//
-//        Location location=new Location();
-//        location.setName(hrRequestDto.getLocationName());
-//        location.setZipCode(hrRequestDto.getZipCode());
-//        location.setState(stateRepository.findById(hrRequestDto.getStateId())
-//                .orElseThrow(()-> new StateNotFoundException(hrRequestDto.getStateId())));
-//
-//        Location savedLocation = locationRepository.save(location);
-//        hr.setLocation(savedLocation);
-//
-//        Set<Department> departments=new HashSet<>();
-//        departments.add(departmentRepository.findById(hrRequestDto.getDepartmentId())
-//                .orElseThrow(()-> new DepartmentNotFoundException(hrRequestDto.getDepartmentId())));
-//        hr.setDepartments(departments);
-//
-//        Set<Project> projects=new HashSet<>();
-//        projects.add((projectRepository.findById(hrRequestDto.getProjectId())
-//                .orElseThrow(()-> new ProjectNotFoundException(hrRequestDto.getProjectId()))));
-//        hr.setProjects(projects);
-//
-//        Set<Manager> managers=new HashSet<>();
-//        managers.add(managerRepository.findById(hrRequestDto.getManagerId())
-//                .orElseThrow(()-> new ManagerNotFoundException(hrRequestDto.getManagerId())));
-//        hr.setManagers(managers);
-//
-//        HR saved = hrRepository.save(hr);
-//        HrResponseDto hrResponseDto = mapToHrResponseDto(saved);
-//
-//        CountryResponseDto countryResponseDto = mapToCountryResponseDto(saved.getLocation().getState().getCountry());
-//        StateResponseDto stateResponseDto = mapToStateResponseDto(saved.getLocation().getState());
-//        LocationResponseDto locationResponseDto = mapToLocationResponseDto(savedLocation);
-//        stateResponseDto.setCountry(countryResponseDto);
-//        locationResponseDto.setState(stateResponseDto);
-//        hrResponseDto.setLocationResponseDto(locationResponseDto);
-//
-//        Set<DepartmentResponseDto> departmentsDto = saved.getDepartments().stream().map(this::mapToDepartmentResponseDto).collect(Collectors.toSet());
-//
-//        hrResponseDto.setDepartments(departmentsDto);
-//
-//        Set<ProjectResponseDto> projectResponseDtos = saved.getProjects().stream().map(this::mapToProjectResponseDto).collect(Collectors.toSet());
-//        hrResponseDto.setProjects(projectResponseDtos);
-//
-//        Set<ManagerResponseDto> managerResponseDtos = saved.getManagers().stream().map(this::mapToManagerResponseDto).collect(Collectors.toSet());
-//
-//        hrResponseDto.setManagers(managerResponseDtos);
+        // HR hr=new HR();
+        // hr.setHrId(hrRequestDto.getHrId());
+        // hr.setFirstName(hrRequestDto.getFirstName());
+        // hr.setLastName(hrRequestDto.getLastName());
+        // hr.setEmail(hrRequestDto.getEmail());
+        // hr.setContactNumber(hrRequestDto.getContactNumber());
+        // hr.setDateOfBirth(hrRequestDto.getDateOfBirth());
+        // hr.setRole(hrRequestDto.getRole());
+        // hr.setPassword(BCrypt.hashpw(hrRequestDto.getPassword(),BCrypt.gensalt(10)));
+        //
+        // Location location=new Location();
+        // location.setName(hrRequestDto.getLocationName());
+        // location.setZipCode(hrRequestDto.getZipCode());
+        // location.setState(stateRepository.findById(hrRequestDto.getStateId())
+        // .orElseThrow(()-> new StateNotFoundException(hrRequestDto.getStateId())));
+        //
+        // Location savedLocation = locationRepository.save(location);
+        // hr.setLocation(savedLocation);
+        //
+        // Set<Department> departments=new HashSet<>();
+        // departments.add(departmentRepository.findById(hrRequestDto.getDepartmentId())
+        // .orElseThrow(()-> new
+        // DepartmentNotFoundException(hrRequestDto.getDepartmentId())));
+        // hr.setDepartments(departments);
+        //
+        // Set<Project> projects=new HashSet<>();
+        // projects.add((projectRepository.findById(hrRequestDto.getProjectId())
+        // .orElseThrow(()-> new
+        // ProjectNotFoundException(hrRequestDto.getProjectId()))));
+        // hr.setProjects(projects);
+        //
+        // Set<Manager> managers=new HashSet<>();
+        // managers.add(managerRepository.findById(hrRequestDto.getManagerId())
+        // .orElseThrow(()-> new
+        // ManagerNotFoundException(hrRequestDto.getManagerId())));
+        // hr.setManagers(managers);
+        //
+        // HR saved = hrRepository.save(hr);
+        // HrResponseDto hrResponseDto = mapToHrResponseDto(saved);
+        //
+        // CountryResponseDto countryResponseDto =
+        // mapToCountryResponseDto(saved.getLocation().getState().getCountry());
+        // StateResponseDto stateResponseDto =
+        // mapToStateResponseDto(saved.getLocation().getState());
+        // LocationResponseDto locationResponseDto =
+        // mapToLocationResponseDto(savedLocation);
+        // stateResponseDto.setCountry(countryResponseDto);
+        // locationResponseDto.setState(stateResponseDto);
+        // hrResponseDto.setLocationResponseDto(locationResponseDto);
+        //
+        // Set<DepartmentResponseDto> departmentsDto =
+        // saved.getDepartments().stream().map(this::mapToDepartmentResponseDto).collect(Collectors.toSet());
+        //
+        // hrResponseDto.setDepartments(departmentsDto);
+        //
+        // Set<ProjectResponseDto> projectResponseDtos =
+        // saved.getProjects().stream().map(this::mapToProjectResponseDto).collect(Collectors.toSet());
+        // hrResponseDto.setProjects(projectResponseDtos);
+        //
+        // Set<ManagerResponseDto> managerResponseDtos =
+        // saved.getManagers().stream().map(this::mapToManagerResponseDto).collect(Collectors.toSet());
+        //
+        // hrResponseDto.setManagers(managerResponseDtos);
 
-//        return hrResponseDto;
-return null;
+        // return hrResponseDto;
+        return null;
 
     }
 
@@ -145,17 +164,20 @@ return null;
         locationResponseDto.setState(stateResponseDto);
         hrResponseDto.setLocationResponseDto(locationResponseDto);
 
-//        Set<DepartmentResponseDto> departmentsDto = hr.getDepartments().stream().map(this::mapToDepartmentResponseDto).collect(Collectors.toSet());
+        // Set<DepartmentResponseDto> departmentsDto =
+        // hr.getDepartments().stream().map(this::mapToDepartmentResponseDto).collect(Collectors.toSet());
 
-//        System.out.println(hr.getDepartments());
-//        hrResponseDto.setDepartments(departmentsDto);
+        // System.out.println(hr.getDepartments());
+        // hrResponseDto.setDepartments(departmentsDto);
 
-        Set<ProjectResponseDto> projectResponseDtos = hr.getProjects().stream().map(this::mapToProjectResponseDto).collect(Collectors.toSet());
+        Set<ProjectResponseDto> projectResponseDtos = hr.getProjects().stream().map(this::mapToProjectResponseDto)
+                .collect(Collectors.toSet());
         hrResponseDto.setProjects(projectResponseDtos);
 
-//        Set<ManagerResponseDto> managerResponseDtos = hr.getManagers().stream().map(this::mapToManagerResponseDto).collect(Collectors.toSet());
+        // Set<ManagerResponseDto> managerResponseDtos =
+        // hr.getManagers().stream().map(this::mapToManagerResponseDto).collect(Collectors.toSet());
 
-//        hrResponseDto.setManagers(managerResponseDtos);
+        // hrResponseDto.setManagers(managerResponseDtos);
 
         return hrResponseDto;
     }
@@ -236,17 +258,12 @@ return null;
 
         return List.of(
                 "Managers Saved: " + managerCount,
-                "Employees Saved: " + employeeCount
-        );
+                "Employees Saved: " + employeeCount);
     }
-
-
 
     @Override
     public List<EmployeeInfo> getAllEmployees() {
         List<EmployeeInformation> allRecords = employeeInformationRepository.findAll();
-
-
 
         // Convert all EmployeeInformation to EmployeeInfo
         return allRecords.parallelStream()
@@ -272,15 +289,13 @@ return null;
 
     }
 
-
     @Override
     public EmployeeInfo getEmployeeById(String employeeId) {
 
-
-            EmployeeInformation employee = employeeInformationRepository.findById(employeeId).orElse(null);
-            EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
-            employeeInfo.setReportingManager(employee.getReportingManager());
-            employeeInfo.setDepartment(employee.getDepartment().getName());
+        EmployeeInformation employee = employeeInformationRepository.findById(employeeId).orElse(null);
+        EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+        employeeInfo.setReportingManager(employee.getReportingManager());
+        employeeInfo.setDepartment(employee.getDepartment().getName());
 
         return employeeInfo;
 
@@ -321,37 +336,101 @@ return null;
 
     }
 
+    @Override
+    public List<EmployeeWithPmsStatus> getCompletedPmsForHR() {
+        List<EmployeeInformation> allEmployees = employeeInformationRepository.findAll();
 
+        return allEmployees.stream()
+                .map(employee -> {
+                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
 
+                    // Skip if PMS not started (no KraKpi record)
+                    if (kraKpiOptional.isEmpty()) {
+                        return null;
+                    }
 
+                    KraKpi kraKpi = kraKpiOptional.get();
 
-    private HrResponseDto mapToHrResponseDto(HR hr){
+                    EmployeeWithPmsStatus dto = new EmployeeWithPmsStatus();
+                    dto.setName(employee.getName());
+                    dto.setDepartment(employee.getDepartment());
+                    dto.setPosition(employee.getCurrentDesignation());
+                    dto.setSelfCompleted(kraKpi.isSelfCompleted() ? "Completed" : "Pending");
+                    dto.setManagerCompleted(kraKpi.isManagerCompleted() ? "Completed" : "Pending");
+
+                    return Map.entry(dto, kraKpi);
+                })
+                .filter(Objects::nonNull) // Remove employees with no KraKpi (PMS not started)
+                .filter(entry -> {
+                    KraKpi kraKpi = entry.getValue();
+                    return Boolean.TRUE.equals(kraKpi.getPmsInitiated()) &&
+                            kraKpi.isManagerCompleted() &&
+                            kraKpi.isSelfCompleted();
+                })
+                .map(Map.Entry::getKey)
+                .toList();
+    }
+
+    @Override
+    public List<EmployeeWithPmsStatus> getPendingPmsForHR() {
+        List<EmployeeInformation> allEmployees = employeeInformationRepository.findAll();
+
+        return allEmployees.stream()
+                .map(employee -> {
+                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+
+                    // Skip if PMS not started (no KraKpi record)
+                    if (kraKpiOptional.isEmpty()) {
+                        return null;
+                    }
+
+                    KraKpi kraKpi = kraKpiOptional.get();
+
+                    EmployeeWithPmsStatus dto = new EmployeeWithPmsStatus();
+                    dto.setName(employee.getName());
+                    dto.setDepartment(employee.getDepartment());
+                    dto.setPosition(employee.getCurrentDesignation());
+                    dto.setSelfCompleted(kraKpi.isSelfCompleted() ? "Completed" : "Pending");
+                    dto.setManagerCompleted(kraKpi.isManagerCompleted() ? "Completed" : "Pending");
+
+                    return Map.entry(dto, kraKpi);
+                })
+                .filter(Objects::nonNull) // Remove employees with no KraKpi (PMS not started)
+                .filter(entry -> {
+                    KraKpi kraKpi = entry.getValue();
+                    return Boolean.TRUE.equals(kraKpi.getPmsInitiated()) &&
+                            (!kraKpi.isManagerCompleted() || !kraKpi.isSelfCompleted());
+                })
+                .map(Map.Entry::getKey)
+                .toList();
+    }
+
+    private HrResponseDto mapToHrResponseDto(HR hr) {
         return modelMapper.map(hr, HrResponseDto.class);
     }
 
-    private CountryResponseDto mapToCountryResponseDto(Country country){
+    private CountryResponseDto mapToCountryResponseDto(Country country) {
         return modelMapper.map(country, CountryResponseDto.class);
     }
 
-    private StateResponseDto mapToStateResponseDto(State state){
+    private StateResponseDto mapToStateResponseDto(State state) {
         return modelMapper.map(state, StateResponseDto.class);
     }
 
-    private LocationResponseDto mapToLocationResponseDto(Location location){
+    private LocationResponseDto mapToLocationResponseDto(Location location) {
         return modelMapper.map(location, LocationResponseDto.class);
     }
 
-    private DepartmentResponseDto mapToDepartmentResponseDto(Department department){
+    private DepartmentResponseDto mapToDepartmentResponseDto(Department department) {
         return modelMapper.map(department, DepartmentResponseDto.class);
     }
 
-    private ProjectResponseDto mapToProjectResponseDto(Project project){
-        return modelMapper.map(project,ProjectResponseDto.class);
-
+    private ProjectResponseDto mapToProjectResponseDto(Project project) {
+        return modelMapper.map(project, ProjectResponseDto.class);
 
     }
 
-    private ManagerResponseDto mapToManagerResponseDto(Manager manager){
+    private ManagerResponseDto mapToManagerResponseDto(Manager manager) {
         return modelMapper.map(manager, ManagerResponseDto.class);
     }
 

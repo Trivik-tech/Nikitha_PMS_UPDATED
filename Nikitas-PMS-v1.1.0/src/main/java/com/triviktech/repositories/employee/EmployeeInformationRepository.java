@@ -14,4 +14,5 @@ public interface EmployeeInformationRepository extends JpaRepository<EmployeeInf
 
     @Query("SELECT e from EmployeeInformation e WHERE e.empId LIKE %:search% OR e.name LIKE %:search% OR e.department.name LIKE %:search% OR e.reportingManager LIKE %:search% OR e.role LIKE %:search% OR e.category LIKE %:search%")
     List<EmployeeInformation> searchEmployees(String search);
+    Optional<EmployeeInformation> findByOfficialEmailId(String email);
 }

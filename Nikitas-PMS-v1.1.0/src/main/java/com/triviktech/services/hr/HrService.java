@@ -4,6 +4,7 @@ import com.triviktech.entities.hr.HR;
 import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
+import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employeeslist.EmployeesList;
 import com.triviktech.payloads.response.global.Response;
 import com.triviktech.payloads.response.hr.HrResponseDto;
@@ -30,5 +31,8 @@ public interface HrService {
 
     List<EmployeeInfo> searchEmployee(String search);
 
+    List<EmployeeWithPmsStatus> getCompletedPmsForHR();
+
+    List<EmployeeWithPmsStatus> getPendingPmsForHR();
 
 }
