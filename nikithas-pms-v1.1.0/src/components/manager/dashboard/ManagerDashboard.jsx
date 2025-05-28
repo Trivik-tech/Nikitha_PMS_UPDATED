@@ -7,6 +7,7 @@ import axios from "axios";
 import Notification from "../../modal/notification/Notification";
 
 import "./ManagerDashboard.css";
+import "./ResponsiveManager.css"
 import logo from "../../../assets/images/nikithas-logo.png";
 import profile from "../../../assets/images/profile1.jpg";
 
@@ -19,25 +20,6 @@ const ManagerDashboard = () => {
 
   const chartRef = useRef();
   const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         "http://localhost:8080/api/v1/pms/manager/profile",
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${localStorage.getItem("token")}`,
-  //           },
-  //         }
-  //       );
-  //       setManagerData(response.data);
-  //     } catch (error) {
-  //       console.error("Error fetching manager data:", error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
 
   const data = {
     labels: ["Completed", "Pending"],
@@ -80,14 +62,11 @@ const ManagerDashboard = () => {
         </div>
         <ul>
           <li>
-            <NavLink to="/manager-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>
-              Dashboard
-            </NavLink>
+            <NavLink to="/manager-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>Dashboard</NavLink>
           </li>
           <li>
             <Link to={`/my-team/${managerData?.managerId}`}>My Team</Link>
           </li>
-          
           <li>
             <Link to="/manager-profile">My Profile</Link>
           </li>
@@ -96,7 +75,7 @@ const ManagerDashboard = () => {
 
       <div className="main-content">
         <div className="dashboard-header">
-          <h1>Manager PMS Dashboard</h1>  
+          <h1>Manager PMS Dashboard</h1>
           <img src={logo} alt="Logo" className="dashboard-logo" />
           <div className="header-icons">
             <Bell className="notification-icon" onClick={() => setNotificationOpen(!notificationOpen)} />

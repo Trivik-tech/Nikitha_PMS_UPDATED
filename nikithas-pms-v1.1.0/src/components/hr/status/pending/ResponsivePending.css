@@ -1,0 +1,76 @@
+/* Mobile-responsive styling */
+@media (max-width: 768px) {
+  .hr-pending-team-container {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  .hr-pending-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    position: relative;
+  }
+
+  .hr-pending-header h1 {
+    font-size: 18px;
+  }
+
+  .hr-pending-company-logo {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    height: 50px; /* Adjust as needed for mobile */
+  }
+
+  .hr-pending-search-bar {
+    width: 100%;
+  }
+
+  .hr-pending-search-bar input {
+    width: 100%;
+    padding-left: 40px;
+  }
+
+  .hr-pending-search-icon {
+    left: 15px;
+  }
+
+  .hr-pending-table-container {
+    padding: 10px;
+    overflow-x: auto;
+  }
+
+  .hr-pending-team-table {
+    min-width: 600px;
+  }
+
+  .hr-pending-profile-pic {
+    width: 28px;
+    height: 28px;
+  }
+
+  .hr-pending-home-icon {
+    font-size: 24px;
+  }
+
+  .hr-pending-header-title {
+    gap: 6px;
+  }
+
+  /* Pagination - Align Previous and Next buttons on the same line */
+  .hr-pagination-container {
+    display: flex;
+    justify-content: center;  /* Centers the buttons horizontally */
+    align-items: center;      /* Vertically aligns the buttons */
+    gap: 10px;                /* Adds space between Previous and Next buttons */
+    flex-wrap: nowrap;        /* Ensures buttons stay in one line */
+  }
+
+  .hr-pagination-container button {
+    padding: 8px 12px;
+    font-size: 14px;
+    margin: 0; /* Removes default margin between buttons */
+  }
+}

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./PendingList.css";
+import "./ResponsivePending.css";
 import { FaSearch, FaHome } from "react-icons/fa";
 import { MdCallMade } from "react-icons/md";
 import logo from "../../../../assets/images/nikithas-logo.png";

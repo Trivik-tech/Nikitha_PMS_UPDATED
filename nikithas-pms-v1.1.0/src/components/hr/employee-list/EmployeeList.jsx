@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaSearch, FaHome, FaEdit, FaTrash } from "react-icons/fa";
 import logo from "../../../assets/images/nikithas-logo.png";
+import "./EmpResponsive.css";
 import "./EmployeeList.css";
+
 import axios from "axios";
 import DeleteConfirmation from "../../modal/delete-confirmation/DeleteConfirmation"
 
