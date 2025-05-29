@@ -1,5 +1,6 @@
 package com.triviktech.payloads.response.employee;
 
+import com.triviktech.entities.department.Department;
 import com.triviktech.payloads.response.department.DepartmentResponseDto;
 
 public class EmployeeWithPmsStatus {
@@ -10,11 +11,18 @@ public class EmployeeWithPmsStatus {
     private String officialEmailId;
     private String currentDesignation;
 
-    private DepartmentResponseDto department;
-
     private Boolean selfCompleted;
     private Boolean managerCompleted;
     private Boolean pmsInitiated;
+    private DepartmentResponseDto department;
+
+    public DepartmentResponseDto getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(DepartmentResponseDto department) {
+        this.department = department;
+    }
 
     public String getEmpId() {
         return empId;
@@ -22,14 +30,6 @@ public class EmployeeWithPmsStatus {
 
     public void setEmpId(String empId) {
         this.empId = empId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getOfficialEmailId() {
@@ -46,14 +46,6 @@ public class EmployeeWithPmsStatus {
 
     public void setCurrentDesignation(String currentDesignation) {
         this.currentDesignation = currentDesignation;
-    }
-
-    public DepartmentResponseDto getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(DepartmentResponseDto department) {
-        this.department = department;
     }
 
     public Boolean getSelfCompleted() {
@@ -78,5 +70,13 @@ public class EmployeeWithPmsStatus {
 
     public void setPmsInitiated(Boolean pmsInitiated) {
         this.pmsInitiated = pmsInitiated;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

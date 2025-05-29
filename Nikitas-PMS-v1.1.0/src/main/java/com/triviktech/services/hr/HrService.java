@@ -4,6 +4,10 @@ import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 
+import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
+import com.triviktech.payloads.response.employeeslist.EmployeesList;
+import com.triviktech.payloads.response.global.Response;
+
 import com.triviktech.payloads.response.hr.HrResponseDto;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +32,7 @@ public interface HrService {
 
     List<EmployeeInfo> searchEmployee(String search);
 
+
     Map<String,String> deleteEmployee(String employeeId);
 
     EmployeeInfo updateEmployee(String empId, Employee employee);
@@ -44,6 +49,11 @@ public interface HrService {
    List<EmployeeInfo> pmsInitiatedEmployees();
 
    Map<String,String> employeeRegistration(Employee employee);
+
+
+    List<EmployeeWithPmsStatus> getCompletedPmsForHR();
+
+    List<EmployeeWithPmsStatus> getPendingPmsForHR();
 
 
 }

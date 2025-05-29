@@ -3,6 +3,11 @@ package com.triviktech.controllers.hr;
 import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
+
+import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
+import com.triviktech.payloads.response.employeeslist.EmployeesList;
+import com.triviktech.payloads.response.global.Response;
+
 import com.triviktech.payloads.response.hr.HrResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +42,7 @@ public interface HRController {
     @GetMapping("/all-employees/{search}")
     ResponseEntity<List<EmployeeInfo>> searchEmployee(@PathVariable String search);
 
+
     @DeleteMapping("/delete-employee/{employeeId}")
     ResponseEntity<Map<String,String>> deleteEmployee(@PathVariable String employeeId);
 
@@ -69,6 +75,13 @@ public interface HRController {
 
 
 
+
+
+    @GetMapping("/completed")
+    ResponseEntity<List<EmployeeWithPmsStatus>> getCompletedPmsForHR();
+
+    @GetMapping("/pending")
+    ResponseEntity<List<EmployeeWithPmsStatus>> getPendingPmsForHR();
 
 
 }
