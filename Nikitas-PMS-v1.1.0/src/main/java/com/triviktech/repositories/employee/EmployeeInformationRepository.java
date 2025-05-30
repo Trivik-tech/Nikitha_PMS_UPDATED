@@ -16,15 +16,14 @@ public interface EmployeeInformationRepository extends JpaRepository<EmployeeInf
 
     List<EmployeeInformation> findByEmpIdIn(Set<String> empIds);
 
-<<<<<<< HEAD
+
     Optional<EmployeeInformation> findByReportingManagerAndEmpId(String managerName, String employeeId);
-=======
     @Query("SELECT e.department.name, COUNT(e) FROM EmployeeInformation e GROUP BY e.department.name")
     List<Object[]> countEmployeesByDepartment();
 
 
     List<EmployeeInformation> findAllByReportingManager(String reportingManager);
 
->>>>>>> arpita
+
 }
 

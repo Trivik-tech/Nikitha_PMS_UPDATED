@@ -6,7 +6,8 @@ import logo from "../../../assets/images/nikithas-logo.png";
 
 import PmsInitiated from "../../modal/pms/PmsInitiated";
 import "./StartPms.css";
-
+import "./ResponsiveStartPMS.css";
+ 
 export default function StartPms() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);

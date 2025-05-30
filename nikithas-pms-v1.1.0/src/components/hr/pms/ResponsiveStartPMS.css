@@ -1,0 +1,253 @@
+/* Responsive styles for StartPms.jsx */
+
+.start-pms-table-container {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.start-pms-team-table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 800px; /* Ensures table is scrollable horizontally on small screens */
+}
+
+.start-pms-team-table thead {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.start-pms-team-table tbody {
+  display: block;
+  max-height: 300px; /* Set your preferred height */
+  overflow-y: auto;
+  width: 100%;
+}
+
+.start-pms-team-table thead tr,
+.start-pms-team-table tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.start-pms-team-table th,
+.start-pms-team-table td {
+  text-align: left;
+  padding: 10px;
+  word-wrap: break-word;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@media screen and (max-width: 1024px) {
+  .start-pms-header {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    justify-content: center;
+    padding-top: 50px; /* Space for home icon */
+  }
+
+  .start-pms-home-icon {
+    position: absolute;
+    top: -13px;
+    left: -5px;
+    font-size: 30px;
+  }
+
+  .start-pms-company-logo {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 100px;
+    height: auto;
+    
+  }
+
+ .start-pms-header-title {
+  width: 100%;
+  position: absolute;
+  top: 20px; /* Adjust distance from the top */
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 1;
+}
+
+  .start-pms-search-filter-container {
+    margin-top: 5px;
+    width: 100%; /* Make full width */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .start-pms-search-bar {
+    width: 100%;
+  }
+
+  .start-pms-search-bar input {
+    width: 100%; /* Full width input */
+  }
+   .start-pms-pagination {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+      margin-bottom: 10px !important;
+      bottom: 10px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .start-pms-container {
+    width: 100vw !important;
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  .start-pms-content {
+    padding: 10px;
+  }
+
+  .start-pms-header {
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    justify-content: center;
+    padding-top: 50px; /* Space for home icon */
+  }
+
+  .start-pms-home-icon {
+    position: absolute;
+    top: -13px;
+    left: -5px;
+    font-size: 30px;
+  }
+
+  .start-pms-company-logo {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 90px;
+    height: auto;
+   
+  }
+
+ 
+.start-pms-header-title h2 {
+  font-size: 1.2rem; /* You can adjust this size as needed */
+  margin-left: 90px;
+  margin-top: 2px;
+}
+  .start-pms-search-filter-container {
+    margin-top: 5px;
+    width: 100%; /* Full width */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .start-pms-search-bar {
+    width: 100%;
+  }
+
+  .start-pms-search-bar input {
+    width: 100%; /* Full width input */
+    font-size: 14px;
+  }
+
+  .start-pms-team-table th,
+  .start-pms-team-table td {
+    font-size: 14px;
+    padding: 8px 5px;
+  }
+
+  .start-pms-button {
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+
+  .start-pms-pagination {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 15px;
+    font-size: 14px;
+      margin-bottom: 10px !important;
+      bottom: 10px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .start-pms-header {
+    position: relative;
+    padding-top: 50px; /* Space for home icon */
+  }
+
+  .start-pms-home-icon {
+    position: absolute;
+    top: -13px;
+    left: -5px;
+    font-size: 30px;
+  }
+
+  .start-pms-company-logo {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 80px;
+    height: auto;
+   
+  }
+
+  .start-pms-header-title h2 {
+    font-size: 1.2rem;
+    text-align: center;
+    margin-top:-9px;
+  }
+
+  .start-pms-search-filter-container {
+    margin-top: 5px;
+    width: 100%; /* Full width */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .start-pms-search-bar {
+    width: 100%;
+  }
+
+  .start-pms-search-bar input {
+    width: 100%; /* Full width input */
+    font-size: 13px;
+  }
+
+  .start-pms-team-table th,
+  .start-pms-team-table td {
+    font-size: 12px;
+    padding: 6px 4px;
+  }
+
+  .start-pms-button {
+    padding: 5px 6px;
+    font-size: 12px;
+  }
+
+  .start-pms-pagination {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+      margin-bottom: 10px !important;
+      bottom: 10px;
+  }
+
+  .start-pms-pagination button {
+    padding: 6px 10px;
+    
+  }
+}
