@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CompletedList.css";
+import "./CompletedListResponsive.css";
 import { FaSearch, FaHome } from "react-icons/fa";
 import logo from '../../../../assets/images/nikithas-logo.png';
 import axios from "axios";

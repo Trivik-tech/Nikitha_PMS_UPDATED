@@ -1,0 +1,97 @@
+/* Responsive.css - Mobile overrides for screens ≤ 768px */
+@media (max-width: 768px) {
+  html, body {
+    width: 100vw;                     /* ✅ Ensure full viewport width */
+    height: 100vh;                    /* ✅ Full height for consistency */
+    margin: 0;                        /* ✅ Remove default margin */
+    padding: 0;
+    overflow-x: hidden;              /* ✅ No horizontal scroll */
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;         /* ✅ Allow vertical flow */
+    overflow-x: hidden;
+  }
+
+  .hr-complete-team-container {
+  width: 100vw;
+  min-height: 100vh;               /* ✅ Ensures it fills the screen */
+  height: auto;
+  border-radius: 0;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+  .hr-complete-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    position: relative;
+    width: 100%;                     /* ✅ Stretch to full width */
+    box-sizing: border-box;
+  }
+
+  .hr-complete-header-title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    width: 100%;                    /* ✅ Full width to align properly */
+  }
+
+  .hr-complete-header h1 {
+    font-size: 20px;
+    margin: 0;
+    width: 100%;
+    text-align: left;
+  }
+
+  .hr-complete-search-bar {
+    width: 100%;
+    margin-top: 0;
+    min-width: unset;
+  }
+
+  .hr-complete-search-bar input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .hr-complete-search-icon {
+    left: 10px;
+  }
+
+  .hr-complete-company-logo {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    height: 60px;
+    width: auto;
+  }
+
+  .hr-complete-table-container {
+    width: 100%;
+    padding: 10px;
+    overflow-x: auto;               /* ✅ Allow scroll if table is wide */
+    box-sizing: border-box;
+  }
+
+  .hr-complete-team-table {
+    min-width: 600px;
+    display: block;
+    overflow-x: auto;
+  }
+
+  .hr-complete-pagination {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

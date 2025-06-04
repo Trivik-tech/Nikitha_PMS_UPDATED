@@ -1,0 +1,201 @@
+/* Responsive.css */
+
+@media screen and (max-width: 768px) {
+  /* ✅ Allow vertical scrolling on the whole page */
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: auto;              /* ✅ Updated: Allows body to grow vertically */
+    min-height: 100vh;         /* ✅ Ensures full viewport height initially */
+    overflow-x: hidden;
+    overflow-y: auto;          /* ✅ Enables vertical scrolling */
+    
+  }
+  /* Show only on desktop (width > 768px) */
+.desktop-only {
+  display: inline-block;
+}
+
+@media screen and (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
+}
+
+  .logout-button {
+   background-color: black;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+.logout-button:hover {
+ background-color: #c82333;/* Light red hover */
+}
+
+  
+
+  .hr-dashboard {
+    display: flex;             /* ✅ Added: Ensure flex context */
+    flex-direction: column;
+    width: 100%;
+    min-height: 100vh;         /* ✅ Added: Allows page to grow with content */
+  }
+
+  .hr-dashboard-sidebar {
+    position: fixed;
+    top: 1;
+    left: 0;
+    width: 240px;
+    height: 88vh;
+    background-color: #f4f4f4;
+    z-index: 1001;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;          /* ✅ Allows scrolling inside sidebar if content overflows */
+    pointer-events: none; 
+    overflow-x: hidden;     /* ✅ Prevents sidebar from blocking scroll/touch when hidden */
+    margin-top: 15px;
+    
+  }
+
+
+
+  .hr-dashboard-sidebar.open {
+    transform: translateX(0);
+    pointer-events: auto;      /* ✅ Re-enable interaction when sidebar is open */
+  }
+
+  .hr-dashboard-sidebar.closed {
+    transform: translateX(-100%);
+  }
+
+  .hr-dashboard-main-content {
+    width: 100%;
+    padding: 16px;
+    overflow-y: auto;          /* ✅ Enables scrolling if content overflows */
+    flex: 1;                   /* ✅ Let content grow and push height */
+    min-height: 100%;          /* ✅ Ensure full height context */
+  }
+
+  .hr-dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  /* ✅ Place notification bell to top-right corner */
+  .hr-dashboard-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1003;
+  }
+
+  .hr-dashboard-chart-container {
+    flex-direction: column;
+  }
+
+  .hr-dashboard-chart-box {
+    width: 100% !important;
+    margin-top: 16px;
+  }
+
+ .hamburger {
+  position: fixed;
+  top: 10px;
+  left: -15px;;
+  z-index: 1002;
+  font-size: 28px;
+  background: none;       /* ✅ No background */
+  border: none;           /* ✅ No border */
+  padding: 8px;           /* ✅ Minimal padding for touch target */
+  margin: 0;              /* ✅ No margin */
+  color: #333;            /* Optional: icon color */
+  cursor: pointer;
+}
+
+
+
+  .hr-dashboard-stat-card {
+    width: 100%;               /* ✅ Make each stat card full width */
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 90px;
+    text-align: center;
+    padding: 5px;
+    
+  }
+
+  .hr-dashboard-profile-container {
+    text-align: center;
+    padding: 20px 0;
+  }
+
+  .hr-dashboard-stats-container {
+    flex-direction: column !important; /* ✅ Stack cards vertically */
+    gap: 5px;                         /* ✅ Add spacing between cards */
+    align-items: stretch;             /* ✅ Make cards full width */
+    padding-top: -10px;
+  }
+  .hr-dashboard-logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hr-dashboard-logo {
+  max-width: 140px;
+  height: auto;
+  margin-bottom: 200px;
+  margin-top: -10px;
+  
+}
+
+.hr-dashboard-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+  text-align: center;
+}
+ .hr-dashboard-assessment-heading {
+    font-size: 1.1rem;  /* Reduce size as needed */
+    white-space: nowrap;  /* Prevent line break */
+    text-align: center;   /* Optional: center align */
+  }
+
+@media screen and (max-width: 768px) {
+  .hr-dashboard-header {
+    flex-direction: column;
+    align-items: center;
+    padding-top: 70px;
+    position: relative;
+  }
+
+  .hr-dashboard-title {
+    font-size: 1.3rem;
+  }
+  .logout-button {
+ background-color: black;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.3s ease
+}
+
+.logout-button:hover {
+ background-color: #c82333;/* Light red hover */
+}
+
+}
+
+}

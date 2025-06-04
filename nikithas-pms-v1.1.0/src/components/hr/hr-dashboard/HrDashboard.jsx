@@ -1,3 +1,4 @@
+// HrDashboard.jsx
 import { React, useState, useEffect } from 'react';
 import { FaUsers, FaClipboardCheck, FaExclamationTriangle, FaChartLine } from 'react-icons/fa';
 import { Bar, Pie } from 'react-chartjs-2';
@@ -14,31 +15,35 @@ import {
 import { Bell } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import './HrDashboard.css';
+import './Responsive.css';
 
 import logo from '../../../assets/images/nikithas-logo.png';
 import profile from '../../../assets/images/profile1.jpg';
 import Notification from "../../modal/notification/Notification";
 import axios from 'axios';
 
-// Register chart.js components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 const HrDashboard = () => {
   const navigate = useNavigate();
 
-  // States
   const [notificationOpen, setNotificationOpen] = useState(false);
-  const [animate, setAnimate] = useState(false);
   const [totalEmployees, setTotalEmployees] = useState(null);
   const [completionRate, setCompletionRate] = useState(0);
   const [pendingRate, setPendingRate] = useState(0);
   const [error, setError] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
+
+  const isMobile = () => window.innerWidth <= 768;
 
   useEffect(() => {
-    setTimeout(() => setAnimate(true), 200);
+    const handleResize = () => {
+      setSidebarOpen(window.innerWidth > 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Fetch total employees
   useEffect(() => {
     const fetchTotalEmployees = async () => {
       try {
@@ -46,16 +51,13 @@ const HrDashboard = () => {
         setTotalEmployees(response.data);
         setError(false);
       } catch (error) {
-        console.error("Error fetching total employees:", error.message);
         setTotalEmployees({ totalEmployees: 0 });
         setError(true);
       }
     };
-
     fetchTotalEmployees();
   }, []);
 
-  // Fetch completion and pending percentages
   useEffect(() => {
     const fetchPercentageData = async () => {
       try {
@@ -70,11 +72,9 @@ const HrDashboard = () => {
         setError(true);
       }
     };
-
     fetchPercentageData();
   }, []);
 
-  // Pie chart data
   const pieData = {
     labels: ['Completed', 'Pending'],
     datasets: [
@@ -96,7 +96,6 @@ const HrDashboard = () => {
     }
   };
 
-  // Dummy bar chart (can be dynamic too)
   const barData = {
     labels: ['IT', 'HR', 'Finance', 'Marketing', 'Sales'],
     datasets: [
@@ -118,10 +117,37 @@ const HrDashboard = () => {
     ],
   };
 
+  const renderSidebarOverlay = () =>
+    isMobile() && sidebarOpen ? (
+      <div
+        className="hr-dashboard-sidebar-overlay"
+        onClick={() => setSidebarOpen(false)}
+        aria-label="Close sidebar"
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          zIndex: 999
+        }}
+      />
+    ) : null;
+
   return (
     <>
       <div className="hr-dashboard-container">
-        <aside className="hr-dashboard-sidebar slide-in">
+        {isMobile() && (
+          <button
+            className="hamburger"
+            aria-label="Toggle sidebar"
+            onClick={() => setSidebarOpen((prev) => !prev)}
+          >
+            ☰
+          </button>
+        )}
+        <aside className={`hr-dashboard-sidebar${sidebarOpen ? ' open' : ' closed'}${isMobile() ? ' mobile' : ''}`}>
           <div className="hr-dashboard-profile-container">
             <img src={profile} alt="Profile" className="hr-dashboard-profileImg" />
             <h2 className="hr-dashboard-profile-name">Avinash S. H.</h2>
@@ -131,16 +157,40 @@ const HrDashboard = () => {
             <li><Link to="/employee-list">Employee List</Link></li>
             <li><Link to="/hr-startpms">Employee Performance</Link></li>
             <li><Link to="/hr-profile">My Profile</Link></li>
+            {isMobile() && (
+              <li>
+                <button
+                  onClick={() => {
+                    localStorage.clear();
+                    navigate('/');
+                  }}
+                  className="logout-button"
+                >
+                  Logout
+                </button>
+              </li>
+            )}
           </ul>
         </aside>
+        {renderSidebarOverlay()}
 
         <main className="hr-dashboard-main-content">
           <header className="hr-dashboard-header fade-in-down">
-            <h1>HR PMS Dashboard</h1>
-            <img src={logo} alt="Nikitha PMS" className="hr-dashboard-logo" />
+            <div className="hr-dashboard-logo-container">
+              <img src={logo} alt="Nikitha PMS" className="hr-dashboard-logo" />
+              <h1 className="hr-dashboard-title">HR PMS Dashboard</h1>
+            </div>
             <div className="hr-dashboard-actions">
               <Bell className="notification-icon" onClick={() => setNotificationOpen(!notificationOpen)} />
-              <Link to="/" className="hr-dashboard-logoutButton">Logout</Link>
+              <button
+                className="hr-dashboard-logoutButton desktop-only"
+                onClick={() => {
+                  localStorage.clear();
+                  navigate('/');
+                }}
+              >
+                Logout
+              </button>
             </div>
           </header>
 
@@ -166,12 +216,6 @@ const HrDashboard = () => {
               <p>{completionRate}%</p>
             </div>
           </section>
-
-          {/* {error && (
-            <p style={{ color: 'red', marginTop: '10px' }}>
-              ⚠ Unable to fetch dashboard data. Server might be down.
-            </p>
-          )} */}
 
           <section className="hr-dashboard-chart-container fade-in-up">
             <h2 className="hr-dashboard-assessment-heading">Assessment Status</h2>
