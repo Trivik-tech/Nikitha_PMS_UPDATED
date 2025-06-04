@@ -593,6 +593,7 @@ public class HrServiceImpl implements HrService {
                 .collect(Collectors.toList());
     }
 
+
     @Override
     public Map<String, String> employeeRegistration(Employee employee) {
         // Creating response object

@@ -1,10 +1,12 @@
+// Approve.jsx
 import React, { useEffect, useState } from "react";
 import "./Approve.css";
-import logo from "../../../assets/images/nikithas-logo.png"; // Make sure the path is correct
+import logo from "../../../assets/images/nikithas-logo.png";
 import { FaHome } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
-import Modal from "../../../components/modal/Modal"; // Ensure the correct path
+import Modal from "../../../components/modal/Modal";
 import axios from "axios";
+import { baseUrl } from "../../urls/CommenUrl";
 
 const Approve = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -15,84 +17,130 @@ const Approve = () => {
   const [designation, setDesignation] = useState("");
   const [department, setDepartment] = useState("");
   const [manager, setManager] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const emplId = useParams();
 
   useEffect(() => {
     const loadKraKpis = async () => {
       try {
-        console.log(emplId);
-
         const result = await axios.get(
-          `http://localhost:8080/api/v1/pms/manager/kra-kpi/Pradeep Prahalada Rao Kubair/${emplId.id}`
+          `${baseUrl}/api/v1/pms/manager/kra-kpi/Pradeep Prahalada Rao Kubair/${emplId.id}`
         );
-        console.log(result.data);
-        setKraKpis(result.data.kra);
+        setKraKpis(result.data.kra || []);
         setName(result.data.employee.name);
         setDesignation(result.data.employee.currentDesignation);
         setDepartment(result.data.employee.department);
         setManager(result.data.employee.reportingManager);
       } catch (error) {
-        console.error(error);
+        console.error("Error loading KRA/KPI data:", error);
       }
     };
 
     loadKraKpis();
-  }, []);
+  }, [emplId]);
 
-  const handleApproveClick = () => {
-    approvekrakpi(); // Show modal when "Approve" is clicked
+  const handleKRAWeightageChange = (index, value) => {
+    const updated = [...krakpi];
+    updated[index].weightage = value;
+    setKraKpis(updated);
   };
 
-  const handleRejectClick = () => {
-    rejectKraKpi(); // Show modal when "Reject" is clicked
+  const handleKPIWeightageChange = (kraIndex, kpiIndex, value) => {
+    const updated = [...krakpi];
+    updated[kraIndex].kpi[kpiIndex].weightage = value;
+    setKraKpis(updated);
   };
 
   const closeModal = () => {
-    setShowModal(false); // Close modal
+    setShowModal(false);
   };
 
-  const approvekrakpi = async () => {
-    const approve = {
-      approveStatus: true,
-    };
-
+  // New function to save updated KRA/KPI
+  const handleSaveChanges = async () => {
+    setLoading(true);
     try {
-      const result = await axios.patch(
-        `http://localhost:8080/api/v1/pms/manager/approve-krakpi/${emplId.id}/Pradeep Prahalada Rao Kubair`,
-        approve
+      const payload = {
+        employeeId: emplId.id,
+        remark: "",
+        selfCompleted: false,
+        managerCompleted: false,
+        dueDate: null,
+        managerReviewDate: null,
+        selfReviewDate:null,
+        pmsInitiated: false,
+        review2: false,
+        managerApproval: true,
+        kra: krakpi.map((kra) => ({
+          kraId: kra.kraId,
+          kraName: kra.kraName,
+          weightage: kra.weightage,
+          kpi: kra.kpi.map((kpi) => ({
+            kpiId: kpi.id,
+            description: kpi.description,
+            weightage: kpi.weightage,
+            selfScore: kpi.selfScore || 0,
+            managerScore: kpi.managerScore || 0,
+            review2: kpi.review2 || 0,
+          })),
+        })),
+      };
+
+      console.log(payload)
+      const result= await axios.patch(
+        `${baseUrl}/api/v1/pms/manager/approve-krakpi/${emplId.id}/Pradeep Prahalada Rao Kubair`,
+        payload
       );
-      console.log(result.data);
-      setErrorMessage("PMS has been approved successfully.");
-      setTitle("PMS Approve");
+      console.log(result.data)
+
+      setErrorMessage("KRA/KPI updates saved successfully.");
+      setTitle("Save Successful");
       setShowModal(true);
     } catch (error) {
-      console.error(error);
+      console.error("Error saving KRA/KPI updates:", error);
+      setErrorMessage("Failed to save updates.");
+      setTitle("Save Failed");
+      setShowModal(true);
+    } finally {
+      setLoading(false);
     }
   };
-  const rejectKraKpi = async () => {
-    const approve = {
-      approveStatus: false,
-    };
 
+  const rejectKraKpi = async () => {
     try {
-      const result = await axios.patch(
-        `http://localhost:8080/api/v1/pms/manager/approve-krakpi/${emplId.id}/Pradeep Prahalada Rao Kubair`,
-        approve
+      await axios.patch(
+        `${baseUrl}/api/v1/pms/manager/approve-krakpi/${emplId.id}/Pradeep Prahalada Rao Kubair`,
+        { approveStatus: false }
       );
-      console.log(result.data);
       setErrorMessage("PMS has been rejected successfully.");
       setTitle("PMS Reject");
       setShowModal(true);
     } catch (error) {
-      console.error(error);
+      console.error("Rejection error:", error);
+      setErrorMessage("Error occurred during rejection.");
+      setTitle("Rejection Error");
+      setShowModal(true);
     }
   };
+
+  const handleApproveClick = async () => {
+    // Optionally, save changes first before approval
+    await handleSaveChanges();
+    
+  };
+
+  const handleRejectClick = async () => {
+    // Optionally, save changes first before rejection
+    await handleSaveChanges();
+    await rejectKraKpi();
+  };
+
   return (
     <div className="manager-approve-container">
       {showModal && (
         <Modal message={errorMessage} closeModal={closeModal} title={title} />
       )}
+
       <header className="manager-approve-header">
         <div className="manager-approve-title-section">
           <Link to="/manager-dashboard" className="icon-link">
@@ -122,24 +170,49 @@ const Approve = () => {
       </header>
 
       <div className="manager-approve-sections">
-        {krakpi.map((data, index) => (
-          <div key={index} className="manager-approve-section">
+        {krakpi.map((kra, kraIndex) => (
+          <div key={kraIndex} className="manager-approve-section">
             <div className="manager-approve-section-header">
-              <h3>KRA - {data.kraName}</h3>
-              <span>Weightage: {data.weightage}</span>
+              <h3>KRA - {kra.kraName}</h3>
+              <div className="kra-weightage-container">
+                <input
+                  type="text"
+                  value={kra.weightage||""}
+                  onChange={(e) =>
+                    handleKRAWeightageChange(kraIndex, e.target.value)
+                  }
+                  placeholder="KRA Weightage"
+                  className="manager-weightage-input"
+                />
+              </div>
             </div>
+
             <table className="manager-approve-table">
               <thead>
                 <tr>
-                  <th>KPI's</th>
+                  <th>KPI Description</th>
                   <th>Weightage</th>
                 </tr>
               </thead>
               <tbody>
-                {data.kpi.map((item, idx) => (
-                  <tr key={idx}>
-                    <td>{item.description}</td>
-                    <td>{item.weightage}</td>
+                {kra.kpi.map((kpiItem, kpiIndex) => (
+                  <tr key={kpiIndex}>
+                    <td>{kpiItem.description}</td>
+                    <td>
+                      <input
+                        type="text"
+                        value={kpiItem.weightage||""}
+                        onChange={(e) =>
+                          handleKPIWeightageChange(
+                            kraIndex,
+                            kpiIndex,
+                            e.target.value
+                          )
+                        }
+                        placeholder="KPI Weightage"
+                        className="manager-weightage-input"
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -152,12 +225,14 @@ const Approve = () => {
         <button
           className="manager-approve-submit-btn approve-btn"
           onClick={handleApproveClick}
+          disabled={loading}
         >
           Approve
         </button>
         <button
           className="manager-approve-submit-btn reject-btn"
           onClick={handleRejectClick}
+          disabled={loading}
         >
           Reject
         </button>

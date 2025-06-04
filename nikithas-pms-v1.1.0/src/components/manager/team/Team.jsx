@@ -5,6 +5,7 @@ import "./Team.css";
 import { FaSearch, FaHome } from "react-icons/fa";
 import logo from "../../../assets/images/nikithas-logo.png";
 // import Loader from "../../modal/loader/Loader";
+import {baseUrl} from '../../urls/CommenUrl'
 
 export default function TeamPage() {
   const [teamList, setTeamList] = useState([]);
@@ -18,7 +19,7 @@ export default function TeamPage() {
   const loadTeam = async () => {
     try {
       const result = await axios.get(
-        "http://localhost:8080/api/v1/pms/manager/employee-list/Pradeep Prahalada Rao Kubair"
+        `${baseUrl}/api/v1/pms/manager/employee-list/Pradeep Prahalada Rao Kubair`
       );
       setTeamList(result.data);
       // console.log(result.data)

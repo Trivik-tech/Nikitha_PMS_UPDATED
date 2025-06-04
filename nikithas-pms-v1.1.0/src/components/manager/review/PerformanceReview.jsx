@@ -5,6 +5,7 @@ import { FaHome } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
 import Modal from "../../modal/Modal";
 import axios from "axios";
+import {baseUrl} from '../../urls/CommenUrl'
 
 const PerformanceReview = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -40,7 +41,7 @@ const PerformanceReview = () => {
   const loadKraKpi = async (employeeId, reportingManager) => {
     try {
       const result = await axios.get(
-        `http://localhost:8080/api/v1/pms/manager/kra-kpi/${reportingManager}/${employeeId}`
+        `${baseUrl}/api/v1/pms/manager/kra-kpi/${reportingManager}/${employeeId}`
       );
       // console.log(result.data)
       const data = result.data;
@@ -170,7 +171,7 @@ const PerformanceReview = () => {
     };
 
     const result = await axios.patch(
-      `http://localhost:8080/api/v1/pms/manager/manager-review/${reportingManager}/${employeeId}`,
+      `${baseUrl}/api/v1/pms/manager/manager-review/${reportingManager}/${employeeId}`,
       payload
     );
     console.log(result);

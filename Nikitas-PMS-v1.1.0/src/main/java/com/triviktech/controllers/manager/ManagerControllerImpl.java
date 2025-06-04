@@ -92,7 +92,7 @@ public class ManagerControllerImpl implements ManagerController{
     }
 
     @Override
-    public ResponseEntity<Map<String, String>> approveKraKpi(String employeeId, String reportingManager, Map<String, Boolean> approve) {
-        return ResponseEntity.ok(managerService.approveKra(approve, employeeId, reportingManager));
+    public ResponseEntity<Map<String, String>> approveKraKpi(String employeeId, String reportingManager, KraKpiRequestDto kraKpiRequestDto) {
+        return ResponseEntity.ok(managerService.approveKra(kraKpiRequestDto, employeeId, reportingManager));
     }
 }

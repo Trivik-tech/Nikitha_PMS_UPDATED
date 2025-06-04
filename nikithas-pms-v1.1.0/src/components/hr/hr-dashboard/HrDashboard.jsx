@@ -1,6 +1,11 @@
 // HrDashboard.jsx
-import { React, useState, useEffect } from 'react';
-import { FaUsers, FaClipboardCheck, FaExclamationTriangle, FaChartLine } from 'react-icons/fa';
+import React, { useState, useEffect } from 'react';
+import {
+  FaUsers,
+  FaClipboardCheck,
+  FaExclamationTriangle,
+  FaChartLine
+} from 'react-icons/fa';
 import { Bar, Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -15,24 +20,35 @@ import {
 import { Bell } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import './HrDashboard.css';
-import './Responsive.css';
-
+import '../../urls/CommenUrl';
 import logo from '../../../assets/images/nikithas-logo.png';
 import profile from '../../../assets/images/profile1.jpg';
-import Notification from "../../modal/notification/Notification";
+import Notification from '../../modal/notification/Notification';
 import axios from 'axios';
+import { baseUrl } from '../../urls/CommenUrl';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+);
 
 const HrDashboard = () => {
   const navigate = useNavigate();
-
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [totalEmployees, setTotalEmployees] = useState(null);
   const [completionRate, setCompletionRate] = useState(0);
   const [pendingRate, setPendingRate] = useState(0);
   const [error, setError] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
+  const [departments, setDepartments] = useState([]);
+  const [employeeCount, setEmployeeCount] = useState([]);
+  const [completed, setCompleted] = useState(0);
+  const [pending, setPending] = useState(0);
 
   const isMobile = () => window.innerWidth <= 768;
 
@@ -47,7 +63,7 @@ const HrDashboard = () => {
   useEffect(() => {
     const fetchTotalEmployees = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/v1/pms/hr/total-employees");
+        const response = await axios.get(`${baseUrl}/api/v1/pms/hr/total-employees`);
         setTotalEmployees(response.data);
         setError(false);
       } catch (error) {
@@ -61,12 +77,11 @@ const HrDashboard = () => {
   useEffect(() => {
     const fetchPercentageData = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/v1/pms/hr/percentage");
+        const response = await axios.get(`${baseUrl}/api/v1/pms/hr/percentage`);
         setCompletionRate(response.data.completedPercentage);
         setPendingRate(response.data.pendingPercentage);
         setError(false);
       } catch (error) {
-        console.error("Error fetching percentage data:", error.message);
         setCompletionRate(0);
         setPendingRate(0);
         setError(true);
@@ -75,46 +90,131 @@ const HrDashboard = () => {
     fetchPercentageData();
   }, []);
 
+  useEffect(() => {
+    loadAllData();
+  }, []);
+
+  const loadAllData = () => {
+    getAllDepartment();
+    getDepartmentsEmployeeCount();
+    getKeyMatrix();
+  };
+
+  const getKeyMatrix = async () => {
+    try {
+      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/keyMatrix`);
+      setCompleted(result.data.completed);
+      setPending(result.data.pending);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getAllDepartment = async () => {
+    try {
+      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-departments`);
+      setDepartments(result.data.departments);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getDepartmentsEmployeeCount = async () => {
+    try {
+      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/employee-count-by-department`);
+      setEmployeeCount(result.data.employees);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const barData = {
+    labels: departments,
+    datasets: [
+      {
+        label: 'Total Employees',
+        data: employeeCount,
+        backgroundColor: '#007bff',
+        borderColor: '#0056b3',
+        borderWidth: 1,
+      },
+      {
+        label: 'Completed',
+        data: Array(departments.length).fill(Math.floor(Math.random() * 100)), // Placeholder
+        backgroundColor: '#28a745',
+        borderColor: '#1e7e34',
+        borderWidth: 1,
+      },
+      {
+        label: 'Pending',
+        data: Array(departments.length).fill(Math.floor(Math.random() * 50)), // Placeholder
+        backgroundColor: '#ffc107',
+        borderColor: '#e0a800',
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const barOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { padding: 20, font: { size: 12 } } },
+      title: {
+        display: true,
+        text: 'Department-wise Employee Statistics',
+        font: { size: 16, weight: 'bold' },
+        padding: { top: 10, bottom: 30 }
+      }
+    },
+    scales: {
+      x: {
+        beginAtZero: true,
+        ticks: { maxRotation: 45, minRotation: 0, font: { size: 11 } },
+        grid: { display: false }
+      },
+      y: {
+        beginAtZero: true,
+        ticks: { font: { size: 11 } },
+        grid: { color: '#e0e0e0' }
+      }
+    },
+    interaction: { intersect: false, mode: 'index' },
+    animation: { duration: 1000, easing: 'easeOutQuart' }
+  };
+
   const pieData = {
     labels: ['Completed', 'Pending'],
     datasets: [
       {
         data: [completionRate, pendingRate],
         backgroundColor: ['#28a745', '#ffa500'],
+        borderColor: ['#1e7e34', '#e0a800'],
+        borderWidth: 2,
       },
     ],
   };
 
   const pieOptions = {
     responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 20, font: { size: 12 } } },
+      title: {
+        display: true,
+        text: 'Overall Assessment Status',
+        font: { size: 16, weight: 'bold' },
+        padding: { top: 10, bottom: 20 }
+      }
+    },
     onClick: (event, elements) => {
       if (elements.length > 0) {
         const index = elements[0].index;
         if (index === 0) navigate('/hr/completed-assessments');
         else if (index === 1) navigate('/hr/pending-assessments');
       }
-    }
-  };
-
-  const barData = {
-    labels: ['IT', 'HR', 'Finance', 'Marketing', 'Sales'],
-    datasets: [
-      {
-        label: 'Total Employees',
-        data: [90, 60, 80, 70, 90],
-        backgroundColor: '#007bff',
-      },
-      {
-        label: 'Completed',
-        data: [80, 55, 70, 60, 75],
-        backgroundColor: '#28a745',
-      },
-      {
-        label: 'Pending',
-        data: [10, 5, 10, 10, 15],
-        backgroundColor: '#ffc107',
-      },
-    ],
+    },
+    animation: { duration: 1000, easing: 'easeOutQuart' }
   };
 
   const renderSidebarOverlay = () =>
@@ -142,7 +242,7 @@ const HrDashboard = () => {
           <button
             className="hamburger"
             aria-label="Toggle sidebar"
-            onClick={() => setSidebarOpen((prev) => !prev)}
+            onClick={() => setSidebarOpen(prev => !prev)}
           >
             ☰
           </button>
@@ -203,12 +303,12 @@ const HrDashboard = () => {
             <div className="hr-dashboard-stat-card">
               <FaClipboardCheck className="stat-card-icon complete" />
               <h2>Completed Assessments</h2>
-              <p>{completionRate}%</p>
+              <p>{completed}</p>
             </div>
             <div className="hr-dashboard-stat-card">
               <FaExclamationTriangle className="stat-card-icon pending" />
               <h2>Pending Assessments</h2>
-              <p>{pendingRate}%</p>
+              <p>{pending}</p>
             </div>
             <div className="hr-dashboard-stat-card">
               <FaChartLine className="stat-card-icon rate" />
@@ -219,11 +319,15 @@ const HrDashboard = () => {
 
           <section className="hr-dashboard-chart-container fade-in-up">
             <h2 className="hr-dashboard-assessment-heading">Assessment Status</h2>
-            <div className="hr-dashboard-chart-box hr-dashboard-bar-chart">
-              <Bar data={barData} options={{ responsive: true, scales: { y: { beginAtZero: true } } }} />
-            </div>
-            <div className="hr-dashboard-chart-box hr-dashboard-pie-chart">
-              <Pie data={pieData} options={pieOptions} />
+            <div className="hr-dashboard-charts-wrapper">
+              <div className="hr-dashboard-chart-box hr-dashboard-bar-chart">
+                <div className="chart-scroll-container">
+                  <Bar data={barData} options={barOptions} />
+                </div>
+              </div>
+              <div className="hr-dashboard-chart-box hr-dashboard-pie-chart">
+                <Pie data={pieData} options={pieOptions} />
+              </div>
             </div>
           </section>
         </main>

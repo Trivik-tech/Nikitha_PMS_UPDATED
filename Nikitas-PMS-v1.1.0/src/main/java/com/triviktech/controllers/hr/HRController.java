@@ -67,9 +67,12 @@ public interface HRController {
 
     @GetMapping("/employee-with-pms-initiated")
     ResponseEntity<List<EmployeeInfo>> pmsInitiatedEmployees();
-
+    
     @GetMapping("/completed")
     ResponseEntity<List<EmployeeWithPmsStatus>> getCompletedPmsForHR();
+
+    @PostMapping("/register-employee")
+    ResponseEntity<Map<String,String>> registerEmployee(@RequestBody Employee employee);
 
     @GetMapping("/pending")
     ResponseEntity<List<EmployeeWithPmsStatus>> getPendingPmsForHR();

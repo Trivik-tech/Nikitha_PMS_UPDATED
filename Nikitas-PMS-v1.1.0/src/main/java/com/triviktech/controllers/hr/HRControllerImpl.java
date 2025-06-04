@@ -117,6 +117,11 @@ public class HRControllerImpl implements HRController {
         return ResponseEntity.ok(hrService.pmsInitiatedEmployees());
     }
 
+    @Override
+    public ResponseEntity<Map<String, String>> registerEmployee(Employee employee) {
+        return new ResponseEntity<>(hrService.employeeRegistration(employee),HttpStatus.CREATED);
+    }
+
 
 
     public ResponseEntity<List<EmployeeWithPmsStatus>> getCompletedPmsForHR() {

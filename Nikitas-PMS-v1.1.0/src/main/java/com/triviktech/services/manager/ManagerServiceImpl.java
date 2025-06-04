@@ -381,30 +381,83 @@ public class ManagerServiceImpl implements ManagerService{
     }
 
     @Override
-    public Map<String, String> approveKra(Map<String, Boolean> approve, String employeeId, String reportingManager) {
+    public Map<String, String> approveKra(KraKpiRequestDto kraKpiRequestDto, String employeeId, String reportingManager) {
         Map<String, String> response = new HashMap<>();
-        Optional<EmployeeInformation> employeeData = employeeInformationRepository.findByReportingManagerAndEmpId(reportingManager, employeeId);
-        if(employeeData.isPresent()){
-            EmployeeInformation employee = employeeData.get();
-            Optional<KraKpi> kraKpi = kraKpiRepository.findByEmployeeInformation(employee);
-            if(kraKpi.isPresent()){
-                KraKpi kraKpi1 = kraKpi.get();
-                kraKpi1.setManagerApproval(approve.get("approveStatus"));
-                if(approve.get("approveStatus")){
-                    response.put("status", "kra kpi approved successfully");
-                }
-                else{
-                    response.put("status", "kra kpi rejected successfully");
-                }
-                kraKpiRepository.save(kraKpi1);
-            }
-            else{
-                throw new KraKpiNotFoundException("Kar Kpi not found for employee");
-            }
+        Optional<EmployeeInformation> employeeById = employeeInformationRepository.findById(employeeId);
+
+        if (employeeById.isEmpty()) {
+           throw new EmployeeNotFoundException(employeeId);
         }
-        else{
-            throw new EmployeeNotFoundException(employeeId);
+
+        EmployeeInformation employee = employeeById.get();
+        Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+
+        if (kraKpiOptional.isEmpty()) {
+            throw new KraKpiNotFoundException("Kra Kpi Not found for employee with id :"+employeeId);
         }
+
+        KraKpi kraKpi = kraKpiOptional.get();
+        kraKpi.setSelfCompleted(kraKpiRequestDto.getSelfCompleted());
+        kraKpi.setManagerApproval(kraKpiRequestDto.getManagerApproval());
+        Set<KRA> existingKras = kraKpi.getKra();
+        Set<KRA> updatedKras = new HashSet<>();
+
+        for (KraRequestDto kraDto : kraKpiRequestDto.getKra()) {
+            // Find existing or create new KRA
+            KRA kra = existingKras.stream()
+                    .filter(existingKra -> existingKra.getKraId().equals(kraDto.getKraId()))
+                    .findFirst()
+                    .orElse(new KRA());
+
+            kra.setKraKpi(kraKpi);
+            kra.setKraName(kraDto.getKraName());
+            kra.setWeightage(kraDto.getWeightage());
+
+            // Update KPIs
+            Set<KPI> existingKpis = kra.getKpi() != null ? kra.getKpi() : new HashSet<>();
+            Set<KPI> updatedKpis = new HashSet<>();
+
+            for (KpiRequestDto kpiDto : kraDto.getKpi()) {
+                KPI kpi = existingKpis.stream()
+                        .filter(existingKpi -> existingKpi.getKpiId().equals(kpiDto.getKpiId()))
+                        .findFirst()
+                        .orElse(new KPI());
+
+                kpi.setKra(kra);
+                kpi.setDescription(kpiDto.getDescription());
+                kpi.setWeightage(kpiDto.getWeightage());
+                kpi.setSelfScore(kpiDto.getSelfScore());
+                kpi.setManagerScore(kpiDto.getManagerScore());
+                kpi.setAverage((float) (kpiDto.getSelfScore() + kpiDto.getManagerScore()) / 2);
+                kpi.setReview2(kpiDto.getReview2());
+
+                updatedKpis.add(kpi);
+            }
+
+            // Remove KPIs that are not in the update
+            existingKpis.removeIf(existingKpi ->
+                    updatedKpis.stream().noneMatch(updatedKpi ->
+                            updatedKpi.getKpiId().equals(existingKpi.getKpiId()))
+            );
+
+            existingKpis.addAll(updatedKpis);
+            kra.setKpi(existingKpis);
+            updatedKras.add(kra);
+        }
+
+        // Remove KRAs that are not in the update
+        existingKras.removeIf(existingKra ->
+                updatedKras.stream().noneMatch(updatedKra ->
+                        updatedKra.getKraId().equals(existingKra.getKraId()))
+        );
+
+        existingKras.addAll(updatedKras);
+        kraKpi.setKra(existingKras);
+
+        KraKpi kraKpi1 = kraKpiRepository.saveAndFlush(kraKpi);
+        String msg=kraKpi1!=null?"Approved":"Something went wrong";
+        response.put("status",msg);
+
         return response ;
     }
 

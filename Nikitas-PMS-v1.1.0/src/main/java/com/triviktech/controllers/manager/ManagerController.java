@@ -53,7 +53,7 @@ public interface ManagerController {
     ResponseEntity<List<EmployeeInfo> > getManagerTeam(@PathVariable String reportingManager);
 
     @PatchMapping("/approve-krakpi/{employeeId}/{reportingManager}")
-    ResponseEntity<Map<String, String>> approveKraKpi(@PathVariable String employeeId, @PathVariable String reportingManager, @RequestBody Map<String, Boolean> approve);
+    ResponseEntity<Map<String, String>> approveKraKpi(@PathVariable String employeeId, @PathVariable String reportingManager, @RequestBody KraKpiRequestDto kraKpiRequestDto);
 
 
 }

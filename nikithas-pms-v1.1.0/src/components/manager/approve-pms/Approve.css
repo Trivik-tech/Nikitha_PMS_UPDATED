@@ -1,246 +1,198 @@
+/* Approve.css */
 html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    scrollbar-width: none;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  scrollbar-width: none;
 }
-
 body::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, Edge */
+  display: none;
 }
 
 .manager-approve-container {
-    width: 97vw;
-    height: 95vh;
-    overflow-y: auto;
-    background-color: #fff;
-    padding: 20px;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-    border-radius: 10px;
+  width: 97vw;
+  height: 95vh;
+  overflow-y: auto;
+  background-color: #fff;
+  padding: 20px;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  border-radius: 10px;
 }
 
 .manager-approve-title-section {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  position: relative;
 }
 
 .icon-link {
-    font-size: 24px;
-    color: #4f46e5;
-    text-decoration: none;
-    margin-right: auto; /* Pushes the title and logo to the right */
+  font-size: 24px;
+  color: #4f46e5;
+  text-decoration: none;
+  margin-right: auto;
 }
 
 .manager-approve-title {
-    flex-grow: 1;
-    text-align: left;
-    font-size: 30px;
-    font-weight: bold;
-    margin-left: 10px;
+  flex-grow: 1;
+  text-align: left;
+  font-size: 30px;
+  font-weight: bold;
+  margin-left: 10px;
 }
 
 .manager-approve-logo {
-    height: 100px;
-    margin-left: auto; /* Pushes logo to far right */
+  height: 100px;
+  margin-left: auto;
 }
 
 .manager-approve-filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin: 20px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 20px 0;
 }
 
 .manager-approve-filters label {
-    font-size: 14px;
-    text-align: center;
-    font-weight: bold;
+  font-size: 14px;
+  text-align: center;
+  font-weight: bold;
 }
 
 .manager-approve-filters input {
-    padding: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    width: 220px; 
-    margin-top: 10PX;
-    text-align: center;
-    background-color: #ebe9e9;
-    font-weight: bold;
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 220px;
+  margin-top: 10px;
+  text-align: center;
+  background-color: #ebe9e9;
+  font-weight: bold;
+}
+
+/* The label wrapping the KRA weightage text and input */
+.manager-weightage-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 150px; /* width to keep label and input on same line */
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* Input fields for both KRA and KPI weightage */
+.manager-weightage-input {
+  width: 150px !important;
+  text-align: center;
+  /* padding: 5px; */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #ebe9e9;
+  font-weight: bold;
+  margin-right: 70px;
+}
+
+.kra-weightage-container {
+  /* Use no auto margin so label aligns naturally */
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
 }
 
 .manager-approve-sections {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 
 .manager-approve-section {
-    margin-bottom: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
-    padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  padding: 10px;
 }
 
 .manager-approve-section-header {
-    background-color: #f7f7f7;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    box-sizing: border-box;
+  background-color: #f7f7f7;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .manager-approve-section-header h3 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.manager-approve-section-header span {
-    font-size: 14px;
-    color: #666;
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .manager-approve-submit-btn {
-   
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
-.manager-approve-submit-btn.approve-btn{
+
+.manager-approve-submit-btn.approve-btn {
   background-color: #4f46e5;
   color: #fff;
 }
-.manager-approve-submit-btn.reject-btn{
+
+.manager-approve-submit-btn.reject-btn {
   background-color: red;
   color: #fff;
 }
-.manager-approve-submit-btn.reject-btn:hover{
+
+.manager-approve-submit-btn.reject-btn:hover,
+.manager-approve-submit-btn.approve-btn:hover {
   transform: scale(1.1);
 }
-.manager-approve-submit-btn.approve-btn:hover{
-  transform: scale(1.1);
-}
-
-
 
 .manager-approve-table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed; 
-    background-color: #fff;
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background-color: #fff;
 }
 
-.manager-approve-table th, .manager-approve-table td {
-    border: 1px solid #ddd;
-    padding: 15px;
-    font-size: 14px;
-    vertical-align: middle;
-    box-sizing: border-box;
+.manager-approve-table th,
+.manager-approve-table td {
+  border: 1px solid #ddd;
+  padding: 15px;
+  font-size: 14px;
+  vertical-align: middle;
+  box-sizing: border-box;
 }
 
 .manager-approve-table th:nth-child(1),
 .manager-approve-table td:nth-child(1) {
-    width: 25%; 
-    text-align: left;
+  width: 75%;
+  text-align: left;
 }
 
 .manager-approve-table th:nth-child(2),
 .manager-approve-table td:nth-child(2) {
-    width: 10%; 
-    text-align: center;
-}
-
-.manager-approve-table th:nth-child(3),
-.manager-approve-table td:nth-child(3),
-.manager-approve-table th:nth-child(4),
-.manager-approve-table td:nth-child(4),
-.manager-approve-table th:nth-child(5),
-.manager-approve-table td:nth-child(5) {
-    width: 12%; 
-    text-align: center;
-}
-
-.manager-approve-table th:nth-child(6),
-.manager-approve-table td:nth-child(6) {
-    width: 12%; 
-    text-align: center;
+  width: 25%;
+  text-align: center;
 }
 
 .manager-approve-table input {
-    width: 90%;
-    padding: 4px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    text-align: center;
-    box-sizing: border-box;
-}
-
-.manager-approve-overall-section {
-    margin-top: 30px;
-    padding: 15px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-}
-
-.manager-approve-overall-table {
-    width: 100%;
-    margin-top: 10px;
-    border-collapse: collapse;
-    table-layout: fixed;
-}
-
-.manager-approve-overall-table th, .manager-approve-overall-table td {
-    padding: 10px;
-    border: 1px solid #ddd;
-    text-align: center;
-    background-color: #fff;
-}
-
-.manager-approve-overall-remarks {
-    margin-top: 20px;
-}
-
-.manager-approve-overall-remarks textarea {
-    width: 100%;
-    height: 100px;
-    margin-top: 5px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    resize: none;
+  width: 90%;
+  padding: 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  text-align: center;
+  box-sizing: border-box;
 }
 
 .manager-approve-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 15px;
-}
-
-.manager-approve-draft-btn, .manager-approve-submit-review-btn, .manager-approve-submit-review-btn-reject{
-    padding: 8px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.manager-approve-submit-review-btn {
-    background-color: #4f46e5;
-    color: white;
-}
-.manager-approve-submit-review-btn-reject {
-    background-color: red;
-    color: white;
-}
-
-.manager-approve-draft-btn {
-    background-color: #e0e0e0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
 }
