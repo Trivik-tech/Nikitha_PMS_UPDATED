@@ -4,43 +4,55 @@ import { FaHome } from "react-icons/fa";
 import "./EmployeeInfo.css";
 import logo from "../../../assets/images/nikithas-logo.png";
 import profile from "../../../assets/images/profile1.jpg";
-import Loader from "../../modal/loader/Loader"; // Assuming Loader is a component that shows a loading spinner
+import Loader from "../../modal/loader/Loader";
 import axios from "axios";
+import { baseUrl } from "../../urls/CommenUrl";
 
 const EmployeeInfo = () => {
   const [employeeData, setEmployeeData] = useState(null);
-  const [loading, setLoading] = useState(true); // Loading state to show loader initially
-  const { id } = useParams(); // Get the 'id' from the URL params
+  const [loading, setLoading] = useState(true);
+  const { id } = useParams();
+
+  const formatDateToDDMMYYYY = (dateString) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    if (isNaN(date)) return "-";
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
 
   useEffect(() => {
     const loadEmployeeData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/v1/pms/hr/get-employee/${id}`
+          `${baseUrl}/api/v1/pms/hr/get-employee/${id}`
         );
 
-        let dob="" +response.data.dob;
-        response.data.dob=dob.substring(0,10)
-        let doj=""+response.data.dateOfJoining;
-        response.data.dateOfJoining=doj.substring(0,10)
-        setEmployeeData(response.data);
-        // console.log(response.data.response)
+        const data = response.data;
+
+        data.dob = formatDateToDDMMYYYY(data.dob);
+        data.dateOfJoining = formatDateToDDMMYYYY(data.dateOfJoining);
+        data.lastWorkingDate = formatDateToDDMMYYYY(data.lastWorkingDate);
+
+        setEmployeeData(data);
       } catch (error) {
         console.error("Error fetching employee data:", error);
       } finally {
-        setLoading(false); // Set loading to false after the API call is done
+        setLoading(false);
       }
     };
 
     loadEmployeeData();
-  }, [id]); // Re-run the effect whenever the 'id' changes
+  }, [id]);
 
   if (loading) {
-    return <Loader />; // Show the loader while fetching data
+    return <Loader />;
   }
 
   if (!employeeData) {
-    return <div>No employee data available.</div>; // Display a message if no data is available
+    return <div>No employee data available.</div>;
   }
 
   return (
@@ -88,7 +100,7 @@ const EmployeeInfo = () => {
                 </li>
                 <li>
                   <strong>Date of Birth:</strong>{" "}
-                  {employeeData.dob || "1990-01-01"}
+                  {employeeData.dob || "-"}
                 </li>
                 <li>
                   <strong>Category:</strong>{" "}
@@ -118,11 +130,11 @@ const EmployeeInfo = () => {
                 </li>
                 <li>
                   <strong>Date of Joining:</strong>{" "}
-                  {employeeData.dateOfJoining || "2015-05-20"}
+                  {employeeData.dateOfJoining || "-"}
                 </li>
                 <li>
                   <strong>Last Working Date:</strong>{" "}
-                  {employeeData.lastWorkingDate || "00-00-00"}
+                  {employeeData.lastWorkingDate || "-"}
                 </li>
               </ul>
             </div>
@@ -143,7 +155,6 @@ const EmployeeInfo = () => {
                 <strong>Mobile Number:</strong>{" "}
                 {employeeData.mobileNumber || "9876543210"}
               </li>
-              {/* <li><strong>Location:</strong> {employeeData.location.name}, {employeeData.location.state.name}, {employeeData.location.zipCode || "560001"}</li> */}
             </ul>
           </div>
         </div>

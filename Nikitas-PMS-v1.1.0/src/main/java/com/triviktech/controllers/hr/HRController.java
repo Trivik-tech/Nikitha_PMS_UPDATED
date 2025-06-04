@@ -66,6 +66,9 @@ public interface HRController {
     @GetMapping("/employee-with-pms-initiated")
     ResponseEntity<List<EmployeeInfo>> pmsInitiatedEmployees();
 
+    @PostMapping("/register-employee")
+    ResponseEntity<Map<String,String>> registerEmployee(@RequestBody Employee employee);
+
 
 
 

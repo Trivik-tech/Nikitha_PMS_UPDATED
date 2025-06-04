@@ -7,6 +7,9 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import Loader from '../../modal/loader/Loader';
 import Modal from '../../modal/Modal';
+import '../../urls/CommenUrl'
+import { baseUrl } from "../../urls/CommenUrl";
+
 
 const EmployeeDetails = () => {
   const [activeTab, setActiveTab] = useState("employment");
@@ -23,6 +26,7 @@ const EmployeeDetails = () => {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.style.display = 'none';
+    
 
     fileInput.addEventListener('change', (event) => {
       const selectedFile = event.target.files[0];
@@ -54,7 +58,7 @@ const EmployeeDetails = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/v1/pms/hr/upload",
+        `${baseUrl}/api/v1/pms/hr/upload`,
         formData,
         {
           headers: {

@@ -5,6 +5,7 @@ import { FaHome } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
 import Modal from "../../modal/Modal";
 import axios from "axios";
+import {baseUrl} from '../../urls/CommenUrl'
 
 const PerformanceReview = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -49,7 +50,7 @@ const PerformanceReview = () => {
   useEffect(() => {
     const loadKraKpi = async () => {
       try {
-        const result = await axios.get(`http://localhost:8080/api/v1/pms/employee/kra-kpi-list/${employeeId}`);
+        const result = await axios.get(`${baseUrl}/api/v1/pms/employee/kra-kpi-list/${employeeId}`);
         setKraKpi(result.data.kra);
         setDepartment(result.data.employee.department.name || "Engineering");
         setDesignation(result.data.employee.currentDesignation);
@@ -95,7 +96,7 @@ const PerformanceReview = () => {
 
       // console.log(employeeId.id)
 
-     const result= await axios.put(`http://localhost:8080/api/v1/pms/employee/self-review/${employeeId}`, payload);
+     const result= await axios.put(`${baseUrl}/api/v1/pms/employee/self-review/${employeeId}`, payload);
       console.log("Review submitted:", payload);
       console.log(result.data)
     } catch (error) {

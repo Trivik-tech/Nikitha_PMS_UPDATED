@@ -6,6 +6,7 @@ import logo from "../../../assets/images/nikithas-logo.png";
 
 import PmsInitiated from "../../modal/pms/PmsInitiated";
 import "./StartPms.css";
+import { baseUrl } from "../../urls/CommenUrl";
 
 export default function StartPms() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,7 +22,7 @@ export default function StartPms() {
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/v1/pms/hr/employee-with-pms-initiated");
+      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/employee-with-pms-initiated`);
       const employees = response.data;
       setTeam(employees);
       setHasServerError(false);
@@ -72,7 +73,7 @@ export default function StartPms() {
     }
 
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/pms/hr/all-employees/${search}`);
+      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees/${search}`);
       setTeam(response.data);
       setHasServerError(false);
     } catch (error) {
@@ -89,7 +90,7 @@ export default function StartPms() {
       }
       // console.log(id)
 
-      const result=await axios.patch(`http://localhost:8080/api/v1/pms/hr/pms-initiated/${id}`,pms);
+      const result=await axios.patch(`${baseUrl}/api/v1/pms/hr/pms-initiated/${id}`,pms);
       console.log(result.data)
 
     }catch(error){

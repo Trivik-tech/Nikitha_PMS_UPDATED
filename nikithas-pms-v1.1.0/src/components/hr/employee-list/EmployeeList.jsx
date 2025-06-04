@@ -4,7 +4,8 @@ import { FaSearch, FaHome, FaEdit, FaTrash } from "react-icons/fa";
 import logo from "../../../assets/images/nikithas-logo.png";
 import "./EmployeeList.css";
 import axios from "axios";
-import DeleteConfirmation from "../../modal/delete-confirmation/DeleteConfirmation"
+import DeleteConfirmation from "../../modal/delete-confirmation/DeleteConfirmation";
+import { baseUrl } from "../../urls/CommenUrl";
 
 export default function EmployeeList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,7 +20,7 @@ export default function EmployeeList() {
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/v1/pms/hr/all-employees");
+      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees`);
       const employees = response.data;
       setTeam(employees);
       setHasServerError(false);
@@ -34,7 +35,7 @@ export default function EmployeeList() {
   }, []);
 
   const entriesPerPage = 10;
-  const filteredTeam = team.filter(member =>
+  const filteredTeam = team.filter((member) =>
     (member.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
     (member.emailId?.toLowerCase() || "").includes(searchTerm.toLowerCase())
   );
@@ -62,7 +63,7 @@ export default function EmployeeList() {
     }
 
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/pms/hr/all-employees/${search}`);
+      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees/${search}`);
       const employees = response.data;
       setTeam(employees);
       setHasServerError(false);
@@ -72,10 +73,9 @@ export default function EmployeeList() {
     }
   };
 
-  const handleDeleteClick = (id,employeeName) => {
+  const handleDeleteClick = (id, employeeName) => {
     setEmployeeToDelete(id);
-    setEmployeeName(employeeName)
-    
+    setEmployeeName(employeeName);
     setModalOpen(true);
   };
 
@@ -83,15 +83,23 @@ export default function EmployeeList() {
     if (!employeeToDelete) return;
 
     try {
-      console.log(employeeToDelete)
-      await axios.delete(`http://localhost:8080/api/v1/pms/hr/delete-employee/${employeeToDelete}`);
-      console.log(`Employee with ID ${employeeToDelete} deleted`);
+      await axios.delete(`${baseUrl}/api/v1/pms/hr/delete-employee/${employeeToDelete}`);
       setEmployeeToDelete(null);
       setModalOpen(false);
       fetchEmployees();
     } catch (error) {
       console.error("Error deleting employee:", error.message);
     }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    if (isNaN(date)) return "-";
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
   };
 
   return (
@@ -125,6 +133,7 @@ export default function EmployeeList() {
         {hasServerError && (
           <div className="employee-list-error-message">
             {/* Show error if needed */}
+            Failed to fetch data from server. Please try again later.
           </div>
         )}
 
@@ -136,6 +145,7 @@ export default function EmployeeList() {
                 <th>Name</th>
                 <th>Department</th>
                 <th>Email</th>
+                <th>Date of Joining</th>
                 <th>Role</th>
                 <th>Action</th>
               </tr>
@@ -151,13 +161,14 @@ export default function EmployeeList() {
                   <td>{member.name || "-"}</td>
                   <td>{member.department || "-"}</td>
                   <td>{member.officialEmailId || "-"}</td>
+                  <td>{formatDate(member.dateOfJoining)}</td>
                   <td>{member.role || "-"}</td>
                   <td onClick={(e) => e.stopPropagation()}>
                     <FaEdit className="employee-list-edit-icon" title="Edit" />
                     <FaTrash
                       className="employee-list-delete-icon"
                       title="Delete"
-                      onClick={() => handleDeleteClick(member.empId,member.name)}
+                      onClick={() => handleDeleteClick(member.empId, member.name)}
                     />
                   </td>
                 </tr>
@@ -168,9 +179,13 @@ export default function EmployeeList() {
 
         {!hasServerError && (
           <div className="employee-list-pagination">
-            <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>Prev</button>
+            <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+              Prev
+            </button>
             <span>Page {currentPage} of {totalPages}</span>
-            <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>Next</button>
+            <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
+              Next
+            </button>
           </div>
         )}
       </div>

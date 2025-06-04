@@ -5,16 +5,15 @@ import { FaHome } from "react-icons/fa";
 import "./Animation.css";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { baseUrl } from "../../urls/CommenUrl";
 
 const Krakpi = () => {
   const [kraList, setKraList] = useState([
     {
       kraName: "",
-      weightage: "",
       kpi: [
         {
           description: "",
-          weightage: "",
         },
       ],
     },
@@ -23,12 +22,6 @@ const Krakpi = () => {
   const handleKRAChange = (index, value) => {
     const updatedList = [...kraList];
     updatedList[index].kraName = value;
-    setKraList(updatedList);
-  };
-
-  const handleKRAWeightageChange = (index, value) => {
-    const updatedList = [...kraList];
-    updatedList[index].weightage = value;
     setKraList(updatedList);
   };
 
@@ -43,11 +36,9 @@ const Krakpi = () => {
       ...kraList,
       {
         kraName: "",
-        weightage: "",
         kpi: [
           {
             description: "",
-            weightage: "",
           },
         ],
       },
@@ -64,7 +55,6 @@ const Krakpi = () => {
     const updatedList = [...kraList];
     updatedList[kraIndex].kpi.push({
       description: "",
-      weightage: "",
     });
     setKraList(updatedList);
   };
@@ -82,7 +72,7 @@ const Krakpi = () => {
         remark: "",
         selfCompleted: false,
         managerCompleted: false,
-        dueDate: "", // Updated format
+        dueDate: "",
         managerReviewDate: null,
         selfReviewDate: null,
         pmsInitiated: false,
@@ -90,24 +80,23 @@ const Krakpi = () => {
         managerApproval: false,
         kra: kraList.map((kra) => ({
           kraName: kra.kraName,
-          weightage: kra.weightage,
+          weightage: 0,
           kpi: kra.kpi.map((kpiItem) => ({
             description: kpiItem.description,
-            weightage: kpiItem.weightage,
+            weightage: 0,
             selfScore: 0,
             managerScore: 0,
             review2: 0,
           })),
         })),
       };
-      
-      
-      console.log(payload)
+
+      console.log(payload);
       const response = await axios.post(
-        "http://localhost:8080/api/v1/pms/employee/register-kra-kpi",
+        `${baseUrl}/api/v1/pms/employee/register-kra-kpi`,
         payload
       );
-      
+
       console.log("Submitted successfully:", response.data);
       alert("KRA/KPI submitted successfully!");
     } catch (error) {
@@ -158,15 +147,6 @@ const Krakpi = () => {
                 onChange={(e) => handleKRAChange(kraIndex, e.target.value)}
                 className="employee-module-kra-input"
               />
-              <input
-                type="text"
-                placeholder="Enter KRA Weightage"
-                value={kraItem.weightage}
-                onChange={(e) =>
-                  handleKRAWeightageChange(kraIndex, e.target.value)
-                }
-                className="employee-module-weightage-input"
-              />
               <button
                 className="employee-module-remove-btn employee-module-btn-hover"
                 onClick={() => removeKRA(kraIndex)}
@@ -193,20 +173,6 @@ const Krakpi = () => {
                     )
                   }
                   className="employee-module-kpi-input"
-                />
-                <input
-                  type="text"
-                  placeholder="Enter Weightage"
-                  value={kpiItem.weightage}
-                  onChange={(e) =>
-                    handleKPIChange(
-                      kraIndex,
-                      kpiIndex,
-                      "weightage",
-                      e.target.value
-                    )
-                  }
-                  className="employee-module-weightage-input"
                 />
                 <button
                   className="employee-module-remove-btn employee-module-btn-hover"
