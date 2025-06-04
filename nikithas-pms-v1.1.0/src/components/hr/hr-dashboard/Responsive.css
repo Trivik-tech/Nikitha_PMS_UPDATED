@@ -11,6 +11,32 @@
     overflow-y: auto;          /* ✅ Enables vertical scrolling */
     
   }
+  /* Show only on desktop (width > 768px) */
+.desktop-only {
+  display: inline-block;
+}
+
+@media screen and (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
+}
+
+  .logout-button {
+   background-color: black;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+.logout-button:hover {
+ background-color: #c82333;/* Light red hover */
+}
+
   
 
   .hr-dashboard {
@@ -25,7 +51,7 @@
     top: 0;
     left: 0;
     width: 240px;
-    height: 100vh;
+    height: 89vh;
     background-color: #f4f4f4;
     z-index: 1001;
     transform: translateX(-100%);
@@ -33,7 +59,11 @@
     overflow-y: auto;          /* ✅ Allows scrolling inside sidebar if content overflows */
     pointer-events: none; 
     overflow-x: hidden;     /* ✅ Prevents sidebar from blocking scroll/touch when hidden */
+    margin-top: 2px;
+    
   }
+
+
 
   .hr-dashboard-sidebar.open {
     transform: translateX(0);
@@ -151,6 +181,21 @@
   .hr-dashboard-title {
     font-size: 1.3rem;
   }
+  .logout-button {
+ background-color: black;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.3s ease
+}
+
+.logout-button:hover {
+ background-color: #c82333;/* Light red hover */
+}
+
 }
 
 }

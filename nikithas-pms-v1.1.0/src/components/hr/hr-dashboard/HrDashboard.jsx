@@ -123,6 +123,21 @@ const HrDashboard = () => {
             <li><Link to="/employee-list">Employee List</Link></li>
             <li><Link to="/hr-startpms">Employee Performance</Link></li>
             <li><Link to="/hr-profile">My Profile</Link></li>
+            {isMobile() && (
+  <li>
+    <button
+      onClick={() => {
+        // Add your logout logic here, e.g., clear auth tokens and navigate
+        localStorage.clear();
+        navigate('/');
+      }}
+      className="logout-button"
+    >
+      Logout
+    </button>
+  </li>
+)}
+
           </ul>
         </aside>
         {renderSidebarOverlay()}
@@ -135,6 +150,17 @@ const HrDashboard = () => {
   </div>
   <div className="hr-dashboard-actions">
     <Bell className="notification-icon" onClick={() => setNotificationOpen(!notificationOpen)} />
+       {/* Logout button visible only on large screens */}
+    <button
+      className="hr-dashboard-logoutButton desktop-only"
+      onClick={() => {
+        localStorage.clear();
+        navigate('/');
+      }}
+    >
+      Logout
+    </button>
+  
   </div>
 </header>
 
