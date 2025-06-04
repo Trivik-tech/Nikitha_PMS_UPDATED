@@ -48,10 +48,10 @@
 
   .hr-dashboard-sidebar {
     position: fixed;
-    top: 0;
+    top: 1;
     left: 0;
     width: 240px;
-    height: 89vh;
+    height: 88vh;
     background-color: #f4f4f4;
     z-index: 1001;
     transform: translateX(-100%);
@@ -59,7 +59,7 @@
     overflow-y: auto;          /* ✅ Allows scrolling inside sidebar if content overflows */
     pointer-events: none; 
     overflow-x: hidden;     /* ✅ Prevents sidebar from blocking scroll/touch when hidden */
-    margin-top: 2px;
+    margin-top: 15px;
     
   }
 
