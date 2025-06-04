@@ -5,6 +5,7 @@ import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
+import com.triviktech.payloads.response.employee.PmsPercentageDto;
 import com.triviktech.payloads.response.employeeslist.EmployeesList;
 import com.triviktech.payloads.response.global.Response;
 
@@ -42,40 +43,30 @@ public interface HRController {
     @GetMapping("/all-employees/{search}")
     ResponseEntity<List<EmployeeInfo>> searchEmployee(@PathVariable String search);
 
-
     @DeleteMapping("/delete-employee/{employeeId}")
-    ResponseEntity<Map<String,String>> deleteEmployee(@PathVariable String employeeId);
-
+    ResponseEntity<Map<String, String>> deleteEmployee(@PathVariable String employeeId);
 
     @PutMapping("/update-employee/{empId}")
-    ResponseEntity<EmployeeInfo>updateEmployee(@PathVariable String empId,@RequestBody Employee employee);
+    ResponseEntity<EmployeeInfo> updateEmployee(@PathVariable String empId, @RequestBody Employee employee);
 
     @GetMapping("/employee-list")
     ResponseEntity<List<EmployeeInfo>> employeeListWithKraKpiApproved();
 
-
     @GetMapping("/get-departments")
-    ResponseEntity<Map<String,Object>>   getDepartment();
-
+    ResponseEntity<Map<String, Object>> getDepartment();
 
     @GetMapping("/employee-count-by-department")
-    ResponseEntity<Map<String, List<Long>>>   employeeCount();
-
+    ResponseEntity<Map<String, List<Long>>> employeeCount();
 
     @GetMapping("/keyMatrix")
-    ResponseEntity <Map<String, Integer> >keyMatrix();
+    ResponseEntity<Map<String, Integer>> keyMatrix();
 
     @PatchMapping("/pms-initiated/{employeeId}")
-    ResponseEntity<Map<String,String>> pmsInitiated(@PathVariable String employeeId,@RequestBody Map<String,Boolean> pms);
-
+    ResponseEntity<Map<String, String>> pmsInitiated(@PathVariable String employeeId,
+            @RequestBody Map<String, Boolean> pms);
 
     @GetMapping("/employee-with-pms-initiated")
     ResponseEntity<List<EmployeeInfo>> pmsInitiatedEmployees();
-
-
-
-
-
 
     @GetMapping("/completed")
     ResponseEntity<List<EmployeeWithPmsStatus>> getCompletedPmsForHR();
@@ -83,5 +74,6 @@ public interface HRController {
     @GetMapping("/pending")
     ResponseEntity<List<EmployeeWithPmsStatus>> getPendingPmsForHR();
 
-
+    @GetMapping("/percentage")
+    ResponseEntity<PmsPercentageDto> getPmsPercentageForHR();
 }

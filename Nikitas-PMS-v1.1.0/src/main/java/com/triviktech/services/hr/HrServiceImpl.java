@@ -21,6 +21,7 @@ import com.triviktech.payloads.response.address.StateResponseDto;
 import com.triviktech.payloads.response.department.DepartmentResponseDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
+import com.triviktech.payloads.response.employee.PmsPercentageDto;
 import com.triviktech.payloads.response.employeeslist.EmployeesList;
 import com.triviktech.payloads.response.global.Response;
 import com.triviktech.payloads.response.hr.HrResponseDto;
@@ -150,13 +151,17 @@ public class HrServiceImpl implements HrService {
 
     @Override
     public HrResponseDto findHrById(String hrId) {
-        // HR hr = hrRepository.findById(hrId).orElseThrow(() -> new HRNotFoundException(hrId));
+        // HR hr = hrRepository.findById(hrId).orElseThrow(() -> new
+        // HRNotFoundException(hrId));
         //
         // HrResponseDto hrResponseDto = mapToHrResponseDto(hr);
         //
-        // CountryResponseDto countryResponseDto = mapToCountryResponseDto(hr.getLocation().getState().getCountry());
-        // StateResponseDto stateResponseDto = mapToStateResponseDto(hr.getLocation().getState());
-        // LocationResponseDto locationResponseDto = mapToLocationResponseDto(hr.getLocation());
+        // CountryResponseDto countryResponseDto =
+        // mapToCountryResponseDto(hr.getLocation().getState().getCountry());
+        // StateResponseDto stateResponseDto =
+        // mapToStateResponseDto(hr.getLocation().getState());
+        // LocationResponseDto locationResponseDto =
+        // mapToLocationResponseDto(hr.getLocation());
         // stateResponseDto.setCountry(countryResponseDto);
         // locationResponseDto.setState(stateResponseDto);
         // hrResponseDto.setLocationResponseDto(locationResponseDto);
@@ -167,11 +172,13 @@ public class HrServiceImpl implements HrService {
         // System.out.println(hr.getDepartments());
         // hrResponseDto.setDepartments(departmentsDto);
 
-        // Set<ProjectResponseDto> projectResponseDtos = hr.getProjects().stream().map(this::mapToProjectResponseDto).collect(Collectors.toSet());
+        // Set<ProjectResponseDto> projectResponseDtos =
+        // hr.getProjects().stream().map(this::mapToProjectResponseDto).collect(Collectors.toSet());
         // hrResponseDto.setProjects(projectResponseDtos);
 
-        // Set<ProjectResponseDto> projectResponseDtos = hr.getProjects().stream().map(this::mapToProjectResponseDto)
-        //         .collect(Collectors.toSet());
+        // Set<ProjectResponseDto> projectResponseDtos =
+        // hr.getProjects().stream().map(this::mapToProjectResponseDto)
+        // .collect(Collectors.toSet());
         // hrResponseDto.setProjects(projectResponseDtos);
 
         // Set<ManagerResponseDto> managerResponseDtos =
@@ -268,8 +275,7 @@ public class HrServiceImpl implements HrService {
 
         return List.of(
                 "Managers Processed: " + managerCount,
-                "Employees Processed: " + employeeCount
-        );
+                "Employees Processed: " + employeeCount);
     }
 
     @Override
@@ -364,7 +370,8 @@ public class HrServiceImpl implements HrService {
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
             // Convert date fields to String
-            String lwdStr = employee.getLastWorkingDate() != null ? formatter.format(employee.getLastWorkingDate()) : null;
+            String lwdStr = employee.getLastWorkingDate() != null ? formatter.format(employee.getLastWorkingDate())
+                    : null;
 
             // Set values
             employee1.setBranch(employee.getBranch());
@@ -394,65 +401,109 @@ public class HrServiceImpl implements HrService {
         throw new EmployeeNotFoundException(empId);
     }
 
-  @Override
-public List<EmployeeWithPmsStatus> getCompletedPmsForHR() {
-    return employeeInformationRepository.findAll().stream()
-        .map(employee -> {
+    @Override
+    public List<EmployeeWithPmsStatus> getCompletedPmsForHR() {
+        return employeeInformationRepository.findAll().stream()
+                .map(employee -> {
+                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+                    if (kraKpiOptional.isEmpty())
+                        return null;
+
+                    KraKpi kraKpi = kraKpiOptional.get();
+
+                    EmployeeWithPmsStatus dto = new EmployeeWithPmsStatus();
+                    dto.setName(employee.getName());
+                    dto.setOfficialEmailId(employee.getOfficialEmailId());
+                    dto.setPmsInitiated(kraKpi.getPmsInitiated());
+                    dto.setEmpId(employee.getEmpId());
+                    dto.setCurrentDesignation(employee.getCurrentDesignation());
+                    DepartmentResponseDto departmentResponseDto = new DepartmentResponseDto();
+                    departmentResponseDto.setName(employee.getDepartment().getName());
+                    departmentResponseDto.setDepartmentId(employee.getDepartment().getDepartmentId());
+                    dto.setDepartment(departmentResponseDto);
+                    dto.setSelfCompleted(kraKpi.isSelfCompleted());
+                    dto.setManagerCompleted(kraKpi.isManagerCompleted());
+
+                    if (!Boolean.TRUE.equals(kraKpi.getPmsInitiated()) ||
+                            !(kraKpi.isSelfCompleted() && kraKpi.isManagerCompleted())) {
+                        return null;
+                    }
+
+                    return dto;
+                })
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    @Override
+    public List<EmployeeWithPmsStatus> getPendingPmsForHR() {
+        return employeeInformationRepository.findAll().stream()
+                .map(employee -> {
+                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+                    if (kraKpiOptional.isEmpty())
+                        return null;
+
+                    KraKpi kraKpi = kraKpiOptional.get();
+
+                    EmployeeWithPmsStatus dto = new EmployeeWithPmsStatus();
+                    dto.setName(employee.getName());
+                    dto.setOfficialEmailId(employee.getOfficialEmailId());
+                    dto.setPmsInitiated(kraKpi.getPmsInitiated());
+                    dto.setEmpId(employee.getEmpId());
+                    dto.setCurrentDesignation(employee.getCurrentDesignation());
+                    DepartmentResponseDto departmentResponseDto = new DepartmentResponseDto();
+                    departmentResponseDto.setName(employee.getDepartment().getName());
+                    departmentResponseDto.setDepartmentId(employee.getDepartment().getDepartmentId());
+                    dto.setDepartment(departmentResponseDto);
+                    dto.setSelfCompleted(kraKpi.isSelfCompleted());
+                    dto.setManagerCompleted(kraKpi.isManagerCompleted());
+
+                    if (!Boolean.TRUE.equals(kraKpi.getPmsInitiated()) ||
+                            (kraKpi.isSelfCompleted() && kraKpi.isManagerCompleted())) {
+                        return null;
+                    }
+
+                    return dto;
+                })
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    @Override
+    public PmsPercentageDto getPmsPercentageForHR() {
+        List<EmployeeInformation> employees = employeeInformationRepository.findAll();
+
+        long totalInitiated = 0;
+        long completedCount = 0;
+
+        for (EmployeeInformation employee : employees) {
             Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
-            if (kraKpiOptional.isEmpty()) return null;
+            if (kraKpiOptional.isEmpty())
+                continue;
 
             KraKpi kraKpi = kraKpiOptional.get();
 
-            EmployeeWithPmsStatus dto = new EmployeeWithPmsStatus();
-            dto.setName(employee.getName());
-            dto.setCurrentDesignation(employee.getCurrentDesignation());
-           DepartmentResponseDto departmentResponseDto =new DepartmentResponseDto();
-            departmentResponseDto.setName(employee.getDepartment().getName());
-            dto.setDepartment(departmentResponseDto);
-            dto.setSelfCompleted(kraKpi.isSelfCompleted());
-            dto.setManagerCompleted(kraKpi.isManagerCompleted());
+            // Only include if PMS is initiated
+            if (!Boolean.TRUE.equals(kraKpi.getPmsInitiated()))
+                continue;
 
-            
-            if (!Boolean.TRUE.equals(kraKpi.getPmsInitiated()) ||
-                !(kraKpi.isSelfCompleted() && kraKpi.isManagerCompleted())) {
-                return null;
+            totalInitiated++;
+
+            // Count as completed only if both self and manager parts are done
+            if (kraKpi.isSelfCompleted() && kraKpi.isManagerCompleted()) {
+                completedCount++;
             }
+        }
 
-            return dto;
-        })
-        .filter(Objects::nonNull)
-        .toList();
-}
+        double completedPercentage = totalInitiated > 0
+                ? (completedCount * 100.0) / totalInitiated
+                : 0.0;
 
-   @Override
-public List<EmployeeWithPmsStatus> getPendingPmsForHR() {
-    return employeeInformationRepository.findAll().stream()
-        .map(employee -> {
-            Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
-            if (kraKpiOptional.isEmpty()) return null;
+        double pendingPercentage = 100.0 - completedPercentage;
 
-            KraKpi kraKpi = kraKpiOptional.get();
+        return new PmsPercentageDto(completedPercentage, pendingPercentage);
+    }
 
-            EmployeeWithPmsStatus dto = new EmployeeWithPmsStatus();
-            dto.setName(employee.getName());
-            dto.setCurrentDesignation(employee.getCurrentDesignation());
-            DepartmentResponseDto departmentResponseDto =new DepartmentResponseDto();
-            departmentResponseDto.setName(employee.getDepartment().getName());
-            dto.setDepartment(departmentResponseDto);
-            dto.setSelfCompleted(kraKpi.isSelfCompleted());
-            dto.setManagerCompleted(kraKpi.isManagerCompleted());
-
-            
-            if (!Boolean.TRUE.equals(kraKpi.getPmsInitiated()) ||
-                (kraKpi.isSelfCompleted() && kraKpi.isManagerCompleted())) {
-                return null;
-            }
-
-            return dto;
-        })
-        .filter(Objects::nonNull)
-        .toList();
-}
     @Override
     public List<EmployeeInfo> employeesWithKraKpiApproval() {
         List<EmployeeInformation> allEmployees = employeeInformationRepository.findAll();
@@ -462,7 +513,8 @@ public List<EmployeeWithPmsStatus> getPendingPmsForHR() {
                     Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
 
                     if (kraKpiOptional.isPresent() && Boolean.TRUE.equals(kraKpiOptional.get().getManagerApproval())) {
-                        EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+                        EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee,
+                                EmployeeInfo.class);
                         employeeInfo.setDepartment(employee.getDepartment().getName());
                         return employeeInfo;
                     }
@@ -509,12 +561,10 @@ public List<EmployeeWithPmsStatus> getPendingPmsForHR() {
                 .map(Optional::get)
                 .collect(Collectors.partitioningBy(
                         kraKpi -> kraKpi.isManagerCompleted() && kraKpi.isSelfCompleted(),
-                        Collectors.counting()
-                ));
+                        Collectors.counting()));
         return Map.of(
                 "completed", result.getOrDefault(true, 0L).intValue(),
-                "pending", result.getOrDefault(false, 0L).intValue()
-        );
+                "pending", result.getOrDefault(false, 0L).intValue());
     }
 
     @Override
@@ -528,9 +578,11 @@ public List<EmployeeWithPmsStatus> getPendingPmsForHR() {
                         boolean selfCompleted = kraKpi.isSelfCompleted();
                         boolean managerCompleted = kraKpi.isManagerCompleted();
 
-                        // Include if managerApproval is true and NOT (selfCompleted && managerCompleted)
+                        // Include if managerApproval is true and NOT (selfCompleted &&
+                        // managerCompleted)
                         if (managerApproval && !(selfCompleted && managerCompleted)) {
-                            EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+                            EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee,
+                                    EmployeeInfo.class);
                             employeeInfo.setDepartment(employee.getDepartment().getName());
                             return employeeInfo;
                         }
@@ -547,7 +599,8 @@ public List<EmployeeWithPmsStatus> getPendingPmsForHR() {
         Map<String, String> response = new HashMap<>();
 
         // Converting Employee Dto class to EmployeeInformation entity class
-        EmployeeInformation employeeInformation = entityDtoConversion.dtoToEntityConversion(employee, EmployeeInformation.class);
+        EmployeeInformation employeeInformation = entityDtoConversion.dtoToEntityConversion(employee,
+                EmployeeInformation.class);
         Department department = departmentRepository.findByName(employee.getDepartment());
         employeeInformation.setDepartment(department);
 
@@ -564,7 +617,7 @@ public List<EmployeeWithPmsStatus> getPendingPmsForHR() {
         return response;
     }
 
-     @Override
+    @Override
     public Map<String, Object> getdepartment() {
         List<Department> allDpt = departmentRepository.findAll();
 
@@ -574,5 +627,5 @@ public List<EmployeeWithPmsStatus> getPendingPmsForHR() {
         return Map.of("departments", departmentNames);
 
     }
-    
+
 }

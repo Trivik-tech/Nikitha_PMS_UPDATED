@@ -4,6 +4,7 @@ import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
+import com.triviktech.payloads.response.employee.PmsPercentageDto;
 import com.triviktech.payloads.response.employeeslist.EmployeesList;
 import com.triviktech.payloads.response.global.Response;
 import com.triviktech.payloads.response.hr.HrResponseDto;
@@ -128,6 +129,11 @@ public class HRControllerImpl implements HRController {
 
         return ResponseEntity.ok(hrService.getPendingPmsForHR());
     }
+
+    @Override
+public ResponseEntity<PmsPercentageDto> getPmsPercentageForHR() {
+    return ResponseEntity.ok(hrService.getPmsPercentageForHR());
+}
 
 
 }
