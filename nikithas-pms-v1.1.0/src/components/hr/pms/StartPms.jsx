@@ -21,9 +21,8 @@ export default function StartPms() {
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/v1/pms/hr/all-employees");
+      const response = await axios.get("http://localhost:8080/api/v1/pms/hr/employee-with-pms-initiated");
       const employees = response.data;
-      console.log(employees)
       setTeam(employees);
       setHasServerError(false);
     } catch (error) {
@@ -34,6 +33,12 @@ export default function StartPms() {
 
   useEffect(() => {
     fetchEmployees();
+
+    const intervalId = setInterval(() => {
+      fetchEmployees();
+    }, 2000);
+
+    return () => clearInterval(intervalId); // Clear interval on unmount
   }, []);
 
   const entriesPerPage = 10;
@@ -59,6 +64,8 @@ export default function StartPms() {
 
   const searchEmployees = async (e) => {
     const search = e.target.value;
+    setSearchTerm(search);
+
     if (!search.trim()) {
       fetchEmployees();
       return;
@@ -66,17 +73,29 @@ export default function StartPms() {
 
     try {
       const response = await axios.get(`http://localhost:8080/api/v1/pms/hr/all-employees/${search}`);
-      const employees = response.data;
-      // console.log(response.data)
-
-      setTeam(employees);
-      setHasServerError(false); // search worked
+      setTeam(response.data);
+      setHasServerError(false);
     } catch (error) {
       console.error("Search failed:", error.message);
-      setHasServerError(true); // could not reach server
+      setHasServerError(true);
     }
   };
-  
+
+  const pmsInitiated=async(id)=>{
+    try{
+
+      const pms={
+        pms_initiated: true
+      }
+      // console.log(id)
+
+      const result=await axios.patch(`http://localhost:8080/api/v1/pms/hr/pms-initiated/${id}`,pms);
+      console.log(result.data)
+
+    }catch(error){
+      console.error(error)
+    }
+  }
 
   return (
     <div className="start-pms-container">
@@ -95,8 +114,7 @@ export default function StartPms() {
               <input
                 type="text"
                 placeholder="Search employees..."
-                // value={searchTerm}
-                onChange={(e)=> searchEmployees(e)}
+                onChange={searchEmployees}
               />
             </div>
           </div>
@@ -105,7 +123,7 @@ export default function StartPms() {
 
         <div className="start-pms-table-container">
           <table className="start-pms-team-table">
-          <thead>
+            <thead>
               <tr>
                 <th onClick={handleSort} style={{ cursor: "pointer" }}>Id</th>
                 <th>Name</th>
@@ -131,10 +149,11 @@ export default function StartPms() {
                     <button
                       className="start-pms-button"
                       onClick={(e) => {
-                        e.stopPropagation(); 
+                        e.stopPropagation();
                         setSelectedEmployee(member.name);
                         setSelectedEmployeeId(member.empId);
                         setShowModal(true);
+                        pmsInitiated(member.empId)
                       }}
                     >
                       Initiate PMS

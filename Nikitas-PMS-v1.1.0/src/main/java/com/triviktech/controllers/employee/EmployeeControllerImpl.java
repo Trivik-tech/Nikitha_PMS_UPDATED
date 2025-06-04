@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class EmployeeControllerImpl implements EmployeeController{
@@ -51,5 +52,10 @@ public class EmployeeControllerImpl implements EmployeeController{
     public ResponseEntity<EmployeeInfo> profile(String employeeId){
         return ResponseEntity.ok(employeeService.profile(employeeId));
 
+    }
+
+    @Override
+    public ResponseEntity<Map<String, String>> selfReview(KraKpiRequestDto kraKpiRequestDto, String employeeId) {
+        return ResponseEntity.ok(kraKpiService.employeeReview(kraKpiRequestDto,employeeId));
     }
 }

@@ -5,6 +5,8 @@ import com.triviktech.entities.address.Location;
 import com.triviktech.entities.address.State;
 import com.triviktech.entities.department.Department;
 import com.triviktech.entities.employee.EmployeeInformation;
+import com.triviktech.entities.kpi.KPI;
+import com.triviktech.entities.kra.KRA;
 import com.triviktech.entities.krakpi.KraKpi;
 import com.triviktech.entities.manager.Manager;
 import com.triviktech.entities.project.Project;
@@ -15,6 +17,9 @@ import com.triviktech.exception.krakpi.KraKpiNotFoundException;
 import com.triviktech.exception.manager.ManagerAlreadyExistsException;
 import com.triviktech.exception.manager.ManagerNotFoundException;
 import com.triviktech.exception.project.ProjectNotFoundException;
+import com.triviktech.payloads.request.kpi.KpiRequestDto;
+import com.triviktech.payloads.request.kra.KraRequestDto;
+import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
 import com.triviktech.payloads.request.manager.ManagerRequestDto;
 import com.triviktech.payloads.response.address.CountryResponseDto;
 import com.triviktech.payloads.response.address.LocationResponseDto;
@@ -41,11 +46,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
+import java.util.*;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -208,53 +210,38 @@ public class ManagerServiceImpl implements ManagerService{
     }
 
     @Override
-    public List<EmployeeWithPmsStatus> listOfEmployeesForManager(String managerId) {
+    public List<EmployeeWithPmsStatus> listOfEmployeesForManager(String reportingManager) {
+        try {
+            List<EmployeeInformation> allByManager = employeeInformationRepository.findAllByReportingManager(reportingManager);
 
-//        try {
-//            Manager manager = managerRepository.findById(managerId)
-//                    .orElseThrow(() -> new ManagerNotFoundException(managerId));
-//
-//            List<EmployeeInformation> allByManager = employeeInformationRepository.findAllByManager(manager);
-//
-//            return allByManager.stream()
-//                    .map(employee -> {
-//                        Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
-//                        KraKpi kraKpi;
-//                        if(kraKpiOptional.isPresent()){
-//                            kraKpi = kraKpiOptional.get();
-//                            kraKpi.setPmsInitiated(true);
-//
-//                        }else{
-//                            kraKpi = new KraKpi();
-//                            kraKpi.setPmsInitiated(false);
-//                            kraKpi.setManagerCompleted(false);
-//                            kraKpi.setSelfCompleted(false);
-//                        }
-//                        return new EmployeeWithKraKpi(employee, kraKpi);
-//
-//
-//                    })
-//                    .filter(pair -> pair.kraKpi.getPmsInitiated())  // Filter only if PMS is initiated
-//                    .map(pair -> {
-//                        EmployeeInformation employee = pair.employee;
-//                        KraKpi kraKpi = pair.kraKpi;
-//
-//                        EmployeeWithPmsStatus response = entityDtoConversion.entityToDtoConversion(employee, EmployeeWithPmsStatus.class);
-//                        response.setManagerCompleted(kraKpi.isManagerCompleted());
-//                        response.setSelfCompleted(kraKpi.isSelfCompleted());
-//                        response.setPmsInitiated(kraKpi.getPmsInitiated());
-//                        response.setDepartment(entityDtoConversion.entityToDtoConversion(employee.getDepartment(), DepartmentResponseDto.class));
-//
-//                        return response;
-//                    })
-//                    .toList();
-//
-//        } catch (Exception e) {
-//            logger.error("Error retrieving employees for manager ID {}: {}", managerId, e.getMessage());
-//            throw e;
-//        }
-        return null;
+            return allByManager.stream().map(employee -> {
+                // Convert base employee info to response DTO
+                EmployeeWithPmsStatus employeeResponse =
+                        entityDtoConversion.entityToDtoConversion(employee, EmployeeWithPmsStatus.class);
+
+                // Set department info
+                employeeResponse.setDepartment(
+                        entityDtoConversion.entityToDtoConversion(employee.getDepartment(), DepartmentResponseDto.class)
+                );
+
+                // Fetch KraKpi if present
+                Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+
+                // Set PMS status fields only if KraKpi exists
+                kraKpiOptional.ifPresent(kraKpi -> {
+                    employeeResponse.setPmsInitiated(kraKpi.getPmsInitiated());
+                    employeeResponse.setSelfCompleted(kraKpi.isSelfCompleted());
+                });
+
+                return employeeResponse;
+            }).collect(Collectors.toList());
+
+        } catch (Exception e) {
+            logger.error("Error retrieving employees for manager ID {}: {}", reportingManager, e.getMessage(), e);
+            throw e;
+        }
     }
+
 
     @Override
     public List<EmployeeInfo> findAllByReportingManager(String reportingManager) {
@@ -392,6 +379,125 @@ public class ManagerServiceImpl implements ManagerService{
                
            }
     }
+
+    @Override
+    public Map<String, String> approveKra(Map<String, Boolean> approve, String employeeId, String reportingManager) {
+        Map<String, String> response = new HashMap<>();
+        Optional<EmployeeInformation> employeeData = employeeInformationRepository.findByReportingManagerAndEmpId(reportingManager, employeeId);
+        if(employeeData.isPresent()){
+            EmployeeInformation employee = employeeData.get();
+            Optional<KraKpi> kraKpi = kraKpiRepository.findByEmployeeInformation(employee);
+            if(kraKpi.isPresent()){
+                KraKpi kraKpi1 = kraKpi.get();
+                kraKpi1.setManagerApproval(approve.get("approveStatus"));
+                if(approve.get("approveStatus")){
+                    response.put("status", "kra kpi approved successfully");
+                }
+                else{
+                    response.put("status", "kra kpi rejected successfully");
+                }
+                kraKpiRepository.save(kraKpi1);
+            }
+            else{
+                throw new KraKpiNotFoundException("Kar Kpi not found for employee");
+            }
+        }
+        else{
+            throw new EmployeeNotFoundException(employeeId);
+        }
+        return response ;
+    }
+
+    @Override
+    public Map<String,String> managerReview(String managerName,String employeeId, KraKpiRequestDto data) {
+        Optional<EmployeeInformation> employeeById = employeeInformationRepository.findByReportingManagerAndEmpId(managerName, employeeId);
+        if(employeeById.isPresent()){
+            EmployeeInformation employee = employeeById.get();
+            Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+            if(kraKpiOptional.isPresent()){
+                KraKpi kraKpi = kraKpiOptional.get();
+                kraKpi.setRemark(data.getRemark());
+                kraKpi.setSelfCompleted(data.getSelfCompleted());
+                kraKpi.setManagerCompleted(data.isManagerCompleted());
+                kraKpi.setDueDate(data.getDueDate());
+                kraKpi.setManagerReviewDate(data.getManagerReviewDate());
+                kraKpi.setSelfReviewDate(data.getSelfReviewDate());
+                kraKpi.setPmsInitiated(data.getPmsInitiated());
+                kraKpi.setReview2(data.isReview2());
+                kraKpi.setManagerApproval(data.getManagerApproval());
+
+                // Track existing KRAs for potential removal
+                Set<KRA> existingKras = kraKpi.getKra();
+                Set<KRA> updatedKras = new HashSet<>();
+
+                for (KraRequestDto kraDto : data.getKra()) {
+                    // Try to find existing KRA, or create new if not found
+                    KRA kra = existingKras.stream()
+                            .filter(existingKra -> existingKra.getKraId() == kraDto.getKraId())
+                            .findFirst()
+                            .orElse(new KRA());  // New KRA if not found
+
+                    kra.setKraKpi(kraKpi);
+                    kra.setKraName(kraDto.getKraName());
+                    kra.setWeightage(kraDto.getWeightage());
+
+                    // Update KPIs within this KRA
+                    Set<KPI> existingKpis = kra.getKpi() != null ? kra.getKpi() : new HashSet<>();
+                    Set<KPI> updatedKpis = new HashSet<>();
+
+                    for (KpiRequestDto kpiDto : kraDto.getKpi()) {
+                        // Try to find existing KPI or create new
+                        KPI kpi = existingKpis.stream()
+                                .filter(existingKpi -> existingKpi.getKpiId() == kpiDto.getKpiId())
+                                .findFirst()
+                                .orElse(new KPI());  // New KPI if not found
+
+                        kpi.setKra(kra);  // Set parent
+                        kpi.setDescription(kpiDto.getDescription());
+                        kpi.setWeightage(kpiDto.getWeightage());
+                        kpi.setSelfScore(kpiDto.getSelfScore());
+                        kpi.setManagerScore(kpiDto.getManagerScore());
+                        kpi.setAverage((float) (kpiDto.getSelfScore() + kpiDto.getManagerScore()) / 2);
+                        kpi.setReview2(kpiDto.getReview2());
+
+                        updatedKpis.add(kpi);
+                    }
+
+                    // Remove KPIs that were not in the new request (to handle deletions)
+                    existingKpis.removeIf(existingKpi ->
+                            updatedKpis.stream().noneMatch(updatedKpi -> updatedKpi.getKpiId() == existingKpi.getKpiId())
+                    );
+
+                    // Combine updated and remaining existing KPIs
+                    existingKpis.addAll(updatedKpis);
+                    kra.setKpi(existingKpis);
+
+                    updatedKras.add(kra);
+                }
+
+                // Remove KRAs that are no longer in the request (handle deletion if needed)
+                existingKras.removeIf(existingKra ->
+                        updatedKras.stream().noneMatch(updatedKra -> updatedKra.getKraId() == existingKra.getKraId())
+                );
+
+                // Combine updated and remaining existing KRAs
+                existingKras.addAll(updatedKras);
+                kraKpi.setKra(existingKras);
+
+                // Save the entire structure (KraKpi -> KRA -> KPI)
+                kraKpiRepository.saveAndFlush(kraKpi);
+
+            }else{
+                throw new KraKpiNotFoundException("Kra Kpi not found for employee with id "+employeeId);
+            }
+
+        }else{
+            throw new EmployeeNotFoundException(employeeId);
+        }
+
+        return Map.of("status","Manager Review has been completed");
+    }
+
 
     // Helper record to carry both Employee and KraKpi together in the stream
     private record EmployeeWithKraKpi(EmployeeInformation employee, KraKpi kraKpi) {}

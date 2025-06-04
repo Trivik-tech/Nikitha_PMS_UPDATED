@@ -1,61 +1,20 @@
 package com.triviktech.payloads.response.employee;
 
+import com.triviktech.entities.department.Department;
 import com.triviktech.payloads.response.department.DepartmentResponseDto;
 
 public class EmployeeWithPmsStatus {
 
-    private String employeeId;
+    private String empId;
 
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String designation;
+    private String name;
+    private String officialEmailId;
+    private String currentDesignation;
 
+    private Boolean selfCompleted;
+    private Boolean managerCompleted;
+    private Boolean pmsInitiated;
     private DepartmentResponseDto department;
-
-    private boolean selfCompleted;
-    private boolean managerCompleted;
-    private boolean pmsInitiated;
-
-    public String getEmployeeId() {
-        return employeeId;
-    }
-
-    public void setEmployeeId(String employeeId) {
-        this.employeeId = employeeId;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getDesignation() {
-        return designation;
-    }
-
-    public void setDesignation(String designation) {
-        this.designation = designation;
-    }
 
     public DepartmentResponseDto getDepartment() {
         return department;
@@ -65,27 +24,59 @@ public class EmployeeWithPmsStatus {
         this.department = department;
     }
 
-    public boolean isSelfCompleted() {
+    public String getEmpId() {
+        return empId;
+    }
+
+    public void setEmpId(String empId) {
+        this.empId = empId;
+    }
+
+    public String getOfficialEmailId() {
+        return officialEmailId;
+    }
+
+    public void setOfficialEmailId(String officialEmailId) {
+        this.officialEmailId = officialEmailId;
+    }
+
+    public String getCurrentDesignation() {
+        return currentDesignation;
+    }
+
+    public void setCurrentDesignation(String currentDesignation) {
+        this.currentDesignation = currentDesignation;
+    }
+
+    public Boolean getSelfCompleted() {
         return selfCompleted;
     }
 
-    public void setSelfCompleted(boolean selfCompleted) {
+    public void setSelfCompleted(Boolean selfCompleted) {
         this.selfCompleted = selfCompleted;
     }
 
-    public boolean isManagerCompleted() {
+    public Boolean getManagerCompleted() {
         return managerCompleted;
     }
 
-    public void setManagerCompleted(boolean managerCompleted) {
+    public void setManagerCompleted(Boolean managerCompleted) {
         this.managerCompleted = managerCompleted;
     }
 
-    public boolean isPmsInitiated() {
+    public Boolean getPmsInitiated() {
         return pmsInitiated;
     }
 
-    public void setPmsInitiated(boolean pmsInitiated) {
+    public void setPmsInitiated(Boolean pmsInitiated) {
         this.pmsInitiated = pmsInitiated;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

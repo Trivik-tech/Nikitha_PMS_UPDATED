@@ -1,63 +1,37 @@
-import { React, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./EmployeeReview.css";
-import logo from "../../../assets/images/nikithas-logo.png"; // Make sure the path is correct
+import logo from "../../../assets/images/nikithas-logo.png";
 import { FaHome } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Modal from "../../modal/Modal";
+import axios from "axios";
 
 const PerformanceReview = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
-  const sections = [
-    {
-      title: "Technical Excellence",
-      weightage: 20,
-      items: [
-        "Code Quality & Standards",
-        "Code Documentation",
-        "Technical Documentation",
-        "POC & Demonstrations",
-        "Technical Presentations",
-      ],
-    },
-    {
-      title: "Project Delivery",
-      weightage: 25,
-      items: [
-        "Delivery Milestones",
-        "Sprint Execution",
-        "Release Readiness",
-        "Process Compliance",
-      ],
-    },
-    {
-      title: "Team Collaboration",
-      weightage: 25,
-      items: [
-        "Knowledge Sharing",
-        "Inter/Intra Team Collaboration",
-        "Peer Reviews",
-        "Conflict Resolution",
-      ],
-    },
-    {
-      title: "Leadership & Mentoring",
-      weightage: 15,
-      items: ["Mentoring Team Members", "Providing Feedback", "Ownership"],
-    },
-    {
-      title: "Professional Development",
-      weightage: 10,
-      items: ["Learning & Development"],
-    },
-  ];
+  const [krakpi, setKraKpi] = useState([]);
+  const [dueDate, setDueDate] = useState("");
+  const [selfReviewDate, setSelfReviewDate] = useState("");
+  const [employeeName, setEmployeeName] = useState("");
+  const [designation, setDesignation] = useState("");
+  const [department, setDepartment] = useState("");
 
-  const reviewSubmit = () => {
+  const { id: employeeId } = useParams();
+
+  const handleSelfScoreChange = (kraIndex, kpiIndex, value) => {
+    const updatedKra = [...krakpi];
+    updatedKra[kraIndex].kpi[kpiIndex].selfScore = Number(value);
+    setKraKpi(updatedKra);
+  };
+
+  const reviewSubmit = async () => {
     setErrorMessage("PMS Review is successfully completed.");
     setTitle("PMS Review");
     setShowModal(true);
+    await selfReview();
   };
+
   const draftSave = () => {
     setErrorMessage("PMS Review has been saved as a draft.");
     setTitle("PMS Review");
@@ -69,7 +43,64 @@ const PerformanceReview = () => {
   };
 
   const printHandler = () => {
-    // Placeholder for print functionality
+    window.print(); // basic browser print
+  };
+
+  useEffect(() => {
+    const loadKraKpi = async () => {
+      try {
+        const result = await axios.get(`http://localhost:8080/api/v1/pms/employee/kra-kpi-list/${employeeId}`);
+        setKraKpi(result.data.kra);
+        setDepartment(result.data.employee.department.name || "Engineering");
+        setDesignation(result.data.employee.currentDesignation);
+        setEmployeeName(result.data.employee.name);
+        setDueDate(result.data.dueDate || "20/5/2025");
+        setSelfReviewDate(result.data.selfReviewDate || "15/5/2025");
+        // console.log(result.data)
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadKraKpi();
+  }, [employeeId]);
+
+  const selfReview = async () => {
+    try {
+      const payload = {
+        employeeId: employeeId,
+        remark: "",
+        selfCompleted: true,
+        managerCompleted: false,
+        dueDate: dueDate,
+        managerReviewDate: null,
+        selfReviewDate: selfReviewDate,
+        pmsInitiated: false,
+        review2: false,
+        managerApproval: false,
+        kra: krakpi.map((kra) => ({
+          kraId: kra.kraId,
+          kraName: kra.kraName,
+          weightage: kra.weightage,
+          kpi: kra.kpi.map((kpi) => ({
+            kpiId: kpi.id,
+            description: kpi.description,
+            weightage: kpi.weightage,
+            selfScore: kpi.selfScore || 0,
+            managerScore: kpi.managerScore || 0,
+            review2: kpi.review2 || 0,
+          })),
+        })),
+      };
+
+      // console.log(employeeId.id)
+
+     const result= await axios.put(`http://localhost:8080/api/v1/pms/employee/self-review/${employeeId}`, payload);
+      console.log("Review submitted:", payload);
+      console.log(result.data)
+    } catch (error) {
+      console.error("Error submitting review:", error);
+    }
   };
 
   return (
@@ -77,45 +108,41 @@ const PerformanceReview = () => {
       {showModal && (
         <Modal message={errorMessage} closeModal={closeModal} title={title} />
       )}
+
       <header className="employee-module-review-header">
         <div className="employee-module-review-title-section">
           <Link to="/employee-dashboard" className="icon-link">
             <FaHome className="employee-module-review-icon home-icon" />
           </Link>
           <h1 className="employee-module-review-title">Performance Review Form</h1>
-          <img
-            src={logo}
-            alt="Company Logo"
-            className="employee-module-review-company-logo"
-          />
+          <img src={logo} alt="Company Logo" className="employee-module-review-company-logo" />
         </div>
 
         <div className="employee-module-review-filters">
           <label>
-            Due Date: <input type="text" value="20/3/2025" readOnly />
+            Due Date: <input type="text" value={dueDate} readOnly />
           </label>
           <label>
-            Self Review Date: <input type="text" value="14/3/2025" readOnly />
+            Self Review Date: <input type="text" value={selfReviewDate} readOnly />
           </label>
           <label>
-            Employee Name: <input type="text" value="Avinash SH" readOnly />
+            Employee Name: <input type="text" value={employeeName} readOnly />
           </label>
           <label>
-            Designation:
-            <input type="text" value="Senior Software Engineer" readOnly />
+            Designation: <input type="text" value={designation} readOnly />
           </label>
           <label>
-            Department: <input type="text" value="Engineering" readOnly />
+            Department: <input type="text" value={department} readOnly />
           </label>
         </div>
       </header>
 
       <div className="employee-module-review-sections">
-        {sections.map((section, index) => (
-          <div key={index} className="employee-module-review-section">
+        {krakpi.map((kra, kraIndex) => (
+          <div key={kraIndex} className="employee-module-review-section">
             <div className="employee-module-review-section-header">
-              <h3>KRA - {section.title}</h3>
-              <span>Weightage: {section.weightage}</span>
+              <h3>KRA - {kra.kraName}</h3>
+              <span>Weightage: {kra.weightage}</span>
             </div>
             <table className="employee-module-review-table">
               <thead>
@@ -126,11 +153,17 @@ const PerformanceReview = () => {
                 </tr>
               </thead>
               <tbody>
-                {section.items.map((item, idx) => (
-                  <tr key={idx}>
-                    <td>{item}</td>
-                    <td>4</td>
-                    <td><input type="text" /></td>
+                {kra.kpi.map((kpi, kpiIndex) => (
+                  <tr key={kpiIndex}>
+                    <td>{kpi.description}</td>
+                    <td>{kpi.weightage}</td>
+                    <td>
+                      <input
+                        type="number"
+                        value={kpi.selfScore || ""}
+                        onChange={(e) => handleSelfScoreChange(kraIndex, kpiIndex, e.target.value)}
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>

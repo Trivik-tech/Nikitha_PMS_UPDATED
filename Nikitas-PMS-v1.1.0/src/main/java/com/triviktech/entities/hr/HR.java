@@ -25,7 +25,7 @@ public class HR {
     private String lastName;
 
     @Column(name = "email", nullable = false, unique = true, length = 500)
-    private String email;
+    private String email; 
 
     @Column(name = "contact_number", nullable = false)
     private Long contactNumber;

@@ -20,17 +20,40 @@ public class KraKpiRequestDto {
     private Date managerReviewDate;
     private Boolean pmsInitiated;
     private Boolean managerApproval;
-    private boolean selfCompleted ;  // Default value to avoid null
-
+    private Boolean selfCompleted ;
     private boolean managerCompleted;
 
 
-    public Boolean getManagerApproval() {
-        return managerApproval;
+    public long getKraKpiId() {
+        return kraKpiId;
     }
 
-    public void setManagerApproval(Boolean managerApproval) {
-        this.managerApproval = managerApproval;
+    public void setKraKpiId(long kraKpiId) {
+        this.kraKpiId = kraKpiId;
+    }
+
+    public String getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(String employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public Set<KraRequestDto> getKra() {
+        return kra;
+    }
+
+    public void setKra(Set<KraRequestDto> kra) {
+        this.kra = kra;
     }
 
     public boolean isReview2() {
@@ -73,45 +96,19 @@ public class KraKpiRequestDto {
         this.pmsInitiated = pmsInitiated;
     }
 
-
-
-    public long getKraKpiId() {
-        return kraKpiId;
+    public Boolean getManagerApproval() {
+        return managerApproval;
     }
 
-    public void setKraKpiId(long kraKpiId) {
-        this.kraKpiId = kraKpiId;
+    public void setManagerApproval(Boolean managerApproval) {
+        this.managerApproval = managerApproval;
     }
 
-    public String getEmployeeId() {
-        return employeeId;
-    }
-
-    public void setEmployeeId(String employeeId) {
-        this.employeeId = employeeId;
-    }
-
-    public String getRemark() {
-        return remark;
-    }
-
-    public void setRemark(String remark) {
-        this.remark = remark;
-    }
-
-    public Set<KraRequestDto> getKra() {
-        return kra;
-    }
-
-    public void setKra(Set<KraRequestDto> kra) {
-        this.kra = kra;
-    }
-
-    public boolean isSelfCompleted() {
+    public Boolean getSelfCompleted() {
         return selfCompleted;
     }
 
-    public void setSelfCompleted(boolean selfCompleted) {
+    public void setSelfCompleted(Boolean selfCompleted) {
         this.selfCompleted = selfCompleted;
     }
 
@@ -122,7 +119,6 @@ public class KraKpiRequestDto {
     public void setManagerCompleted(boolean managerCompleted) {
         this.managerCompleted = managerCompleted;
     }
-
 
     @Override
     public String toString() {

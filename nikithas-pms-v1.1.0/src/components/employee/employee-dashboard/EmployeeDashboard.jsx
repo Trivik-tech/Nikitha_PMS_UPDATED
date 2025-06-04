@@ -33,7 +33,7 @@ const EmployeeDashboard = () => {
         </div>
         <ul>
           <li><Link to="/employee-dashboard" className="active">My Dashboard</Link></li>
-          <li><Link to="/self-review">Start PMS</Link></li>
+          <li><Link to={`/self-review/CNT139`}>Start PMS</Link></li>
           <li><Link to="/employee-performance">My Performance</Link></li>
           <li><Link to="/add-krakpi">Register KRA|KPI</Link></li>
         </ul>

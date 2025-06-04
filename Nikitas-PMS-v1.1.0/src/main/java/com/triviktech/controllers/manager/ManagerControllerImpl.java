@@ -62,8 +62,8 @@ public class ManagerControllerImpl implements ManagerController{
     }
 
     @Override
-    public ResponseEntity<List<EmployeeWithPmsStatus>> listOfEmployeesForManager(String managerId) {
-        return ResponseEntity.ok(managerService.listOfEmployeesForManager(managerId));
+    public ResponseEntity<List<EmployeeWithPmsStatus>> listOfEmployeesForManager(String reportingManager) {
+        return ResponseEntity.ok(managerService.listOfEmployeesForManager(reportingManager));
     }
 
     @Override
@@ -77,8 +77,8 @@ public class ManagerControllerImpl implements ManagerController{
     }
 
     @Override
-    public ResponseEntity<?> managerReview(String managerId, KraKpiRequestDto data) {
-        return ResponseEntity.ok(kraKpiService.managerReview(managerId,data));
+    public ResponseEntity<Map<String,String>> managerReview(String managerName,String employeeId, KraKpiRequestDto data) {
+        return ResponseEntity.ok(managerService.managerReview(managerName,employeeId,data));
     }
 
     @Override
@@ -86,8 +86,13 @@ public class ManagerControllerImpl implements ManagerController{
     public ResponseEntity<KraKpiResponseDto> getKraKpis(String managerName, String employeeId) {
         return ResponseEntity.ok(managerService.getEmployeeKarKpi(managerName, employeeId));
     }
-    public ResponseEntity<List<EmployeeInfo>> getManagerTeam(String reportingManager) {
-        return  ResponseEntity.ok(managerService.findAllByReportingManager(reportingManager));
 
+    public ResponseEntity<List<EmployeeInfo>> getManagerTeam(String reportingManager) {
+        return ResponseEntity.ok(managerService.findAllByReportingManager(reportingManager));
+    }
+
+    @Override
+    public ResponseEntity<Map<String, String>> approveKraKpi(String employeeId, String reportingManager, Map<String, Boolean> approve) {
+        return ResponseEntity.ok(managerService.approveKra(approve, employeeId, reportingManager));
     }
 }

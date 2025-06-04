@@ -3,17 +3,12 @@ import { useNavigate } from "react-router-dom";
 import "./CompletedList.css";
 import { FaSearch, FaHome } from "react-icons/fa";
 import logo from '../../../../assets/images/nikithas-logo.png';
-
-const teamMembers = [
-  { name: "Sarah Wilson", department: "Product Design", position: "Senior Designer", self: "Completed", manager: "Completed", image: "https://randomuser.me/api/portraits/women/1.jpg" },
-  { name: "John Doe", department: "Engineering", position: "Software Engineer", self: "Completed", manager: "Completed", image: "https://randomuser.me/api/portraits/men/1.jpg" },
-  { name: "Alex Johnson", department: "Marketing", position: "Content Strategist", self: "Completed", manager: "Completed", image: "https://randomuser.me/api/portraits/men/2.jpg" },
-  { name: "David Lee", department: "Sales", position: "Sales Director", self: "Completed", manager: "Completed", image: "https://randomuser.me/api/portraits/men/3.jpg" },
-];
+import axios from "axios";
 
 export default function CompletedList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [employees, setEmployees] = useState([]);
   const navigate = useNavigate();
   const entriesPerPage = 6;
 
@@ -22,13 +17,27 @@ export default function CompletedList() {
     return () => document.body.classList.remove("fade-in");
   }, []);
 
-  const filteredTeam = teamMembers.filter(member =>
+  useEffect(() => {
+    loadCompletedEmployees();
+  }, []);
+
+  const loadCompletedEmployees = async () => {
+    try {
+      const result = await axios.get("http://localhost:8080/api/v1/pms/hr/completed");
+      setEmployees(result.data);
+      console.log(result.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const filteredEmployees = employees.filter(member =>
     member.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filteredTeam.length / entriesPerPage);
+  const totalPages = Math.ceil(filteredEmployees.length / entriesPerPage);
   const startIndex = (currentPage - 1) * entriesPerPage;
-  const currentEntries = filteredTeam.slice(startIndex, startIndex + entriesPerPage);
+  const currentEntries = filteredEmployees.slice(startIndex, startIndex + entriesPerPage);
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
@@ -59,6 +68,7 @@ export default function CompletedList() {
         <table className="hr-complete-team-table">
           <thead>
             <tr>
+              <th>ID</th>
               <th>Name</th>
               <th>Department</th>
               <th>Position</th>
@@ -69,14 +79,16 @@ export default function CompletedList() {
           <tbody>
             {currentEntries.map((member, index) => (
               <tr key={index}>
-                <td className="hr-complete-team-member">
-                  <img src={member.image} alt={member.name} className="hr-complete-profile-pic" />
-                  {member.name}
+                <td>{member.empId}</td>
+                <td className="hr-complete-team-member">{member.name}</td>
+                <td>{member.department?.name || "N/A"}</td>
+                <td>{member.currentDesignation}</td>
+                <td style={{ color: member.selfCompleted ? "green" : "red" }}>
+                  {member.selfCompleted ? "Completed" : "Pending"}
                 </td>
-                <td>{member.department}</td>
-                <td>{member.position}</td>
-                <td style={{ color: "green" }}>{member.self}</td>
-                <td style={{ color: "green" }}>{member.manager}</td>
+                <td style={{ color: member.managerCompleted ? "green" : "red" }}>
+                  {member.managerCompleted ? "Completed" : "Pending"}
+                </td>
               </tr>
             ))}
           </tbody>

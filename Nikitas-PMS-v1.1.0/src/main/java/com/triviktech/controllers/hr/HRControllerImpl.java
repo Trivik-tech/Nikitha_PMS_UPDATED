@@ -3,6 +3,8 @@ package com.triviktech.controllers.hr;
 import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
+import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
+import com.triviktech.payloads.response.employee.PmsPercentageDto;
 import com.triviktech.payloads.response.employeeslist.EmployeesList;
 import com.triviktech.payloads.response.global.Response;
 import com.triviktech.payloads.response.hr.HrResponseDto;
@@ -19,7 +21,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
-public class HRControllerImpl implements HRController{
+public class HRControllerImpl implements HRController {
 
     private final HrService hrService;
 
@@ -39,7 +41,7 @@ public class HRControllerImpl implements HRController{
 
     @Override
     public ResponseEntity<List<Object>> uploadEmployeesData(MultipartFile file) throws IOException {
-        return new ResponseEntity<>(hrService.uploadEmployeesData(file),HttpStatus.CREATED);
+        return new ResponseEntity<>(hrService.uploadEmployeesData(file), HttpStatus.CREATED);
     }
 
     @Override
@@ -54,13 +56,13 @@ public class HRControllerImpl implements HRController{
 
     @Override
     public ResponseEntity<Map<String, Integer>> totalEmployees() {
-        Map<String,Integer> response=new HashMap<>();
-        response.put("totalEmployees",hrService.totalEmployees());
+        Map<String, Integer> response = new HashMap<>();
+        response.put("totalEmployees", hrService.totalEmployees());
         return ResponseEntity.ok(response);
     }
 
     @Override
-    public  ResponseEntity<List<EmployeeInfo>> searchEmployee(String search) {
+    public ResponseEntity<List<EmployeeInfo>> searchEmployee(String search) {
         return ResponseEntity.ok(hrService.searchEmployee(search));
     }
 
@@ -77,7 +79,13 @@ public class HRControllerImpl implements HRController{
         return ResponseEntity.ok(employeeInfo);
     }
 
+    @Override
+    public ResponseEntity<List<EmployeeInfo>> employeeListWithKraKpiApproved() {
+        return ResponseEntity.ok(hrService.employeesWithKraKpiApproval());
+    }
 
+
+    @Override
     public ResponseEntity<Map<String, Object>> getDepartment() {
         Map<String, Object> getdepartment = hrService.getdepartment();
         return ResponseEntity.ok(getdepartment);
@@ -98,6 +106,34 @@ public class HRControllerImpl implements HRController{
          return  ResponseEntity.ok(employeeKeyMatrix);
 
     }
+
+    @Override
+    public ResponseEntity<Map<String, String>> pmsInitiated(String employeeId, Map<String, Boolean> pms) {
+        return ResponseEntity.ok(hrService.initiatePms(employeeId,pms));
+    }
+
+    @Override
+    public ResponseEntity<List<EmployeeInfo>> pmsInitiatedEmployees() {
+        return ResponseEntity.ok(hrService.pmsInitiatedEmployees());
+    }
+
+
+
+    public ResponseEntity<List<EmployeeWithPmsStatus>> getCompletedPmsForHR() {
+
+        return ResponseEntity.ok(hrService.getCompletedPmsForHR());
+    }
+
+    @Override
+    public ResponseEntity<List<EmployeeWithPmsStatus>> getPendingPmsForHR() {
+
+        return ResponseEntity.ok(hrService.getPendingPmsForHR());
+    }
+
+    @Override
+public ResponseEntity<PmsPercentageDto> getPmsPercentageForHR() {
+    return ResponseEntity.ok(hrService.getPmsPercentageForHR());
+}
 
 
 }
