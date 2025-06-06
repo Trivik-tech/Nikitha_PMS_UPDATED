@@ -1,12 +1,12 @@
 // HrDashboard.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   FaUsers,
   FaClipboardCheck,
   FaExclamationTriangle,
-  FaChartLine
-} from 'react-icons/fa';
-import { Bar, Pie } from 'react-chartjs-2';
+  FaChartLine,
+} from "react-icons/fa";
+import { Bar, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,18 +15,17 @@ import {
   Title,
   Tooltip,
   Legend,
-  ArcElement
-} from 'chart.js';
-import { Bell } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
-import './HrDashboard.css';
-import '../../urls/CommenUrl';
-import logo from '../../../assets/images/nikithas-logo.png';
-import profile from '../../../assets/images/profile1.jpg';
-import Notification from '../../modal/notification/Notification';
-import axios from 'axios';
-import { baseUrl } from '../../urls/CommenUrl';
-
+  ArcElement,
+} from "chart.js";
+import { Bell } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import "./HrDashboard.css";
+import "../../urls/CommenUrl";
+import logo from "../../../assets/images/nikithas-logo.png";
+import profile from "../../../assets/images/profile1.jpg";
+import Notification from "../../modal/notification/Notification";
+import axios from "axios";
+import { baseUrl } from "../../urls/CommenUrl";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -56,14 +55,16 @@ const HrDashboard = () => {
     const handleResize = () => {
       setSidebarOpen(window.innerWidth > 768);
     };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
     const fetchTotalEmployees = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/api/v1/pms/hr/total-employees`);
+        const response = await axios.get(
+          `${baseUrl}/api/v1/pms/hr/total-employees`
+        );
         setTotalEmployees(response.data);
         setError(false);
       } catch (error) {
@@ -112,7 +113,9 @@ const HrDashboard = () => {
 
   const getAllDepartment = async () => {
     try {
-      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-departments`);
+      const result = await axios.get(
+        `${baseUrl}/api/v1/pms/hr/get-departments`
+      );
       setDepartments(result.data.departments);
     } catch (error) {
       console.error(error);
@@ -121,7 +124,9 @@ const HrDashboard = () => {
 
   const getDepartmentsEmployeeCount = async () => {
     try {
-      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/employee-count-by-department`);
+      const result = await axios.get(
+        `${baseUrl}/api/v1/pms/hr/employee-count-by-department`
+      );
       setEmployeeCount(result.data.employees);
     } catch (error) {
       console.error(error);
@@ -132,24 +137,24 @@ const HrDashboard = () => {
     labels: departments,
     datasets: [
       {
-        label: 'Total Employees',
+        label: "Total Employees",
         data: employeeCount,
-        backgroundColor: '#007bff',
-        borderColor: '#0056b3',
+        backgroundColor: "#007bff",
+        borderColor: "#0056b3",
         borderWidth: 1,
       },
       {
-        label: 'Completed',
+        label: "Completed",
         data: Array(departments.length).fill(Math.floor(Math.random() * 100)), // Placeholder
-        backgroundColor: '#28a745',
-        borderColor: '#1e7e34',
+        backgroundColor: "#28a745",
+        borderColor: "#1e7e34",
         borderWidth: 1,
       },
       {
-        label: 'Pending',
+        label: "Pending",
         data: Array(departments.length).fill(Math.floor(Math.random() * 50)), // Placeholder
-        backgroundColor: '#ffc107',
-        borderColor: '#e0a800',
+        backgroundColor: "#ffc107",
+        borderColor: "#e0a800",
         borderWidth: 1,
       },
     ],
@@ -159,37 +164,37 @@ const HrDashboard = () => {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'top', labels: { padding: 20, font: { size: 12 } } },
+      legend: { position: "top", labels: { padding: 20, font: { size: 12 } } },
       title: {
         display: true,
-        text: 'Department-wise Employee Statistics',
-        font: { size: 16, weight: 'bold' },
-        padding: { top: 10, bottom: 30 }
-      }
+        text: "Department-wise Employee Statistics",
+        font: { size: 16, weight: "bold" },
+        padding: { top: 10, bottom: 30 },
+      },
     },
     scales: {
       x: {
         beginAtZero: true,
         ticks: { maxRotation: 45, minRotation: 0, font: { size: 11 } },
-        grid: { display: false }
+        grid: { display: false },
       },
       y: {
         beginAtZero: true,
         ticks: { font: { size: 11 } },
-        grid: { color: '#e0e0e0' }
-      }
+        grid: { color: "#e0e0e0" },
+      },
     },
-    interaction: { intersect: false, mode: 'index' },
-    animation: { duration: 1000, easing: 'easeOutQuart' }
+    interaction: { intersect: false, mode: "index" },
+    animation: { duration: 1000, easing: "easeOutQuart" },
   };
 
   const pieData = {
-    labels: ['Completed', 'Pending'],
+    labels: ["Completed", "Pending"],
     datasets: [
       {
         data: [completionRate, pendingRate],
-        backgroundColor: ['#28a745', '#ffa500'],
-        borderColor: ['#1e7e34', '#e0a800'],
+        backgroundColor: ["#28a745", "#ffa500"],
+        borderColor: ["#1e7e34", "#e0a800"],
         borderWidth: 2,
       },
     ],
@@ -199,22 +204,25 @@ const HrDashboard = () => {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'bottom', labels: { padding: 20, font: { size: 12 } } },
+      legend: {
+        position: "bottom",
+        labels: { padding: 20, font: { size: 12 } },
+      },
       title: {
         display: true,
-        text: 'Overall Assessment Status',
-        font: { size: 16, weight: 'bold' },
-        padding: { top: 10, bottom: 20 }
-      }
+        text: "Overall Assessment Status",
+        font: { size: 16, weight: "bold" },
+        padding: { top: 10, bottom: 20 },
+      },
     },
     onClick: (event, elements) => {
       if (elements.length > 0) {
         const index = elements[0].index;
-        if (index === 0) navigate('/hr/completed-assessments');
-        else if (index === 1) navigate('/hr/pending-assessments');
+        if (index === 0) navigate("/hr/completed-assessments");
+        else if (index === 1) navigate("/hr/pending-assessments");
       }
     },
-    animation: { duration: 1000, easing: 'easeOutQuart' }
+    animation: { duration: 1000, easing: "easeOutQuart" },
   };
 
   const renderSidebarOverlay = () =>
@@ -224,13 +232,13 @@ const HrDashboard = () => {
         onClick={() => setSidebarOpen(false)}
         aria-label="Close sidebar"
         style={{
-          position: 'fixed',
+          position: "fixed",
           top: 0,
           left: 0,
-          width: '100vw',
-          height: '100vh',
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          zIndex: 999
+          width: "100vw",
+          height: "100vh",
+          backgroundColor: "rgba(0,0,0,0.5)",
+          zIndex: 999,
         }}
       />
     ) : null;
@@ -242,27 +250,45 @@ const HrDashboard = () => {
           <button
             className="hamburger"
             aria-label="Toggle sidebar"
-            onClick={() => setSidebarOpen(prev => !prev)}
+            onClick={() => setSidebarOpen((prev) => !prev)}
           >
             ☰
           </button>
         )}
-        <aside className={`hr-dashboard-sidebar${sidebarOpen ? ' open' : ' closed'}${isMobile() ? ' mobile' : ''}`}>
+        <aside
+          className={`hr-dashboard-sidebar${sidebarOpen ? " open" : " closed"}${
+            isMobile() ? " mobile" : ""
+          }`}
+        >
           <div className="hr-dashboard-profile-container">
-            <img src={profile} alt="Profile" className="hr-dashboard-profileImg" />
+            <img
+              src={profile}
+              alt="Profile"
+              className="hr-dashboard-profileImg"
+            />
             <h2 className="hr-dashboard-profile-name">Avinash S. H.</h2>
           </div>
           <ul>
-            <li><Link to="/hr-dashboard" className="active">HR Dashboard</Link></li>
-            <li><Link to="/employee-list">Employee List</Link></li>
-            <li><Link to="/hr-startpms">Employee Performance</Link></li>
-            <li><Link to="/hr-profile">My Profile</Link></li>
+            <li>
+              <Link to="/hr-dashboard" className="active">
+                HR Dashboard
+              </Link>
+            </li>
+            <li>
+              <Link to="/employee-list">Employee List</Link>
+            </li>
+            <li>
+              <Link to="/hr-startpms">Employee Performance</Link>
+            </li>
+            <li>
+              <Link to="/hr-profile">My Profile</Link>
+            </li>
             {isMobile() && (
               <li>
                 <button
                   onClick={() => {
                     localStorage.clear();
-                    navigate('/');
+                    navigate("/");
                   }}
                   className="logout-button"
                 >
@@ -281,12 +307,15 @@ const HrDashboard = () => {
               <h1 className="hr-dashboard-title">HR PMS Dashboard</h1>
             </div>
             <div className="hr-dashboard-actions">
-              <Bell className="notification-icon" onClick={() => setNotificationOpen(!notificationOpen)} />
+              <Bell
+                className="notification-icon"
+                onClick={() => setNotificationOpen(!notificationOpen)}
+              />
               <button
                 className="hr-dashboard-logoutButton desktop-only"
                 onClick={() => {
                   localStorage.clear();
-                  navigate('/');
+                  navigate("/");
                 }}
               >
                 Logout
@@ -298,7 +327,7 @@ const HrDashboard = () => {
             <div className="hr-dashboard-stat-card">
               <FaUsers className="stat-card-icon user" />
               <h2>Total Employees</h2>
-              <p>{totalEmployees?.totalEmployees ?? '-'}</p>
+              <p>{totalEmployees?.totalEmployees ?? "-"}</p>
             </div>
             <div className="hr-dashboard-stat-card">
               <FaClipboardCheck className="stat-card-icon complete" />
@@ -318,7 +347,9 @@ const HrDashboard = () => {
           </section>
 
           <section className="hr-dashboard-chart-container fade-in-up">
-            <h2 className="hr-dashboard-assessment-heading">Assessment Status</h2>
+            <h2 className="hr-dashboard-assessment-heading">
+              Assessment Status
+            </h2>
             <div className="hr-dashboard-charts-wrapper">
               <div className="hr-dashboard-chart-box hr-dashboard-bar-chart">
                 <div className="chart-scroll-container">
