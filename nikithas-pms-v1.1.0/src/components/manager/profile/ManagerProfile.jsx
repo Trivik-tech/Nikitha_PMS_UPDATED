@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { FaArrowLeft, FaHome } from "react-icons/fa";
+import { FaHome } from "react-icons/fa";
 import axios from "axios";
 import "./ManagerProfile.css";
-import "./ResponsiveManagerProfile.css";
+import "./ResponsiveManagerProfile.css"; // ✅ Resolved conflict - keeping this file
 import logo from "../../../assets/images/nikithas-logo.png";
 import profile from "../../../assets/images/profile1.jpg";
 import Loader from '../../modal/loader/Loader';
@@ -13,41 +13,41 @@ const ManagerProfile = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const token = localStorage.getItem("token");
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = localStorage.getItem("token");
 
-  //     if (!token) {
-  //       console.error("No token found. Redirecting to login...");
-  //       navigate("/login");
-  //       return;
-  //     }
+      if (!token) {
+        console.error("No token found. Redirecting to login...");
+        navigate("/login");
+        return;
+      }
 
-  //     try {
-  //       const response = await axios.get("http://localhost:8080/api/v1/pms/manager/profile", {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-  //       setManagerData(response.data);
-  //     } catch (error) {
-  //       console.error("Error fetching data:", error);
-  //       if (error.response && error.response.status === 401) {
-  //         console.error("Unauthorized! Redirecting to login...");
-  //         localStorage.removeItem("token");
-  //         navigate("/login");
-  //       }
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
+      try {
+        const response = await axios.get("http://localhost:8080/api/v1/pms/manager/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setManagerData(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        if (error.response && error.response.status === 401) {
+          console.error("Unauthorized! Redirecting to login...");
+          localStorage.removeItem("token");
+          navigate("/login");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  //   fetchData();
-  // }, [navigate]);
+    fetchData();
+  }, [navigate]);
 
   return (
     <div className="manager-container">
-      {/* {loading && <Loader />} */}
+      {loading && <Loader />}
       <header className="manager-header">
         <div className="header-left">
           <Link to="/manager-dashboard" className="icon-link">
@@ -64,7 +64,9 @@ const ManagerProfile = () => {
         <div className="profile-right">
           <h2>{managerData?.firstName || "Ravindra"} {managerData?.lastName || "Kulkarni"}</h2>
           <p className="designation">Senior Software Engineer</p>
-          <p className="location">{managerData?.location?.name || "Bengaluru"}, {managerData?.location?.state?.name || "Karnataka"}</p>
+          <p className="location">
+            {managerData?.location?.name || "Bengaluru"}, {managerData?.location?.state?.name || "Karnataka"}
+          </p>
         </div>
       </div>
 
@@ -97,7 +99,7 @@ const ManagerProfile = () => {
           <p><strong>Mobile Number:</strong> {managerData?.contactNumber || "1234567895"}</p>
         </div>
         <div className="contact-card hover-zoom">
-          <p><strong>Location:</strong> {managerData?.location?.name || "Bengaluru"}, {managerData?.location?.state?.name} {managerData?.location?.zipCode || "12345"}</p>
+          <p><strong>Location:</strong> {managerData?.location?.name || "20, Watch Factory Rd, Phase -1, Yeswanthpur, Bengaluru, Karnataka 560013"}, {managerData?.location?.state?.name || "Karnataka"} {managerData?.location?.zipCode || "12345"}</p>
         </div>
       </div>
     </div>

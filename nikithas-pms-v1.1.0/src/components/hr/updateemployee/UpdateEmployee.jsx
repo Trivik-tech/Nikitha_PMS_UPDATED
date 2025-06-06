@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FaHome } from "react-icons/fa";
-import "./EmployeeDetails.css";
-import "./ResponsiveEmpDetails.css";
+import "./EmployeeUpdate.css";
+import "./ResponsiveEmpUpdate.css";
 import logo from '../../../assets/images/nikithas-logo.png';
 import FileConfirmation from "../../modal/file-confirmation/FileConfirmation";
 import { Link, useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ import Loader from '../../modal/loader/Loader';
 import Modal from '../../modal/Modal';
 import { baseUrl } from "../../urls/CommenUrl";
 
-const EmployeeDetails = () => {
+const UpdateEmployee = () => {
   const [file, setFile] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -38,64 +38,11 @@ const EmployeeDetails = () => {
     fileInput.remove();
   };
 
-  const handleConfirmUpload = async () => {
-    setShowModal(false);
-
-    if (!file) {
-      setModalTitle("Upload Failed");
-      setModalMessage("No file selected!");
-      setStatusModal(true);
-      return;
-    }
-
-    setLoading(true);
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      await axios.post(
-        `${baseUrl}/api/v1/pms/hr/upload`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
-        }
-      );
-
-      setModalTitle("Upload Successful");
-      setModalMessage("File uploaded successfully!");
-      setStatusModal(true);
-
-      setTimeout(() => {
-        navigate("/employee-list");
-      }, 2000);
-    } catch (error) {
-      console.error("Upload failed:", error);
-      setModalTitle("Upload Failed");
-      setModalMessage("File upload failed. Please try again.");
-      setStatusModal(true);
-    } finally {
-      setLoading(false);
-      setFile(null);
-    }
-  };
-
-  const handleCancelUpload = () => {
-    setShowModal(false);
-    setFile(null);
-  };
+  
 
   return (
-    <div className="hr-module-add-employee-container">
-      {showModal && (
-        <FileConfirmation
-          file={file}
-          onConfirm={handleConfirmUpload}
-          onCancel={handleCancelUpload}
-        />
-      )}
+    <div className="hr-module-update-employee-container">
+      
 
       {loading && <Loader />}
 
@@ -107,42 +54,42 @@ const EmployeeDetails = () => {
         />
       )}
 
-      <div className="hr-module-add-employee-top-bar">
-        <h2 className="hr-module-add-employee-header">
-          <Link to="/hr-dashboard" className="hr-module-add-employee-home-icon">
+      <div className="hr-module-update-employee-top-bar">
+        <h2 className="hr-module-update-employee-header">
+          <Link to="/hr-dashboard" className="hr-module-update-employee-home-icon">
             <FaHome className="employee-list-home-icon" />
           </Link>
-          Employee Registration
+          Employee Updation
         </h2>
-        <img src={logo} className="hr-module-add-employee-company-icon" alt="Company Logo" />
+        <img src={logo} className="hr-module-update-employee-company-icon" alt="Company Logo" />
       </div>
 
-      <div className="hr-module-add-employee-form">
-        <div className="hr-module-add-employee-form-group">
+      <div className="hr-module-update-employee-form">
+        <div className="hr-module-update-employee-form-group">
           <label>Employee ID</label>
           <input type="text" name="empId" />
         </div>
-        <div className="hr-module-add-employee-form-group">
+        <div className="hr-module-update-employee-form-group">
           <label>Name</label>
           <input type="text" name="name" />
         </div>
-        <div className="hr-module-add-employee-form-group">
+        <div className="hr-module-update-employee-form-group">
           <label>Date of Birth</label>
           <input type="date" name="dob" />
         </div>
-        <div className="hr-module-add-employee-form-group">
+        <div className="hr-module-update-employee-form-group">
           <label>Date of Joining</label>
           <input type="date" name="dateOfJoining" />
         </div>
-        <div className="hr-module-add-employee-form-group">
+        <div className="hr-module-update-employee-form-group">
           <label>Role</label>
           <input type="text" name="role" />
         </div>
-        <div className="hr-module-add-employee-form-group">
+        <div className="hr-module-update-employee-form-group">
           <label>Current Designation</label>
           <input type="text" name="currentDesignation" />
         </div>
-        <div className="hr-module-add-employee-form-group">
+        <div className="hr-module-update-employee-form-group">
           <label>Department</label>
           <select name="department">
             <option>Engineer</option>
@@ -151,11 +98,11 @@ const EmployeeDetails = () => {
             <option>Admin</option>
           </select>
         </div>
-        <div className="hr-module-add-employee-form-group">
+        <div className="hr-module-update-employee-form-group">
           <label>Branch</label>
           <input type="text" name="branch" style={{ minWidth: "672px" }} />
         </div>
-        <div className="hr-module-add-employee-form-group">
+        <div className="hr-module-update-employee-form-group">
           <label>Category</label>
           <select name="category">
             <option>Permanent</option>
@@ -163,7 +110,7 @@ const EmployeeDetails = () => {
             <option>Intern</option>
           </select>
         </div>
-        <div className="hr-module-add-employee-form-group">
+        <div className="hr-module-update-employee-form-group">
           <label>Reporting Manager</label>
           <select name="reportingManager" style={{ minWidth: "300px" }}>
             <option>Manager X</option>
@@ -171,32 +118,29 @@ const EmployeeDetails = () => {
             <option>Manager Z</option>
           </select>
         </div>
-        <div className="hr-module-add-employee-form-group">
+        <div className="hr-module-update-employee-form-group">
           <label>Contact Number</label>
           <input type="text" name="mobileNumber" />
         </div>
-        <div className="hr-module-add-employee-form-group">
+        <div className="hr-module-update-employee-form-group">
           <label>Official Email ID</label>
           <input type="email" name="officialEmailId" />
         </div>
-        <div className="hr-module-add-employee-form-group">
+        <div className="hr-module-update-employee-form-group">
           <label>Personal Email</label>
           <input type="email" name="emailId" />
         </div>
-        <div className="hr-module-add-employee-form-group">
+        <div className="hr-module-update-employee-form-group">
           <label>Upload Photo</label>
           <input type="file" />
         </div>
       </div>
 
-      <div className="hr-module-add-employee-button-container">
-        <button onClick={uploadData} className="hr-module-add-employee-button primary">
-          Upload
-        </button>
-        <button className="hr-module-add-employee-button">Save</button>
+      <div className="hr-module-update-employee-button-container">
+        <button className="hr-module-update-employee-button">Save</button>
       </div>
     </div>
   );
 };
 
-export default EmployeeDetails;
+export default UpdateEmployee;
