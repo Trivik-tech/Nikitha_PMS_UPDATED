@@ -166,7 +166,7 @@ export default function EmployeeList() {
                       <td>{formatDate(member.dateOfJoining)}</td>
                       <td>{member.role || "-"}</td>
                       <td onClick={(e) => e.stopPropagation()}>
-                        <FaEdit className="employee-list-edit-icon" title="Edit" />
+                        <FaEdit className="employee-list-edit-icon" title="Edit" onClick={()=> navigate("/update-employee/12345")}/>
                         <FaTrash
                           className="employee-list-delete-icon"
                           title="Delete"

@@ -1,0 +1,216 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden; /* Prevent scrollbar */
+}
+
+/* Outer Container */
+.hr-module-update-employee-container {
+    width: 95vw;
+    height: 95vh;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    overflow: hidden; /* Prevent scroll */
+}
+
+/* Top Bar with Company Icon */
+.hr-module-update-employee-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* margin-bottom: 20px; */
+}
+
+.hr-module-update-employee-company-icon {
+    width: 120px;
+    height: auto;
+    margin-left: 10px;
+    object-fit: contain;
+}
+
+.hr-module-update-employee-home-icon {
+    font-size: 30px;
+    margin-right: 10px;
+    color: #333;
+}
+
+/* Header */
+.hr-module-update-employee-header {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    align-items: center;
+}
+
+/* Tabs */
+.hr-module-update-employee-tabs {
+    display: flex;
+    border-bottom: 2px solid #ddd;
+}
+
+.hr-module-update-employee-tab {
+    flex: 1;
+    text-align: center;
+    padding: 15px;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #f9f9f9;
+    border: none;
+    outline: none;
+    color: #777;
+    transition: 0.3s;
+}
+
+.hr-module-update-employee-tab.active {
+    border-bottom: 3px solid #333;
+    color: #333;
+    background-color: #fff;
+}
+
+/* Form Layout */
+.hr-module-update-employee-form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 20px;
+    height: 80%;
+    overflow: auto;
+}
+
+/* Form Fields */
+.hr-module-update-employee-form-group {
+    width: 48%;
+    margin-bottom: 5px;
+}
+
+/* Form Labels */
+.hr-module-update-employee-form-group label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Input Fields */
+input, select, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    background-color: white;
+    border-radius: 5px;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s;
+    box-sizing: border-box;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: #333;
+}
+
+/* Buttons */
+.hr-module-update-employee-button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.hr-module-update-employee-button {
+    background-color: rgb(37, 30, 225);
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.hr-module-update-employee-button:hover {
+    background-color: #333;
+}
+
+.hr-module-update-employee-button.secondary {
+    background-color: #f5f5f5;
+    color: black;
+    border: 1px solid #ccc;
+}
+
+.hr-module-update-employee-button.primary {
+    background-color: #06a2fd;
+    color: black;
+    border: 1px solid #ccc;
+}
+
+.hr-module-update-employee-button.secondary:hover {
+    background-color: #e0e0e0;
+}
+
+/* Resized Textarea */
+textarea {
+    width: 100%;
+    margin-bottom: 15px;
+    resize: none;
+    height: 60px;
+}
+
+/* New Styles */
+.hr-module-update-employee-form-group {
+    margin-bottom: 5px;
+    width: 48%;
+}
+
+.hr-module-update-employee-form-group textarea {
+    margin-bottom: 0;
+    height: 60px;
+}
+
+.hr-module-update-employee-form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.hr-module-update-employee-form-group textarea {
+    width: 100%;
+}
+
+input[type="text"], input[type="email"], input[type="date"], input[type="file"] {
+    width: 100%;
+}
+
+.hr-module-update-employee-form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 20px;
+    height: 80%;
+    overflow: auto;
+    opacity: 0;
+    animation: fadeIn 1s forwards;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
