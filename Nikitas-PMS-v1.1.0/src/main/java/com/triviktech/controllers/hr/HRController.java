@@ -67,7 +67,7 @@ public interface HRController {
 
     @GetMapping("/employee-with-pms-initiated")
     ResponseEntity<List<EmployeeInfo>> pmsInitiatedEmployees();
-    
+
     @GetMapping("/completed")
     ResponseEntity<List<EmployeeWithPmsStatus>> getCompletedPmsForHR();
 

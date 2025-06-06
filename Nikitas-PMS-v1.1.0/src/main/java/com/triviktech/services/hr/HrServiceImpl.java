@@ -34,6 +34,8 @@ import com.triviktech.repositories.hr.HRRepository;
 import com.triviktech.repositories.krakpi.KraKpiRepository;
 import com.triviktech.repositories.manager.ManagerRepository;
 import com.triviktech.repositories.project.ProjectRepository;
+import com.triviktech.utilities.email.EmailService;
+import com.triviktech.utilities.email.Message;
 import com.triviktech.utilities.entitydtoconversion.EntityDtoConversion;
 import com.triviktech.utilities.xlsxsupport.XlsxSupport;
 
@@ -54,26 +56,22 @@ public class HrServiceImpl implements HrService {
     private final StateRepository stateRepository;
     private final LocationRepository locationRepository;
     private final DepartmentRepository departmentRepository;
-    private final ProjectRepository projectRepository;
-    private final ManagerRepository managerRepository;
-    private final ModelMapper modelMapper;
     private final EntityDtoConversion entityDtoConversion;
     private final EmployeeInformationRepository employeeInformationRepository;
     private final KraKpiRepository kraKpiRepository;
+    private final EmailService emailService;
 
     public HrServiceImpl(HRRepository hrRepository, StateRepository stateRepository,
-            LocationRepository locationRepository, DepartmentRepository departmentRepository,
-            KraKpiRepository kraKpiRepository,
-            ProjectRepository projectRepository, ManagerRepository managerRepository, ModelMapper modelMapper,
-            EntityDtoConversion entityDtoConversion, EmployeeInformationRepository employeeInformationRepository) {
+                         LocationRepository locationRepository, DepartmentRepository departmentRepository,
+                         KraKpiRepository kraKpiRepository,
+                         EntityDtoConversion entityDtoConversion, EmployeeInformationRepository employeeInformationRepository, EmailService emailService) {
 
         this.hrRepository = hrRepository;
         this.stateRepository = stateRepository;
         this.locationRepository = locationRepository;
         this.departmentRepository = departmentRepository;
-        this.projectRepository = projectRepository;
-        this.managerRepository = managerRepository;
-        this.modelMapper = modelMapper;
+        this.emailService = emailService;
+
         this.entityDtoConversion = entityDtoConversion;
         this.employeeInformationRepository = employeeInformationRepository;
         this.kraKpiRepository = kraKpiRepository;
@@ -611,6 +609,15 @@ public class HrServiceImpl implements HrService {
         employeeInformation.setLastWorkingDay(lwdStr);
 
         EmployeeInformation saved = employeeInformationRepository.save(employeeInformation);
+
+        try {
+            String subject = String.format(Message.REGISTRATION_SUBJECT, saved.getName());
+            String message = String.format(Message.REGISTRATION_MESSAGE, saved.getName(), new Date(), saved.getEmpId());
+            emailService.sendEmail(saved.getEmailId(), subject, message);
+            System.out.println("Message has be sent");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         String mesg = saved != null ? "Employee Registration Successful" : "Employee Registration Failed";
 
