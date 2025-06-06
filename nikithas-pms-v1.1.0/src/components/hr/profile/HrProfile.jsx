@@ -7,7 +7,7 @@ import logo from "../../../assets/images/nikithas-logo.png";
 import profile from "../../../assets/images/profile1.jpg";
 import Loader from '../../modal/loader/Loader';
 
-const HrProfile = () => {
+const HrProfile = () => { 
   const [managerData, setManagerData] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
