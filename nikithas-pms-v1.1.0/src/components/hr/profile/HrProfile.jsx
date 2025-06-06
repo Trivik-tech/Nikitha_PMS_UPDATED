@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { FaArrowLeft, FaHome } from "react-icons/fa";
 import axios from "axios";
 import "./HrProfile.css";
+import "./HrResponsive.css";
 import logo from "../../../assets/images/nikithas-logo.png";
 import profile from "../../../assets/images/profile1.jpg";
 import Loader from '../../modal/loader/Loader';

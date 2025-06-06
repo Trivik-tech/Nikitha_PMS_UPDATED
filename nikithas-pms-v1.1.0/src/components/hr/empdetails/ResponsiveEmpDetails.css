@@ -1,0 +1,51 @@
+@media screen and (max-width: 600px) {
+.hr-module-add-employee-container {
+  width: 100vw;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  box-sizing: border-box;
+}
+/* Bigger Company Logo */
+.hr-module-add-employee-company-icon {
+    width: 200px; /* Increased from 120px */
+    height: auto;
+    margin-left: 10px;
+    object-fit: contain;
+}
+  .hr-module-add-employee-header {
+    font-size: 16px;
+  }
+  .hr-module-add-employee-form {
+  display: flex;
+  gap: 10px;
+  overflow-y: visible;
+  margin-top: 10px;
+  
+}
+
+  .hr-module-add-employee-company-icon {
+    width: 60px;
+  }
+  .hr-module-add-employee-form-group {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+  .hr-module-add-employee-tab {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  .hr-module-add-employee-button {
+    font-size: 14px;
+    margin-bottom: 70px;
+    padding: 8px;
+  }
+
+  textarea {
+    font-size: 13px;
+  }
+}

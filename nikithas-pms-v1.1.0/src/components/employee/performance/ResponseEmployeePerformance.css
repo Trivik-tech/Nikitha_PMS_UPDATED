@@ -1,0 +1,51 @@
+@media (max-width: 767px) {
+    .employee-module-container {
+        padding: 15px;
+        margin: 10px;
+        overflow-x: auto;
+        margin-bottom: 70px;
+    }
+
+    .employee-module-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .employee-module-header h1 {
+        font-size: 18px;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .employee-module-header img {
+        max-width: 70px; 
+        height: auto;
+        margin-top: 10px;
+    }
+
+    .employee-module-section h2 {
+        font-size: 16px;
+    }
+
+    .employee-module-kra-details,
+    .employee-module-rating,
+    .employee-module-overall-performance span {
+        font-size: 13px;
+    }
+
+    .employee-module-rating {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .employee-module-overall-performance {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .employee-module-progress-bar,
+    .employee-module-blue-progress {
+        height: 12px;
+    }
+}

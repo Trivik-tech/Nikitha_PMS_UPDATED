@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Team.css";
+import "./ResponsiveTeam.css";
 import { FaSearch, FaHome } from "react-icons/fa";
 import logo from "../../../assets/images/nikithas-logo.png";
 import { Link } from "react-router-dom";

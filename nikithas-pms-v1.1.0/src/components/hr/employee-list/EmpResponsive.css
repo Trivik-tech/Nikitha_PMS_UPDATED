@@ -1,0 +1,37 @@
+@media (max-width: 768px) {
+  body {
+    overflow: auto; /* Allow scroll on small screens */
+    height: auto;
+  }
+
+  .employee-list-container {
+    height: auto;
+    overflow: auto;
+    padding-bottom: 50px; /* Add some space at bottom */
+  }
+
+  .employee-list-content {
+    overflow-y: visible;
+    padding: 10px;
+  }
+
+  .employee-list-table-container {
+    overflow-x: auto; /* Allow horizontal scroll */
+  }
+
+  .employee-list-team-table {
+    min-width: 600px; /* Prevent table from squishing too much */
+  }
+
+  .employee-list-add-button-container {
+    position: static;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .employee-list-add-button-container .employee-list-add-button {
+    position: relative;
+    left: unset;
+    bottom: unset;
+  }
+}
