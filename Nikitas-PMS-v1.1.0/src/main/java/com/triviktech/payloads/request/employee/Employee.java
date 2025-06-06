@@ -1,20 +1,50 @@
 package com.triviktech.payloads.request.employee;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+
 import java.util.Date;
 
 public class Employee {
+
+    @NotEmpty(message = "Employee Id Should not be empty")
     private String empId;
+
+    @NotEmpty(message = "Employee name should not be empty")
+    @Size(min = 3,message = "Employee name must at least contains 3 Characters")
     private String name;
     private Date dob;
     private Date dateOfJoining;
+
+    @NotEmpty(message = "Designation Should not be empty")
+    @Size(min=3,message = "Employee Designation must at least contains 3 Characters")
     private String currentDesignation;
+
+    @NotEmpty(message = "Department should not be empty")
+    @Size(min = 3 , message = "Department must at least contains 3 Characters")
     private String department;
+
+    @NotEmpty(message = "Branch should not be empty")
+    @Size(min = 3 , message = "Branch must at least contains 3 Characters")
     private String branch;
+
+    @NotEmpty(message = "Category should not be empty")
+    @Size(min = 3 , message = "Category must at least contains 3 Characters")
     private String category;
+
     private Date lastWorkingDate;
+
+    @NotEmpty(message = "Official Email Id should not be empty")
     private String officialEmailId;
+
+    @NotEmpty(message = "Mobile Number should not be empty")
     private String mobileNumber;
+
+    @NotEmpty(message = "Reporting Manager should not be empty")
+    @Size(min = 3 , message = "Reporting Manager must at least contains 3 Characters")
     private String reportingManager;
+
+    @NotEmpty(message = "Email Id should not be empty")
     private String emailId;
 
     public String getEmpId() {

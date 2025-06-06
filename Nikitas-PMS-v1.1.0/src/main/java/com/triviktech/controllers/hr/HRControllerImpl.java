@@ -1,5 +1,6 @@
 package com.triviktech.controllers.hr;
 
+import com.triviktech.exception.validation.ValidationException;
 import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
@@ -11,6 +12,7 @@ import com.triviktech.payloads.response.hr.HrResponseDto;
 import com.triviktech.services.hr.HrService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -118,7 +120,10 @@ public class HRControllerImpl implements HRController {
     }
 
     @Override
-    public ResponseEntity<Map<String, String>> registerEmployee(Employee employee) {
+    public ResponseEntity<Map<String, String>> registerEmployee(Employee employee, BindingResult bindingResult) {
+        if(bindingResult.hasErrors()){
+            throw new ValidationException(bindingResult.getFieldError().getDefaultMessage());
+        }
         return new ResponseEntity<>(hrService.employeeRegistration(employee),HttpStatus.CREATED);
     }
 

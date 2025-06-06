@@ -10,7 +10,9 @@ import com.triviktech.payloads.response.employeeslist.EmployeesList;
 import com.triviktech.payloads.response.global.Response;
 
 import com.triviktech.payloads.response.hr.HrResponseDto;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -72,7 +74,7 @@ public interface HRController {
     ResponseEntity<List<EmployeeWithPmsStatus>> getCompletedPmsForHR();
 
     @PostMapping("/register-employee")
-    ResponseEntity<Map<String,String>> registerEmployee(@RequestBody Employee employee);
+    ResponseEntity<Map<String,String>> registerEmployee(@Valid @RequestBody Employee employee, BindingResult bindingResult);
 
     @GetMapping("/pending")
     ResponseEntity<List<EmployeeWithPmsStatus>> getPendingPmsForHR();
