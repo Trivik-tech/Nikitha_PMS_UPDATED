@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FaUser, FaLock } from 'react-icons/fa';
 import logo from '../../assets/images/nikithas-logo.png';
 import './Login.css';
+import './LoginResponsive.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../modal/Modal';

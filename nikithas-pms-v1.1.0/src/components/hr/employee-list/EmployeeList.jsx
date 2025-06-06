@@ -4,7 +4,6 @@ import { FaSearch, FaHome, FaEdit, FaTrash } from "react-icons/fa";
 import logo from "../../../assets/images/nikithas-logo.png";
 import "./EmpResponsive.css";
 import "./EmployeeList.css";
-
 import axios from "axios";
 import DeleteConfirmation from "../../modal/delete-confirmation/DeleteConfirmation";
 import { baseUrl } from "../../urls/CommenUrl";
@@ -59,6 +58,7 @@ export default function EmployeeList() {
 
   const searchEmployees = async (e) => {
     const search = e.target.value;
+    setSearchTerm(search);
     if (!search.trim()) {
       fetchEmployees();
       return;
@@ -105,104 +105,106 @@ export default function EmployeeList() {
   };
 
   return (
-    <div className="employee-list-container">
-      <div className="employee-list-content">
-        <div className="employee-list-header">
-          <div className="employee-list-header-title">
-            <Link to="/hr-dashboard" className="icon-link">
-              <FaHome className="employee-list-home-icon" />
-            </Link>
-            <h1 className="hr-module-employee-list-text">Employee List</h1>
+    <div className="employee-list-fullpage">
+      <div className="employee-list-container">
+        <div className="employee-list-content">
+          <div className="employee-list-header">
+            <div className="employee-list-header-title">
+              <Link to="/hr-dashboard" className="icon-link">
+                <FaHome className="employee-list-home-icon" />
+              </Link>
+              <h1 className="hr-module-employee-list-text">Employee List</h1>
+            </div>
             <div className="employee-list-search-bar">
               <FaSearch className="employee-list-search-icon" />
               <input
                 type="text"
                 placeholder="Search employees..."
+                value={searchTerm}
                 onChange={(e) => searchEmployees(e)}
               />
             </div>
+            <div className="employee-list-add-button-container">
+              <Link to="/add-employee" className="employee-list-add-button">
+                Add Employee
+              </Link>
+            </div>
+            <img src={logo} alt="Company Logo" className="employee-list-company-logo" />
           </div>
 
-          <div className="employee-list-add-button-container">
-            <Link to="/add-employee" className="employee-list-add-button">
-              Add Employee
-            </Link>
+          {hasServerError && (
+            <div className="employee-list-error-message">
+              Failed to fetch data from server. Please try again later.
+            </div>
+          )}
+
+          <div className="employee-list-table-container">
+            <div className="employee-list-table-scroll">
+              <table className="employee-list-team-table">
+                <thead>
+                  <tr>
+                    <th onClick={handleSort} style={{ cursor: "pointer" }}>Id</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Email</th>
+                    <th>Date of Joining</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentEntries.map((member) => (
+                    <tr
+                      key={member.id}
+                      onClick={() => navigate(`/employee-info/${member.empId || member.managerId}`)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <td>{member.empId || "-"}</td>
+                      <td>{member.name || "-"}</td>
+                      <td>{member.department || "-"}</td>
+                      <td>{member.officialEmailId || "-"}</td>
+                      <td>{formatDate(member.dateOfJoining)}</td>
+                      <td>{member.role || "-"}</td>
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <FaEdit className="employee-list-edit-icon" title="Edit" />
+                        <FaTrash
+                          className="employee-list-delete-icon"
+                          title="Delete"
+                          onClick={() => handleDeleteClick(member.empId, member.name)}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          <img src={logo} alt="Company Logo" className="employee-list-company-logo" />
+          {!hasServerError && (
+            <div className="employee-list-pagination">
+              <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
+                Prev
+              </button>
+              <span>Page {currentPage} of {totalPages}</span>
+              <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
+                Next
+              </button>
+            </div>
+          )}
         </div>
 
-        {hasServerError && (
-          <div className="employee-list-error-message">
-            {/* Show error if needed */}
-            Failed to fetch data from server. Please try again later.
-          </div>
-        )}
-
-        <div className="employee-list-table-container">
-          <table className="employee-list-team-table">
-            <thead>
-              <tr>
-                <th onClick={handleSort} style={{ cursor: "pointer" }}>Id</th>
-                <th>Name</th>
-                <th>Department</th>
-                <th>Email</th>
-                <th>Date of Joining</th>
-                <th>Role</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentEntries.map((member) => (
-                <tr
-                  key={member.id}
-                  onClick={() => navigate(`/employee-info/${member.empId || member.managerId}`)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <td>{member.empId || "-"}</td>
-                  <td>{member.name || "-"}</td>
-                  <td>{member.department || "-"}</td>
-                  <td>{member.officialEmailId || "-"}</td>
-                  <td>{formatDate(member.dateOfJoining)}</td>
-                  <td>{member.role || "-"}</td>
-                  <td onClick={(e) => e.stopPropagation()}>
-                    <FaEdit className="employee-list-edit-icon" title="Edit" />
-                    <FaTrash
-                      className="employee-list-delete-icon"
-                      title="Delete"
-                      onClick={() => handleDeleteClick(member.empId, member.name)}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {!hasServerError && (
-          <div className="employee-list-pagination">
-            <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
-              Prev
-            </button>
-            <span>Page {currentPage} of {totalPages}</span>
-            <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
-              Next
-            </button>
-          </div>
-        )}
+        {/* Modal */}
+        <DeleteConfirmation
+          isOpen={modalOpen}
+          onClose={() => {
+            setModalOpen(false);
+            setEmployeeToDelete(null);
+          }}
+          onConfirm={deleteEmployee}
+          name={employeeName}
+          id={employeeToDelete}
+        />
       </div>
-
-      {/* Modal */}
-      <DeleteConfirmation
-        isOpen={modalOpen}
-        onClose={() => {
-          setModalOpen(false);
-          setEmployeeToDelete(null);
-        }}
-        onConfirm={deleteEmployee}
-        name={employeeName}
-        id={employeeToDelete}
-      />
     </div>
   );
 }

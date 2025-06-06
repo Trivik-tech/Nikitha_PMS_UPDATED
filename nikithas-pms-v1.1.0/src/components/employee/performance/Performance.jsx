@@ -1,5 +1,6 @@
 import React from 'react';
 import './Performance.css';
+import './ResponseEmployeePerformance.css';
 import logo from '../../../assets/images/nikithas-logo.png';
 import { FaHome } from 'react-icons/fa'; // Importing the home icon
 import { Link } from 'react-router-dom';
