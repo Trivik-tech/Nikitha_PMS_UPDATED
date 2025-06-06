@@ -1,4 +1,3 @@
-// HrDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import {
   FaUsers,
@@ -20,6 +19,7 @@ import {
 import { Bell } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import './HrDashboard.css';
+import './Responsive.css';
 import '../../urls/CommenUrl';
 import logo from '../../../assets/images/nikithas-logo.png';
 import profile from '../../../assets/images/profile1.jpg';
@@ -230,7 +230,7 @@ const HrDashboard = () => {
           width: '100vw',
           height: '100vh',
           backgroundColor: 'rgba(0,0,0,0.5)',
-          zIndex: 999
+          zIndex: 998 // Set lower than sidebar but above page
         }}
       />
     ) : null;
@@ -238,16 +238,32 @@ const HrDashboard = () => {
   return (
     <>
       <div className="hr-dashboard-container">
-        {isMobile() && (
-          <button
-            className="hamburger"
-            aria-label="Toggle sidebar"
-            onClick={() => setSidebarOpen(prev => !prev)}
-          >
-            ☰
-          </button>
-        )}
-        <aside className={`hr-dashboard-sidebar${sidebarOpen ? ' open' : ' closed'}${isMobile() ? ' mobile' : ''}`}>
+        {/* Sidebar */}
+        <aside
+          className={`hr-dashboard-sidebar${sidebarOpen ? ' open' : ' closed'}${isMobile() ? ' mobile' : ''}`}
+          style={
+            isMobile()
+              ? {
+                  position: 'fixed',
+                  top: 10,
+                  left: 10,
+                  height: '100vh',
+                  zIndex: 999 // Above the overlay
+                }
+              : {}
+          }
+        >
+          {/* Hamburger only on mobile, only when sidebar is open, now inside sidebar */}
+          {isMobile() && sidebarOpen && (
+            <button
+              className="hamburger sidebar-hamburger"
+              aria-label="Close sidebar"
+              onClick={() => setSidebarOpen(false)}
+              style={{ position: 'absolute', top: 10, right: 1, left: 10 }}
+            >
+              ☰
+            </button>
+          )}
           <div className="hr-dashboard-profile-container">
             <img src={profile} alt="Profile" className="hr-dashboard-profileImg" />
             <h2 className="hr-dashboard-profile-name">Avinash S. H.</h2>
@@ -276,6 +292,16 @@ const HrDashboard = () => {
 
         <main className="hr-dashboard-main-content">
           <header className="hr-dashboard-header fade-in-down">
+            {/* Hamburger always on top, only on mobile, only when sidebar is closed */}
+            {isMobile() && !sidebarOpen && (
+              <button
+                className="hamburger"
+                aria-label="Open sidebar"
+                onClick={() => setSidebarOpen(true)}
+              >
+                ☰
+              </button>
+            )}
             <div className="hr-dashboard-logo-container">
               <img src={logo} alt="Nikitha PMS" className="hr-dashboard-logo" />
               <h1 className="hr-dashboard-title">HR PMS Dashboard</h1>
