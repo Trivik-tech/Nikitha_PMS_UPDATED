@@ -50,13 +50,13 @@
 
   .sidebar ul li {
     text-align: center;
-    padding: 10px 0;
+    /* padding: 10px 0; */
   }
 
   .sidebar ul li a {
     text-decoration: none;
     color: black;
-    font-weight: bold;
+    
   }
 
   .sidebar ul li a.active {
