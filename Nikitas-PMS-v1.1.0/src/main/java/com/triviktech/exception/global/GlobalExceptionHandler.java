@@ -9,6 +9,7 @@ import com.triviktech.exception.manager.ManagerAlreadyExistsException;
 import com.triviktech.exception.manager.ManagerNotFoundException;
 import com.triviktech.exception.project.ProjectNotFoundException;
 import com.triviktech.exception.token.TokenExpiredException;
+import com.triviktech.exception.validation.ValidationException;
 import com.triviktech.payloads.exception.ExceptionMessage;
 import jakarta.servlet.ServletException;
 import org.springframework.http.HttpStatus;
@@ -110,6 +111,14 @@ public class GlobalExceptionHandler {
         ExceptionMessage exceptionMessage=new ExceptionMessage();
         exceptionMessage.setMessage(exception.getMessage());
         return new ResponseEntity<>(exceptionMessage,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ExceptionMessage> handleValidationException(ValidationException e){
+        ExceptionMessage exceptionMessage=new ExceptionMessage();
+        exceptionMessage.setMessage(e.getMessage());
+        return new ResponseEntity<>(exceptionMessage,HttpStatus.NOT_ACCEPTABLE);
+
     }
 
 }

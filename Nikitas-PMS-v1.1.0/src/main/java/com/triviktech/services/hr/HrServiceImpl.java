@@ -614,7 +614,7 @@ public class HrServiceImpl implements HrService {
             String subject = String.format(Message.REGISTRATION_SUBJECT, saved.getName());
             String message = String.format(Message.REGISTRATION_MESSAGE, saved.getName(), new Date(), saved.getEmpId());
             emailService.sendEmail(saved.getEmailId(), subject, message);
-            System.out.println("Message has be sent");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
