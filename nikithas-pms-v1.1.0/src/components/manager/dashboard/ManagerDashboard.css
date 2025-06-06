@@ -1,4 +1,9 @@
 /* Global Styles */
+@media screen and (min-width: 769px) {
+  .sidebar ul li .logout {
+    display: none !important;
+  }
+}
 body, html {
   margin: 0;
   padding: 0;
@@ -197,21 +202,7 @@ body, html {
   transform: scale(1.2);
 }
 
-.logout-btn {
-  background-color: #202020;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  font-size: 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  text-decoration: none;
-  transition: background-color 0.3s ease;
-}
 
-.logout-btn:hover {
-  background-color: #cc0000;
-}
 
 /* Stats Section */
 .stats-container {
@@ -268,6 +259,21 @@ body, html {
   color: #4CAF50;
 }
 
+.logout-btn {
+  background-color: #000;
+  color: #fff;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  font-weight: bold;
+}
+
+.logout-btn:hover {
+  background-color: red;
+  color: #fff;
+}
+
 /* Chart Section */
 .chart-container {
   background-color: #fff;
@@ -302,6 +308,7 @@ body, html {
   to { opacity: 1; transform: translateY(0); }
 }
 
+
 /* Responsive */
 @media screen and (max-width: 768px) {
   .sidebar {
@@ -325,4 +332,25 @@ body, html {
   .dashboard-logo {
       width: 90px;
   }
+  /* 👁️ Show logout next to bell icon on desktop only */
+.desktop-only {
+  display: inline-block;
 }
+
+@media screen and (max-width: 768px) {
+  .desktop-only {
+    display: none;
+  }
+
+}
+
+}
+/* Hide sidebar logout button on desktop */
+@media screen and (min-width: 769px) {
+  .sidebar ul li .logout-btn {
+    display: none;
+  }
+  
+}
+
+

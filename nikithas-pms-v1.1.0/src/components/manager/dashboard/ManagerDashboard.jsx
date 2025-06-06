@@ -1,3 +1,4 @@
+// ✅ ManagerDashboard.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Chart, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie, getElementsAtEvent } from "react-chartjs-2";
@@ -7,7 +8,7 @@ import axios from "axios";
 import Notification from "../../modal/notification/Notification";
 
 import "./ManagerDashboard.css";
-import "./ResponsiveManager.css"
+import "./ResponsiveManager.css"; // ✅ Separate responsive file
 import logo from "../../../assets/images/nikithas-logo.png";
 import profile from "../../../assets/images/profile1.jpg";
 
@@ -49,9 +50,7 @@ const ManagerDashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <button className="sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
-        ☰
-      </button>
+      
 
       <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="profile-container">
@@ -62,7 +61,9 @@ const ManagerDashboard = () => {
         </div>
         <ul>
           <li>
-            <NavLink to="/manager-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>Dashboard</NavLink>
+            <NavLink to="/manager-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>
+              Dashboard
+            </NavLink>
           </li>
           <li>
             <Link to={`/my-team/${managerData?.managerId}`}>My Team</Link>
@@ -70,17 +71,23 @@ const ManagerDashboard = () => {
           <li>
             <Link to="/manager-profile">My Profile</Link>
           </li>
+          <li>
+            <Link to="/" className="logout button">Logout</Link>
+          </li>
         </ul>
       </div>
 
       <div className="main-content">
         <div className="dashboard-header">
+           <button className="sidebar-toggle hum-btn" onClick={() => setSidebarOpen(!sidebarOpen)}>
+        ☰
+      </button>
           <h1>Manager PMS Dashboard</h1>
           <img src={logo} alt="Logo" className="dashboard-logo" />
           <div className="header-icons">
             <Bell className="notification-icon" onClick={() => setNotificationOpen(!notificationOpen)} />
             {notificationOpen && <Notification onClose={() => setNotificationOpen(false)} />}
-            <Link to="/" className="logout-btn">Logout</Link>
+            <Link to="/" className="logout-btn desktop-only">Logout</Link>
           </div>
         </div>
 
