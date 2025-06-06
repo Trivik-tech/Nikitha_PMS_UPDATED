@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { FaArrowLeft, FaHome } from "react-icons/fa";
 import axios from "axios";
 import "./ManagerProfile.css";
+import './ResponsiveProfile.css';
 import logo from "../../../assets/images/nikithas-logo.png";
 import profile from "../../../assets/images/profile1.jpg";
 import Loader from '../../modal/loader/Loader';
@@ -96,7 +97,7 @@ const ManagerProfile = () => {
           <p><strong>Mobile Number:</strong> {managerData?.contactNumber || "1234567895"}</p>
         </div>
         <div className="contact-card hover-zoom">
-          <p><strong>Location:</strong> {managerData?.location?.name || "Bengaluru"}, {managerData?.location?.state?.name} {managerData?.location?.zipCode || "12345"}</p>
+          <p><strong>Location:</strong> {managerData?.location?.name || "20, Watch Factory Rd, Phase -1, Yeswanthpur, Bengaluru, Karnataka 560013"}, {managerData?.location?.state?.name} {managerData?.location?.zipCode || "12345"}</p>
         </div>
       </div>
     </div>
