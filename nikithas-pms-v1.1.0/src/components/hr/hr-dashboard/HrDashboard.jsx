@@ -128,6 +128,13 @@ const HrDashboard = () => {
     }
   };
 
+  // --------
+  // FIX: Labels being cut off in mobile view.
+  // Chart.js bar chart on mobile with overflow-x: scroll
+  // Solution: set bar chart width proportional to number of departments (min 480px, 120px per department)
+  // --------
+  const barChartMinWidth = Math.max(480, departments.length * 120);
+
   const barData = {
     labels: departments,
     datasets: [
@@ -170,7 +177,7 @@ const HrDashboard = () => {
     scales: {
       x: {
         beginAtZero: true,
-        ticks: { maxRotation: 45, minRotation: 0, font: { size: 11 } },
+        ticks: { maxRotation: 45, minRotation: 0, font: { size: 11 }, autoSkip: false },
         grid: { display: false }
       },
       y: {
@@ -245,8 +252,8 @@ const HrDashboard = () => {
             isMobile()
               ? {
                   position: 'fixed',
-                  top: 10,
-                  left: 10,
+                  top: 0,
+                  left: 0,
                   height: '100vh',
                   zIndex: 999 // Above the overlay
                 }
@@ -259,7 +266,7 @@ const HrDashboard = () => {
               className="hamburger sidebar-hamburger"
               aria-label="Close sidebar"
               onClick={() => setSidebarOpen(false)}
-              style={{ position: 'absolute', top: 10, right: 1, left: 10 }}
+              style={{ position: 'absolute', top: 5, right: 150 }}
             >
               ☰
             </button>
@@ -298,6 +305,7 @@ const HrDashboard = () => {
                 className="hamburger"
                 aria-label="Open sidebar"
                 onClick={() => setSidebarOpen(true)}
+                style={{ top: -7, left: -30 }}
               >
                 ☰
               </button>
@@ -347,8 +355,27 @@ const HrDashboard = () => {
             <h2 className="hr-dashboard-assessment-heading">Assessment Status</h2>
             <div className="hr-dashboard-charts-wrapper">
               <div className="hr-dashboard-chart-box hr-dashboard-bar-chart">
-                <div className="chart-scroll-container">
-                  <Bar data={barData} options={barOptions} />
+                <div
+                  className="chart-scroll-container"
+                  style={
+                    isMobile()
+                      ? { width: '100%', overflowX: 'auto' }
+                      : {}
+                  }
+                >
+                  <div
+                    style={
+                      isMobile()
+                        ? {
+                            minWidth: `${barChartMinWidth}px`,
+                            width: `${barChartMinWidth}px`,
+                            height: '320px'
+                          }
+                        : { width: '100%', height: '320px' }
+                    }
+                  >
+                    <Bar data={barData} options={barOptions} />
+                  </div>
                 </div>
               </div>
               <div className="hr-dashboard-chart-box hr-dashboard-pie-chart">
