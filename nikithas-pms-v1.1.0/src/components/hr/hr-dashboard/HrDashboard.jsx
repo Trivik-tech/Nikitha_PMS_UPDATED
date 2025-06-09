@@ -241,7 +241,7 @@ const HrDashboard = () => {
           width: "100vw",
           height: "100vh",
           backgroundColor: "rgba(0,0,0,0.5)",
-          zIndex: 999,
+          zIndex: 1,
         }}
       />
     ) : null;
@@ -310,7 +310,7 @@ const HrDashboard = () => {
               <h1 className="hr-dashboard-title">HR PMS Dashboard</h1>
             </div>
             <div className="hr-dashboard-actions">
-              <Bell className="notification-icon" onClick={() => setNotificationOpen(!notificationOpen)} />
+              <Bell className=".hr-dashboard-notificationButton" onClick={() => setNotificationOpen(!notificationOpen)} />
               <button
                 className="hr-dashboard-logoutButton desktop-only"
                 onClick={() => {
