@@ -1,6 +1,7 @@
 import { React, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './EmployeeDashboard.css';
+import './EmployeeDashboardResponsive.css'
 import logo from '../../../assets/images/nikithas-logo.png';
 import { Bell } from 'lucide-react';
 import Notification from '../../modal/notification/Notification';
@@ -22,20 +23,52 @@ const employeeData = {
 
 const EmployeeDashboard = () => {
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Close sidebar on overlay click or navigation
+  const handleSidebarClose = () => setSidebarOpen(false);
+
   return (
     <div className="employee-dashboard-container">
-      {notificationOpen && <Notification onClose={() => setNotificationOpen(false)} />}
+      {/* Sidebar overlay for mobile */}
+      <div
+        className={`employee-dashboard-sidebar-overlay ${sidebarOpen ? 'visible' : 'hidden'}`}
+        onClick={handleSidebarClose}
+        aria-label="Close sidebar"
+        tabIndex={sidebarOpen ? 0 : -1}
+        style={{ display: sidebarOpen ? 'block' : 'none' }}
+      />
+      {/* Hamburger icon */}
+      <div
+        className="employee-dashboard-hamburger"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        aria-label="Open sidebar"
+        tabIndex={0}
+        role="button"
+      >
+        <span />
+        <span />
+        <span />
+      </div>
       {/* Sidebar */}
-      <aside className="employee-dashboard-sidebar">
+      <aside className={`employee-dashboard-sidebar${sidebarOpen ? ' open' : ''}`}>
         <div className="employee-profile-container">
           <img src={employeeData.profileImage} alt="Profile" className="employee-profile-img" />
           <h2 className="employee-name">{employeeData.name}</h2>
         </div>
         <ul>
-          <li><Link to="/employee-dashboard" className="active">My Dashboard</Link></li>
-          <li><Link to={`/self-review/CNT139`}>Start PMS</Link></li>
-          <li><Link to="/employee-performance">My Performance</Link></li>
-          <li><Link to="/add-krakpi">Register KRA|KPI</Link></li>
+          <li>
+            <Link to="/employee-dashboard" className="active" onClick={handleSidebarClose}>My Dashboard</Link>
+          </li>
+          <li>
+            <Link to={`/self-review/CNT139`} onClick={handleSidebarClose}>Start PMS</Link>
+          </li>
+          <li>
+            <Link to="/employee-performance" onClick={handleSidebarClose}>My Performance</Link>
+          </li>
+          <li>
+            <Link to="/add-krakpi" onClick={handleSidebarClose}>Register KRA|KPI</Link>
+          </li>
         </ul>
       </aside>
 
@@ -48,7 +81,6 @@ const EmployeeDashboard = () => {
           </div>
           <div className="employee-dashboard-actions">
             <Bell className="employee-dashboard-notificationButton" onClick={() => setNotificationOpen(!notificationOpen)} />
-            
             <Link to="/" className="employee-logout-btn">Logout</Link>
           </div>
         </header>
@@ -81,6 +113,7 @@ const EmployeeDashboard = () => {
           </div>
         </section>
       </main>
+      {notificationOpen && <Notification onClose={() => setNotificationOpen(false)} />}
     </div>
   );
 };
