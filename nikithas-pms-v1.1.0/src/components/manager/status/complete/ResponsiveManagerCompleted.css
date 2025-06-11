@@ -1,0 +1,123 @@
+/* 🌐 Responsive Styles for Tablets and Mobiles */
+@media screen and (max-width: 1024px) {
+  .complete-team-container {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    overflow-y: auto;
+    padding-bottom: 60px; /* To make space for pagination */
+  }
+
+  .complete-header {
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 25px;
+  }
+
+  .complete-home-icon {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-size: 28px;
+    color: #333;
+    z-index: 1000;
+  }
+
+  .complete-company-logo {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    height: 60px;
+    max-width: 120px;
+  }
+
+  .complete-header-title {
+    margin-top: -5px; /* space below icons */
+    width: 100%;
+    margin-right: 25px;
+    text-align: center;
+  }
+
+  .complete-header-title h1 {
+    font-size: 22px;
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  .complete-search-bar {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .complete-search-bar input {
+    width: 100%;
+    padding-left: 30px;
+  }
+
+  .complete-search-icon {
+    left: 10px;
+  }
+
+  .complete-table-container {
+    padding: 10px 12px;
+  }
+
+  .complete-team-table th,
+  .complete-team-table td {
+    padding: 20px;
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .complete-profile-pic {
+    width: 40px;
+    height: 50px;
+  }
+
+  .complete-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .complete-pagination button,
+  .complete-pagination span {
+    font-size: 14px;
+    padding: 6px 12px;
+    min-width: 60px;
+  }
+}
+
+/* 📱 Extra Small Devices (Mobiles) */
+@media screen and (max-width: 600px) {
+  .complete-header-title h1 {
+    font-size: 18px;
+  }
+
+  .complete-search-bar input {
+    padding-left: 28px;
+  }
+
+  .complete-team-table th,
+  .complete-team-table td {
+    font-size: 15px;
+    padding: 14px;
+  }
+
+  .complete-company-logo {
+    height: 70px;
+    width: 80px;
+    top: 0px;
+    right: -0px;
+  }
+
+  .complete-home-icon {
+    font-size: 30px;
+    top: 15px;
+    left: 15px;
+  }
+}

@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Complete.css";
+import './ResponsiveManagerCompleted.css'; 
 import { FaSearch, FaHome } from "react-icons/fa";
 import logo from '../../../../assets/images/nikithas-logo.png';
 
 const teamMembers = [
-  { name: "Sarah Wilson", department: "Product Design", position: "Senior Designer", self: "Completed", manager: "Completed", image: "https://randomuser.me/api/portraits/women/1.jpg" },
-  { name: "John Doe", department: "Engineering", position: "Software Engineer", self: "Completed", manager: "Completed", image: "https://randomuser.me/api/portraits/men/1.jpg" },
-  { name: "Alex Johnson", department: "Marketing", position: "Content Strategist", self: "Completed", manager: "Completed", image: "https://randomuser.me/api/portraits/men/2.jpg" },
-  { name: "David Lee", department: "Sales", position: "Sales Director", self: "Completed", manager: "Completed", image: "https://randomuser.me/api/portraits/men/3.jpg" },
+  { name: "Sarah Wilson", department: "Product Design", position: "Senior Designer", self: "Completed", manager: "Completed" },
+  { name: "John Doe", department: "Engineering", position: "Software Engineer", self: "Completed", manager: "Completed" },
+  { name: "Alex Johnson", department: "Marketing", position: "Content Strategist", self: "Completed", manager: "Completed" },
+  { name: "David Lee", department: "Sales", position: "Sales Director", self: "Completed", manager: "Completed"},
 ];
 
 export default function Complete() {
@@ -70,7 +71,7 @@ export default function Complete() {
             {currentEntries.map((member, index) => (
               <tr key={index}>
                 <td className="complete-team-member">
-                  <img src={member.image} alt={member.name} className="complete-profile-pic" />
+                  {/* <img src={member.image} alt={member.name} className="complete-profile-pic" /> */}
                   {member.name}
                 </td>
                 <td>{member.department}</td>
