@@ -39,9 +39,22 @@
   transition: 0.4s;
 }
 
+/* Sidebar logout button: hidden by default */
+.employee-sidebar-logout-btn {
+  display: none;
+}
+
+/* Bell icon top right for mobile/tablet (default hidden) */
+.employee-dashboard-bell-topright {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .employee-dashboard-container {
     flex-direction: column;
+    /* Enable vertical scroll for the whole page in mobile/tablet */
+    overflow-y: auto !important;
+    height: 100vh;
   }
   .employee-dashboard-title {
     font-size: 22px;
@@ -49,8 +62,10 @@
     color: #333;
     flex: 1;
     text-align: left;
-    padding-left: 20px;
-}
+    padding-left: 35px;
+    margin-bottom: -50px;
+
+  }
   .employee-dashboard-sidebar {
     position: fixed;
     left: 0;
@@ -73,10 +88,20 @@
     transform: translateX(0);
   }
   .employee-dashboard-hamburger {
-    display: flex;
+    display: flex; 
     position: absolute;
     top: 24px;
     left: 18px;
+    margin-top: 20px;
+  }
+  /* Bell icon in top right, same as hamburger but right side */
+  .employee-dashboard-bell-topright {
+    display: flex;
+    position: absolute;
+    top: 24px;
+    right: 18px;
+    z-index: 1201;
+    background: transparent;
   }
   .employee-main-content {
     width: 100%;
@@ -86,13 +111,52 @@
     flex-wrap: wrap;
     padding: 15px 10px 15px 56px;
     position: relative;
+    height: 110px;
   }
   .employee-dashboard-logo img {
-    height: 60px;
+    height: 80px;
+    margin-top: -30px;
+  }
+  /* Show sidebar logout button, hide header logout button */
+  .employee-sidebar-logout-btn {
+    display: block;
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.3s ease;
+    white-space: nowrap;
+    margin: 20px auto 0 auto;
+    width: 90%;
+    text-align: center;
+  }
+  .employee-sidebar-logout-btn:hover {
+    background-color: #c82333;
   }
   .employee-logout-btn {
-    order: 3;
-    margin-left: 15px;
+    display: none;
+  }
+  /* Hide bell in header actions on mobile/tablet */
+  .employee-dashboard-bell-desktop {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .employee-sidebar-logout-btn {
+    display: none !important;
+  }
+  .employee-logout-btn {
+    display: block;
+  }
+  .employee-dashboard-bell-topright {
+    display: none !important;
+  }
+  .employee-dashboard-bell-desktop {
+    display: flex !important;
   }
 }
 
@@ -107,7 +171,7 @@
   }
   .employee-info,
   .reporting-manager {
-    padding: 14px;
+    padding: 10px;
   }
   .manager-info {
     flex-direction: column;
@@ -119,6 +183,14 @@
     left: 8px;
     width: 32px;
     height: 32px;
+  }
+  .employee-dashboard-bell-topright {
+    top: 20px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    margin-right: 10px;
+    margin-top: 13px;
   }
 }
 

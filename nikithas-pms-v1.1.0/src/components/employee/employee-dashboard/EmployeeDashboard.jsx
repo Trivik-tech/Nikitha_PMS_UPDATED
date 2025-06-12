@@ -8,7 +8,7 @@ import Notification from '../../modal/notification/Notification';
 
 const employeeData = {
   id: 'EMP00123',
-  name: 'Sowmya Kumari',
+  name: 'Sowmya K',
   location: 'Tumkur, Karnataka',
   email: 'Sowmya74@gmail.com',
   profileImage: 'https://assets.onecompiler.app/4344tsra5/43brqemzn/1000115242.jpg',
@@ -50,6 +50,16 @@ const EmployeeDashboard = () => {
         <span />
         <span />
       </div>
+      {/* Bell icon top right on mobile/tablet */}
+      <div
+        className="employee-dashboard-bell-topright"
+        onClick={() => setNotificationOpen(!notificationOpen)}
+        aria-label="Show notifications"
+        tabIndex={0}
+        role="button"
+      >
+        <Bell className="employee-dashboard-notificationButton" />
+      </div>
       {/* Sidebar */}
       <aside className={`employee-dashboard-sidebar${sidebarOpen ? ' open' : ''}`}>
         <div className="employee-profile-container">
@@ -67,9 +77,11 @@ const EmployeeDashboard = () => {
             <Link to="/employee-performance" onClick={handleSidebarClose}>My Performance</Link>
           </li>
           <li>
-            <Link to="/add-krakpi" onClick={handleSidebarClose}>Register KRA|KPI</Link>
+            <Link to="/add-krakpi" onClick={handleSidebarClose}>Add KRA|KPI</Link>
           </li>
         </ul>
+        {/* Sidebar Logout button for mobile/tablet only */}
+        <Link to="/" className="employee-sidebar-logout-btn">Logout</Link>
       </aside>
 
       {/* Main Content */}
@@ -80,7 +92,8 @@ const EmployeeDashboard = () => {
             <img src={logo} alt="Nikitha PMS" />
           </div>
           <div className="employee-dashboard-actions">
-            <Bell className="employee-dashboard-notificationButton" onClick={() => setNotificationOpen(!notificationOpen)} />
+            {/* Bell in header (desktop only) */}
+            <Bell className="employee-dashboard-notificationButton employee-dashboard-bell-desktop" onClick={() => setNotificationOpen(!notificationOpen)} />
             <Link to="/" className="employee-logout-btn">Logout</Link>
           </div>
         </header>
