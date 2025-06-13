@@ -1,0 +1,230 @@
+/* Responsive styles for EmployeeDashboard with hamburger sidebar */
+/* Hide sidebar and show hamburger on mobile/tablet, slide sidebar in/out */
+
+@media (max-width: 992px) {
+  .employee-info,
+  .reporting-manager {
+    width: 100%;
+  }
+}
+
+/* Hamburger styles */
+.employee-dashboard-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  z-index: 1201;
+  margin-left: 13px;
+}
+.employee-dashboard-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+    flex: 1;
+    text-align: left;
+    padding-left: 20px;
+}
+
+.employee-dashboard-hamburger span {
+  display: block;
+  width: 26px;
+  height: 3px;
+  background: #333;
+  margin: 4px 0;
+  border-radius: 2px;
+  transition: 0.4s;
+}
+
+/* Sidebar logout button: hidden by default */
+.employee-sidebar-logout-btn {
+  display: none;
+}
+
+/* Bell icon top right for mobile/tablet (default hidden) */
+.employee-dashboard-bell-topright {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .employee-dashboard-container {
+    flex-direction: column;
+    /* Enable vertical scroll for the whole page in mobile/tablet */
+    overflow-y: auto !important;
+    height: 100vh;
+    margin-right: -20px;
+  }
+  .employee-dashboard-title {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+    flex: 1;
+    text-align: left;
+    padding-left: 35px;
+    margin-bottom: -50px;
+
+  }
+  .employee-dashboard-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 220px;
+    height: 100vh;
+    margin: 0;
+    border-radius: 0 5px 5px 0;
+    z-index: 1200;
+    background: #fff;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.15);
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.32,0.72,0.51,1);
+    opacity: 1 !important;
+    animation: none !important;
+    overflow-y: auto;
+    padding-top: 60px;
+  }
+  .employee-dashboard-sidebar.open {
+    transform: translateX(0);
+  }
+  .employee-dashboard-hamburger {
+    display: flex; 
+    position: absolute;
+    top: 24px;
+    left: 18px;
+    margin-top: 20px;
+  }
+  /* Bell icon in top right, same as hamburger but right side */
+  .employee-dashboard-bell-topright {
+    display: flex;
+    position: absolute;
+    top: 24px;
+    right: 18px;
+    z-index: 1201;
+    background: transparent;
+  }
+  .employee-main-content {
+    width: 100%;
+    padding-left: 0;
+  }
+  .employee-dashboard-header {
+    flex-wrap: wrap;
+    padding: 15px 10px 15px 56px;
+    position: relative;
+    height: 110px;
+  }
+  .employee-dashboard-logo img {
+    height: 80px;
+    margin-top: -30px;
+  }
+  /* Show sidebar logout button, hide header logout button */
+  .employee-sidebar-logout-btn {
+    display: block;
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.3s ease;
+    white-space: nowrap;
+    margin: 20px auto 0 auto;
+    width: 90%;
+    text-align: center;
+  }
+  .employee-sidebar-logout-btn:hover {
+    background-color: #c82333;
+  }
+  .employee-logout-btn {
+    display: none;
+  }
+  /* Hide bell in header actions on mobile/tablet */
+  .employee-dashboard-bell-desktop {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .employee-sidebar-logout-btn {
+    display: none !important;
+  }
+  .employee-logout-btn {
+    display: block;
+  }
+  .employee-dashboard-bell-topright {
+    display: none !important;
+  }
+  .employee-dashboard-bell-desktop {
+    display: flex !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .employee-dashboard-header {
+    padding: 10px 10px 10px 56px;
+  }
+  
+  .employee-info-container {
+    padding: 10px;
+    gap: 12px;
+  }
+  .employee-info,
+  .reporting-manager {
+    padding: 10px;
+  }
+  .manager-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .employee-dashboard-hamburger {
+    top: 10px;
+    left: 8px;
+    width: 32px;
+    height: 32px;
+  }
+  .employee-dashboard-bell-topright {
+    top: 20px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    margin-right: 10px;
+    margin-top: 13px;
+  }
+}
+
+/* Sidebar overlay for mobile */
+.employee-dashboard-sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .employee-dashboard-sidebar-overlay {
+    display: block;
+    position: fixed;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.18);
+    z-index: 1199;
+    transition: opacity 0.2s;
+  }
+  .employee-dashboard-sidebar-overlay.hidden {
+    display: none;
+    opacity: 0;
+  }
+  .employee-dashboard-sidebar-overlay.visible {
+    display: block;
+    opacity: 1;
+  }
+}
+
+/* Apply vertical scroll to the whole page on mobile/tablet */
+@media (max-width: 768px) {
+  html, body {
+    height: 100vh;
+    min-height: 100vh;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+}
