@@ -18,7 +18,7 @@
   height: 40px;
   cursor: pointer;
   z-index: 1201;
-  margin-left: 5px;
+  margin-left: 13px;
 }
 .employee-dashboard-title {
     font-size: 22px;
@@ -55,6 +55,7 @@
     /* Enable vertical scroll for the whole page in mobile/tablet */
     overflow-y: auto !important;
     height: 100vh;
+    margin-right: -20px;
   }
   .employee-dashboard-title {
     font-size: 22px;
@@ -215,5 +216,15 @@
   .employee-dashboard-sidebar-overlay.visible {
     display: block;
     opacity: 1;
+  }
+}
+
+/* Apply vertical scroll to the whole page on mobile/tablet */
+@media (max-width: 768px) {
+  html, body {
+    height: 100vh;
+    min-height: 100vh;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
   }
 }
