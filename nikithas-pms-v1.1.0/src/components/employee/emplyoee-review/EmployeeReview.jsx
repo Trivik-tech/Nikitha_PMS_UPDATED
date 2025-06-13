@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./EmployeeReview.css";
+import "./EmployeeReviewResponsiveness.css"
 import logo from "../../../assets/images/nikithas-logo.png";
 import { FaHome } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
