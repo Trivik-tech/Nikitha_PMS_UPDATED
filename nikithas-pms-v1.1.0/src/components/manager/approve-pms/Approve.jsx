@@ -1,6 +1,7 @@
 // Approve.jsx
 import React, { useEffect, useState } from "react";
 import "./Approve.css";
+import "./ResponsiveApprovePms.css"
 import logo from "../../../assets/images/nikithas-logo.png";
 import { FaHome } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
