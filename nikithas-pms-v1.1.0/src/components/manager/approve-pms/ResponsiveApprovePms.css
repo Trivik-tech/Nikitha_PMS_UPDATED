@@ -1,0 +1,85 @@
+@media (max-width: 768px) {
+  html, body {
+    height: auto;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .manager-approve-container {
+    width: 100vw;
+    min-height: 100vh;
+    height: auto;
+    padding: 15px;
+    border-radius: 0;
+    overflow: visible;
+    box-sizing: border-box;
+  }
+
+  .manager-approve-title-section {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+
+  .icon-link {
+    margin-bottom: 10px;
+    font-size: 20px;
+  }
+
+  .manager-approve-title {
+    font-size: 24px;
+    margin-left: 0;
+    text-align: left;
+  }
+
+  .manager-approve-logo {
+    height: 60px;
+    margin: 10px 0 0 auto;
+  }
+
+  .manager-approve-filters {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .manager-weightage-label,
+  .kra-weightage-container {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .manager-weightage-input {
+    width: 100% !important;
+    margin-right: 0;
+  }
+
+  .manager-approve-table,
+  .manager-approve-table th,
+  .manager-approve-table td {
+    display: block;
+    width: 100% !important;
+    box-sizing: border-box;
+    text-align: left !important;
+  }
+
+  .manager-approve-table th,
+  .manager-approve-table td {
+    padding: 10px;
+  }
+
+  .manager-approve-table input {
+    width: 100%;
+  }
+
+  .manager-approve-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .manager-approve-submit-btn {
+    width: 100%;
+  }
+}
