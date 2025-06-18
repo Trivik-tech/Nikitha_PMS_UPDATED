@@ -2,6 +2,7 @@ package com.triviktech.entities.employee;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.triviktech.entities.department.Department;
+import com.triviktech.entities.manager.Manager;
 import com.triviktech.entities.project.Project;
 import jakarta.persistence.*;
 
@@ -60,12 +61,17 @@ public class EmployeeInformation {
     @Column(name = "email_id", length = 1000)
     private String emailId;
 
-    @Column(name = "reporting_manager")
-    private String reportingManager;
+    @ManyToOne
+    @JoinColumn(name = "manager_manager_id")
+    private Manager manager;
 
-    // Getters and Setters
-    public String getReportingManager() { return reportingManager; }
-    public void setReportingManager(String reportingManager) { this.reportingManager = reportingManager; }
+    public Manager getManager() {
+        return manager;
+    }
+
+    public void setManager(Manager manager) {
+        this.manager = manager;
+    }
 
     public String getEmailId() { return emailId; }
     public void setEmailId(String emailId) { this.emailId = emailId; }

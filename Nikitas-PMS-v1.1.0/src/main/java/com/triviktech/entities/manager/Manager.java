@@ -9,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Entity
@@ -35,6 +36,8 @@ public class Manager {
 
     @Column(name = "role")
     private String role;
+
+
 
     @ManyToOne
     @JoinColumn(name = "location_id")
@@ -74,6 +77,19 @@ public class Manager {
 
     @Column(name = "reporting_manager")
     private String reportingManager;
+
+    @OneToMany(mappedBy = "manager", orphanRemoval = true)
+    private Set<EmployeeInformation> employeeInformations = new LinkedHashSet<>();
+
+
+    public Set<EmployeeInformation> getEmployeeInformations() {
+        return employeeInformations;
+    }
+
+
+    public void setEmployeeInformations(Set<EmployeeInformation> employeeInformations) {
+        this.employeeInformations = employeeInformations;
+    }
 
     public String getManagerId() {
         return managerId;

@@ -7,6 +7,7 @@ import "./EmployeeList.css";
 import axios from "axios";
 import DeleteConfirmation from "../../modal/delete-confirmation/DeleteConfirmation";
 import { baseUrl } from "../../urls/CommenUrl";
+import { encrypt } from "../../utils/encryptUtils";
 
 export default function EmployeeList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -56,24 +57,26 @@ export default function EmployeeList() {
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
 
-  const searchEmployees = async (e) => {
-    const search = e.target.value;
-    setSearchTerm(search);
-    if (!search.trim()) {
-      fetchEmployees();
-      return;
-    }
+ const searchEmployees = async (e) => {
+  const search = e.target.value;
+  
+  if (!search.trim()) {
+    fetchEmployees();
+    return;
+  }
 
-    try {
-      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees/${search}`);
-      const employees = response.data;
-      setTeam(employees);
-      setHasServerError(false);
-    } catch (error) {
-      console.error("Search failed:", error.message);
-      setHasServerError(true);
-    }
-  };
+  try {
+   
+    const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees/${search}`);
+    const employees = response.data;
+    setTeam(employees);
+    setHasServerError(false);
+  } catch (error) {
+    console.error("Search failed:", error.message);
+    setHasServerError(true);
+  }
+};
+
 
   const handleDeleteClick = (id, employeeName) => {
     setEmployeeToDelete(id);
@@ -120,7 +123,6 @@ export default function EmployeeList() {
               <input
                 type="text"
                 placeholder="Search employees..."
-                value={searchTerm}
                 onChange={(e) => searchEmployees(e)}
               />
             </div>
@@ -156,7 +158,9 @@ export default function EmployeeList() {
                   {currentEntries.map((member) => (
                     <tr
                       key={member.id}
-                      onClick={() => navigate(`/employee-info/${member.empId || member.managerId}`)}
+                      onClick={() =>{
+                        const encryptedId = encrypt(member.empId);
+                         navigate(`/employee-info/${encryptedId || member.managerId}`)}}
                       style={{ cursor: "pointer" }}
                     >
                       <td>{member.empId || "-"}</td>
@@ -166,7 +170,10 @@ export default function EmployeeList() {
                       <td>{formatDate(member.dateOfJoining)}</td>
                       <td>{member.role || "-"}</td>
                       <td onClick={(e) => e.stopPropagation()}>
-                        <FaEdit className="employee-list-edit-icon" title="Edit" onClick={()=> navigate("/update-employee/12345")}/>
+                        <FaEdit className="employee-list-edit-icon" title="Edit" onClick={() => {
+                            const encryptedId = encrypt(member.empId);
+                            navigate(`/update-employee/${encryptedId}`);
+                          }}/>
                         <FaTrash
                           className="employee-list-delete-icon"
                           title="Delete"

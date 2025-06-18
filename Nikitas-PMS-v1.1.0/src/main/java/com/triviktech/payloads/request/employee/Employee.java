@@ -21,7 +21,6 @@ public class Employee {
     private String currentDesignation;
 
     @NotEmpty(message = "Department should not be empty")
-    @Size(min = 3 , message = "Department must at least contains 3 Characters")
     private String department;
 
     @NotEmpty(message = "Branch should not be empty")
@@ -46,6 +45,17 @@ public class Employee {
 
     @NotEmpty(message = "Email Id should not be empty")
     private String emailId;
+
+    @NotEmpty(message = "Role Should not be empty")
+    private String role;
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 
     public String getEmpId() {
         return empId;

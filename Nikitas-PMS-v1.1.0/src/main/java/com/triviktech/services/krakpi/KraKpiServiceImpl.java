@@ -21,6 +21,8 @@ import com.triviktech.repositories.kpi.KPIRepository;
 import com.triviktech.repositories.kra.KRARepository;
 import com.triviktech.repositories.krakpi.KraKpiRepository;
 import com.triviktech.repositories.manager.ManagerRepository;
+import com.triviktech.utilities.email.EmailService;
+import com.triviktech.utilities.email.Message;
 import com.triviktech.utilities.entitydtoconversion.EntityDtoConversion;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -39,15 +41,17 @@ public class KraKpiServiceImpl implements KraKpiService {
     private final KRARepository kraRepository;
     private final KPIRepository kpiRepository;
     private final EntityDtoConversion entityDtoConversion;
+    private final EmailService emailService;
 
 
-    public KraKpiServiceImpl(EmployeeInformationRepository employeeInformationRepository, KraKpiRepository kraKpiRepository, KRARepository kraRepository, KPIRepository kpiRepository, EntityDtoConversion entityDtoConversion) {
+    public KraKpiServiceImpl(EmployeeInformationRepository employeeInformationRepository, KraKpiRepository kraKpiRepository, KRARepository kraRepository, KPIRepository kpiRepository, EntityDtoConversion entityDtoConversion, EmailService emailService) {
         this.employeeInformationRepository = employeeInformationRepository;
         this.kraKpiRepository = kraKpiRepository;
         this.kraRepository = kraRepository;
         this.kpiRepository = kpiRepository;
         this.entityDtoConversion = entityDtoConversion;
 
+        this.emailService = emailService;
     }
 
     @Override
@@ -113,6 +117,23 @@ public class KraKpiServiceImpl implements KraKpiService {
 
         kraKpi.setKra(kras);
         kraKpi = kraKpiRepository.saveAndFlush(kraKpi); // Final update
+
+        try{
+            Optional<EmployeeInformation> byName = employeeInformationRepository.findByName(kraKpi.getEmployeeInformation().getManager().getName());
+
+            if(byName.isEmpty()){
+                throw new EmployeeNotFoundException("Manager");
+            }
+            EmployeeInformation manager = byName.get();
+            String sub=String.format(Message.KRA_KPI_SUBJECT_TO_MANAGER,kraKpi.getEmployeeInformation().getName());
+            String to=manager.getEmailId();
+            String message=String.format(Message.KRA_KPI_MESSAGE_TO_MANAGER,manager.getName(),kraKpi.getEmployeeInformation().getName(),kraKpi.getEmployeeInformation().getEmpId());
+
+            emailService.sendEmail(to,sub,message);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         // Convert Entity to DTO
         KraKpiResponseDto kraKpiResponseDto = entityDtoConversion.entityToDtoConversion(kraKpi, KraKpiResponseDto.class);
