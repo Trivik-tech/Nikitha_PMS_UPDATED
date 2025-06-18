@@ -1,0 +1,227 @@
+/* Tablet Devices */
+@media (max-width: 1024px) {
+  .employee-module-review-title {
+    font-size: 24px;
+  }
+  .employee-module-review-company-logo {
+    height: 50px !important;
+    width: 70px !important;
+    position: absolute;
+    margin-left: 310px;
+    margin-bottom: 15px;
+  }
+  .employee-module-review-filters input {
+    width: 140px;
+    font-size: 13px;
+  }
+  .employee-module-review-table th,
+  .employee-module-review-table td {
+    font-size: 13px;
+    padding: 6px;
+  }
+  .employee-module-review-table input {
+    font-size: 13px;
+    padding: 4px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .employee-module-review-actions button {
+    width: 120px;
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+  .employee-module-review-section-header span {
+    font-size: 14px;
+    color: #666;
+    margin-left: 170px;
+  }
+  .employee-module-review-section-header h3 {
+    font-size: 16px;
+    font-weight: bold;
+  }
+}
+
+/* Large Mobile Devices */
+@media (max-width: 768px) {
+  .employee-module-review-company-logo {
+    height: 50px;
+  }
+  .employee-module-review-title-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .employee-module-review-title {
+    font-size: 30px;
+    margin-left: 0;
+    margin-top: 5px;
+    text-align: left;
+    font-weight: bold;
+  }
+  .employee-module-review-filters {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  .employee-module-review-filters label {
+    font-size: 13px;
+    width: 100%;
+    text-align: left;
+  }
+  .employee-module-review-filters input {
+    width: 100%;
+    min-width: 0;
+    font-size: 12px;
+  }
+  .employee-module-review-section {
+    overflow-x: auto;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding-bottom: 1px; /* little gap for scroll */
+  }
+  /* --- KEY: WRAPPER for header + table --- */
+  .employee-module-review-section-inner {
+    min-width: 500px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .employee-module-review-section-header {
+    width: 100%;
+    min-width: 500px;
+    max-width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .employee-module-review-section-header h3 {
+    font-size: 14px;
+  }
+  .employee-module-review-section-header span {
+    font-size: 12px;
+  }
+  .employee-module-review-table {
+    min-width: 500px;
+    width: 100%;
+    display: table;
+  }
+  .employee-module-review-table th,
+  .employee-module-review-table td {
+    font-size: 12px;
+    padding: 5px;
+    white-space: nowrap;
+  }
+  .employee-module-review-table input {
+    font-size: 12px;
+    padding: 4px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .employee-module-review-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .employee-module-review-draft-btn,
+  .employee-module-review-print-btn,
+  .employee-module-review-submit-review-btn {
+    width: 100%;
+    font-size: 13px;
+    padding: 8px 0;
+  }
+}
+
+/* Small Mobile Devices */
+@media (max-width: 480px) {
+  .employee-module-review-container {
+    padding: 8px;
+    border-radius: 0;
+    width: 100vw;
+    height: 100vh;
+  }
+  .employee-module-review-title-section {
+    padding: 8px 0;
+  }
+  .employee-module-review-title {
+    font-size: 16px;
+  }
+  .employee-module-review-company-logo {
+    height: 36px;
+  }
+  .employee-module-review-filters label {
+    font-size: 11px;
+  }
+  .employee-module-review-filters input {
+    padding: 5px;
+    font-size: 11px;
+  }
+  .employee-module-review-section {
+    margin-bottom: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding-bottom: 1px;
+  }
+  .employee-module-review-section-inner {
+    min-width: 500px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .employee-module-review-section-header {
+    width: 100%;
+    min-width: 500px;
+    max-width: 100%;
+    left: 0;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .employee-module-review-section-header h3 {
+    font-size: 12px;
+  }
+  .employee-module-review-section-header span {
+    font-size: 10px;
+  }
+  .employee-module-review-table {
+    min-width: 500px;
+    width: 100%;
+    display: table;
+  }
+  .employee-module-review-table th,
+  .employee-module-review-table td {
+    font-size: 11px;
+    padding: 4px;
+    white-space: nowrap;
+  }
+  .employee-module-review-table input {
+    padding: 2px;
+    font-size: 11px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .employee-module-review-actions {
+    gap: 6px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+  }
+  .employee-module-review-draft-btn,
+  .employee-module-review-print-btn,
+  .employee-module-review-submit-review-btn {
+    display: flex;
+    flex-direction: row;
+    font-size: 11px;
+    padding: 6px 0;
+    width: 100%;
+    border-radius: 3px;
+  }
+}

@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { FaUser, FaLock } from 'react-icons/fa';
+import { FaUser, FaLock ,FaVoicemail} from 'react-icons/fa';
 import logo from '../../assets/images/nikithas-logo.png';
-import './Login.css';
-import './LoginResponsive.css';
+import './Forgot.css';
+
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../modal/Modal';
 import { Link } from 'react-router-dom';
 import Loader from '../modal/loader/Loader';
 
-const Login = () => {
+const Forgot = () => {
   const [login, setLogin] = useState({ username: '', password: '' });
   const [errorMessage, setErrorMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -26,7 +26,6 @@ const Login = () => {
   const handleHardcodedLogin = (e) => {
     e.preventDefault();
     
-    // Handle validation for username and password fields individually
     if (!username.trim() && !password.trim()) {
       setErrorMessage('Username and password are required.');
       setTitle('Login Error');
@@ -48,7 +47,6 @@ const Login = () => {
       return;
     }
 
-    // Check hardcoded login credentials
     if (username === 'MG1234' && password === '12345') {
       navigation('/manager-dashboard');
     } else if (username === 'HR1234' && password === '12345') {
@@ -111,63 +109,44 @@ const Login = () => {
   };
 
   return (
-    <div className="login-container">
+    <div className="forgot-password-container">
       {loading && <Loader />}
       {showModal && <Modal message={errorMessage} closeModal={closeModal} title={title} />}
 
-      <div className="login-form-section">
-        <div className="login-logo">
+      <div className="forgot-password-form-section">
+        <div className="forgot-password-logo">
           <img src={logo} alt="Logo" />
         </div>
 
         <h1>PMS</h1>
-        <h3>Login</h3>
+        <h3>Forgot Password</h3>
 
         <form onSubmit={handleHardcodedLogin}>
-          <div className="login-input-group">
-            <label htmlFor="username">Username</label>
-            <div className="login-input-wrapper">
-              <FaUser className="login-input-icon" />
+          <div className="forgot-password-input-group">
+            <label htmlFor="username">Email ID</label>
+            <div className="forgot-password-input-wrapper">
+              <FaUser className="forgot-password-input-icon" />
               <input
                 id="username"
                 type="text"
                 name="username"
-                placeholder="Enter your username"
+                placeholder="Enter your email ID"
                 value={username}
                 onChange={onInputChange}
               />
             </div>
           </div>
 
-          <div className="login-input-group">
-            <label htmlFor="password">Password</label>
-            <div className="login-input-wrapper">
-              <FaLock className="login-input-icon" />
-              <input
-                id="password"
-                type="password"
-                name="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={onInputChange}
-              />
-            </div>
-          </div>
 
-          <div className="login-links-container">
-            <span>
-              Not Registered? <Link to="/signup" className="login-register-link">Register</Link>
-            </span>
-            <a href="/forgot-password" className="login-forgot-password">Forgot password?</a>
-          </div>
 
-          <button type="submit" className="login-button">Login</button>
+         
+          <button type="submit" className="forgot-password-button">Submit</button>
         </form>
       </div>
 
-      <div className="login-image-section"></div>
+      <div className="forgot-password-image-section"></div>
     </div>
   );
 };
 
-export default Login;
+export default Forgot;
