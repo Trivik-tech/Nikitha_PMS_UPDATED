@@ -39,6 +39,7 @@ import com.triviktech.utilities.email.Message;
 import com.triviktech.utilities.entitydtoconversion.EntityDtoConversion;
 import com.triviktech.utilities.xlsxsupport.XlsxSupport;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -60,11 +61,12 @@ public class HrServiceImpl implements HrService {
     private final EmployeeInformationRepository employeeInformationRepository;
     private final KraKpiRepository kraKpiRepository;
     private final EmailService emailService;
+    private final ManagerRepository managerRepository;
 
     public HrServiceImpl(HRRepository hrRepository, StateRepository stateRepository,
                          LocationRepository locationRepository, DepartmentRepository departmentRepository,
                          KraKpiRepository kraKpiRepository,
-                         EntityDtoConversion entityDtoConversion, EmployeeInformationRepository employeeInformationRepository, EmailService emailService) {
+                         EntityDtoConversion entityDtoConversion, EmployeeInformationRepository employeeInformationRepository, EmailService emailService, ManagerRepository managerRepository) {
 
         this.hrRepository = hrRepository;
         this.stateRepository = stateRepository;
@@ -75,115 +77,16 @@ public class HrServiceImpl implements HrService {
         this.entityDtoConversion = entityDtoConversion;
         this.employeeInformationRepository = employeeInformationRepository;
         this.kraKpiRepository = kraKpiRepository;
+        this.managerRepository = managerRepository;
     }
 
     @Override
     public HrResponseDto registerHr(HrRequestDto hrRequestDto) {
-        // HR hr=new HR();
-        // hr.setHrId(hrRequestDto.getHrId());
-        // hr.setFirstName(hrRequestDto.getFirstName());
-        // hr.setLastName(hrRequestDto.getLastName());
-        // hr.setEmail(hrRequestDto.getEmail());
-        // hr.setContactNumber(hrRequestDto.getContactNumber());
-        // hr.setDateOfBirth(hrRequestDto.getDateOfBirth());
-        // hr.setRole(hrRequestDto.getRole());
-        // hr.setPassword(BCrypt.hashpw(hrRequestDto.getPassword(),BCrypt.gensalt(10)));
-        //
-        // Location location=new Location();
-        // location.setName(hrRequestDto.getLocationName());
-        // location.setZipCode(hrRequestDto.getZipCode());
-        // location.setState(stateRepository.findById(hrRequestDto.getStateId())
-        // .orElseThrow(()-> new StateNotFoundException(hrRequestDto.getStateId())));
-        //
-        // Location savedLocation = locationRepository.save(location);
-        // hr.setLocation(savedLocation);
-        //
-        // Set<Department> departments=new HashSet<>();
-        // departments.add(departmentRepository.findById(hrRequestDto.getDepartmentId())
-        // .orElseThrow(()-> new
-        // DepartmentNotFoundException(hrRequestDto.getDepartmentId())));
-        // hr.setDepartments(departments);
-        //
-        // Set<Project> projects=new HashSet<>();
-        // projects.add((projectRepository.findById(hrRequestDto.getProjectId())
-        // .orElseThrow(()-> new
-        // ProjectNotFoundException(hrRequestDto.getProjectId()))));
-        // hr.setProjects(projects);
-        //
-        // Set<Manager> managers=new HashSet<>();
-        // managers.add(managerRepository.findById(hrRequestDto.getManagerId())
-        // .orElseThrow(()-> new
-        // ManagerNotFoundException(hrRequestDto.getManagerId())));
-        // hr.setManagers(managers);
-        //
-        // HR saved = hrRepository.save(hr);
-        // HrResponseDto hrResponseDto = mapToHrResponseDto(saved);
-        //
-        // CountryResponseDto countryResponseDto =
-        // mapToCountryResponseDto(saved.getLocation().getState().getCountry());
-        // StateResponseDto stateResponseDto =
-        // mapToStateResponseDto(saved.getLocation().getState());
-        // LocationResponseDto locationResponseDto =
-        // mapToLocationResponseDto(savedLocation);
-        // stateResponseDto.setCountry(countryResponseDto);
-        // locationResponseDto.setState(stateResponseDto);
-        // hrResponseDto.setLocationResponseDto(locationResponseDto);
-        //
-        // Set<DepartmentResponseDto> departmentsDto =
-        // saved.getDepartments().stream().map(this::mapToDepartmentResponseDto).collect(Collectors.toSet());
-        //
-        // hrResponseDto.setDepartments(departmentsDto);
-        //
-        // Set<ProjectResponseDto> projectResponseDtos =
-        // saved.getProjects().stream().map(this::mapToProjectResponseDto).collect(Collectors.toSet());
-        // hrResponseDto.setProjects(projectResponseDtos);
-        //
-        // Set<ManagerResponseDto> managerResponseDtos =
-        // saved.getManagers().stream().map(this::mapToManagerResponseDto).collect(Collectors.toSet());
-        //
-        // hrResponseDto.setManagers(managerResponseDtos);
-
-        // return hrResponseDto;
         return null;
     }
 
     @Override
     public HrResponseDto findHrById(String hrId) {
-        // HR hr = hrRepository.findById(hrId).orElseThrow(() -> new
-        // HRNotFoundException(hrId));
-        //
-        // HrResponseDto hrResponseDto = mapToHrResponseDto(hr);
-        //
-        // CountryResponseDto countryResponseDto =
-        // mapToCountryResponseDto(hr.getLocation().getState().getCountry());
-        // StateResponseDto stateResponseDto =
-        // mapToStateResponseDto(hr.getLocation().getState());
-        // LocationResponseDto locationResponseDto =
-        // mapToLocationResponseDto(hr.getLocation());
-        // stateResponseDto.setCountry(countryResponseDto);
-        // locationResponseDto.setState(stateResponseDto);
-        // hrResponseDto.setLocationResponseDto(locationResponseDto);
-
-        // Set<DepartmentResponseDto> departmentsDto =
-        // hr.getDepartments().stream().map(this::mapToDepartmentResponseDto).collect(Collectors.toSet());
-
-        // System.out.println(hr.getDepartments());
-        // hrResponseDto.setDepartments(departmentsDto);
-
-        // Set<ProjectResponseDto> projectResponseDtos =
-        // hr.getProjects().stream().map(this::mapToProjectResponseDto).collect(Collectors.toSet());
-        // hrResponseDto.setProjects(projectResponseDtos);
-
-        // Set<ProjectResponseDto> projectResponseDtos =
-        // hr.getProjects().stream().map(this::mapToProjectResponseDto)
-        // .collect(Collectors.toSet());
-        // hrResponseDto.setProjects(projectResponseDtos);
-
-        // Set<ManagerResponseDto> managerResponseDtos =
-        // hr.getManagers().stream().map(this::mapToManagerResponseDto).collect(Collectors.toSet());
-
-        // hrResponseDto.setManagers(managerResponseDtos);
-
         return null;
     }
 
@@ -191,18 +94,17 @@ public class HrServiceImpl implements HrService {
     public List<Object> uploadEmployeesData(MultipartFile file) throws IOException {
         List<Employee> employees = XlsxSupport.convertXlsxToListOfEmployee(file.getInputStream());
 
-        // Filter out invalid or blank employee rows
+        // Step 1: Filter valid rows
         employees = employees.stream()
                 .filter(emp -> emp != null &&
                         emp.getName() != null && !emp.getName().trim().isEmpty() &&
                         emp.getDepartment() != null && !emp.getDepartment().trim().isEmpty())
                 .collect(Collectors.toList());
 
-        // Cache existing departments
+        // Step 2: Cache departments
         Map<String, Department> departmentCache = departmentRepository.findAll().stream()
                 .collect(Collectors.toConcurrentMap(Department::getName, d -> d));
 
-        // Extract departments from Excel
         Set<String> allDeptNames = employees.stream()
                 .map(Employee::getDepartment)
                 .filter(Objects::nonNull)
@@ -210,7 +112,6 @@ public class HrServiceImpl implements HrService {
                 .filter(name -> !name.isEmpty())
                 .collect(Collectors.toSet());
 
-        // Create and save new departments if needed
         List<Department> newDepartments = allDeptNames.stream()
                 .filter(dept -> !departmentCache.containsKey(dept))
                 .map(name -> {
@@ -227,7 +128,6 @@ public class HrServiceImpl implements HrService {
 
         String hashedPassword = BCrypt.hashpw("trivik", BCrypt.gensalt(10));
 
-        // Fetch existing employees from DB by empId
         Set<String> empIds = employees.stream()
                 .map(Employee::getEmpId)
                 .collect(Collectors.toSet());
@@ -235,12 +135,79 @@ public class HrServiceImpl implements HrService {
         Map<String, EmployeeInformation> existingEmpMap = employeeInformationRepository.findByEmpIdIn(empIds).stream()
                 .collect(Collectors.toMap(EmployeeInformation::getEmpId, e -> e));
 
-        List<EmployeeInformation> toSave = new ArrayList<>();
+        Map<String, Manager> existingManagerMap = managerRepository.findByManagerIdIn(empIds).stream()
+                .collect(Collectors.toMap(Manager::getManagerId, m -> m));
 
+        Map<String, Manager> allManagersByName = managerRepository.findAll().stream()
+                .collect(Collectors.toMap(
+                        m -> m.getName().trim().toLowerCase(),
+                        m -> m,
+                        (m1, m2) -> m1
+                ));
+
+        // Step 3: Identify managers
+        Set<String> reportingManagerNames = employees.stream()
+                .map(Employee::getReportingManager)
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(name -> !name.isEmpty())
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
+
+        List<Employee> managerRecords = employees.stream()
+                .filter(emp -> reportingManagerNames.contains(emp.getName().trim().toLowerCase()))
+                .collect(Collectors.toList());
+
+        Set<String> managerEmpIds = managerRecords.stream()
+                .map(Employee::getEmpId)
+                .collect(Collectors.toSet());
+
+        // Step 4: Save only managers in manager table
+        Map<String, Manager> managerByEmpId = new HashMap<>(existingManagerMap);
+        List<Manager> toSaveManagers = new ArrayList<>();
+
+        for (Employee emp : managerRecords) {
+            Manager manager = managerByEmpId.getOrDefault(emp.getEmpId(), new Manager());
+            manager.setManagerId(emp.getEmpId());
+            manager.setName(emp.getName());
+            manager.setBranch(emp.getBranch());
+            manager.setDob(emp.getDob());
+            manager.setCurrentDesignation(emp.getCurrentDesignation());
+            manager.setDateOfJoining(emp.getDateOfJoining());
+            manager.setEmailId(emp.getEmailId());
+            manager.setOfficialEmailId(emp.getOfficialEmailId());
+            manager.setMobileNumber(emp.getMobileNumber());
+            manager.setPassword(hashedPassword);
+            manager.setRole("MANAGER");
+            manager.setCategory(emp.getCategory());
+            manager.setDepartment(departmentCache.get(emp.getDepartment()));
+            manager.setReportingManager(emp.getReportingManager() != null ? emp.getReportingManager().trim() : null);
+
+            managerByEmpId.put(emp.getEmpId(), manager);
+            toSaveManagers.add(manager);
+        }
+
+        if (!toSaveManagers.isEmpty()) {
+            List<Manager> savedManagers = managerRepository.saveAll(toSaveManagers);
+            for (Manager m : savedManagers) {
+                allManagersByName.put(m.getName().trim().toLowerCase(), m);
+                managerByEmpId.put(m.getManagerId(), m);
+            }
+        }
+
+        // Step 5: Prepare employees (excluding those who are managers)
+        List<EmployeeInformation> toSaveEmployees = new ArrayList<>();
         for (Employee emp : employees) {
-            EmployeeInformation info = existingEmpMap.getOrDefault(emp.getEmpId(), new EmployeeInformation());
+            if (managerEmpIds.contains(emp.getEmpId())) {
+                continue; // skip if already saved as manager
+            }
 
-            // Set/update fields
+            Manager reportingManagerObj = null;
+            if (emp.getReportingManager() != null && !emp.getReportingManager().trim().isEmpty()) {
+                reportingManagerObj = allManagersByName.get(emp.getReportingManager().trim().toLowerCase());
+            }
+
+            EmployeeInformation info = existingEmpMap.getOrDefault(emp.getEmpId(), new EmployeeInformation());
             info.setEmpId(emp.getEmpId());
             info.setName(emp.getName());
             info.setBranch(emp.getBranch());
@@ -250,99 +217,211 @@ public class HrServiceImpl implements HrService {
             info.setEmailId(emp.getEmailId());
             info.setOfficialEmailId(emp.getOfficialEmailId());
             info.setMobileNumber(emp.getMobileNumber());
-            info.setPassword(info.getEmpId() == null ? hashedPassword : info.getPassword()); // Set only if new
-            info.setRole("Manager".equalsIgnoreCase(emp.getCategory()) ? "MANAGER" : "EMPLOYEE");
+            info.setPassword(hashedPassword);
+            info.setRole("EMPLOYEE");
             info.setCategory(emp.getCategory());
-            info.setReportingManager(emp.getReportingManager());
             info.setDepartment(departmentCache.get(emp.getDepartment()));
+            if (reportingManagerObj != null) {
+                info.setManager(reportingManagerObj);
+            }
 
-            toSave.add(info);
+            toSaveEmployees.add(info);
         }
 
-        // Save updated or new employee information
-        if (!toSave.isEmpty()) {
-            employeeInformationRepository.saveAll(toSave);
+        if (!toSaveEmployees.isEmpty()) {
+            employeeInformationRepository.saveAll(toSaveEmployees);
         }
-
-        // Count managers and employees
-        long managerCount = toSave.stream()
-                .filter(e -> "MANAGER".equalsIgnoreCase(e.getRole()))
-                .count();
-
-        long employeeCount = toSave.size() - managerCount;
 
         return List.of(
-                "Managers Processed: " + managerCount,
-                "Employees Processed: " + employeeCount);
+                "Managers Processed: " + toSaveManagers.size(),
+                "Employees Processed: " + toSaveEmployees.size()
+        );
     }
+
 
     @Override
     public List<EmployeeInfo> getAllEmployees() {
-        List<EmployeeInformation> allRecords = employeeInformationRepository.findAll();
+        List<EmployeeInformation> employees = employeeInformationRepository.findAll();
+        List<Manager> managers = managerRepository.findAll();
 
-        // Convert all EmployeeInformation to EmployeeInfo
-        return allRecords.parallelStream()
-                .map(employee -> {
-                    EmployeeInfo info = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+        List<EmployeeInfo> employeeDtos = employees.parallelStream().map(employee -> {
+            EmployeeInfo dto = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
 
-                    // Set department name safely
-                    if (employee.getDepartment() != null) {
-                        info.setDepartment(employee.getDepartment().getName());
-                    } else {
-                        info.setDepartment("N/A");
-                    }
+            dto.setDepartment(
+                    employee.getDepartment() != null ? employee.getDepartment().getName() : "N/A"
+            );
 
-                    // Set reporting manager safely
-                    if (employee.getReportingManager() != null && !employee.getReportingManager().isEmpty()) {
-                        info.setReportingManager(employee.getReportingManager());
-                    } else {
-                        info.setReportingManager("N/A");
-                    }
+            dto.setReportingManager(
+                    employee.getManager() != null ? employee.getManager().getName() : "N/A"
+            );
 
-                    return info;
-                }).toList();
+            dto.setRole("EMPLOYEE");
+
+            return dto;
+        }).collect(Collectors.toList());
+
+        List<EmployeeInfo> managerDtos = managers.parallelStream().map(manager -> {
+            EmployeeInfo dto = entityDtoConversion.entityToDtoConversion(manager, EmployeeInfo.class);
+            dto.setEmpId(manager.getManagerId());
+
+            dto.setDepartment(
+                    manager.getDepartment() != null ? manager.getDepartment().getName() : "N/A"
+            );
+
+            dto.setReportingManager(
+                    manager.getReportingManager() != null ? manager.getReportingManager() : "N/A"
+            );
+
+            dto.setRole("MANAGER");
+
+            return dto;
+        }).collect(Collectors.toList());
+
+        List<EmployeeInfo> combinedList = new ArrayList<>();
+        combinedList.addAll(employeeDtos);
+        combinedList.addAll(managerDtos);
+
+        return combinedList;
     }
 
     @Override
     public EmployeeInfo getEmployeeById(String employeeId) {
-        EmployeeInformation employee = employeeInformationRepository.findById(employeeId).orElse(null);
-        EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
-        employeeInfo.setReportingManager(employee.getReportingManager());
-        employeeInfo.setDepartment(employee.getDepartment().getName());
-
-        return employeeInfo;
-    }
-
-    @Override
-    public Integer totalEmployees() {
-        return employeeInformationRepository.findAll().size();
-    }
-
-    @Override
-    public List<EmployeeInfo> searchEmployee(String search) {
-        List<EmployeeInformation> employees = employeeInformationRepository.searchEmployees(search);
-
-        // Convert EmployeeInformation to EmployeeInfo with null safety
-        return employees.parallelStream().map(employee -> {
+        // First check in employee table
+        Optional<EmployeeInformation> optionalEmp = employeeInformationRepository.findById(employeeId);
+        if (optionalEmp.isPresent()) {
+            EmployeeInformation employee = optionalEmp.get();
             EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
 
-            // Set department name safely
+            // Safely set manager name
+            if (employee.getManager() != null) {
+                employeeInfo.setReportingManager(employee.getManager().getName());
+            } else {
+                employeeInfo.setReportingManager("N/A");
+            }
+
+            // Safely set department name
             if (employee.getDepartment() != null) {
                 employeeInfo.setDepartment(employee.getDepartment().getName());
             } else {
                 employeeInfo.setDepartment("N/A");
             }
 
-            // Set reporting manager safely
-            if (employee.getReportingManager() != null) {
-                employeeInfo.setReportingManager(employee.getReportingManager());
+            return employeeInfo;
+        }
+
+        // If not found in employee, check in manager table
+        Optional<Manager> optionalManager = managerRepository.findById(employeeId);
+        if (optionalManager.isPresent()) {
+            Manager manager = optionalManager.get();
+            EmployeeInfo managerInfo = entityDtoConversion.entityToDtoConversion(manager, EmployeeInfo.class);
+            managerInfo.setEmpId(manager.getManagerId());
+
+            // For manager's reporting manager
+            if (manager.getReportingManager() != null && !manager.getReportingManager().isBlank()) {
+                managerInfo.setReportingManager(manager.getReportingManager());
             } else {
-                employeeInfo.setReportingManager("N/A");
+                managerInfo.setReportingManager("N/A");
             }
 
-            return employeeInfo;
-        }).collect(Collectors.toList());
+            // For manager's department
+            if (manager.getDepartment() != null) {
+                managerInfo.setDepartment(manager.getDepartment().getName());
+            } else {
+                managerInfo.setDepartment("N/A");
+            }
+
+            return managerInfo;
+        }
+
+        // If not found in either
+        throw new EntityNotFoundException("No employee or manager found with ID: " + employeeId);
     }
+
+
+    @Override
+    public Integer totalEmployees() {
+        return employeeInformationRepository.findAll().size()+managerRepository.findAll().size();
+    }
+
+    @Override
+    public List<EmployeeInfo> searchEmployee(String search) {
+        String searchLower = search.trim().toLowerCase();
+
+        List<EmployeeInformation> employees = employeeInformationRepository.searchEmployees(search);
+        List<Manager> managers = managerRepository.searchManagers(search);
+
+        List<EmployeeInfo> employeeDtos = employees.stream()
+                .map(employee -> {
+                    EmployeeInfo dto = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+
+                    dto.setEmpId(employee.getEmpId());
+                    dto.setName(employee.getName());
+                    dto.setDepartment(employee.getDepartment() != null ? employee.getDepartment().getName() : "N/A");
+                    dto.setReportingManager(employee.getManager() != null ? employee.getManager().getName() : "N/A");
+                    dto.setCategory(employee.getCategory());
+                    dto.setRole("EMPLOYEE");
+
+                    return dto;
+                }).collect(Collectors.toList());
+
+        List<EmployeeInfo> managerDtos = managers.stream()
+                .map(manager -> {
+                    EmployeeInfo dto = entityDtoConversion.entityToDtoConversion(manager, EmployeeInfo.class);
+
+                    dto.setEmpId(manager.getManagerId());
+                    dto.setName(manager.getName());
+                    dto.setDepartment(manager.getDepartment() != null ? manager.getDepartment().getName() : "N/A");
+                    dto.setReportingManager(manager.getReportingManager() != null ? manager.getReportingManager() : "N/A");
+                    dto.setCategory(manager.getCategory());
+                    dto.setRole("MANAGER");
+
+                    return dto;
+                }).collect(Collectors.toList());
+
+        List<EmployeeInfo> combinedList = new ArrayList<>();
+        combinedList.addAll(employeeDtos);
+        combinedList.addAll(managerDtos);
+
+        // Sort by priority (startsWith → contains → else) and then by name
+        combinedList.sort((a, b) -> {
+            int priorityA = getPriorityScore(a, searchLower);
+            int priorityB = getPriorityScore(b, searchLower);
+
+            if (priorityA != priorityB) {
+                return Integer.compare(priorityA, priorityB);
+            } else {
+                // Secondary sort by name alphabetically
+                String nameA = a.getName() != null ? a.getName().toLowerCase() : "";
+                String nameB = b.getName() != null ? b.getName().toLowerCase() : "";
+                return nameA.compareTo(nameB);
+            }
+        });
+
+        return combinedList;
+    }
+
+    private int getPriorityScore(EmployeeInfo info, String searchLower) {
+        String name = safe(info.getName());
+        String dept = safe(info.getDepartment());
+        String role = safe(info.getRole());
+        String category = safe(info.getCategory());
+        String manager = safe(info.getReportingManager());
+
+        if (name.startsWith(searchLower) || dept.startsWith(searchLower) || role.startsWith(searchLower)
+                || category.startsWith(searchLower) || manager.startsWith(searchLower)) {
+            return 1;
+        } else if (name.contains(searchLower) || dept.contains(searchLower) || role.contains(searchLower)
+                || category.contains(searchLower) || manager.contains(searchLower)) {
+            return 2;
+        }
+        return 3;
+    }
+
+    private String safe(String val) {
+        return val != null ? val.toLowerCase() : "";
+    }
+
+
 
     @Override
     public Map<String, String> deleteEmployee(String employeeId) {
@@ -382,16 +461,45 @@ public class HrServiceImpl implements HrService {
             employee1.setLastWorkingDay(lwdStr);
             employee1.setMobileNumber(employee.getMobileNumber());
             employee1.setOfficialEmailId(employee.getOfficialEmailId());
-            employee1.setReportingManager(employee.getReportingManager());
+            employee1.setRole(employee.getRole());
 
             // Set department name
             Department department = employee1.getDepartment();
-            department.setName(employee.getDepartment());
+            if (department == null) {
+                department = departmentRepository.findByName(employee.getDepartment());
+            } else {
+                department.setName(employee.getDepartment());
+            }
             employee1.setDepartment(department);
+
+            // Set reporting manager (now a Manager object)
+            Manager reportingManagerObj = null;
+            if (employee.getReportingManager() != null && !employee.getReportingManager().trim().isEmpty()) {
+                reportingManagerObj = managerRepository.findByName(employee.getReportingManager()).get();
+            }
+            employee1.setManager(reportingManagerObj);
 
             // Save and convert to DTO
             EmployeeInformation save = employeeInformationRepository.save(employee1);
             EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(save, EmployeeInfo.class);
+            if (save.getManager() != null) {
+                employeeInfo.setReportingManager(save.getManager().getName());
+            } else {
+                employeeInfo.setReportingManager("N/A");
+            }
+            if (save.getDepartment() != null) {
+                employeeInfo.setDepartment(save.getDepartment().getName());
+            } else {
+                employeeInfo.setDepartment("N/A");
+            }
+
+            try{
+                String sub=String.format(Message.EMPLOYEE_DETAILS_UPDATED_SUBJECT);
+                String message=String.format(Message.EMPLOYEE_DETAILS_UPDATED_MESSAGE,employeeInfo.getName());
+                emailService.sendEmail(employeeInfo.getEmailId(),sub,message);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
 
             return employeeInfo;
         }
@@ -513,7 +621,17 @@ public class HrServiceImpl implements HrService {
                     if (kraKpiOptional.isPresent() && Boolean.TRUE.equals(kraKpiOptional.get().getManagerApproval())) {
                         EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee,
                                 EmployeeInfo.class);
-                        employeeInfo.setDepartment(employee.getDepartment().getName());
+                        if (employee.getDepartment() != null) {
+                            employeeInfo.setDepartment(employee.getDepartment().getName());
+                        } else {
+                            employeeInfo.setDepartment("N/A");
+                        }
+                        // reporting manager
+                        if (employee.getManager() != null) {
+                            employeeInfo.setReportingManager(employee.getManager().getName());
+                        } else {
+                            employeeInfo.setReportingManager("N/A");
+                        }
                         return employeeInfo;
                     }
                     return null;
@@ -532,6 +650,11 @@ public class HrServiceImpl implements HrService {
                 KraKpi kraKpi = krakpi.get();
                 kraKpi.setPmsInitiated(pms.get("pms_initiated"));
                 kraKpiRepository.save(kraKpi);
+                try{
+                    // Place to send notifications if needed
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             } else {
                 throw new KraKpiNotFoundException("Kra Kpi not found for employee with id " + employeeId);
             }
@@ -543,16 +666,31 @@ public class HrServiceImpl implements HrService {
 
     @Override
     public List<Long> getEmployeeCountByDepartment() {
-        List<Object[]> result = employeeInformationRepository.countEmployeesByDepartment();
+        // Get employee counts by department
+        List<Object[]> empResult = employeeInformationRepository.countEmployeesByDepartment();
+        // Get manager counts by department
+        List<Object[]> mgrResult = managerRepository.countManagersByDepartment();
 
-        return result.stream()
-                .map(row -> (Long) row[1]) // row[1] is the count
-                .collect(Collectors.toList());
+        // Merge employee and manager department counts: Map<dept, count>
+        Map<String, Long> deptCountMap = new HashMap<>();
+        for (Object[] row : empResult) {
+            String dept = (String) row[0];
+            Long count = (Long) row[1];
+            deptCountMap.put(dept, count);
+        }
+        for (Object[] row : mgrResult) {
+            String dept = (String) row[0];
+            Long count = (Long) row[1];
+            deptCountMap.put(dept, deptCountMap.getOrDefault(dept, 0L) + count);
+        }
+
+        return new ArrayList<>(deptCountMap.values());
     }
 
     @Override
     public Map<String, Integer> assessmentKeyMatrix() {
-        Map<Boolean, Long> result = employeeInformationRepository.findAll()
+        // Employees
+        Map<Boolean, Long> empResult = employeeInformationRepository.findAll()
                 .stream()
                 .map(kraKpiRepository::findByEmployeeInformation)
                 .filter(Optional::isPresent)
@@ -560,38 +698,84 @@ public class HrServiceImpl implements HrService {
                 .collect(Collectors.partitioningBy(
                         kraKpi -> kraKpi.isManagerCompleted() && kraKpi.isSelfCompleted(),
                         Collectors.counting()));
+
+        // Managers (for those who also have KraKpi)
+        Map<Boolean, Long> mgrResult = managerRepository.findAll()
+                .stream()
+                .map(kraKpiRepository::findByManager)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.partitioningBy(
+                        kraKpi -> kraKpi.isManagerCompleted() && kraKpi.isSelfCompleted(),
+                        Collectors.counting()));
+
+        long completed = empResult.getOrDefault(true, 0L) + mgrResult.getOrDefault(true, 0L);
+        long pending = empResult.getOrDefault(false, 0L) + mgrResult.getOrDefault(false, 0L);
+
         return Map.of(
-                "completed", result.getOrDefault(true, 0L).intValue(),
-                "pending", result.getOrDefault(false, 0L).intValue());
+                "completed", (int) completed,
+                "pending", (int) pending
+        );
     }
 
     @Override
     public List<EmployeeInfo> pmsInitiatedEmployees() {
-        return employeeInformationRepository.findAll().stream()
-                .map(employee -> {
-                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
-                    if (kraKpiOptional.isPresent()) {
-                        KraKpi kraKpi = kraKpiOptional.get();
-                        boolean managerApproval = Boolean.TRUE.equals(kraKpi.getManagerApproval());
-                        boolean selfCompleted = kraKpi.isSelfCompleted();
-                        boolean managerCompleted = kraKpi.isManagerCompleted();
+        List<EmployeeInfo> result = new ArrayList<>();
 
-                        // Include if managerApproval is true and NOT (selfCompleted &&
-                        // managerCompleted)
-                        if (managerApproval && !(selfCompleted && managerCompleted)) {
-                            EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee,
-                                    EmployeeInfo.class);
-                            employeeInfo.setDepartment(employee.getDepartment().getName());
-                            return employeeInfo;
-                        }
+        // Employees
+        employeeInformationRepository.findAll().forEach(employee -> {
+            Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+            if (kraKpiOptional.isPresent()) {
+                KraKpi kraKpi = kraKpiOptional.get();
+                boolean managerApproval = Boolean.TRUE.equals(kraKpi.getManagerApproval());
+                boolean selfCompleted = kraKpi.isSelfCompleted();
+                boolean managerCompleted = kraKpi.isManagerCompleted();
+                if (managerApproval && !(selfCompleted && managerCompleted)) {
+                    EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+                    if (employee.getDepartment() != null) {
+                        employeeInfo.setDepartment(employee.getDepartment().getName());
+                    } else {
+                        employeeInfo.setDepartment("N/A");
                     }
-                    return null; // Skip this employee
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                    if (employee.getManager() != null) {
+                        employeeInfo.setReportingManager(employee.getManager().getName());
+                    } else {
+                        employeeInfo.setReportingManager("N/A");
+                    }
+                    result.add(employeeInfo);
+                }
+            }
+        });
+
+        // Managers
+        managerRepository.findAll().forEach(manager -> {
+            Optional<KraKpi> kraKpiOptional = null;
+//            Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByManager(manager);
+            if (kraKpiOptional.isPresent()) {
+                KraKpi kraKpi = kraKpiOptional.get();
+                boolean managerApproval = Boolean.TRUE.equals(kraKpi.getManagerApproval());
+                boolean selfCompleted = kraKpi.isSelfCompleted();
+                boolean managerCompleted = kraKpi.isManagerCompleted();
+                if (managerApproval && !(selfCompleted && managerCompleted)) {
+                    EmployeeInfo managerInfo = entityDtoConversion.entityToDtoConversion(manager, EmployeeInfo.class);
+                    if (manager.getDepartment() != null) {
+                        managerInfo.setDepartment(manager.getDepartment().getName());
+                    } else {
+                        managerInfo.setDepartment("N/A");
+                    }
+                    // For reporting manager of a manager, use reportingManager string or "N/A"
+                    if (manager.getReportingManager() != null && !manager.getReportingManager().trim().isEmpty()) {
+                        managerInfo.setReportingManager(manager.getReportingManager());
+                    } else {
+                        managerInfo.setReportingManager("N/A");
+                    }
+                    result.add(managerInfo);
+                }
+            }
+        });
+
+        return result;
     }
-
-
     @Override
     public Map<String, String> employeeRegistration(Employee employee) {
         // Creating response object
@@ -607,6 +791,13 @@ public class HrServiceImpl implements HrService {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         String lwdStr = employee.getLastWorkingDate() != null ? formatter.format(employee.getLastWorkingDate()) : null;
         employeeInformation.setLastWorkingDay(lwdStr);
+
+        // Set reporting manager (now a Manager object)
+        Manager reportingManagerObj = null;
+        if (employee.getReportingManager() != null && !employee.getReportingManager().trim().isEmpty()) {
+            reportingManagerObj = managerRepository.findByName(employee.getReportingManager()).get();
+        }
+        employeeInformation.setManager(reportingManagerObj);
 
         EmployeeInformation saved = employeeInformationRepository.save(employeeInformation);
 

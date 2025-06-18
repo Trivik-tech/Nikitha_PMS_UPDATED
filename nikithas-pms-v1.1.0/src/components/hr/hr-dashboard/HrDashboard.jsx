@@ -128,6 +128,7 @@ const HrDashboard = () => {
         `${baseUrl}/api/v1/pms/hr/employee-count-by-department`
       );
       setEmployeeCount(result.data.employees);
+      console.log(result.data)
     } catch (error) {
       console.error(error);
     }

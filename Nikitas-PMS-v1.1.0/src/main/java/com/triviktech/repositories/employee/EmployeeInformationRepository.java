@@ -12,20 +12,32 @@ import java.util.List;
 
 public interface EmployeeInformationRepository extends JpaRepository<EmployeeInformation, String> {
 
-    @Query("SELECT e from EmployeeInformation e WHERE e.empId LIKE %:search% OR e.name LIKE %:search% OR e.department.name LIKE %:search% OR e.reportingManager LIKE %:search% OR e.role LIKE %:search% OR e.category LIKE %:search%")
-
+    @Query("SELECT e FROM EmployeeInformation e " +
+            "LEFT JOIN e.department d " +
+            "LEFT JOIN e.manager m " +
+            "WHERE LOWER(e.empId) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR LOWER(e.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR LOWER(d.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR LOWER(m.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR LOWER(e.role) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR LOWER(e.category) LIKE LOWER(CONCAT('%', :search, '%'))")
     List<EmployeeInformation> searchEmployees(@Param("search") String search);
+
+
 
     List<EmployeeInformation> findByEmpIdIn(Set<String> empIds);
 
-    Optional<EmployeeInformation> findByReportingManagerAndEmpId(String managerName, String employeeId);
+//    Optional<EmployeeInformation> findByReportingManagerAndEmpId(String managerName, String employeeId);
 
     @Query("SELECT e.department.name, COUNT(e) FROM EmployeeInformation e GROUP BY e.department.name")
     List<Object[]> countEmployeesByDepartment();
 
-    @Query("select e from EmployeeInformation e where e.reportingManager=:reportingManager")
-    List<EmployeeInformation> findAllByReportingManager(@Param("reportingManager") String reportingManager);
+//    @Query("select e from EmployeeInformation e where e.reportingManager=:reportingManager")
+//    List<EmployeeInformation> findAllByReportingManager(@Param("reportingManager") String reportingManager);
 
     Optional<EmployeeInformation> findByOfficialEmailId(String officialEmailId);
+
+    @Query("select e from EmployeeInformation e where e.name=:name")
+    Optional<EmployeeInformation> findByName(@Param("name") String name);
 
 }

@@ -101,7 +101,7 @@ body {
 
 .login-image-section {
     flex: 1;
-    background: url('../../assets/images/pms.jpg') no-repeat center center/cover;
+    background: url('../../assets/images/login-image-1.jpg') no-repeat center center/cover;
 }
 
 .login-logo {

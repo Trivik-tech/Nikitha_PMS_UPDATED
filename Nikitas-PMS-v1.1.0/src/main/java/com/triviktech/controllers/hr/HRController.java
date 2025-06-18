@@ -6,8 +6,6 @@ import com.triviktech.payloads.response.employee.EmployeeInfo;
 
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
-import com.triviktech.payloads.response.employeeslist.EmployeesList;
-import com.triviktech.payloads.response.global.Response;
 
 import com.triviktech.payloads.response.hr.HrResponseDto;
 import jakarta.validation.Valid;

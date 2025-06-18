@@ -39,6 +39,8 @@ import com.triviktech.repositories.employee.EmployeeInformationRepository;
 import com.triviktech.repositories.krakpi.KraKpiRepository;
 import com.triviktech.repositories.manager.ManagerRepository;
 import com.triviktech.repositories.project.ProjectRepository;
+import com.triviktech.utilities.email.EmailService;
+import com.triviktech.utilities.email.Message;
 import com.triviktech.utilities.entitydtoconversion.EntityDtoConversion;
 import jakarta.websocket.DeploymentException;
 import org.slf4j.Logger;
@@ -60,12 +62,13 @@ public class ManagerServiceImpl implements ManagerService{
     private final DepartmentRepository departmentRepository;
     private final EmployeeInformationRepository employeeInformationRepository;
     private final KraKpiRepository kraKpiRepository;
+    private final EmailService emailService;
 
     private final EntityDtoConversion entityDtoConversion;
 
     private static final Logger logger = LoggerFactory.getLogger(ManagerServiceImpl.class);
 
-    public ManagerServiceImpl(ManagerRepository managerRepository, StateRepository stateRepository, LocationRepository locationRepository, ProjectRepository projectRepository, DepartmentRepository departmentRepository, EmployeeInformationRepository employeeInformationRepository, KraKpiRepository kraKpiRepository, EntityDtoConversion entityDtoConversion) {
+    public ManagerServiceImpl(ManagerRepository managerRepository, StateRepository stateRepository, LocationRepository locationRepository, ProjectRepository projectRepository, DepartmentRepository departmentRepository, EmployeeInformationRepository employeeInformationRepository, KraKpiRepository kraKpiRepository, EmailService emailService, EntityDtoConversion entityDtoConversion) {
         this.managerRepository = managerRepository;
         this.stateRepository = stateRepository;
         this.locationRepository = locationRepository;
@@ -73,6 +76,7 @@ public class ManagerServiceImpl implements ManagerService{
         this.departmentRepository = departmentRepository;
         this.employeeInformationRepository = employeeInformationRepository;
         this.kraKpiRepository = kraKpiRepository;
+        this.emailService = emailService;
         this.entityDtoConversion = entityDtoConversion;
     }
 
@@ -212,7 +216,8 @@ public class ManagerServiceImpl implements ManagerService{
     @Override
     public List<EmployeeWithPmsStatus> listOfEmployeesForManager(String reportingManager) {
         try {
-            List<EmployeeInformation> allByManager = employeeInformationRepository.findAllByReportingManager(reportingManager);
+//            List<EmployeeInformation> allByManager = employeeInformationRepository.findAllByReportingManager(reportingManager);
+            List<EmployeeInformation> allByManager = null;
 
             return allByManager.stream().map(employee -> {
                 // Convert base employee info to response DTO
@@ -245,7 +250,8 @@ public class ManagerServiceImpl implements ManagerService{
 
     @Override
     public List<EmployeeInfo> findAllByReportingManager(String reportingManager) {
-        List<EmployeeInformation> allEmployees = employeeInformationRepository.findAllByReportingManager(reportingManager);
+        List<EmployeeInformation> allEmployees = null;
+//        List<EmployeeInformation> allEmployees = employeeInformationRepository.findAllByReportingManager(reportingManager);
         List<EmployeeInfo> collect = allEmployees.stream().map(employee -> {
             EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
             employeeInfo.setDepartment(employee.getDepartment().getName());
@@ -336,7 +342,8 @@ public class ManagerServiceImpl implements ManagerService{
 
     @Override
     public KraKpiResponseDto getEmployeeKarKpi(String managerName, String employeeId) {
-        Optional<EmployeeInformation> employeeData = employeeInformationRepository.findByReportingManagerAndEmpId(managerName, employeeId);
+        Optional<EmployeeInformation> employeeData = null;
+//        Optional<EmployeeInformation> employeeData = employeeInformationRepository.findByReportingManagerAndEmpId(managerName, employeeId);
            if(employeeData.isPresent()){
                EmployeeInformation employee = employeeData.get();
                Optional<KraKpi> kraKpi = kraKpiRepository.findByEmployeeInformation(employee);
@@ -457,13 +464,30 @@ public class ManagerServiceImpl implements ManagerService{
         KraKpi kraKpi1 = kraKpiRepository.saveAndFlush(kraKpi);
         String msg=kraKpi1!=null?"Approved":"Something went wrong";
         response.put("status",msg);
+        try{
+
+            String sub=String.format(Message.KRA_KPI_APPROVED_SUBJECT_TO_EMPLOYEE);
+            String message=String.format(Message.KRA_KPI_APPROVED_MESSAGE_TO_EMPLOYEE,employee.getName());
+            emailService.sendEmail(employee.getEmailId(),sub,message);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        try{
+
+            String sub=String.format(Message.KRA_KPI_APPROVED_SUBJECT_TO_HR);
+            String message=String.format(Message.KRA_KPI_APPROVED_MESSAGE_TO_HR,employee.getName(),employee.getEmpId());
+//            emailService.sendEmail(,sub,message);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         return response ;
     }
 
     @Override
     public Map<String,String> managerReview(String managerName,String employeeId, KraKpiRequestDto data) {
-        Optional<EmployeeInformation> employeeById = employeeInformationRepository.findByReportingManagerAndEmpId(managerName, employeeId);
+        Optional<EmployeeInformation> employeeById =  null;
+//        Optional<EmployeeInformation> employeeById = employeeInformationRepository.findByReportingManagerAndEmpId(managerName, employeeId);
         if(employeeById.isPresent()){
             EmployeeInformation employee = employeeById.get();
             Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);

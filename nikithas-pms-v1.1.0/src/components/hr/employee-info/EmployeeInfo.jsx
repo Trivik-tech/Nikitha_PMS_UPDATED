@@ -7,11 +7,13 @@ import profile from "../../../assets/images/profile1.jpg";
 import Loader from "../../modal/loader/Loader";
 import axios from "axios";
 import { baseUrl } from "../../urls/CommenUrl";
+import { decrypt } from "../../utils/encryptUtils";
 
 const EmployeeInfo = () => {
   const [employeeData, setEmployeeData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { id } = useParams();
+ const { id: encodedId } = useParams();
+  const id = decrypt(encodedId);
 
   const formatDateToDDMMYYYY = (dateString) => {
     if (!dateString) return "-";
