@@ -6,16 +6,15 @@
   .employee-module-review-company-logo {
     height: 50px !important;
     width: 70px !important;
-      position: absolute;
-      margin-left: 310px;
-      margin-bottom: 15px ;
-      
+    position: absolute;
+    margin-left: 310px;
+    margin-bottom: 15px;
   }
   .employee-module-review-filters input {
     width: 140px;
     font-size: 13px;
   }
-  .employee-module-review-table th, 
+  .employee-module-review-table th,
   .employee-module-review-table td {
     font-size: 13px;
     padding: 6px;
@@ -36,18 +35,11 @@
     font-size: 14px;
     color: #666;
     margin-left: 170px;
-    
-    
-}
- .employee-module-review-section-header {
-    width: 100%;
- }
-.employee-module-review-section-header h3 {
-    
+  }
+  .employee-module-review-section-header h3 {
     font-size: 16px;
     font-weight: bold;
-}
-
+  }
 }
 
 /* Large Mobile Devices */
@@ -82,16 +74,45 @@
     min-width: 0;
     font-size: 12px;
   }
+  .employee-module-review-section {
+    overflow-x: auto;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding-bottom: 1px; /* little gap for scroll */
+  }
+  /* --- KEY: WRAPPER for header + table --- */
+  .employee-module-review-section-inner {
+    min-width: 500px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .employee-module-review-section-header {
+    width: 100%;
+    min-width: 500px;
+    max-width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
   .employee-module-review-section-header h3 {
     font-size: 14px;
   }
   .employee-module-review-section-header span {
     font-size: 12px;
   }
+  .employee-module-review-table {
+    min-width: 500px;
+    width: 100%;
+    display: table;
+  }
   .employee-module-review-table th,
   .employee-module-review-table td {
     font-size: 12px;
     padding: 5px;
+    white-space: nowrap;
   }
   .employee-module-review-table input {
     font-size: 12px;
@@ -105,27 +126,12 @@
     align-items: stretch;
     gap: 8px;
   }
-  .employee-module-review-draft-btn, 
+  .employee-module-review-draft-btn,
   .employee-module-review-print-btn,
   .employee-module-review-submit-review-btn {
     width: 100%;
     font-size: 13px;
     padding: 8px 0;
-    
-  }
-  /* Responsive Table Fix */
-  .employee-module-review-section {
-    overflow-x: auto;
-  }
-  .employee-module-review-table {
-    min-width: 500px;
-    display: block;
-    overflow-x: auto;
-    width: 100%;
-  }
-  .employee-module-review-table th,
-  .employee-module-review-table td {
-    white-space: nowrap;
   }
 }
 
@@ -157,14 +163,39 @@
     margin-bottom: 12px;
     border-radius: 6px;
     overflow-x: auto;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding-bottom: 1px;
+  }
+  .employee-module-review-section-inner {
+    min-width: 500px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .employee-module-review-section-header {
+    width: 100%;
+    min-width: 500px;
+    max-width: 100%;
+    left: 0;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
   .employee-module-review-section-header h3 {
     font-size: 12px;
   }
   .employee-module-review-section-header span {
     font-size: 10px;
-   }
-  .employee-module-review-table th, 
+  }
+  .employee-module-review-table {
+    min-width: 500px;
+    width: 100%;
+    display: table;
+  }
+  .employee-module-review-table th,
   .employee-module-review-table td {
     font-size: 11px;
     padding: 4px;
@@ -177,19 +208,13 @@
     min-width: 0;
     box-sizing: border-box;
   }
-  .employee-module-review-table {
-    min-width: 500px;
-    display: block;
-    overflow-x: auto;
-    width: 100%;
-  }
   .employee-module-review-actions {
     gap: 6px;
     margin-top: 10px;
-     display: flex;
+    display: flex;
     flex-direction: row;
   }
-  .employee-module-review-draft-btn, 
+  .employee-module-review-draft-btn,
   .employee-module-review-print-btn,
   .employee-module-review-submit-review-btn {
     display: flex;

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./EmployeeReview.css";
-import "./EmployeeReviewResponsiveness.css"
+import "./EmployeeReviewResponsiveness.css";
 import logo from "../../../assets/images/nikithas-logo.png";
 import { FaHome } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
 import Modal from "../../modal/Modal";
 import axios from "axios";
-import {baseUrl} from '../../urls/CommenUrl'
+import { baseUrl } from '../../urls/CommenUrl'
 
 const PerformanceReview = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -58,7 +58,6 @@ const PerformanceReview = () => {
         setEmployeeName(result.data.employee.name);
         setDueDate(result.data.dueDate || "20/5/2025");
         setSelfReviewDate(result.data.selfReviewDate || "15/5/2025");
-        // console.log(result.data)
       } catch (error) {
         console.error(error);
       }
@@ -95,9 +94,7 @@ const PerformanceReview = () => {
         })),
       };
 
-      // console.log(employeeId.id)
-
-     const result= await axios.put(`${baseUrl}/api/v1/pms/employee/self-review/${employeeId}`, payload);
+      const result = await axios.put(`${baseUrl}/api/v1/pms/employee/self-review/${employeeId}`, payload);
       console.log("Review submitted:", payload);
       console.log(result.data)
     } catch (error) {
@@ -142,34 +139,37 @@ const PerformanceReview = () => {
       <div className="employee-module-review-sections">
         {krakpi.map((kra, kraIndex) => (
           <div key={kraIndex} className="employee-module-review-section">
-            <div className="employee-module-review-section-header">
-              <h3>KRA - {kra.kraName}</h3>
-              <span>Weightage: {kra.weightage}</span>
-            </div>
-            <table className="employee-module-review-table">
-              <thead>
-                <tr>
-                  <th>KPI's</th>
-                  <th style={{ width: "5%" }}>Weightage</th>
-                  <th style={{ width: "5%" }}>Self Rating</th>
-                </tr>
-              </thead>
-              <tbody>
-                {kra.kpi.map((kpi, kpiIndex) => (
-                  <tr key={kpiIndex}>
-                    <td>{kpi.description}</td>
-                    <td>{kpi.weightage}</td>
-                    <td>
-                      <input
-                        type="number"
-                        value={kpi.selfScore || ""}
-                        onChange={(e) => handleSelfScoreChange(kraIndex, kpiIndex, e.target.value)}
-                      />
-                    </td>
+            {/* WRAP header + table for proper responsive scroll alignment */}
+            <div className="employee-module-review-section-inner">
+              <div className="employee-module-review-section-header">
+                <h3>KRA - {kra.kraName}</h3>
+                <span>Weightage: {kra.weightage}</span>
+              </div>
+              <table className="employee-module-review-table">
+                <thead>
+                  <tr>
+                    <th>KPI's</th>
+                    <th style={{ width: "5%" }}>Weightage</th>
+                    <th style={{ width: "5%" }}>Self Rating</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {kra.kpi.map((kpi, kpiIndex) => (
+                    <tr key={kpiIndex}>
+                      <td>{kpi.description}</td>
+                      <td>{kpi.weightage}</td>
+                      <td>
+                        <input
+                          type="number"
+                          value={kpi.selfScore || ""}
+                          onChange={(e) => handleSelfScoreChange(kraIndex, kpiIndex, e.target.value)}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ))}
       </div>
