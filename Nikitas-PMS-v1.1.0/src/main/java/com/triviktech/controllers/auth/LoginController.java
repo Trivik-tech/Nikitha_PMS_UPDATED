@@ -13,7 +13,7 @@ import java.util.Map;
 public interface LoginController {
 
     @PostMapping("/login")
-    ResponseEntity<Map<String, String>> login(@Valid @RequestBody Login login, BindingResult bindingResult);
+    ResponseEntity<Map<String, String>> login( @RequestBody Login login, BindingResult bindingResult);
 
     @GetMapping("/{token}")
     ResponseEntity<Map<String, String>> getRole(@PathVariable String token);

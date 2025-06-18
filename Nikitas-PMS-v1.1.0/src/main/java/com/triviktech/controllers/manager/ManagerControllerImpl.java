@@ -5,6 +5,7 @@ import com.triviktech.payloads.request.manager.ManagerRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeInformationResponseDto;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
+import com.triviktech.payloads.response.employee.PmsPercentageDto;
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
 import com.triviktech.services.krakpi.KraKpiService;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -89,6 +91,25 @@ public class ManagerControllerImpl implements ManagerController{
 
     public ResponseEntity<List<EmployeeInfo>> getManagerTeam(String reportingManager) {
         return ResponseEntity.ok(managerService.findAllByReportingManager(reportingManager));
+    }
+
+    @Override
+    public ResponseEntity<List<EmployeeWithPmsStatus>> getCompletedPmsForManager(String reportingManager) {
+       
+        return ResponseEntity.ok(managerService.getCompletedAssessmentListForManager(reportingManager));
+    }
+
+    @Override
+    public ResponseEntity<List<EmployeeWithPmsStatus>> getPendingPmsForManager(String reportingManager) {
+        
+        return ResponseEntity.ok(managerService.getPendingAssessmentListForManager(reportingManager));
+    }
+
+
+    @Override
+    public ResponseEntity<PmsPercentageDto> getPmsPercentageForManager(String reportingManager) {
+        
+        return ResponseEntity.ok(managerService.getPmsPercentageForManager(reportingManager));
     }
 
     @Override

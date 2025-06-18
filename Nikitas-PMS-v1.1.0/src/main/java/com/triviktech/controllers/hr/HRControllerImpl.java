@@ -84,7 +84,6 @@ public class HRControllerImpl implements HRController {
         return ResponseEntity.ok(hrService.employeesWithKraKpiApproval());
     }
 
-
     @Override
     public ResponseEntity<Map<String, Object>> getDepartment() {
         Map<String, Object> getdepartment = hrService.getdepartment();
@@ -102,14 +101,14 @@ public class HRControllerImpl implements HRController {
 
     @Override
     public ResponseEntity<Map<String, Integer>> keyMatrix() {
-        Map<String, Integer>  employeeKeyMatrix = hrService.assessmentKeyMatrix();
-         return  ResponseEntity.ok(employeeKeyMatrix);
+        Map<String, Integer> employeeKeyMatrix = hrService.assessmentKeyMatrix();
+        return ResponseEntity.ok(employeeKeyMatrix);
 
     }
 
     @Override
     public ResponseEntity<Map<String, String>> pmsInitiated(String employeeId, Map<String, Boolean> pms) {
-        return ResponseEntity.ok(hrService.initiatePms(employeeId,pms));
+        return ResponseEntity.ok(hrService.initiatePms(employeeId, pms));
     }
 
     @Override
@@ -117,8 +116,7 @@ public class HRControllerImpl implements HRController {
         return ResponseEntity.ok(hrService.pmsInitiatedEmployees());
     }
 
-
-
+    @Override
     public ResponseEntity<List<EmployeeWithPmsStatus>> getCompletedPmsForHR() {
 
         return ResponseEntity.ok(hrService.getCompletedPmsForHR());
@@ -131,9 +129,8 @@ public class HRControllerImpl implements HRController {
     }
 
     @Override
-public ResponseEntity<PmsPercentageDto> getPmsPercentageForHR() {
-    return ResponseEntity.ok(hrService.getPmsPercentageForHR());
-}
-
+    public ResponseEntity<PmsPercentageDto> getPmsPercentageForHR() {
+        return ResponseEntity.ok(hrService.getPmsPercentageForHR());
+    }
 
 }

@@ -56,6 +56,6 @@ public interface HrService {
 
     List<EmployeeWithPmsStatus> getPendingPmsForHR();
 
-   PmsPercentageDto getPmsPercentageForHR();
+    PmsPercentageDto getPmsPercentageForHR();
 
 }

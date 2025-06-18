@@ -5,6 +5,7 @@ import com.triviktech.payloads.request.manager.ManagerRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeInformationResponseDto;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
+import com.triviktech.payloads.response.employee.PmsPercentageDto;
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
 import jakarta.validation.Valid;
@@ -21,39 +22,49 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:3000")
 public interface ManagerController {
 
-    @PostMapping("/register-manager")
-    ResponseEntity<?> registerManager(@Valid @RequestBody ManagerRequestDto managerRequestDto, BindingResult bindingResult);
+        @PostMapping("/register-manager")
+        ResponseEntity<?> registerManager(@Valid @RequestBody ManagerRequestDto managerRequestDto,
+                        BindingResult bindingResult);
 
-    @GetMapping("/manager-list")
-    ResponseEntity<List<ManagerResponseDto>> listOfManagers();
+        @GetMapping("/manager-list")
+        ResponseEntity<List<ManagerResponseDto>> listOfManagers();
 
-    @GetMapping("/{managerId}")
-    ResponseEntity<ManagerResponseDto> getManager(@PathVariable String managerId);
+        @GetMapping("/{managerId}")
+        ResponseEntity<ManagerResponseDto> getManager(@PathVariable String managerId);
 
-    @GetMapping("/profile")
-    ResponseEntity<ManagerResponseDto> profile(@AuthenticationPrincipal UserDetails manager);
+        @GetMapping("/profile")
+        ResponseEntity<ManagerResponseDto> profile(@AuthenticationPrincipal UserDetails manager);
 
-    @GetMapping("/employee-list/{reportingManager}")
-    ResponseEntity<List<EmployeeWithPmsStatus>> listOfEmployeesForManager(@PathVariable String reportingManager);
+        @GetMapping("/employee-list/{reportingManager}")
+        ResponseEntity<List<EmployeeWithPmsStatus>> listOfEmployeesForManager(@PathVariable String reportingManager);
 
-    @GetMapping("/pending-pms-list/{managerId}")
-    ResponseEntity<List<EmployeeWithPmsStatus>> listOfPMSPendingEmployees(@PathVariable String managerId);
+        @GetMapping("/pending-pms-list/{managerId}")
+        ResponseEntity<List<EmployeeWithPmsStatus>> listOfPMSPendingEmployees(@PathVariable String managerId);
 
-    @GetMapping("/completed-pms-list/{managerId}")
-    ResponseEntity<List<EmployeeWithPmsStatus>> listOfPMSCompletedEmployees(@PathVariable String managerId);
+        @GetMapping("/completed-pms-list/{managerId}")
+        ResponseEntity<List<EmployeeWithPmsStatus>> listOfPMSCompletedEmployees(@PathVariable String managerId);
 
-    @PatchMapping("/manager-review/{managerName}/{employeeId}")
-    ResponseEntity<Map<String,String>> managerReview(@PathVariable String  managerName,@PathVariable String employeeId, @RequestBody KraKpiRequestDto data);
+        @PatchMapping("/manager-review/{managerName}/{employeeId}")
+        ResponseEntity<Map<String, String>> managerReview(@PathVariable String managerName,
+                        @PathVariable String employeeId,
+                        @RequestBody KraKpiRequestDto data);
 
+        @GetMapping("/kra-kpi/{managerName}/{employeeId}")
+        ResponseEntity<KraKpiResponseDto> getKraKpis(@PathVariable String managerName, @PathVariable String employeeId);
 
-    @GetMapping("/kra-kpi/{managerName}/{employeeId}")
-    ResponseEntity<KraKpiResponseDto> getKraKpis(@PathVariable String managerName,  @PathVariable String employeeId);
+        @GetMapping("/manager-team/{reportingManager}")
+        ResponseEntity<List<EmployeeInfo>> getManagerTeam(@PathVariable String reportingManager);
 
-    @GetMapping("/manager-team/{reportingManager}")
-    ResponseEntity<List<EmployeeInfo> > getManagerTeam(@PathVariable String reportingManager);
+        @PatchMapping("/approve-krakpi/{employeeId}/{reportingManager}")
+        ResponseEntity<Map<String, String>> approveKraKpi(@PathVariable String employeeId,
+                        @PathVariable String reportingManager, @RequestBody Map<String, Boolean> approve);
 
-    @PatchMapping("/approve-krakpi/{employeeId}/{reportingManager}")
-    ResponseEntity<Map<String, String>> approveKraKpi(@PathVariable String employeeId, @PathVariable String reportingManager, @RequestBody Map<String, Boolean> approve);
+        @GetMapping("/completed/{reportingManager}")
+        ResponseEntity<List<EmployeeWithPmsStatus>> getCompletedPmsForManager(@PathVariable String reportingManager);
 
+        @GetMapping("/pending/{reportingManager}")
+        ResponseEntity<List<EmployeeWithPmsStatus>> getPendingPmsForManager(@PathVariable String reportingManager);
 
+        @GetMapping("/percentage/{reportingManager}")
+        ResponseEntity<PmsPercentageDto> getPmsPercentageForManager(@PathVariable String reportingManager);
 }

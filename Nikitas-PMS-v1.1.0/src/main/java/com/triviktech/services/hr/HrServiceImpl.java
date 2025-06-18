@@ -190,93 +190,98 @@ public class HrServiceImpl implements HrService {
     }
 
     @Override
-    public List<Object> uploadEmployeesData(MultipartFile file) throws IOException {
-        List<Employee> employees = XlsxSupport.convertXlsxToListOfEmployee(file.getInputStream());
+public List<Object> uploadEmployeesData(MultipartFile file) throws IOException {
+    List<Employee> employees = XlsxSupport.convertXlsxToListOfEmployee(file.getInputStream());
 
-        // Filter out invalid or blank employee rows
-        employees = employees.stream()
-                .filter(emp -> emp != null &&
-                        emp.getName() != null && !emp.getName().trim().isEmpty() &&
-                        emp.getDepartment() != null && !emp.getDepartment().trim().isEmpty())
-                .collect(Collectors.toList());
+    // Filter out invalid or blank employee rows
+    employees = employees.stream()
+            .filter(emp -> emp != null &&
+                    emp.getName() != null && !emp.getName().trim().isEmpty() &&
+                    emp.getDepartment() != null && !emp.getDepartment().trim().isEmpty())
+            .collect(Collectors.toList());
 
-        // Cache existing departments
-        Map<String, Department> departmentCache = departmentRepository.findAll().stream()
-                .collect(Collectors.toConcurrentMap(Department::getName, d -> d));
+    // Cache existing departments
+    Map<String, Department> departmentCache = departmentRepository.findAll().stream()
+            .collect(Collectors.toConcurrentMap(Department::getName, d -> d));
 
-        // Extract departments from Excel
-        Set<String> allDeptNames = employees.stream()
-                .map(Employee::getDepartment)
-                .filter(Objects::nonNull)
-                .map(String::trim)
-                .filter(name -> !name.isEmpty())
-                .collect(Collectors.toSet());
+    // Extract departments from Excel
+    Set<String> allDeptNames = employees.stream()
+            .map(Employee::getDepartment)
+            .filter(Objects::nonNull)
+            .map(String::trim)
+            .filter(name -> !name.isEmpty())
+            .collect(Collectors.toSet());
 
-        // Create and save new departments if needed
-        List<Department> newDepartments = allDeptNames.stream()
-                .filter(dept -> !departmentCache.containsKey(dept))
-                .map(name -> {
-                    Department d = new Department();
-                    d.setName(name);
-                    return d;
-                })
-                .collect(Collectors.toList());
+    // Create and save new departments if needed
+    List<Department> newDepartments = allDeptNames.stream()
+            .filter(dept -> !departmentCache.containsKey(dept))
+            .map(name -> {
+                Department d = new Department();
+                d.setName(name);
+                return d;
+            })
+            .collect(Collectors.toList());
 
-        if (!newDepartments.isEmpty()) {
-            List<Department> savedDepts = departmentRepository.saveAll(newDepartments);
-            savedDepts.forEach(d -> departmentCache.put(d.getName(), d));
-        }
-
-        String hashedPassword = BCrypt.hashpw("trivik", BCrypt.gensalt(10));
-
-        // Fetch existing employees from DB by empId
-        Set<String> empIds = employees.stream()
-                .map(Employee::getEmpId)
-                .collect(Collectors.toSet());
-
-        Map<String, EmployeeInformation> existingEmpMap = employeeInformationRepository.findByEmpIdIn(empIds).stream()
-                .collect(Collectors.toMap(EmployeeInformation::getEmpId, e -> e));
-
-        List<EmployeeInformation> toSave = new ArrayList<>();
-
-        for (Employee emp : employees) {
-            EmployeeInformation info = existingEmpMap.getOrDefault(emp.getEmpId(), new EmployeeInformation());
-
-            // Set/update fields
-            info.setEmpId(emp.getEmpId());
-            info.setName(emp.getName());
-            info.setBranch(emp.getBranch());
-            info.setDob(emp.getDob());
-            info.setCurrentDesignation(emp.getCurrentDesignation());
-            info.setDateOfJoining(emp.getDateOfJoining());
-            info.setEmailId(emp.getEmailId());
-            info.setOfficialEmailId(emp.getOfficialEmailId());
-            info.setMobileNumber(emp.getMobileNumber());
-            info.setPassword(info.getEmpId() == null ? hashedPassword : info.getPassword()); // Set only if new
-            info.setRole("Manager".equalsIgnoreCase(emp.getCategory()) ? "MANAGER" : "EMPLOYEE");
-            info.setCategory(emp.getCategory());
-            info.setReportingManager(emp.getReportingManager());
-            info.setDepartment(departmentCache.get(emp.getDepartment()));
-
-            toSave.add(info);
-        }
-
-        // Save updated or new employee information
-        if (!toSave.isEmpty()) {
-            employeeInformationRepository.saveAll(toSave);
-        }
-
-        // Count managers and employees
-        long managerCount = toSave.stream()
-                .filter(e -> "MANAGER".equalsIgnoreCase(e.getRole()))
-                .count();
-
-        long employeeCount = toSave.size() - managerCount;
-
-        return List.of(
-                "Managers Processed: " + managerCount,
-                "Employees Processed: " + employeeCount);
+    if (!newDepartments.isEmpty()) {
+        List<Department> savedDepts = departmentRepository.saveAll(newDepartments);
+        savedDepts.forEach(d -> departmentCache.put(d.getName(), d));
     }
+
+    String hashedPassword = BCrypt.hashpw("trivik", BCrypt.gensalt(10));
+
+    // Fetch existing employees from DB by empId
+    Set<String> empIds = employees.stream()
+            .map(Employee::getEmpId)
+            .collect(Collectors.toSet());
+
+    Map<String, EmployeeInformation> existingEmpMap = employeeInformationRepository.findByEmpIdIn(empIds).stream()
+            .collect(Collectors.toMap(EmployeeInformation::getEmpId, e -> e));
+
+    List<EmployeeInformation> toSave = new ArrayList<>();
+
+    for (Employee emp : employees) {
+        boolean isNew = !existingEmpMap.containsKey(emp.getEmpId());
+        EmployeeInformation info = existingEmpMap.getOrDefault(emp.getEmpId(), new EmployeeInformation());
+
+        // Set/update fields
+        info.setEmpId(emp.getEmpId());
+        info.setName(emp.getName());
+        info.setBranch(emp.getBranch());
+        info.setDob(emp.getDob());
+        info.setCurrentDesignation(emp.getCurrentDesignation());
+        info.setDateOfJoining(emp.getDateOfJoining());
+        info.setEmailId(emp.getEmailId());
+        info.setOfficialEmailId(emp.getOfficialEmailId());
+        info.setMobileNumber(emp.getMobileNumber());
+
+        if (isNew) {
+            info.setPassword(hashedPassword); // Set password only for new employees
+        }
+
+        info.setRole("Manager".equalsIgnoreCase(emp.getCategory()) ? "MANAGER" : "EMPLOYEE");
+        info.setCategory(emp.getCategory());
+        info.setReportingManager(emp.getReportingManager());
+        info.setDepartment(departmentCache.get(emp.getDepartment()));
+
+        toSave.add(info);
+    }
+
+    // Save updated or new employee information
+    if (!toSave.isEmpty()) {
+        employeeInformationRepository.saveAll(toSave);
+    }
+
+    // Count managers and employees
+    long managerCount = toSave.stream()
+            .filter(e -> "MANAGER".equalsIgnoreCase(e.getRole()))
+            .count();
+
+    long employeeCount = toSave.size() - managerCount;
+
+    return List.of(
+            "Managers Processed: " + managerCount,
+            "Employees Processed: " + employeeCount);
+}
 
     @Override
     public List<EmployeeInfo> getAllEmployees() {
