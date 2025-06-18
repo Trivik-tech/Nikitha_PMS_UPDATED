@@ -3,8 +3,8 @@ package com.triviktech.controllers.manager;
 import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
 import com.triviktech.payloads.request.manager.ManagerRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
-import com.triviktech.payloads.response.employee.EmployeeInformationResponseDto;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
+import com.triviktech.payloads.response.employee.PmsPercentageDto;
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
 import com.triviktech.services.krakpi.KraKpiService;
@@ -22,7 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @RestController
-public class ManagerControllerImpl implements ManagerController{
+public class ManagerControllerImpl implements ManagerController {
 
     private final ManagerService managerService;
     private final KraKpiService kraKpiService;
@@ -34,14 +34,12 @@ public class ManagerControllerImpl implements ManagerController{
 
     @Override
     public ResponseEntity<?> registerManager(ManagerRequestDto managerRequestDto, BindingResult bindingResult) {
-
-        if(bindingResult.hasErrors()){
-            ValidationMessage validationMessage=new ValidationMessage();
+        if (bindingResult.hasErrors()) {
+            ValidationMessage validationMessage = new ValidationMessage();
             validationMessage.setMessage(Objects.requireNonNull(bindingResult.getFieldError()).getDefaultMessage());
             validationMessage.setStatus(HttpStatus.NOT_ACCEPTABLE);
             return new ResponseEntity<>(validationMessage, HttpStatus.NOT_ACCEPTABLE);
         }
-
         return new ResponseEntity<>(managerService.registerManager(managerRequestDto), HttpStatus.CREATED);
     }
 
@@ -57,7 +55,7 @@ public class ManagerControllerImpl implements ManagerController{
     }
 
     @Override
-    public  ResponseEntity<ManagerResponseDto> profile(@AuthenticationPrincipal UserDetails manager) {
+    public ResponseEntity<ManagerResponseDto> profile(@AuthenticationPrincipal UserDetails manager) {
         return ResponseEntity.ok(managerService.findManagerById(manager.getUsername()));
     }
 
@@ -77,16 +75,16 @@ public class ManagerControllerImpl implements ManagerController{
     }
 
     @Override
-    public ResponseEntity<Map<String,String>> managerReview(String managerName,String employeeId, KraKpiRequestDto data) {
-        return ResponseEntity.ok(managerService.managerReview(managerName,employeeId,data));
+    public ResponseEntity<Map<String, String>> managerReview(String managerName, String employeeId, KraKpiRequestDto data) {
+        return ResponseEntity.ok(managerService.managerReview(managerName, employeeId, data));
     }
 
     @Override
-
     public ResponseEntity<KraKpiResponseDto> getKraKpis(String managerName, String employeeId) {
         return ResponseEntity.ok(managerService.getEmployeeKarKpi(managerName, employeeId));
     }
 
+    @Override
     public ResponseEntity<List<EmployeeInfo>> getManagerTeam(String reportingManager) {
         return ResponseEntity.ok(managerService.findAllByReportingManager(reportingManager));
     }
@@ -94,5 +92,20 @@ public class ManagerControllerImpl implements ManagerController{
     @Override
     public ResponseEntity<Map<String, String>> approveKraKpi(String employeeId, String reportingManager, KraKpiRequestDto kraKpiRequestDto) {
         return ResponseEntity.ok(managerService.approveKra(kraKpiRequestDto, employeeId, reportingManager));
+    }
+
+    @Override
+    public ResponseEntity<List<EmployeeWithPmsStatus>> getCompletedPmsForManager(String reportingManager) {
+        return ResponseEntity.ok(managerService.getCompletedAssessmentListForManager(reportingManager));
+    }
+
+    @Override
+    public ResponseEntity<List<EmployeeWithPmsStatus>> getPendingPmsForManager(String reportingManager) {
+        return ResponseEntity.ok(managerService.getPendingAssessmentListForManager(reportingManager));
+    }
+
+    @Override
+    public ResponseEntity<PmsPercentageDto> getPmsPercentageForManager(String reportingManager) {
+        return ResponseEntity.ok(managerService.getPmsPercentageForManager(reportingManager));
     }
 }

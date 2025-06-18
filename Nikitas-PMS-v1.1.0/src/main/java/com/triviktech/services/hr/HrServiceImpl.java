@@ -238,7 +238,6 @@ public class HrServiceImpl implements HrService {
         );
     }
 
-
     @Override
     public List<EmployeeInfo> getAllEmployees() {
         List<EmployeeInformation> employees = employeeInformationRepository.findAll();
@@ -751,7 +750,7 @@ public class HrServiceImpl implements HrService {
         managerRepository.findAll().forEach(manager -> {
             Optional<KraKpi> kraKpiOptional = null;
 //            Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByManager(manager);
-            if (kraKpiOptional.isPresent()) {
+            if (kraKpiOptional != null && kraKpiOptional.isPresent()) {
                 KraKpi kraKpi = kraKpiOptional.get();
                 boolean managerApproval = Boolean.TRUE.equals(kraKpi.getManagerApproval());
                 boolean selfCompleted = kraKpi.isSelfCompleted();
