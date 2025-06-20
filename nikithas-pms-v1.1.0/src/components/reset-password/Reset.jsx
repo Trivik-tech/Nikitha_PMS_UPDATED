@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { FaUser, FaLock } from 'react-icons/fa';
 import logo from '../../assets/images/nikithas-logo.png';
-import './Forgot.css';
+import './Reset.css';
+import './ResetResponsive.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../modal/Modal';
 import { Link } from 'react-router-dom';
 import Loader from '../modal/loader/Loader';
 
-const Forgot = () => {
+const Reset = () => {
   const [login, setLogin] = useState({ username: '', password: '' });
   const [errorMessage, setErrorMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -108,63 +109,63 @@ const Forgot = () => {
   };
 
   return (
-    <div className="forgot-password-container">
+    <div className="reset-password-container">
       {loading && <Loader />}
       {showModal && <Modal message={errorMessage} closeModal={closeModal} title={title} />}
 
-      <div className="forgot-password-form-section">
-        <div className="forgot-password-logo">
+      <div className="reset-password-form-section">
+        <div className="reset-password-logo">
           <img src={logo} alt="Logo" />
         </div>
 
         <h1>PMS</h1>
-        <h3>Login</h3>
+        <h3>Reset Password</h3>
 
         <form onSubmit={handleHardcodedLogin}>
-          <div className="forgot-password-input-group">
-            <label htmlFor="username">Username</label>
-            <div className="forgot-password-input-wrapper">
-              <FaUser className="forgot-password-input-icon" />
+          <div className="reset-password-input-group">
+            <label htmlFor="username">Otp</label>
+            <div className="reset-password-input-wrapper">
+              <FaUser className="reset-password-input-icon" />
               <input
                 id="username"
                 type="text"
                 name="username"
-                placeholder="Enter your username"
+                placeholder="Enter OTP"
                 value={username}
                 onChange={onInputChange}
               />
             </div>
           </div>
 
-          <div className="forgot-password-input-group">
-            <label htmlFor="password">Password</label>
-            <div className="forgot-password-input-wrapper">
-              <FaLock className="forgot-password-input-icon" />
+          <div className="reset-password-input-group">
+            <label htmlFor="password">New Password</label>
+            <div className="reset-password-input-wrapper">
+              <FaLock className="reset-password-input-icon" />
               <input
                 id="password"
                 type="password"
                 name="password"
-                placeholder="Enter your password"
+                placeholder="Enter New password"
                 value={password}
                 onChange={onInputChange}
               />
             </div>
           </div>
 
-          <div className="forgot-password-links-container">
+          {/* <div className="reset-password-links-container">
             <span>
-              Not Registered? <Link to="/signup" className="forgot-password-register-link">Register</Link>
+              Not Registered? <Link to="/signup" className="reset-password-register-link">Register</Link>
             </span>
-            <a href="/forgot-password" className="forgot-password-forgot-password">Forgot password?</a>
-          </div>
+            <a href="/forgot-password" className="reset-password-forgot-password">Forgot password?</a>
+          </div> */}
 
-          <button type="submit" className="forgot-password-button">Login</button>
+          <button type="submit" className="reset-password-button">Reset</button>
         </form>
       </div>
 
-      <div className="forgot-password-image-section"></div>
+      <div className="reset-password-image-section"></div>
     </div>
   );
 };
 
-export default  Forgot;
+export default Reset;

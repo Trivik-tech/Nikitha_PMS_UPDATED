@@ -32,7 +32,9 @@ import EmployeeReview from './components/employee/emplyoee-review/EmployeeReview
 import KrakpiRegistration from './components/employee/kpi-registration/KrakpiRegistration';
 import EmployeeInfo from './components/hr/employee-info/EmployeeInfo';
 import UpdateEmployee from './components/hr/updateemployee/UpdateEmployee';
-import Forgot from './components/forgot-password/Forgot'
+import Forgot from './components/forgot-password/Forgot';
+import Reset from './components/reset-password/Reset';
+
 
 
 
@@ -88,6 +90,10 @@ function App() {
 
           <Route exact path="/update-employee/:id" element={<UpdateEmployee/>} />
           <Route path="/forgot-password" element={<Forgot />} />
+          <Route path="/reset-password" element={<Reset />} />
+
+          
+          
 
           
 
