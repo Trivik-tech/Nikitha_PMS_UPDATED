@@ -9,15 +9,20 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh; 
-    /* background: #fff; */
-    
+    height: 100vh;
+    background-color: #f8f8f8;
+}
+
+.forgot-password-container {
+    display: flex;
+    background: #fff;
+    width: 900px;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     padding: 10px;
-    height: 500px;
-} 
+}
+
 .forgot-password-form-section {
     flex: 1;
     padding: 40px;
@@ -33,7 +38,7 @@ body {
     margin-bottom: 10px;
 }
 
-.forgot-password-form-section  h3{
+.forgot-password-form-section h3 {
     text-align: center;
     font-weight: 600;
 }

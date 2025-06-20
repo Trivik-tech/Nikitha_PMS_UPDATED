@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { FaUser, FaLock ,FaVoicemail} from 'react-icons/fa';
+import { FaUser, FaLock } from 'react-icons/fa';
 import logo from '../../assets/images/nikithas-logo.png';
 import './Forgot.css';
-
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../modal/Modal';
 import { Link } from 'react-router-dom';
 import Loader from '../modal/loader/Loader';
 
-const Forgot = () => {
+const Login = () => {
   const [login, setLogin] = useState({ username: '', password: '' });
   const [errorMessage, setErrorMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -119,28 +118,47 @@ const Forgot = () => {
         </div>
 
         <h1>PMS</h1>
-        <h3>Forgot Password</h3>
+        <h3>Login</h3>
 
         <form onSubmit={handleHardcodedLogin}>
           <div className="forgot-password-input-group">
-            <label htmlFor="username">Email ID</label>
+            <label htmlFor="username">Username</label>
             <div className="forgot-password-input-wrapper">
               <FaUser className="forgot-password-input-icon" />
               <input
                 id="username"
                 type="text"
                 name="username"
-                placeholder="Enter your email ID"
+                placeholder="Enter your username"
                 value={username}
                 onChange={onInputChange}
               />
             </div>
           </div>
 
+          <div className="forgot-password-input-group">
+            <label htmlFor="password">Password</label>
+            <div className="forgot-password-input-wrapper">
+              <FaLock className="forgot-password-input-icon" />
+              <input
+                id="password"
+                type="password"
+                name="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={onInputChange}
+              />
+            </div>
+          </div>
 
+          <div className="forgot-password-links-container">
+            <span>
+              Not Registered? <Link to="/signup" className="forgot-password-register-link">Register</Link>
+            </span>
+            <a href="/forgot-password" className="forgot-password-forgot-password">Forgot password?</a>
+          </div>
 
-         
-          <button type="submit" className="forgot-password-button">Submit</button>
+          <button type="submit" className="forgot-password-button">Login</button>
         </form>
       </div>
 
@@ -149,4 +167,4 @@ const Forgot = () => {
   );
 };
 
-export default Forgot;
+export default Login;
