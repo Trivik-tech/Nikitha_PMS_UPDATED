@@ -1,0 +1,74 @@
+/* 📱 Responsive styles for tablets and mobile devices */
+@media screen and (max-width: 1024px) {
+  .reset-password-container {
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  
+  .reset-password-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .reset-password-form-section {
+    padding: 20px;
+  }
+
+  .reset-password-form-section h1 {
+    font-size: 24px;
+  }
+
+  .reset-password-form-section h3 {
+    font-size: 18px;
+  }
+
+  .reset-password-input-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
+  .reset-password-input-wrapper input {
+    padding: 10px 10px 10px 40px; /* left padding increased to make room for icon */
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .reset-password-input-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #888;
+    pointer-events: none;
+  }
+
+  .reset-password-form-section button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .reset-password-links-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .reset-password-image-section {
+    display: none; /* Hide image on small screens */
+  }
+
+  input {
+    width: 100% !important;
+  }
+}
