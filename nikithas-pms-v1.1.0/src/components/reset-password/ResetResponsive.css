@@ -32,6 +32,12 @@
     position: relative;
     width: 100%;
   }
+  .otp-timer {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #333;
+}
+
 
   .reset-password-input-wrapper input {
     padding: 10px 10px 10px 40px; /* left padding increased to make room for icon */
@@ -71,4 +77,10 @@
   input {
     width: 100% !important;
   }
+  .otp-timer {
+  margin-top: 8px;
+  font-size: 14px;
+  color: red;
+}
+
 }

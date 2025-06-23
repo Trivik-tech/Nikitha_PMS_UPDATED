@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaUser, FaLock } from 'react-icons/fa';
 import logo from '../../assets/images/nikithas-logo.png';
 import './Reset.css';
@@ -15,17 +15,35 @@ const Reset = () => {
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState('');
+  const [timeLeft, setTimeLeft] = useState(600); // 600 seconds = 10 minutes
 
   const navigation = useNavigate();
   const { username, password } = login;
 
-  const onInputChange = (e) => {  
+  const onInputChange = (e) => {
     setLogin({ ...login, [e.target.name]: e.target.value });
+  };
+
+  // Timer countdown
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
+  const formatTime = (seconds) => {
+    const min = Math.floor(seconds / 60);
+    const sec = seconds % 60;
+    return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
   };
 
   const handleHardcodedLogin = (e) => {
     e.preventDefault();
-    
+
     if (!username.trim() && !password.trim()) {
       setErrorMessage('Username and password are required.');
       setTitle('Login Error');
@@ -43,6 +61,13 @@ const Reset = () => {
     if (!password.trim()) {
       setErrorMessage('Password is required.');
       setTitle('Login Error');
+      setShowModal(true);
+      return;
+    }
+
+    if (timeLeft <= 0) {
+      setErrorMessage('OTP has expired. Please request a new one.');
+      setTitle('OTP Expired');
       setShowModal(true);
       return;
     }
@@ -135,6 +160,13 @@ const Reset = () => {
                 onChange={onInputChange}
               />
             </div>
+            <div className="otp-timer">
+              {timeLeft > 0 ? (
+                <span>OTP valid for: {formatTime(timeLeft)}</span>
+              ) : (
+                <span style={{ color: 'red' }}>OTP expired</span>
+              )}
+            </div>
           </div>
 
           <div className="reset-password-input-group">
@@ -152,13 +184,6 @@ const Reset = () => {
             </div>
           </div>
 
-          {/* <div className="reset-password-links-container">
-            <span>
-              Not Registered? <Link to="/signup" className="reset-password-register-link">Register</Link>
-            </span>
-            <a href="/forgot-password" className="reset-password-forgot-password">Forgot password?</a>
-          </div> */}
-
           <button type="submit" className="reset-password-button">Reset</button>
         </form>
       </div>
@@ -169,3 +194,4 @@ const Reset = () => {
 };
 
 export default Reset;
+ 
