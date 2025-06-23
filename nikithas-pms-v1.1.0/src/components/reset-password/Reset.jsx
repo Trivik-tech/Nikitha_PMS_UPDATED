@@ -123,7 +123,7 @@ const Reset = () => {
 
         <form onSubmit={handleHardcodedLogin}>
           <div className="reset-password-input-group">
-            <label htmlFor="username">Otp</label>
+            <label htmlFor="username">OTP</label>
             <div className="reset-password-input-wrapper">
               <FaUser className="reset-password-input-icon" />
               <input
