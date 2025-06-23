@@ -20,40 +20,73 @@
     flex-direction: column;
     align-items: stretch;
     position: relative;
-    padding: 10px;
-    gap: 10px;
+    padding: 5px; /* Reduced padding */
+    gap: 5px;
   }
 
+  /* Home icon top-left */
+  .manager-team-home-icon {
+    position: absolute;
+    top: -10px;
+    left: 0;
+    font-size: 26px; /* Reduced icon size */
+    color: #333;
+    z-index: 10;
+  }
+
+  /* Logo top-right */
   .manager-team-company-logo {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 100px;
+    top: -10px;
+    right: 0;
+    width: 75px; /* Smaller logo */
     height: auto;
     object-fit: contain;
+    z-index: 10;
   }
 
+  /* My Team heading */
   .manager-team-header-left {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-    padding-right: 120px; /* prevents overlap with logo */
+    position: relative;
+    height: 30px; /* Adjusted height */
+  }
+
+  .manager-team-header-left h1 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    font-size: 14px; /* Smaller text */
+    line-height: 1.2;
+    text-align: center;
+    z-index: 5;
   }
 
   .manager-team-content {
-    padding: 10px;
+    padding: 6px;
     flex: 1;
     overflow-y: auto;
   }
 
   .manager-team-search-bar {
     width: 100%;
+    margin-top: 8px;
+    position: relative;
   }
 
   .manager-team-search-bar input {
     width: 100%;
-    padding-left: 35px;
-    font-size: 14px;
+    padding-left: 30px;
+    font-size: 13px;
+  }
+
+  .manager-team-search-icon {
+    position: absolute;
+    top: 50%;
+    left: 8px;
+    transform: translateY(-50%);
+    font-size: 20px;
   }
 
   .manager-team-table-container {
@@ -64,23 +97,24 @@
   }
 
   .manager-team-table {
-    min-width: 700px;
+    min-width: 600px;
   }
 
   .manager-team-table th,
   .manager-team-table td {
-    font-size: 12px;
-    padding: 8px;
+    font-size: 14px;
+    padding: 6px;
+    text-align: center;
   }
 
   .manager-team-start-pms-button {
-    font-size: 12px;
-    padding: 6px 10px;
+    font-size: 11px;
+    padding: 5px 8px;
   }
 
   .manager-team-profile-pic {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
   }
 
   .manager-team-member {
@@ -93,7 +127,7 @@
     justify-content: flex-end;
     align-items: center;
     gap: 10px;
-    padding: 10px 50px;
+    padding: 6px 20px;
     position: fixed;
     bottom: 0;
     right: 0;
@@ -104,11 +138,11 @@
   }
 
   .manager-team-pagination button {
-    font-size: 14px;
-    padding: 10px 12px;
+    font-size: 12px;
+    padding: 6px 8px;
   }
 
   .manager-team-pagination span {
-    font-size: 14px;
+    font-size: 12px;
   }
 }

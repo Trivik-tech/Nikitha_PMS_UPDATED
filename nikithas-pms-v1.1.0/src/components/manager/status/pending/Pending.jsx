@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Pending.css";
+import './ResponsivePending.css';
 import { FaSearch, FaHome } from "react-icons/fa";
 import logo from "../../../../assets/images/nikithas-logo.png";
 import Loader from "../../../modal/loader/Loader";
@@ -17,7 +18,7 @@ const teamMembers = [
     position: "Senior Designer",
     self: "Pending",
     manager: "pending",
-    image: "https://randomuser.me/api/portraits/women/1.jpg",
+
   },
   {
     name: "John Doe",
@@ -25,15 +26,15 @@ const teamMembers = [
     position: "Software Engineer",
     self: "Completed",
     manager: "Pending",
-    image: "https://randomuser.me/api/portraits/men/1.jpg",
   },
+
   {
     name: "Alex Johnson",
     department: "Marketing",
     position: "Content Strategist",
     self: "completed",
     manager: "Pending",
-    image: "https://randomuser.me/api/portraits/men/2.jpg",
+    
   },
   {
     name: "David Lee",
@@ -41,7 +42,7 @@ const teamMembers = [
     position: "Sales Director",
     self: "Pending",
     manager: "Pending",
-    image: "https://randomuser.me/api/portraits/men/3.jpg",
+   
   },
   {
     name: "Emily Brown",
@@ -49,7 +50,7 @@ const teamMembers = [
     position: "HR Manager",
     self: "Pending",
     manager: "Pending",
-    image: "https://randomuser.me/api/portraits/women/2.jpg",
+   
   },
   {
     name: "Robert Taylor",
@@ -57,7 +58,7 @@ const teamMembers = [
     position: "DevOps Engineer",
     self: "Pending",
     manager: "Pending",
-    image: "https://randomuser.me/api/portraits/men/4.jpg",
+    
   },
   {
     name: "Lisa Wang",
@@ -65,7 +66,7 @@ const teamMembers = [
     position: "UI/UX Designer",
     self: "Completed",
     manager: "Pending",
-    image: "https://randomuser.me/api/portraits/women/3.jpg",
+    
   },
   {
     name: "James Wilson",
@@ -73,15 +74,15 @@ const teamMembers = [
     position: "SEO Specialist",
     self: "Pending",
     manager: "Pending",
-    image: "https://randomuser.me/api/portraits/men/5.jpg",
   },
+   
   {
     name: "Maria Garcia",
     department: "Sales",
     position: "Account Manager",
     self: "Pending",
     manager: "Pending",
-    image: "https://randomuser.me/api/portraits/women/4.jpg",
+    
   },
   {
     name: "Thomas Anderson",
@@ -89,7 +90,7 @@ const teamMembers = [
     position: "Backend Developer",
     self: "Pending",
     manager: "Pending",
-    image: "https://randomuser.me/api/portraits/men/6.jpg",
+    
   },
   {
     name: "James Wilson",
@@ -97,7 +98,7 @@ const teamMembers = [
     position: "SEO Specialist",
     self: "Pending",
     manager: "Pending",
-    image: "https://randomuser.me/api/portraits/men/5.jpg",
+    
   },
   {
     name: "Maria Garcia",
@@ -105,7 +106,7 @@ const teamMembers = [
     position: "Account Manager",
     self: "Pending",
     manager: "Pending",
-    image: "https://randomuser.me/api/portraits/women/4.jpg",
+    
   },
   {
     name: "Thomas Anderson",
@@ -113,7 +114,7 @@ const teamMembers = [
     position: "Backend Developer",
     self: "Pending",
     manager: "Pending",
-    image: "https://randomuser.me/api/portraits/men/6.jpg",
+   
   },
 ];
 
@@ -225,11 +226,7 @@ export default function Pending() {
             {currentEntries.map((member, index) => (
               <tr key={index}>
                 <td className="pending-team-member">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="pending-profile-pic"
-                  />
+                 
                   {member.name}
                 </td>
                 <td>{member.department}</td>

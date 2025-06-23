@@ -1,216 +1,137 @@
-body {
-  min-height: 100vh;
-  background-color: var(--base-clr, #f4f4f9);
-  display: flex;
-  justify-content: center;
-  overflow: hidden;
-  align-items: center;
-  color: var(--text-clr, #333);
-  margin: 0;
-  font-family: Arial, sans-serif;
+body{
+  min-height:100vh;
+  background-color:var(--base-clr,#f4f4f9);
+  display:flex;
+  justify-content:center;
+  overflow:hidden;
+  align-items:center;
+  color:var(--text-clr,#333);
+  margin:0;
+  font-family:Arial, sans-serif;
 }
 
-/* Page container fade-in animation */
-.pending-team-container {
-  display: flex;
-  flex-direction: column;
-  width: 97vw;
-  height: 95vh;
-  background: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow: hidden;
-  opacity: 0;
-  transform: translateY(-20px);
-  animation: fadeInSlide 0.8s ease-out forwards;
+/* Container animation */
+.pending-team-container{
+  display:flex;
+  flex-direction:column;
+  width:97vw;
+  height:95vh;
+  background:#fff;
+  box-shadow:0 4px 12px rgba(0,0,0,.1);
+  border-radius:8px;
+  overflow:hidden;
+  opacity:0;
+  transform:translateY(-20px);
+  animation:fadeInSlide .8s ease-out forwards;
+}
+@keyframes fadeInSlide{
+  from{opacity:0;transform:translateY(-20px);}
+  to{opacity:1;transform:translateY(0);}
 }
 
-@keyframes fadeInSlide {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Header */
+.pending-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#fff;
+  padding:15px 20px;
+  border-bottom:1px solid #ddd;
+  position:sticky;
+  top:0;
+  z-index:10;
 }
+.pending-header-title{display:flex;align-items:center;gap:10px;}
+.pending-home-icon{font-size:28px;color:#000;cursor:pointer;transition:.3s;}
+.pending-home-icon:hover{color:#0056b3;transform:scale(1.1);}
+.pending-header h1{margin:0;font-size:22px;font-weight:600;}
 
-.pending-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: white;
-  padding: 15px 20px;
-  border-bottom: 1px solid #ddd;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+/* Search bar */
+.pending-search-bar{position:relative;width:30%;}
+.pending-search-bar input{
+  width:50%;
+  padding:6px 10px 6px 30px;
+  border:1px solid #ccc;
+  border-radius:4px;
+  transition:.3s;
+  font-size:14px;
 }
+.pending-search-bar input:focus{border-color:#007bff;box-shadow:0 0 8px rgba(0,123,255,.3);outline:none;}
+.pending-search-icon{position:absolute;right:92%;top:50%;transform:translateY(-50%);color:gray;}
 
-.pending-header-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* Logo */
+.pending-company-logo{height:80px;}
+
+/* Table container */
+.pending-table-container{flex:1;overflow-y:auto;padding:10px 20px;}
+
+/* TABLE */
+.pending-team-table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
 }
-
-.pending-home-icon {
-  font-size: 30px;
-  color: black;
-  cursor: pointer;
-  transition: color 0.3s, transform 0.3s ease;
-}
-
-.pending-home-icon:hover {
-  color: #0056b3;
-  transform: scale(1.1);
-}
-
-.pending-header h1 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 600;
-}
-
-/* Smooth search bar focus animation */
-.pending-search-bar {
-  position: relative;
-  width: 30%;
-}
-
-.pending-search-bar input {
-  width: 50%;
-  padding: 8px 10px 8px 30px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  transition: border-color 0.3s, box-shadow 0.3s;
-}
-
-.pending-search-bar input:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
-  outline: none;
-}
-
-.pending-search-icon {
-  position: absolute;
-  right: 92%;
-  top: 50%;
-  transform: translateY(-50%);
-  color: gray;
-}
-
-.pending-company-logo {
-  height: 100px;
-}
-
-.pending-table-container {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px 20px;
-  
-}
-
-/* Table hover row effect */
-.pending-team-table {
-  width: 100%;
-  border-collapse: collapse;
-  
-}
-
 .pending-team-table th,
-.pending-team-table td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
+.pending-team-table td{
+  padding:8px;
+  text-align:center;                /* ⬅️  Center alignment */
+  border-bottom:1px solid #ddd;
+  vertical-align:middle;
+  height:44px;
+  font-size:14px;
+  line-height:1.4;
 }
-.pending-team-table th{
-  background-color: lightgray;
-}
+.pending-team-table td *{margin:0;padding:0;font-size:inherit;text-align:center;} /* keep inner text centred */
+.pending-team-table th{background:lightgray;}
+.pending-team-table tbody tr{transition:background-color .3s;}
+.pending-team-table tbody tr:hover{background:#f8f9fc;}
 
-.pending-team-table tbody tr {
-  transition: background-color 0.3s ease;
+/* Profile + name cell */
+.pending-team-member{
+  display:flex;
+  justify-content:center;           /* ⬅️  centres image+name block */
+  align-items:center;
+  gap:8px;
 }
+.pending-profile-pic{
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  transition:transform .3s;
+}
+.pending-team-member:hover .pending-profile-pic{transform:scale(1.15);}
 
-.pending-team-table tbody tr:hover {
-  background-color: #f8f9fc;
+/* Pagination */
+.pending-pagination{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  padding:10px 20px;
+  background:#f8f9fa;
+  border-top:1px solid #ddd;
+  position:sticky;
+  bottom:0;
+  z-index:10;
+  gap:10px;
+  font-size:13px;
+  font-weight:500;
+  color:#555;
 }
+.pending-pagination button{
+  padding:6px 12px;
+  background:#007bff;
+  color:#fff;
+  border:1px solid transparent;
+  border-radius:4px;
+  cursor:pointer;
+  transition:.2s;
+  font-weight:500;
+}
+.pending-pagination button:disabled{background:#ccc;cursor:not-allowed;}
+.pending-pagination button:hover:not(:disabled){background:#0056b3;transform:translateY(-3px);}
+.pending-pagination span{font-weight:600;color:#333;}
 
-/* Profile picture subtle animation */
-.pending-team-member {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.pending-profile-pic {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  transition: transform 0.3s ease;
-}
-
-.pending-team-member:hover .pending-profile-pic {
-  transform: scale(1.15);
-}
-
-.pending-pagination {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 12px 20px;
-  background: #f8f9fa;
-  border-top: 1px solid #ddd;
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
-  gap: 10px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #555;
-}
-
-/* Pagination button animations */
-.pending-pagination button {
-  padding: 8px 14px;
-  background-color: #007bff;
-  color: white;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-  font-weight: 500;
-}
-
-.pending-pagination button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.pending-pagination button:hover:not(:disabled) {
-  background-color: #0056b3;
-  transform: translateY(-3px);
-}
-
-.pending-pagination span {
-  font-weight: 600;
-  color: #333;
-}
-
-/* Notify bell hover animation */
-.pending-notify-icon {
-  text-align: center;
-  cursor: pointer;
-  font-size: 18px;
-  transition: transform 0.3s ease;
-}
-
-.pending-notify-icon:hover {
-  transform: rotate(2deg);
-}
-
-.notify-bell {
-  color: blue;
-  cursor: pointer;
-  font-size: 25px;
-}
+/* Notification bell */
+.pending-notify-icon{text-align:center;cursor:pointer;font-size:20px;transition:transform .3s;}
+.pending-notify-icon:hover{transform:rotate(2deg);}
+.notify-bell{color:blue;cursor:pointer;font-size:28px;}
