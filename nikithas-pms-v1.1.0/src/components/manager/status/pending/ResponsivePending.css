@@ -1,0 +1,112 @@
+/* 🌐 Responsive Design (max-width: 1024px) */
+@media screen and (max-width: 1024px) {
+  .pending-team-container {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    padding-bottom: 60px;
+    overflow-y: auto;
+  }
+
+  .pending-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .pending-header-title {
+    margin-top: -0px; /* space below icons */
+    width: 100%;
+    margin-right: 15px;
+    text-align: center;
+  }
+  
+  .pending-header h1 {
+    font-size: 20px;
+    margin-left: -35px;
+    margin-right: 30px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .pending-company-logo {
+    position: absolute;
+    top: 0px;
+    right: -0px;
+    height: 70px;
+    width: 80px;
+  }
+
+  .pending-search-bar {
+    width: 100%;
+    margin-top: 15px;
+  }
+
+  .pending-search-bar input {
+    width: 100%;
+    padding: 8px 10px 8px 35px;
+    font-size: 18x;
+  }
+
+  .pending-search-icon {
+    left: 10px;
+    right: auto;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+  }
+
+  .pending-table-container {
+    padding: 9px;
+    overflow-x: auto;
+  
+  }
+
+  .pending-team-table {
+    min-width: 700px;
+    font-size: 13px;
+    
+  }
+
+  .pending-team-table th,
+  .pending-team-table td {
+    font-size: 13px;
+    padding: 6px;
+    white-space: nowrap;
+    text-align: center; /* ✅ Center alignment added */
+  }
+
+  .pending-team-member {
+    justify-content:center;
+  }
+
+  .pending-profile-pic {
+    width: 26px;
+    height: 26px;
+  }
+
+  .pending-pagination {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    font-size: 12px;
+    gap: 6px;
+    padding: 10px;
+  }
+
+  .pending-pagination button {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  .notify-bell {
+    font-size: 22px;
+  }
+
+  .pending-home-icon {
+    font-size: 30px;
+    top: 15px;
+    left: 15px;
+  }
+}
