@@ -21,6 +21,7 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     padding: 10px;
+    height: 70vh;
 }
 
 .forgot-password-form-section {
@@ -153,7 +154,7 @@ input {
 
 .forgot-password-links-container span {
     display: flex;
-    align-items: center;
+    align-items: center; 
     gap: 5px;
 }
 
