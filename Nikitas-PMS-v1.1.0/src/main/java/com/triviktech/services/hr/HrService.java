@@ -36,7 +36,7 @@ public interface HrService {
 
     Map<String, String> deleteEmployee(String employeeId);
 
-    EmployeeInfo updateEmployee(String empId, Employee employee);
+    Map<String , String> updateEmployee(String empId, Employee employee);
 
     Map<String, Object> getdepartment();
 

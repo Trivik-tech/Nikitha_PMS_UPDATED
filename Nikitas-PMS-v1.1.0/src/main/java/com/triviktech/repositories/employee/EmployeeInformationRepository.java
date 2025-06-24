@@ -27,13 +27,13 @@ public interface EmployeeInformationRepository extends JpaRepository<EmployeeInf
 
     List<EmployeeInformation> findByEmpIdIn(Set<String> empIds);
 
-//    Optional<EmployeeInformation> findByReportingManagerAndEmpId(String managerName, String employeeId);
+    Optional<EmployeeInformation> findByManagerAndEmpId(Manager manager, String employeeId);
 
     @Query("SELECT e.department.name, COUNT(e) FROM EmployeeInformation e GROUP BY e.department.name")
     List<Object[]> countEmployeesByDepartment();
 
-//    @Query("select e from EmployeeInformation e where e.reportingManager=:reportingManager")
-//    List<EmployeeInformation> findAllByReportingManager(@Param("reportingManager") String reportingManager);
+
+    List<EmployeeInformation> findAllByManager(Manager manager);
 
     Optional<EmployeeInformation> findByOfficialEmailId(String officialEmailId);
 

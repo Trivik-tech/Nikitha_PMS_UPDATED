@@ -49,7 +49,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-
 import java.util.stream.Collectors;
 
 @Service
@@ -69,9 +68,9 @@ public class ManagerServiceImpl implements ManagerService {
     private static final Logger logger = LoggerFactory.getLogger(ManagerServiceImpl.class);
 
     public ManagerServiceImpl(ManagerRepository managerRepository, StateRepository stateRepository,
-                             LocationRepository locationRepository, ProjectRepository projectRepository,
-                             DepartmentRepository departmentRepository, EmployeeInformationRepository employeeInformationRepository,
-                             KraKpiRepository kraKpiRepository, EmailService emailService, EntityDtoConversion entityDtoConversion) {
+                              LocationRepository locationRepository, ProjectRepository projectRepository,
+                              DepartmentRepository departmentRepository, EmployeeInformationRepository employeeInformationRepository,
+                              KraKpiRepository kraKpiRepository, EmailService emailService, EntityDtoConversion entityDtoConversion) {
         this.managerRepository = managerRepository;
         this.stateRepository = stateRepository;
         this.locationRepository = locationRepository;
@@ -227,11 +226,14 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public List<EmployeeWithPmsStatus> listOfEmployeesForManager(String reportingManager) {
+    public List<EmployeeWithPmsStatus> listOfEmployeesForManager(String managerId) {
         try {
-            // List<EmployeeInformation> allByManager = employeeInformationRepository
-            //         .findAllByReportingManager(reportingManager);
-            List<EmployeeInformation> allByManager = null;
+            Optional<Manager> optionalManager = managerRepository.findByManagerId(managerId);
+            if(optionalManager.isEmpty()){
+                throw new ManagerNotFoundException(managerId);
+            }
+            Manager manager = optionalManager.get();
+            List<EmployeeInformation> allByManager = employeeInformationRepository.findAllByManager(manager);
 
             return allByManager.stream().map(employee -> {
                 // Convert base employee info to response DTO
@@ -250,30 +252,29 @@ public class ManagerServiceImpl implements ManagerService {
                 kraKpiOptional.ifPresent(kraKpi -> {
                     employeeResponse.setPmsInitiated(kraKpi.getPmsInitiated());
                     employeeResponse.setSelfCompleted(kraKpi.isSelfCompleted());
+                    employeeResponse.setManagerCompleted(kraKpi.isManagerCompleted());
                 });
 
                 return employeeResponse;
             }).collect(Collectors.toList());
 
         } catch (Exception e) {
-            logger.error("Error retrieving employees for manager ID {}: {}", reportingManager, e.getMessage(), e);
+            logger.error("Error retrieving employees for manager ID {}: {}", managerId, e.getMessage(), e);
             throw e;
         }
     }
 
-    @Override
-    public List<EmployeeInfo> findAllByReportingManager(String reportingManager) {
-        // List<EmployeeInformation> allEmployees = employeeInformationRepository
-        //         .findAllByReportingManager(reportingManager);
-         List<EmployeeInformation> allEmployees = null;
-        List<EmployeeInfo> collect = allEmployees.stream().map(employee -> {
-            EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
-            employeeInfo.setDepartment(employee.getDepartment().getName());
-            return employeeInfo;
-
-        }).collect(Collectors.toList());
-        return collect;
-    }
+//    @Override
+//    public List<EmployeeInfo> findAllByReportingManager(String reportingManager) {
+//        List<EmployeeInformation> allEmployees = employeeInformationRepository.findAllByReportingManager(reportingManager);
+//        List<EmployeeInfo> collect = allEmployees.stream().map(employee -> {
+//            EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+//            employeeInfo.setDepartment(employee.getDepartment().getName());
+//            return employeeInfo;
+//
+//        }).collect(Collectors.toList());
+//        return collect;
+//    }
 
     @Override
     public List<EmployeeWithPmsStatus> listOfPMSCompletedEmployees(String managerId) {
@@ -288,21 +289,23 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public KraKpiResponseDto getEmployeeKarKpi(String managerName, String employeeId) {
-        // Optional<EmployeeInformation> employeeData = employeeInformationRepository
-        //         .findByReportingManagerAndEmpId(managerName, employeeId);
-          Optional<EmployeeInformation> employeeData = null;
-        if (employeeData.isPresent()) {
+    public KraKpiResponseDto getEmployeeKarKpi(String managerId, String employeeId) {
+        Optional<Manager> optionalManager = managerRepository.findByManagerId(managerId);
+        if(optionalManager.isEmpty()){
+            throw new ManagerNotFoundException(managerId);
+        }
+        Manager manager = optionalManager.get();
+        Optional<EmployeeInformation> employeeData = employeeInformationRepository.findByManagerAndEmpId(manager, employeeId);
+        if(employeeData.isPresent()){
             EmployeeInformation employee = employeeData.get();
             Optional<KraKpi> kraKpi = kraKpiRepository.findByEmployeeInformation(employee);
-            if (kraKpi.isPresent()) {
+            if (kraKpi.isPresent()){
                 KraKpi kraKpi1 = kraKpi.get();
-                KraKpiResponseDto kraKpiResponseDto = entityDtoConversion.entityToDtoConversion(kraKpi1,
-                        KraKpiResponseDto.class);
+                KraKpiResponseDto kraKpiResponseDto = entityDtoConversion.entityToDtoConversion(kraKpi1, KraKpiResponseDto.class);
                 EmployeeInformation employeeInformation = kraKpi1.getEmployeeInformation();
-                EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employeeInformation,
-                        EmployeeInfo.class);
+                EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employeeInformation, EmployeeInfo.class);
                 employeeInfo.setDepartment(employeeInformation.getDepartment().getName());
+                employeeInfo.setReportingManager(employee.getManager().getName());
                 kraKpiResponseDto.setEmployee(employeeInfo);
 
                 Set<KraResponseDto1> kras = kraKpi1.getKra().stream().map(kra -> {
@@ -336,9 +339,14 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public Map<String, String> approveKra(KraKpiRequestDto kraKpiRequestDto, String employeeId, String reportingManager) {
+    public Map<String, String> approveKra(KraKpiRequestDto kraKpiRequestDto, String employeeId, String managerId) {
         Map<String, String> response = new HashMap<>();
-        Optional<EmployeeInformation> employeeById = employeeInformationRepository.findById(employeeId);
+        Optional<Manager> optionalManager = managerRepository.findByManagerId(managerId);
+        if(optionalManager.isEmpty()){
+            throw new ManagerNotFoundException(managerId);
+        }
+        Manager manager = optionalManager.get();
+        Optional<EmployeeInformation> employeeById = employeeInformationRepository.findByManagerAndEmpId(manager, employeeId);
 
         if (employeeById.isEmpty()) {
             throw new EmployeeNotFoundException(employeeId);
@@ -410,20 +418,22 @@ public class ManagerServiceImpl implements ManagerService {
         kraKpi.setKra(existingKras);
 
         KraKpi kraKpi1 = kraKpiRepository.saveAndFlush(kraKpi);
-        String msg = kraKpi1 != null ? "Approved" : "Something went wrong";
-        response.put("status", msg);
-        try {
-            String sub = String.format(Message.KRA_KPI_APPROVED_SUBJECT_TO_EMPLOYEE);
-            String message = String.format(Message.KRA_KPI_APPROVED_MESSAGE_TO_EMPLOYEE, employee.getName());
-            emailService.sendEmail(employee.getEmailId(), sub, message);
-        } catch (Exception e) {
+        String msg=kraKpi1!=null?"Approved":"Something went wrong";
+        response.put("status",msg);
+        try{
+            // sending email to employee
+            String sub=String.format(Message.KRA_KPI_APPROVED_SUBJECT_TO_EMPLOYEE);
+            String message=String.format(Message.KRA_KPI_APPROVED_MESSAGE_TO_EMPLOYEE,employee.getName());
+            emailService.sendEmail(employee.getEmailId(),sub,message);
+        }catch (Exception e){
             e.printStackTrace();
         }
-        try {
-            String sub = String.format(Message.KRA_KPI_APPROVED_SUBJECT_TO_HR);
-            String message = String.format(Message.KRA_KPI_APPROVED_MESSAGE_TO_HR, employee.getName(), employee.getEmpId());
+        try{
+            // sending email to HR
+            String sub=String.format(Message.KRA_KPI_APPROVED_SUBJECT_TO_HR);
+            String message=String.format(Message.KRA_KPI_APPROVED_MESSAGE_TO_HR,employee.getName(),employee.getEmpId());
             // emailService.sendEmail(,sub,message);
-        } catch (Exception e) {
+        }catch (Exception e){
             e.printStackTrace();
         }
 
@@ -431,11 +441,15 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public Map<String, String> managerReview(String managerName, String employeeId, KraKpiRequestDto data) {
-        // Optional<EmployeeInformation> employeeById = employeeInformationRepository
-        //         .findByReportingManagerAndEmpId(managerName, employeeId);
-                 Optional<EmployeeInformation> employeeById = null;
-        if (employeeById.isPresent()) {
+    public Map<String,String> managerReview(String managerId,String employeeId, KraKpiRequestDto data) {
+        Optional<Manager> optionalManager = managerRepository.findByManagerId(managerId);
+        if(optionalManager.isEmpty()){
+            throw new ManagerNotFoundException(managerId);
+        }
+        Manager manager = optionalManager.get();
+
+        Optional<EmployeeInformation> employeeById = employeeInformationRepository.findByManagerAndEmpId(manager, employeeId);
+        if(employeeById.isPresent()){
             EmployeeInformation employee = employeeById.get();
             Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
             if (kraKpiOptional.isPresent()) {
@@ -509,8 +523,26 @@ public class ManagerServiceImpl implements ManagerService {
                 // Save the entire structure (KraKpi -> KRA -> KPI)
                 kraKpiRepository.saveAndFlush(kraKpi);
 
-            } else {
-                throw new KraKpiNotFoundException("Kra Kpi not found for employee with id " + employeeId);
+                try{
+                    // Sending email to employee
+                    String sub=String.format(Message.MANAGER_REVIEW_COMPLETED_SUBJECT_TO_EMPLOYEE);
+                    String message=String.format(Message.MANAGER_REVIEW_COMPLETED_MESSAGE_TO_EMPLOYEE,employee.getName());
+                    emailService.sendEmail(employee.getEmailId(),sub,message);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+//                try{
+//                    // Sending email to HR
+//                    String sub=String.format(Message.MANAGER_REVIEW_COMPLETED_SUBJECT_TO_HR);
+//                    String message=String.format(Message.MANAGER_REVIEW_COMPLETED_MESSAGE_TO_HR,employee.getName(),employee.getEmpId());
+//
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                }
+
+            }else{
+                throw new KraKpiNotFoundException("Kra Kpi not found for employee with id "+employeeId);
             }
 
         } else {
@@ -521,9 +553,13 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public List<EmployeeWithPmsStatus> getCompletedAssessmentListForManager(String reportingManager) {
-        // List<EmployeeInformation> employees = employeeInformationRepository.findAllByReportingManager(reportingManager);
-        List<EmployeeInformation> employees = null;
+    public List<EmployeeWithPmsStatus> getCompletedAssessmentListForManager(String managerId) {
+        Optional<Manager> optionalManager = managerRepository.findByManagerId(managerId);
+        if(optionalManager.isEmpty()){
+            throw new ManagerNotFoundException(managerId);
+        }
+        Manager manager = optionalManager.get();
+        List<EmployeeInformation> employees = employeeInformationRepository.findAllByManager(manager);
 
         return employees.stream()
                 .map(employee -> {
@@ -561,9 +597,13 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public List<EmployeeWithPmsStatus> getPendingAssessmentListForManager(String reportingManager) {
-        // List<EmployeeInformation> employees = employeeInformationRepository.findAllByReportingManager(reportingManager);
-        List<EmployeeInformation> employees = null;
+    public List<EmployeeWithPmsStatus> getPendingAssessmentListForManager(String managerId) {
+        Optional<Manager> optionalManager = managerRepository.findByManagerId(managerId);
+        if(optionalManager.isEmpty()){
+            throw new ManagerNotFoundException(managerId);
+        }
+        Manager manager = optionalManager.get();
+        List<EmployeeInformation> employees = employeeInformationRepository.findAllByManager(manager);
 
         return employees.stream()
                 .map(employee -> {
@@ -601,10 +641,14 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
-    public PmsPercentageDto getPmsPercentageForManager(String reportingManager) {
+    public PmsPercentageDto getPmsPercentageForManager(String managerId) {
+        Optional<Manager> optionalManager = managerRepository.findByManagerId(managerId);
+        if(optionalManager.isEmpty()){
+            throw new ManagerNotFoundException(managerId);
+        }
+        Manager manager = optionalManager.get();
 
-        // List<EmployeeInformation> employees = employeeInformationRepository.findAllByReportingManager(reportingManager);
-        List<EmployeeInformation> employees = null;
+        List<EmployeeInformation> employees = employeeInformationRepository.findAllByManager(manager);
 
         long totalInitiatedWithKraKpi = 0;
         long completedCount = 0;

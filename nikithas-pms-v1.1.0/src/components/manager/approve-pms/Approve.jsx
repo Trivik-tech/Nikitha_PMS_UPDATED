@@ -26,7 +26,7 @@ const Approve = () => {
     const loadKraKpis = async () => {
       try {
         const result = await axios.get(
-          `${baseUrl}/api/v1/pms/manager/kra-kpi/Pradeep Prahalada Rao Kubair/${emplId.id}`
+          `${baseUrl}/api/v1/pms/manager/kra-kpi/EMP1234/${emplId.id}`
         );
         setKraKpis(result.data.kra || []);
         setName(result.data.employee.name);
@@ -89,7 +89,7 @@ const Approve = () => {
 
       console.log(payload)
       const result= await axios.patch(
-        `${baseUrl}/api/v1/pms/manager/approve-krakpi/${emplId.id}/Pradeep Prahalada Rao Kubair`,
+        `${baseUrl}/api/v1/pms/manager/approve-krakpi/${emplId.id}/EMP1234`,
         payload
       );
       console.log(result.data)
@@ -110,7 +110,7 @@ const Approve = () => {
   const rejectKraKpi = async () => {
     try {
       await axios.patch(
-        `${baseUrl}/api/v1/pms/manager/approve-krakpi/${emplId.id}/Pradeep Prahalada Rao Kubair`,
+        `${baseUrl}/api/v1/pms/manager/approve-krakpi/${emplId.id}/1234`,
         { approveStatus: false }
       );
       setErrorMessage("PMS has been rejected successfully.");

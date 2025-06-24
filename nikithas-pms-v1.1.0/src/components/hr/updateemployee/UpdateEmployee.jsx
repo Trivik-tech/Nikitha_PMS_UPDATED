@@ -86,16 +86,13 @@ const UpdateEmployee = () => {
   const handleSave = async () => {
     try {
       setLoading(true);
-
       const updatedEmployee = {
         ...employee,
-        role: employee.role?.toUpperCase() || "",
-        department: employee.department?.toString() || "" // ensure it's a string
+        role: employee.role || "",
+        department: employee.department?.toString() || ""
       };
 
-      // console.log(updatedEmployee)
-      const result=await axios.put(`${baseUrl}/api/v1/pms/hr/update-employee/${id}`, updatedEmployee);
-      console.log({data:result.data})
+      const result = await axios.put(`${baseUrl}/api/v1/pms/hr/update-employee/${id}`, updatedEmployee);
       setModalTitle("Success");
       setModalMessage("Employee updated successfully!");
       setStatusModal(true);
@@ -135,6 +132,7 @@ const UpdateEmployee = () => {
       </div>
 
       <div className="hr-module-update-employee-form">
+        {/* Fields */}
         <div className="hr-module-update-employee-form-group">
           <label>Employee ID</label>
           <input type="text" name="empId" value={employee.empId} readOnly />
@@ -154,8 +152,8 @@ const UpdateEmployee = () => {
         <div className="hr-module-update-employee-form-group">
           <label>Role</label>
           <select name="role" value={employee.role || ""} onChange={handleChange}>
-            {["Employee", "HR", "Manager"].map((role, index) => (
-              <option key={index} value={role}>{role}</option>
+            {["EMPLOYEE", "HR", "MANAGER"].map((role, index) => (
+              <option key={index} value={role}>{role.charAt(0) + role.slice(1).toLowerCase()}</option>
             ))}
           </select>
         </div>
@@ -167,13 +165,9 @@ const UpdateEmployee = () => {
           <label>Department</label>
           <select name="department" value={employee.department || ""} onChange={handleChange}>
             <option value="">-- Select Department --</option>
-            {departmentList.length > 0 ? (
-              departmentList.map((dept, index) => (
-                <option key={index} value={dept}>{dept}</option>
-              ))
-            ) : (
-              <option disabled>Loading...</option>
-            )}
+            {departmentList.map((dept, index) => (
+              <option key={index} value={dept}>{dept}</option>
+            ))}
           </select>
         </div>
         <div className="hr-module-update-employee-form-group">

@@ -7,6 +7,7 @@ import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
+
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,8 +35,8 @@ public interface ManagerController {
     @GetMapping("/profile")
     ResponseEntity<ManagerResponseDto> profile(@AuthenticationPrincipal UserDetails manager);
 
-    @GetMapping("/employee-list/{reportingManager}")
-    ResponseEntity<List<EmployeeWithPmsStatus>> listOfEmployeesForManager(@PathVariable String reportingManager);
+    @GetMapping("/employee-list/{managerId}")
+    ResponseEntity<List<EmployeeWithPmsStatus>> listOfEmployeesForManager(@PathVariable String managerId);
 
     @GetMapping("/pending-pms-list/{managerId}")
     ResponseEntity<List<EmployeeWithPmsStatus>> listOfPMSPendingEmployees(@PathVariable String managerId);
@@ -43,21 +44,22 @@ public interface ManagerController {
     @GetMapping("/completed-pms-list/{managerId}")
     ResponseEntity<List<EmployeeWithPmsStatus>> listOfPMSCompletedEmployees(@PathVariable String managerId);
 
-    @PatchMapping("/manager-review/{managerName}/{employeeId}")
-    ResponseEntity<Map<String, String>> managerReview(@PathVariable String managerName,
+    @PatchMapping("/manager-review/{managerId}/{employeeId}")
+    ResponseEntity<Map<String, String>> managerReview(@PathVariable String managerId,
                                                       @PathVariable String employeeId,
                                                       @RequestBody KraKpiRequestDto data);
 
-    @GetMapping("/kra-kpi/{managerName}/{employeeId}")
-    ResponseEntity<KraKpiResponseDto> getKraKpis(@PathVariable String managerName, @PathVariable String employeeId);
+    @GetMapping("/kra-kpi/{managerId}/{employeeId}")
+    ResponseEntity<KraKpiResponseDto> getKraKpis(@PathVariable String managerId,
+                                                 @PathVariable String employeeId);
 
-    @GetMapping("/manager-team/{reportingManager}")
-    ResponseEntity<List<EmployeeInfo>> getManagerTeam(@PathVariable String reportingManager);
-
-    @PatchMapping("/approve-krakpi/{employeeId}/{reportingManager}")
+    @PatchMapping("/approve-krakpi/{employeeId}/{managerId}")
     ResponseEntity<Map<String, String>> approveKraKpi(@PathVariable String employeeId,
-                                                      @PathVariable String reportingManager,
+                                                      @PathVariable String managerId,
                                                       @RequestBody KraKpiRequestDto kraKpiRequestDto);
+
+//    @GetMapping("/manager-team/{reportingManager}")
+//    ResponseEntity<List<EmployeeInfo>> getManagerTeam(@PathVariable String reportingManager);
 
     @GetMapping("/completed/{reportingManager}")
     ResponseEntity<List<EmployeeWithPmsStatus>> getCompletedPmsForManager(@PathVariable String reportingManager);

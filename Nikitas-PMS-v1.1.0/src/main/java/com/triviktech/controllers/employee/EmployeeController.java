@@ -17,9 +17,6 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:3000")
 public interface EmployeeController {
 
-    @PostMapping("/register-employee")
-    ResponseEntity<?> registerEmployee(@RequestBody EmployeeInformationRequestDto employeeInformationRequestDto);
-
     @GetMapping("/employee-list")
     ResponseEntity<List<EmployeeInformationResponseDto>>
     listOfEmployees(@RequestParam(name = "pageSize",defaultValue = AppConstants.DEFAULT_PAGE_SIZE,required = false) int pageSize,
@@ -29,7 +26,7 @@ public interface EmployeeController {
     ResponseEntity<KraKpiResponseDto> kraKpiForEmployee(@PathVariable String employeeId);
 
     @PostMapping("/register-kra-kpi")
-    ResponseEntity<KraKpiResponseDto> kraKpiRegistrationForEmployee(@RequestBody KraKpiRequestDto kraKpiRequestDto);
+    ResponseEntity<Map<String,String>> kraKpiRegistrationForEmployee(@RequestBody KraKpiRequestDto kraKpiRequestDto);
 
     @GetMapping("/profile/{employeeId}")
     ResponseEntity<EmployeeInfo> profile(@PathVariable String employeeId);

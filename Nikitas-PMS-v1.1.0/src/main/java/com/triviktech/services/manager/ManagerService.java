@@ -21,7 +21,7 @@ public interface ManagerService {
 
     List<EmployeeWithPmsStatus> listOfEmployeesForManager(String reportingManager);
 
-    List<EmployeeInfo> findAllByReportingManager(String name);
+//    List<EmployeeInfo> findAllByReportingManager(String name);
 
     List<EmployeeWithPmsStatus> listOfPMSCompletedEmployees(String managerId);
 
@@ -29,8 +29,7 @@ public interface ManagerService {
 
     KraKpiResponseDto getEmployeeKarKpi(String managerName, String employeeId);
 
-    // Final resolved version includes both relevant methods without duplication
-    Map<String, String> approveKra(KraKpiRequestDto kraKpiRequestDto, String employeeId, String reportingManager);
+    Map<String, String> approveKra(KraKpiRequestDto kraKpiRequestDto, String employeeId, String managerId);
 
     Map<String, String> managerReview(String managerId, String employeeId, KraKpiRequestDto data);
 

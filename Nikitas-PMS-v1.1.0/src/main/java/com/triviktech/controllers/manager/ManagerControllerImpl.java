@@ -60,8 +60,8 @@ public class ManagerControllerImpl implements ManagerController {
     }
 
     @Override
-    public ResponseEntity<List<EmployeeWithPmsStatus>> listOfEmployeesForManager(String reportingManager) {
-        return ResponseEntity.ok(managerService.listOfEmployeesForManager(reportingManager));
+    public ResponseEntity<List<EmployeeWithPmsStatus>> listOfEmployeesForManager(String managerId) {
+        return ResponseEntity.ok(managerService.listOfEmployeesForManager(managerId));
     }
 
     @Override
@@ -75,23 +75,23 @@ public class ManagerControllerImpl implements ManagerController {
     }
 
     @Override
-    public ResponseEntity<Map<String, String>> managerReview(String managerName, String employeeId, KraKpiRequestDto data) {
-        return ResponseEntity.ok(managerService.managerReview(managerName, employeeId, data));
+    public ResponseEntity<Map<String,String>> managerReview(String managerId,String employeeId, KraKpiRequestDto data) {
+        return ResponseEntity.ok(managerService.managerReview(managerId,employeeId,data));
     }
 
     @Override
-    public ResponseEntity<KraKpiResponseDto> getKraKpis(String managerName, String employeeId) {
-        return ResponseEntity.ok(managerService.getEmployeeKarKpi(managerName, employeeId));
+    public ResponseEntity<KraKpiResponseDto> getKraKpis(String managerId, String employeeId) {
+        return ResponseEntity.ok(managerService.getEmployeeKarKpi(managerId, employeeId));
     }
 
-    @Override
-    public ResponseEntity<List<EmployeeInfo>> getManagerTeam(String reportingManager) {
-        return ResponseEntity.ok(managerService.findAllByReportingManager(reportingManager));
-    }
+//    @Override
+//    public ResponseEntity<List<EmployeeInfo>> getManagerTeam(String reportingManager) {
+//        return ResponseEntity.ok(managerService.findAllByReportingManager(reportingManager));
+//    }
 
     @Override
-    public ResponseEntity<Map<String, String>> approveKraKpi(String employeeId, String reportingManager, KraKpiRequestDto kraKpiRequestDto) {
-        return ResponseEntity.ok(managerService.approveKra(kraKpiRequestDto, employeeId, reportingManager));
+    public ResponseEntity<Map<String, String>> approveKraKpi(String employeeId, String managerId, KraKpiRequestDto kraKpiRequestDto) {
+        return ResponseEntity.ok(managerService.approveKra(kraKpiRequestDto, employeeId, managerId));
     }
 
     @Override

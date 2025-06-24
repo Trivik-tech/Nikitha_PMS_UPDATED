@@ -8,6 +8,7 @@ import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
 import com.triviktech.payloads.response.hr.HrResponseDto;
 import com.triviktech.services.hr.HrService;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -72,9 +73,9 @@ public class HRControllerImpl implements HRController {
     }
 
     @Override
-    public ResponseEntity<EmployeeInfo> updateEmployee(String empId, Employee employee) {
-        EmployeeInfo employeeInfo = hrService.updateEmployee(empId, employee);
-        return ResponseEntity.ok(employeeInfo);
+    public ResponseEntity<Map<String, String>> updateEmployee(String empId, Employee employee) {
+        Map<String, String> response = hrService.updateEmployee(empId, employee);
+        return ResponseEntity.ok(response);
     }
 
     @Override

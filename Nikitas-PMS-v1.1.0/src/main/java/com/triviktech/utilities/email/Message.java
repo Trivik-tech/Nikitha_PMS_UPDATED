@@ -22,14 +22,16 @@ public class Message {
                     "Security Team";
 
 
-    public static final String PMS_SUBJECT = "PMS Cycle Initiated – Submit Your KRA/KPI by %s";
+    public static final String PMS_SUBJECT = "PMS Cycle Initiated – Submit Your Self-Appraisal by %s";
+
     public static final String PMS_MESSAGE =
             "Dear %s,\n\n" +
                     "We would like to inform you that the Performance Management System (PMS) cycle has been initiated for the duration: %s.\n" +
-                    "Please login to the PMS portal and complete your KRA/KPI submission before %s.\n\n" +
-                    "Your proactive participation is crucial for a fair and transparent review process.\n\n" +
+                    "Please log in to the PMS portal and complete your self-appraisal submission before %s.\n\n" +
+                    "Your active participation is essential for a fair and transparent performance evaluation process.\n\n" +
                     "Warm regards,\n" +
                     "HR Department";
+
 
     public static final String KRA_KPI_SUBJECT_TO_MANAGER = "KRA/KPI Submitted by %s for Your Review";
 
@@ -78,6 +80,16 @@ public class Message {
                     "For any further details or clarifications, you may refer to the PMS portal or contact the respective manager.\n\n" +
                     "Regards,\n" +
                     "System Notification";
+
+    public static final String MANAGER_REVIEW_COMPLETED_SUBJECT_TO_EMPLOYEE = "PMS Cycle Completed – Final Review Submitted";
+    public static final String MANAGER_REVIEW_COMPLETED_MESSAGE_TO_EMPLOYEE =
+            "Dear %s,\n\n" +
+                    "We would like to inform you that your manager has successfully completed the review of your performance.\n\n" +
+                    "The PMS cycle is now marked as complete. You may view the final feedback and ratings by logging into the PMS portal.\n\n" +
+                    "If you have any questions or wish to discuss the outcome, you may reach out to your manager or the HR department.\n\n" +
+                    "Best regards,\n" +
+                    "HR Team";
+
 
     public static final String EMPLOYEE_DETAILS_UPDATED_SUBJECT = "Your Profile Details Have Been Updated";
     public static final String EMPLOYEE_DETAILS_UPDATED_MESSAGE =
