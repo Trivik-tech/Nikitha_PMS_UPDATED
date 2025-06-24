@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class EmployeeControllerImpl implements EmployeeController {
     }
 
     @Override
-    public ResponseEntity< Map<String, String>> kraKpiRegistrationForEmployee(KraKpiRequestDto kraKpiRequestDto) {
+    public ResponseEntity<Map<String, String>> kraKpiRegistrationForEmployee(KraKpiRequestDto kraKpiRequestDto) {
         String reportingManager = "NB238";
         String destination = "/queue/manager-notification";
         String content = "KraKpi Registered for employee ID: " + kraKpiRequestDto.getEmployeeId();
@@ -70,7 +71,7 @@ public class EmployeeControllerImpl implements EmployeeController {
 
     @GetMapping("/recent")
     public ResponseEntity<List<Notification>> getRecentMessages() {
-        String username = "NB238";
+        String username = "EMP1234"; // This should come from SecurityContext in real implementation
         System.out.println("✅ Authenticated username: " + username);
 
         List<Notification> undelivered = notificationService.getPendingNotification(username);

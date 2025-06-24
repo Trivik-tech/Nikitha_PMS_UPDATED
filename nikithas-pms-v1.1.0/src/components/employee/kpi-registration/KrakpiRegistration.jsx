@@ -11,11 +11,7 @@ const Krakpi = () => {
   const [kraList, setKraList] = useState([
     {
       kraName: "",
-      kpi: [
-        {
-          description: "",
-        },
-      ],
+      kpi: [{ description: "" }],
     },
   ]);
 
@@ -36,11 +32,7 @@ const Krakpi = () => {
       ...kraList,
       {
         kraName: "",
-        kpi: [
-          {
-            description: "",
-          },
-        ],
+        kpi: [{ description: "" }],
       },
     ]);
   };
@@ -53,9 +45,7 @@ const Krakpi = () => {
 
   const addKPI = (kraIndex) => {
     const updatedList = [...kraList];
-    updatedList[kraIndex].kpi.push({
-      description: "",
-    });
+    updatedList[kraIndex].kpi.push({ description: "" });
     setKraList(updatedList);
   };
 
@@ -68,7 +58,7 @@ const Krakpi = () => {
   const handleSubmit = async () => {
     try {
       const payload = {
-        employeeId:"EMP1235",
+        employeeId: "EMP1235", // RESOLVED VALUE
         remark: "",
         selfCompleted: false,
         managerCompleted: false,

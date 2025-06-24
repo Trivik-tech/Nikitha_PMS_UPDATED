@@ -1,14 +1,15 @@
-// ✅ ManagerDashboard.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Chart, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie, getElementsAtEvent } from "react-chartjs-2";
 import { Link, useNavigate, NavLink } from "react-router-dom";
 import { Users, NotebookPen, CheckCircle, Bell } from "lucide-react";
-import axios from "axios";
-import Notification from "../../modal/notification/Notification";
+import { Client } from '@stomp/stompjs';
+import SockJS from 'sockjs-client';
 
+import Notification from "../../modal/notification/Notification";
 import "./ManagerDashboard.css";
-import "./ResponsiveManager.css"; // ✅ Separate responsive file
+import "./ResponsiveManager.css";
+
 import logo from "../../../assets/images/nikithas-logo.png";
 import profile from "../../../assets/images/profile1.jpg";
 
@@ -18,9 +19,105 @@ const ManagerDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [managerData, setManagerData] = useState(null);
+  const [notifications, setNotifications] = useState([]);
 
   const chartRef = useRef();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token") // Replace with real token or get from localStorage
+
+    const socket = new SockJS(`http://localhost:8080/ws?token=${token}`);
+    const client = new Client({
+      webSocketFactory: () => socket,
+      reconnectDelay: 5000,
+
+      onConnect: async () => {
+        console.log("✅ WebSocket connected");
+
+        client.subscribe("/user/queue/manager-notification", async (message) => {
+          const newMsg = {
+            title: "New Notification",
+            message: message.body,
+            timestamp: new Date().toISOString()
+          };
+
+          const updated = [newMsg, ...notifications];
+
+          try {
+            const res = await fetch("http://localhost:8080/api/v1/pms/employee/recent", {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+
+            const recent = await res.json();
+            const formattedRecent = recent.map(msg => ({
+              title: "Recent Notification",
+              message: msg.message || msg.content || "No content",
+              timestamp: msg.timestamp || new Date().toISOString()
+            }));
+
+            const filteredRecent = formattedRecent.filter(msg => {
+              const msgTime = Math.floor(new Date(msg.timestamp).getTime() / 1000);
+              const newMsgTime = Math.floor(new Date(newMsg.timestamp).getTime() / 1000);
+              return !(msgTime === newMsgTime && msg.message === newMsg.message);
+            });
+
+            const combined = [...updated, ...filteredRecent];
+            const unique = Array.from(
+              new Map(
+                combined.map(msg => [
+                  `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.message}`,
+                  msg
+                ])
+              ).values()
+            );
+
+            setNotifications(unique.slice(0, 50));
+            setNotificationOpen(true);
+          } catch (err) {
+            console.error("❌ Error fetching recent:", err);
+          }
+        });
+
+        // Initial fetch of recent notifications
+        try {
+          const res = await fetch("http://localhost:8080/api/v1/pms/employee/recent", {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+
+          const messages = await res.json();
+          const formatted = messages.map(msg => ({
+            title: "Recent Notification",
+            message: msg.message || msg.content || "No content",
+            timestamp: msg.timestamp || new Date().toISOString()
+          }));
+
+          const unique = Array.from(
+            new Map(
+              formatted.map(msg => [
+                `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.message}`,
+                msg
+              ])
+            ).values()
+          );
+
+          setNotifications(unique.slice(0, 50));
+        } catch (err) {
+          console.error("❌ Initial fetch error:", err);
+        }
+      },
+
+      onStompError: (frame) => {
+        console.error("🔴 STOMP error:", frame);
+      }
+    });
+
+    client.activate();
+
+    return () => {
+      client.deactivate();
+    };
+  }, []);
 
   const data = {
     labels: ["Completed", "Pending"],
@@ -36,22 +133,16 @@ const ManagerDashboard = () => {
   const handleChartClick = (event) => {
     const chart = chartRef.current;
     if (!chart) return;
-
     const elements = getElementsAtEvent(chart, event);
     if (elements.length > 0) {
       const clickedIndex = elements[0].index;
-      if (clickedIndex === 0) {
-        navigate("/completed-assessments");
-      } else if (clickedIndex === 1) {
-        navigate("/pending-assessments");
-      }
+      if (clickedIndex === 0) navigate("/completed-assessments");
+      else if (clickedIndex === 1) navigate("/pending-assessments");
     }
   };
 
   return (
     <div className="dashboard-container">
-      
-
       <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="profile-container">
           <img src={profile} alt="Profile" className="profile-pic" />
@@ -79,14 +170,17 @@ const ManagerDashboard = () => {
 
       <div className="main-content">
         <div className="dashboard-header">
-           <button className="sidebar-toggle hum-btn" onClick={() => setSidebarOpen(!sidebarOpen)}>
-        ☰
-      </button>
+          <button className="sidebar-toggle hum-btn" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
           <h1>Manager PMS Dashboard</h1>
           <img src={logo} alt="Logo" className="dashboard-logo" />
           <div className="header-icons">
             <Bell className="notification-icon" onClick={() => setNotificationOpen(!notificationOpen)} />
-            {notificationOpen && <Notification onClose={() => setNotificationOpen(false)} />}
+            {notificationOpen && (
+              <Notification
+                notifications={Array.isArray(notifications) ? notifications : []}
+                onClose={() => setNotificationOpen(false)}
+              />
+            )}
             <Link to="/" className="logout-btn desktop-only">Logout</Link>
           </div>
         </div>
@@ -96,7 +190,7 @@ const ManagerDashboard = () => {
             <Users className="stat-icon team-icon" />
             <div className="stat-text">
               <h2>Total Team Members</h2>
-              <p>24</p>
+              <p>2</p>
             </div>
           </div>
           <div className="stat-card">
@@ -122,8 +216,6 @@ const ManagerDashboard = () => {
           </div>
         </div>
       </div>
-
-      {notificationOpen && <Notification onClose={() => setNotificationOpen(false)} />}
     </div>
   );
 };

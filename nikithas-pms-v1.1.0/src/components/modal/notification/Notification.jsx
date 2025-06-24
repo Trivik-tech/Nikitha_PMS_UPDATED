@@ -1,18 +1,9 @@
 import React, { useState } from "react";
 import "./Notification.css";
 
-const Notification = ({ onClose }) => {
+const Notification = ({ onClose, notifications = [] }) => {
   const [activeTab, setActiveTab] = useState("unread");
   const [selectedNotification, setSelectedNotification] = useState(null);
-
-  const notifications = [
-    { id: 1, title: "System Update", message: "The system will undergo maintenance at 10 PM tonight. Please save your work.", timestamp: "1h ago" },
-    { id: 2, title: "New Policy", message: "A new leave policy has been published. Please review it in the portal.", timestamp: "2h ago" },
-    { id: 3, title: "Meeting Reminder", message: "Reminder: Project meeting scheduled at 3 PM.", timestamp: "3h ago" },
-    { id: 4, title: "System Update", message: "The system will undergo maintenance at 10 PM tonight. Please save your work.", timestamp: "1h ago" },
-    { id: 5, title: "New Policy", message: "A new leave policy has been published. Please review it in the portal.", timestamp: "2h ago" },
-    { id: 6, title: "Meeting Reminder", message: "Reminder: Project meeting scheduled at 3 PM.", timestamp: "3h ago" }
-  ];
 
   const handleNotificationClick = (notification) => {
     setSelectedNotification(notification);
@@ -35,7 +26,7 @@ const Notification = ({ onClose }) => {
 
         <div className="tabs">
           <div className={`tab ${activeTab === "unread" ? "active-tab" : ""}`} onClick={() => setActiveTab("unread")}>
-            Unread <span className="badge">2</span>
+            Unread <span className="badge">{notifications.length}</span>
           </div>
           <div className={`tab ${activeTab === "read" ? "active-tab" : ""}`} onClick={() => setActiveTab("read")}>
             Read
@@ -43,23 +34,28 @@ const Notification = ({ onClose }) => {
         </div>
 
         <div className="notification-list">
-          {notifications.map((notification) => (
-            <div
-              className="notification-item"
-              key={notification.id}
-              onClick={() => handleNotificationClick(notification)}
-            >
-              <div className="icon-container">📩</div>
-              <div className="notification-content">
-                <strong>{notification.title}</strong>
-                <p>{notification.message.slice(0, 50)}...</p>
-              </div>
-              <span className="timestamp">{notification.timestamp}</span>
+          {notifications.length === 0 ? (
+            <div style={{ textAlign: "center", padding: "20px", color: "#888" }}>
+              No notifications yet.
             </div>
-          ))}
+          ) : (
+            notifications.map((notification) => (
+              <div
+                className="notification-item"
+                key={notification.id}
+                onClick={() => handleNotificationClick(notification)}
+              >
+                <div className="icon-container">📩</div>
+                <div className="notification-content">
+                  <strong>{notification.title}</strong>
+                  <p>{notification.message.slice(0, 50)}...</p>
+                </div>
+                <span className="timestamp">{notification.timestamp}</span>
+              </div>
+            ))
+          )}
         </div>
 
-        {/* Full Details Popup */}
         {selectedNotification && (
           <div className="notification-details-popup">
             <div className="details-content">

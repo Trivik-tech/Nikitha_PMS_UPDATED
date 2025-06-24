@@ -9,7 +9,10 @@ import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
 import com.triviktech.services.krakpi.KraKpiService;
 import com.triviktech.services.manager.ManagerService;
+import com.triviktech.services.notification.NotificationService;
 import com.triviktech.utilities.validation.ValidationMessage;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,6 +26,9 @@ import java.util.Objects;
 
 @RestController
 public class ManagerControllerImpl implements ManagerController {
+
+    @Autowired
+    private NotificationService notificationService;
 
     private final ManagerService managerService;
     private final KraKpiService kraKpiService;
@@ -56,6 +62,7 @@ public class ManagerControllerImpl implements ManagerController {
 
     @Override
     public ResponseEntity<ManagerResponseDto> profile(@AuthenticationPrincipal UserDetails manager) {
+        System.out.println(manager.getUsername());
         return ResponseEntity.ok(managerService.findManagerById(manager.getUsername()));
     }
 
@@ -75,8 +82,8 @@ public class ManagerControllerImpl implements ManagerController {
     }
 
     @Override
-    public ResponseEntity<Map<String,String>> managerReview(String managerId,String employeeId, KraKpiRequestDto data) {
-        return ResponseEntity.ok(managerService.managerReview(managerId,employeeId,data));
+    public ResponseEntity<Map<String, String>> managerReview(String managerId, String employeeId, KraKpiRequestDto data) {
+        return ResponseEntity.ok(managerService.managerReview(managerId, employeeId, data));
     }
 
     @Override
@@ -84,13 +91,13 @@ public class ManagerControllerImpl implements ManagerController {
         return ResponseEntity.ok(managerService.getEmployeeKarKpi(managerId, employeeId));
     }
 
-//    @Override
-//    public ResponseEntity<List<EmployeeInfo>> getManagerTeam(String reportingManager) {
-//        return ResponseEntity.ok(managerService.findAllByReportingManager(reportingManager));
-//    }
-
     @Override
     public ResponseEntity<Map<String, String>> approveKraKpi(String employeeId, String managerId, KraKpiRequestDto kraKpiRequestDto) {
+        // Send a notification to employee
+        String destination = "/queue/employee-notification";
+        String content = "KraKpi Approved for employee ID: " + kraKpiRequestDto.getEmployeeId();
+        notificationService.sendMessageWithRecent("System", employeeId, content, destination);
+
         return ResponseEntity.ok(managerService.approveKra(kraKpiRequestDto, employeeId, managerId));
     }
 

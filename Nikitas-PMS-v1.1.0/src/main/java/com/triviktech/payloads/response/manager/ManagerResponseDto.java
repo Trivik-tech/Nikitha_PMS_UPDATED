@@ -34,9 +34,7 @@ public class ManagerResponseDto {
     // Updated to reflect a single department
     private DepartmentResponseDto department;
 
-    private Set<ProjectResponseDto> projects;
-
-    private LocationResponseDto location;
+   
 
     public String getFirstName() {
         return firstName;
@@ -95,19 +93,5 @@ public class ManagerResponseDto {
         this.department = department;
     }
 
-    public Set<ProjectResponseDto> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(Set<ProjectResponseDto> projects) {
-        this.projects = projects;
-    }
-
-    public LocationResponseDto getLocation() {
-        return location;
-    }
-
-    public void setLocation(LocationResponseDto location) {
-        this.location = location;
-    }
+   
 }

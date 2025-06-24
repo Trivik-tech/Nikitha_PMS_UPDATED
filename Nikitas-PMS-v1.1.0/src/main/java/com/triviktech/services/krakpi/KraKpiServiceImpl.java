@@ -40,21 +40,19 @@ public class KraKpiServiceImpl implements KraKpiService {
     private final EntityDtoConversion entityDtoConversion;
     private final EmailService emailService;
 
-
     public KraKpiServiceImpl(EmployeeInformationRepository employeeInformationRepository, KraKpiRepository kraKpiRepository, KRARepository kraRepository, KPIRepository kpiRepository, EntityDtoConversion entityDtoConversion, EmailService emailService) {
         this.employeeInformationRepository = employeeInformationRepository;
         this.kraKpiRepository = kraKpiRepository;
         this.kraRepository = kraRepository;
         this.kpiRepository = kpiRepository;
         this.entityDtoConversion = entityDtoConversion;
-
         this.emailService = emailService;
     }
 
     @Override
     @Transactional
-    public Map<String,String> registerKraKpi(KraKpiRequestDto kraKpiRequestDto) {
-        Map<String,String> response=new HashMap<>();
+    public Map<String, String> registerKraKpi(KraKpiRequestDto kraKpiRequestDto) {
+        Map<String, String> response = new HashMap<>();
 
         // Convert DTO to Entity
         KraKpi kraKpi = new KraKpi();
@@ -72,7 +70,6 @@ public class KraKpiServiceImpl implements KraKpiService {
         kraKpi.setReview2(kraKpiRequestDto.isReview2());
         kraKpi.setManagerApproval(kraKpiRequestDto.getManagerApproval());
 
-
         // Save KraKpi first to get a valid ID
         kraKpi = kraKpiRepository.saveAndFlush(kraKpi);
 
@@ -82,7 +79,6 @@ public class KraKpiServiceImpl implements KraKpiService {
             kra.setKraKpi(kraKpi); // Set foreign key relation
             kra.setKraName(dto.getKraName());
             kra.setWeightage(dto.getWeightage());
-
 
             // Save KRA first before adding KPIs
             kra = kraRepository.saveAndFlush(kra);
@@ -119,27 +115,42 @@ public class KraKpiServiceImpl implements KraKpiService {
         kraKpi.setManager(manager);
         kraKpi = kraKpiRepository.saveAndFlush(kraKpi); // Final update
 
-        try{
+        // Unified git conflict resolution: Use robust manager/employee null-check and send email
+        try {
+            EmployeeInformation emp = kraKpi.getEmployeeInformation();
+            // For debug (can be removed in prod): 
+            // System.out.println("✅ Employee Info: " + emp.getEmpId() + ", " + emp.getName());
 
-            String sub=String.format(Message.KRA_KPI_SUBJECT_TO_MANAGER,kraKpi.getEmployeeInformation().getName());
-            String to=manager.getEmailId();
-            String message=String.format(Message.KRA_KPI_MESSAGE_TO_MANAGER,manager.getName(),employee.getName(),employee.getEmpId());
+            if (emp.getManager() == null) {
+                throw new EmployeeNotFoundException("Manager not assigned to employee: " + emp.getEmpId());
+            }
 
-            emailService.sendEmail(to,sub,message);
+            Manager mgr = emp.getManager();
+            // For debug (can be removed in prod): 
+            // System.out.println("✅ Manager Info: " + mgr.getManagerId() + ", " + mgr.getName());
 
-        }catch (Exception e){
-            response.put("Status","Something went wrong");
+            String sub = String.format(Message.KRA_KPI_SUBJECT_TO_MANAGER, emp.getName());
+            String to = mgr.getEmailId();
+            String message = String.format(
+                Message.KRA_KPI_MESSAGE_TO_MANAGER,
+                mgr.getName(),
+                emp.getName(),
+                emp.getEmpId()
+            );
+            emailService.sendEmail(to, sub, message);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("Status", "Something went wrong");
             return response;
         }
 
-
-        response.put("Status","KRA KPI Registration Completed");
+        response.put("Status", "KRA KPI Registration Completed");
         return response;
     }
 
     @Override
     public KraKpiResponseDto kraKpiForEmployee(String employeeId) {
-
         EmployeeInformation employee = employeeInformationRepository.findById(employeeId).orElseThrow(() -> new EmployeeNotFoundException(employeeId));
 
         KraKpi krakpi = kraKpiRepository.findByEmployeeInformation(employee).orElseThrow(() -> new RuntimeException("Could not find"));
@@ -158,8 +169,6 @@ public class KraKpiServiceImpl implements KraKpiService {
         response.setKra(kraList);
         return response;
     }
-
-
 
     @Override
     public Map<String, String> employeeReview(KraKpiRequestDto kraKpiRequestDto, String employeeId) {
@@ -235,19 +244,16 @@ public class KraKpiServiceImpl implements KraKpiService {
 
         kraKpiRepository.saveAndFlush(kraKpi);
 
-        try{
-            String sub=String.format(Message.SELF_APPRAISAL_SUBJECT_TO_MANAGER,employee.getName());
-            String message=String.format(Message.SELF_APPRAISAL_MESSAGE_TO_MANAGER,employee.getManager().getName(),employee.getName(),employee.getEmpId());
-            String to=employee.getManager().getEmailId();
-            emailService.sendEmail(to,sub,message);
-        }catch (Exception e){
+        try {
+            String sub = String.format(Message.SELF_APPRAISAL_SUBJECT_TO_MANAGER, employee.getName());
+            String message = String.format(Message.SELF_APPRAISAL_MESSAGE_TO_MANAGER, employee.getManager().getName(), employee.getName(), employee.getEmpId());
+            String to = employee.getManager().getEmailId();
+            emailService.sendEmail(to, sub, message);
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
 
         return Map.of("status", "Employee Review successful");
     }
 
-
 }
-

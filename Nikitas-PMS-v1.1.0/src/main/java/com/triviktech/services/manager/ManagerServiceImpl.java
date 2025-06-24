@@ -42,7 +42,6 @@ import com.triviktech.repositories.project.ProjectRepository;
 import com.triviktech.utilities.email.EmailService;
 import com.triviktech.utilities.email.Message;
 import com.triviktech.utilities.entitydtoconversion.EntityDtoConversion;
-import jakarta.websocket.DeploymentException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -92,53 +91,18 @@ public class ManagerServiceImpl implements ManagerService {
             Manager manager = entityDtoConversion.dtoToEntityConversion(managerRequestDto, Manager.class);
             manager.setPassword(BCrypt.hashpw(managerRequestDto.getPassword(), BCrypt.gensalt(10)));
 
-            Location location = new Location();
-            location.setName(managerRequestDto.getLocationName());
-            location.setZipCode(managerRequestDto.getZipCode());
-
-            State state = stateRepository.findById(managerRequestDto.getStateId())
-                    .orElseThrow(() -> new StateNotFoundException(managerRequestDto.getStateId()));
-            location.setState(state);
-
-            Location savedLocation = locationRepository.save(location);
-            manager.setLocation(savedLocation);
-
             Department department = departmentRepository.findById(managerRequestDto.getDepartmentId())
                     .orElseThrow(() -> new DepartmentNotFoundException(managerRequestDto.getDepartmentId()));
             manager.setDepartment(department);
-
-            Set<Project> projects = new HashSet<>();
-            Project project = projectRepository.findById(managerRequestDto.getProjectId())
-                    .orElseThrow(() -> new ProjectNotFoundException(managerRequestDto.getProjectId()));
-            projects.add(project);
-            manager.setProjects(projects);
 
             Manager savedManager = managerRepository.save(manager);
 
             ManagerResponseDto responseDto = entityDtoConversion.entityToDtoConversion(savedManager,
                     ManagerResponseDto.class);
 
-            LocationResponseDto locationResponseDto = entityDtoConversion
-                    .entityToDtoConversion(savedManager.getLocation(), LocationResponseDto.class);
-
-            StateResponseDto stateResponse = entityDtoConversion
-                    .entityToDtoConversion(savedManager.getLocation().getState(), StateResponseDto.class);
-            CountryResponseDto countryResponseDto = entityDtoConversion.entityToDtoConversion(
-                    savedManager.getLocation().getState().getCountry(), CountryResponseDto.class);
-
-            stateResponse.setCountry(countryResponseDto);
-            locationResponseDto.setState(stateResponse);
-            responseDto.setLocation(locationResponseDto);
-
             DepartmentResponseDto departmentResponseDto = entityDtoConversion
                     .entityToDtoConversion(savedManager.getDepartment(), DepartmentResponseDto.class);
             responseDto.setDepartment(departmentResponseDto);
-
-            Set<ProjectResponseDto> projectsDto = savedManager.getProjects()
-                    .stream()
-                    .map(project1 -> entityDtoConversion.entityToDtoConversion(project1, ProjectResponseDto.class))
-                    .collect(Collectors.toSet());
-            responseDto.setProjects(projectsDto);
 
             return responseDto;
         } catch (Exception e) {
@@ -156,26 +120,9 @@ public class ManagerServiceImpl implements ManagerService {
             return all.stream().map(manager -> {
                 ManagerResponseDto responseDto = entityDtoConversion.entityToDtoConversion(manager,
                         ManagerResponseDto.class);
-                LocationResponseDto locationResponseDto = entityDtoConversion
-                        .entityToDtoConversion(manager.getLocation(), LocationResponseDto.class);
-                StateResponseDto stateResponse = entityDtoConversion
-                        .entityToDtoConversion(manager.getLocation().getState(), StateResponseDto.class);
-                CountryResponseDto countryResponseDto = entityDtoConversion
-                        .entityToDtoConversion(manager.getLocation().getState().getCountry(), CountryResponseDto.class);
-
-                stateResponse.setCountry(countryResponseDto);
-                locationResponseDto.setState(stateResponse);
-                responseDto.setLocation(locationResponseDto);
-
                 DepartmentResponseDto departmentResponseDto = entityDtoConversion
                         .entityToDtoConversion(manager.getDepartment(), DepartmentResponseDto.class);
                 responseDto.setDepartment(departmentResponseDto);
-
-                Set<ProjectResponseDto> projectsDto = manager.getProjects()
-                        .stream()
-                        .map(project -> entityDtoConversion.entityToDtoConversion(project, ProjectResponseDto.class))
-                        .collect(Collectors.toSet());
-                responseDto.setProjects(projectsDto);
 
                 return responseDto;
             }).toList();
@@ -196,26 +143,10 @@ public class ManagerServiceImpl implements ManagerService {
 
             ManagerResponseDto responseDto = entityDtoConversion.entityToDtoConversion(manager,
                     ManagerResponseDto.class);
-            LocationResponseDto locationResponseDto = entityDtoConversion.entityToDtoConversion(manager.getLocation(),
-                    LocationResponseDto.class);
-            StateResponseDto stateResponse = entityDtoConversion.entityToDtoConversion(manager.getLocation().getState(),
-                    StateResponseDto.class);
-            CountryResponseDto countryResponseDto = entityDtoConversion
-                    .entityToDtoConversion(manager.getLocation().getState().getCountry(), CountryResponseDto.class);
-
-            stateResponse.setCountry(countryResponseDto);
-            locationResponseDto.setState(stateResponse);
-            responseDto.setLocation(locationResponseDto);
 
             DepartmentResponseDto departmentResponseDto = entityDtoConversion
                     .entityToDtoConversion(manager.getDepartment(), DepartmentResponseDto.class);
             responseDto.setDepartment(departmentResponseDto);
-
-            Set<ProjectResponseDto> projectsDto = manager.getProjects()
-                    .stream()
-                    .map(project -> entityDtoConversion.entityToDtoConversion(project, ProjectResponseDto.class))
-                    .collect(Collectors.toSet());
-            responseDto.setProjects(projectsDto);
 
             return responseDto;
         } catch (Exception e) {
@@ -264,17 +195,17 @@ public class ManagerServiceImpl implements ManagerService {
         }
     }
 
-//    @Override
-//    public List<EmployeeInfo> findAllByReportingManager(String reportingManager) {
-//        List<EmployeeInformation> allEmployees = employeeInformationRepository.findAllByReportingManager(reportingManager);
-//        List<EmployeeInfo> collect = allEmployees.stream().map(employee -> {
-//            EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
-//            employeeInfo.setDepartment(employee.getDepartment().getName());
-//            return employeeInfo;
-//
-//        }).collect(Collectors.toList());
-//        return collect;
-//    }
+    @Override
+    public List<EmployeeInfo> findAllByReportingManager(String reportingManager) {
+        List<EmployeeInformation> allEmployees = employeeInformationRepository.findAllByReportingManager(reportingManager);
+        List<EmployeeInfo> collect = allEmployees.stream().map(employee -> {
+            EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+            employeeInfo.setDepartment(employee.getDepartment().getName());
+            return employeeInfo;
+
+        }).collect(Collectors.toList());
+        return collect;
+    }
 
     @Override
     public List<EmployeeWithPmsStatus> listOfPMSCompletedEmployees(String managerId) {
@@ -398,10 +329,8 @@ public class ManagerServiceImpl implements ManagerService {
             }
 
             // Remove KPIs that are not in the update
-            existingKpis.removeIf(existingKpi ->
-                    updatedKpis.stream().noneMatch(updatedKpi ->
-                            updatedKpi.getKpiId().equals(existingKpi.getKpiId()))
-            );
+            existingKpis.removeIf(existingKpi -> updatedKpis.stream()
+                    .noneMatch(updatedKpi -> updatedKpi.getKpiId().equals(existingKpi.getKpiId())));
 
             existingKpis.addAll(updatedKpis);
             kra.setKpi(existingKpis);
@@ -409,10 +338,8 @@ public class ManagerServiceImpl implements ManagerService {
         }
 
         // Remove KRAs that are not in the update
-        existingKras.removeIf(existingKra ->
-                updatedKras.stream().noneMatch(updatedKra ->
-                        updatedKra.getKraId().equals(existingKra.getKraId()))
-        );
+        existingKras.removeIf(existingKra -> updatedKras.stream()
+                .noneMatch(updatedKra -> updatedKra.getKraId().equals(existingKra.getKraId())));
 
         existingKras.addAll(updatedKras);
         kraKpi.setKra(existingKras);
@@ -531,15 +458,6 @@ public class ManagerServiceImpl implements ManagerService {
                 }catch (Exception e){
                     e.printStackTrace();
                 }
-
-//                try{
-//                    // Sending email to HR
-//                    String sub=String.format(Message.MANAGER_REVIEW_COMPLETED_SUBJECT_TO_HR);
-//                    String message=String.format(Message.MANAGER_REVIEW_COMPLETED_MESSAGE_TO_HR,employee.getName(),employee.getEmpId());
-//
-//                }catch (Exception e){
-//                    e.printStackTrace();
-//                }
 
             }else{
                 throw new KraKpiNotFoundException("Kra Kpi not found for employee with id "+employeeId);
