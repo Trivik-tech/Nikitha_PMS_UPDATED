@@ -26,31 +26,31 @@ public class webSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOriginPatterns("http://localhost:3001")
+        registry.addEndpoint("/ws").setAllowedOriginPatterns("http://localhost:3000")
                 .setHandshakeHandler(new DefaultHandshakeHandler() {
 
                     @Override
                     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wSocketHandler,
                             Map<String, Object> attributes) {
 
-                        System.out.println("🔧 [WebSocket] Handshake started...");
+                        System.out.println(" [WebSocket] Handshake started...");
                         String token = extractTokenFromRequest(request);
 
                         if (token != null) {
-                            System.out.println("🔐 [WebSocket] Extracted token: " + token);
+                            System.out.println(" [WebSocket] Extracted token: " + token);
                             boolean isValid = jwt.isTokenValid(token);
-                            System.out.println("✅ [WebSocket] Is token valid? " + isValid);
+                            System.out.println(" [WebSocket] Is token valid? " + isValid);
 
                             if (isValid) {
                                 String username = jwt.getUsername(token);
-                                System.out.println("👤 [WebSocket] Extracted username from token: " + username);
+                                System.out.println(" [WebSocket] Extracted username from token: " + username);
 
                                 return () -> username;
                             } else {
-                                System.out.println("❌ [WebSocket] Token is invalid.");
+                                System.out.println(" [WebSocket] Token is invalid.");
                             }
                         } else {
-                            System.out.println("⚠️ [WebSocket] No token found in request.");
+                            System.out.println(" [WebSocket] No token found in request.");
                         }
 
                         return null;

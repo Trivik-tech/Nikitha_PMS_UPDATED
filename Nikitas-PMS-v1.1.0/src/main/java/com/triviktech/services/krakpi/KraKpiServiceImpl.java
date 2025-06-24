@@ -118,22 +118,31 @@ public class KraKpiServiceImpl implements KraKpiService {
         kraKpi.setKra(kras);
         kraKpi = kraKpiRepository.saveAndFlush(kraKpi); // Final update
 
-        try{
-            Optional<EmployeeInformation> byName = employeeInformationRepository.findByName(kraKpi.getEmployeeInformation().getManager().getName());
+       try {
+    EmployeeInformation emp = kraKpi.getEmployeeInformation();
+    System.out.println("✅ Employee Info: " + emp.getEmpId() + ", " + emp.getName());
 
-            if(byName.isEmpty()){
-                throw new EmployeeNotFoundException("Manager");
-            }
-            EmployeeInformation manager = byName.get();
-            String sub=String.format(Message.KRA_KPI_SUBJECT_TO_MANAGER,kraKpi.getEmployeeInformation().getName());
-            String to=manager.getEmailId();
-            String message=String.format(Message.KRA_KPI_MESSAGE_TO_MANAGER,manager.getName(),kraKpi.getEmployeeInformation().getName(),kraKpi.getEmployeeInformation().getEmpId());
+    if (emp.getManager() == null) {
+        throw new EmployeeNotFoundException("Manager not assigned to employee: " + emp.getEmpId());
+    }
 
-            emailService.sendEmail(to,sub,message);
+    Manager manager = emp.getManager();
+    System.out.println("✅ Manager Info: " + manager.getManagerId() + ", " + manager.getName());
 
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+    String sub = String.format(Message.KRA_KPI_SUBJECT_TO_MANAGER, emp.getName());
+    String to = manager.getEmailId();
+    String message = String.format(
+        Message.KRA_KPI_MESSAGE_TO_MANAGER,
+        manager.getName(),
+        emp.getName(),
+        emp.getEmpId()
+    );
+
+    emailService.sendEmail(to, sub, message);
+
+} catch (Exception e) {
+    e.printStackTrace();
+}
 
         // Convert Entity to DTO
         KraKpiResponseDto kraKpiResponseDto = entityDtoConversion.entityToDtoConversion(kraKpi, KraKpiResponseDto.class);

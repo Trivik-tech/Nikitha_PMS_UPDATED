@@ -19,6 +19,7 @@ import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
@@ -102,13 +103,12 @@ public class EmployeeControllerImpl implements EmployeeController {
 // }
 @GetMapping("/recent")
     public ResponseEntity<List<Notification>> getRecentMessages() {
-        // if (data == null) {
-        //     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        // }
+        
 
-        String username = "NB238"; // ✅ This will be injected from SecurityContext
-        System.out.println("✅ Authenticated username: " + username);
-
+        // String username = manager.getUsername(); //  This will be injected from SecurityContext
+        // System.out.println("Authenticated username: " + username);
+String username = "EMP1234"; // This will be injected from SecurityContext
+        System.out.println(" Authenticated username: " + username);
         List<Notification> undelivered = notificationService.getPendingNotification(username);
         int remaining = 50 - undelivered.size();
 
@@ -127,7 +127,7 @@ public class EmployeeControllerImpl implements EmployeeController {
 
 @Override
 public ResponseEntity<KraKpiResponseDto> kraKpiRegistrationForEmployee(KraKpiRequestDto kraKpiRequestDto) {
-    String reportingManager = "NB238";
+    String reportingManager = "EMP1234";
     String destination = "/queue/manager-notification";
     String content = "KraKpi Registered for employee ID: " + kraKpiRequestDto.getEmployeeId();
 
@@ -147,5 +147,6 @@ public ResponseEntity<KraKpiResponseDto> kraKpiRegistrationForEmployee(KraKpiReq
     @Override
     public ResponseEntity<Map<String, String>> selfReview(KraKpiRequestDto kraKpiRequestDto, String employeeId) {
         return ResponseEntity.ok(kraKpiService.employeeReview(kraKpiRequestDto, employeeId));
+        
     }
 }

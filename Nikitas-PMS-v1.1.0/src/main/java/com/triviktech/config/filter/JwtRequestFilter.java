@@ -37,7 +37,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 @Override
 protected boolean shouldNotFilter(HttpServletRequest request) {
     String path = request.getRequestURI();
-    return path.startsWith("/ws") || path.contains("sockjs") || path.contains("/api/v1/pms/employee/recent");
+    return path.startsWith("/ws") || path.contains("sockjs");
 }
 
     @Override
@@ -57,7 +57,7 @@ protected boolean shouldNotFilter(HttpServletRequest request) {
                 }
 
                 String role = jwtService.getRole(token);
-
+System.out.println(role);
                 if (role.equalsIgnoreCase("MANAGER")) {
                     UserDetails userDetails = managerDetailsService.loadUserByUsername(jwtService.getUsername(token));
                     if (userDetails != null) {

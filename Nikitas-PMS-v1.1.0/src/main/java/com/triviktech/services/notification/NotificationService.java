@@ -114,11 +114,20 @@ public class NotificationService {
         list.forEach(n -> n.setDelivered(true));
         return repo.saveAll(list);
     }
+public void sendOnConnect(String username) {
+    List<Notification> undelivered = getPendingNotification(username);
 
-    public void sendOnConnect(String username) {
-        List<Notification> undelivered = getPendingNotification(username);
-        undelivered.forEach(n ->
-            messagingTemplate.convertAndSendToUser(username, n.getDestination(), n.getContent())
-        );
-    }
+    undelivered.forEach(n -> {
+        // try {
+        //     // Delay of 5 seconds for testing purpose
+        //     Thread.sleep(10000); 
+        // } catch (InterruptedException e) {
+        //     Thread.currentThread().interrupt();
+        //     System.out.println("Interrupted while delaying message send");
+        // }
+
+        // Send message via WebSocket
+        messagingTemplate.convertAndSendToUser(username, n.getDestination(), n.getContent());
+    });
+}
 }
