@@ -47,7 +47,7 @@ public interface HRController {
     ResponseEntity<Map<String, String>> deleteEmployee(@PathVariable String employeeId);
 
     @PutMapping("/update-employee/{empId}")
-    ResponseEntity<EmployeeInfo> updateEmployee(@PathVariable String empId, @RequestBody Employee employee);
+    ResponseEntity<Map<String,String>> updateEmployee(@PathVariable String empId, @RequestBody Employee employee);
 
     @GetMapping("/employee-list")
     ResponseEntity<List<EmployeeInfo>> employeeListWithKraKpiApproved();

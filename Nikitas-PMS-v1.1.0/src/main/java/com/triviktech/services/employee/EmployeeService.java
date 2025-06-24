@@ -11,7 +11,6 @@ import java.util.Map;
 
 public interface EmployeeService {
 
-    EmployeeInformationResponseDto registerEmployee(EmployeeInformationRequestDto employeeInformationRequestDto);
     List<EmployeeInformationResponseDto> listOfEmployees(int pageSize,int pageNumber);
 
     EmployeeInfo profile(String employeeId);

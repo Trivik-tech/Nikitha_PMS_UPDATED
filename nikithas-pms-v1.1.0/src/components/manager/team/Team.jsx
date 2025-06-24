@@ -20,7 +20,7 @@ export default function TeamPage() {
   const loadTeam = async () => {
     try {
       const result = await axios.get(
-        `${baseUrl}/api/v1/pms/manager/employee-list/Pradeep Prahalada Rao Kubair`
+        `${baseUrl}/api/v1/pms/manager/employee-list/EMP1234`
       );
       setTeamList(result.data);
       // console.log(result.data)
@@ -54,6 +54,23 @@ export default function TeamPage() {
     if (newPage > 0 && newPage <= totalPages) {
       setCurrentPage(newPage);
     }
+  };
+
+  // The button should ONLY be enabled if:
+  // - selfCompleted === true
+  // - pmsInitiated === true
+  // - managerCompleted === null OR managerCompleted === false
+  // The button should be DISABLED if:
+  // - selfCompleted !== true OR
+  // - pmsInitiated !== true OR
+  // - managerCompleted === true
+
+  const isPmsEnabled = (member) => {
+    return (
+      member.selfCompleted === true &&
+      member.pmsInitiated === true &&
+      (member.managerCompleted === null || member.managerCompleted === false)
+    );
   };
 
   return (
@@ -98,11 +115,8 @@ export default function TeamPage() {
             <tbody>
               {currentEntries.length > 0 ? (
                 currentEntries.map((member) => {
-                  const isPmsEnabled =
-                    member.selfCompleted === true &&
-                    member.pmsInitiated === true &&
-                    member.managerCompleted===null
-                    
+                  const pmsEnabled = isPmsEnabled(member);
+
                   return (
                     <tr
                       key={member.empId}
@@ -116,12 +130,18 @@ export default function TeamPage() {
                       <td>{member.officialEmailId || "-"}</td>
                       <td onClick={(e) => e.stopPropagation()}>
                         <Link
-                          to={`/manager-review/${member.empId}/Pradeep Prahalada Rao Kubair`}
+                          to={pmsEnabled ? `/manager-review/${member.empId}/EMP1234` : "#"}
                           className={`manager-team-start-pms-button ${
-                            isPmsEnabled ? "" : "disabled"
+                            pmsEnabled ? "" : "disabled"
                           }`}
                           onClick={(e) => {
-                            if (!isPmsEnabled) e.preventDefault();
+                            if (!pmsEnabled) e.preventDefault();
+                          }}
+                          tabIndex={pmsEnabled ? 0 : -1}
+                          aria-disabled={!pmsEnabled}
+                          style={{
+                            pointerEvents: pmsEnabled ? "auto" : "none",
+                            opacity: pmsEnabled ? 1 : 0.5,
                           }}
                         >
                           Start PMS

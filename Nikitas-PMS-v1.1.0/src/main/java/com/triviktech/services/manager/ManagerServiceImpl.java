@@ -214,10 +214,14 @@ public class ManagerServiceImpl implements ManagerService{
     }
 
     @Override
-    public List<EmployeeWithPmsStatus> listOfEmployeesForManager(String reportingManager) {
+    public List<EmployeeWithPmsStatus> listOfEmployeesForManager(String managerId) {
         try {
-//            List<EmployeeInformation> allByManager = employeeInformationRepository.findAllByReportingManager(reportingManager);
-            List<EmployeeInformation> allByManager = null;
+            Optional<Manager> optionalManager = managerRepository.findByManagerId(managerId);
+            if(optionalManager.isEmpty()){
+                throw new ManagerNotFoundException(managerId);
+            }
+            Manager manager = optionalManager.get();
+            List<EmployeeInformation> allByManager = employeeInformationRepository.findAllByManager(manager);
 
             return allByManager.stream().map(employee -> {
                 // Convert base employee info to response DTO
@@ -236,13 +240,14 @@ public class ManagerServiceImpl implements ManagerService{
                 kraKpiOptional.ifPresent(kraKpi -> {
                     employeeResponse.setPmsInitiated(kraKpi.getPmsInitiated());
                     employeeResponse.setSelfCompleted(kraKpi.isSelfCompleted());
+                    employeeResponse.setManagerCompleted(kraKpi.isManagerCompleted());
                 });
 
                 return employeeResponse;
             }).collect(Collectors.toList());
 
         } catch (Exception e) {
-            logger.error("Error retrieving employees for manager ID {}: {}", reportingManager, e.getMessage(), e);
+            logger.error("Error retrieving employees for manager ID {}: {}", managerId, e.getMessage(), e);
             throw e;
         }
     }
@@ -341,9 +346,13 @@ public class ManagerServiceImpl implements ManagerService{
     }
 
     @Override
-    public KraKpiResponseDto getEmployeeKarKpi(String managerName, String employeeId) {
-        Optional<EmployeeInformation> employeeData = null;
-//        Optional<EmployeeInformation> employeeData = employeeInformationRepository.findByReportingManagerAndEmpId(managerName, employeeId);
+    public KraKpiResponseDto getEmployeeKarKpi(String managerId, String employeeId) {
+        Optional<Manager> optionalManager = managerRepository.findByManagerId(managerId);
+        if(optionalManager.isEmpty()){
+            throw new ManagerNotFoundException(managerId);
+        }
+        Manager manager = optionalManager.get();
+        Optional<EmployeeInformation> employeeData = employeeInformationRepository.findByManagerAndEmpId(manager, employeeId);
            if(employeeData.isPresent()){
                EmployeeInformation employee = employeeData.get();
                Optional<KraKpi> kraKpi = kraKpiRepository.findByEmployeeInformation(employee);
@@ -353,6 +362,7 @@ public class ManagerServiceImpl implements ManagerService{
                     EmployeeInformation employeeInformation = kraKpi1.getEmployeeInformation();
                     EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employeeInformation, EmployeeInfo.class);
                     employeeInfo.setDepartment(employeeInformation.getDepartment().getName());
+                    employeeInfo.setReportingManager(employee.getManager().getName());
                     kraKpiResponseDto.setEmployee(employeeInfo);
 
                     Set<KraResponseDto1> kras = kraKpi1.getKra().stream().map(kra -> {
@@ -388,9 +398,14 @@ public class ManagerServiceImpl implements ManagerService{
     }
 
     @Override
-    public Map<String, String> approveKra(KraKpiRequestDto kraKpiRequestDto, String employeeId, String reportingManager) {
+    public Map<String, String> approveKra(KraKpiRequestDto kraKpiRequestDto, String employeeId, String managerId) {
         Map<String, String> response = new HashMap<>();
-        Optional<EmployeeInformation> employeeById = employeeInformationRepository.findById(employeeId);
+        Optional<Manager> optionalManager = managerRepository.findByManagerId(managerId);
+        if(optionalManager.isEmpty()){
+            throw new ManagerNotFoundException(managerId);
+        }
+        Manager manager = optionalManager.get();
+        Optional<EmployeeInformation> employeeById = employeeInformationRepository.findByManagerAndEmpId(manager, employeeId);
 
         if (employeeById.isEmpty()) {
            throw new EmployeeNotFoundException(employeeId);
@@ -465,7 +480,7 @@ public class ManagerServiceImpl implements ManagerService{
         String msg=kraKpi1!=null?"Approved":"Something went wrong";
         response.put("status",msg);
         try{
-
+// sending email to employee
             String sub=String.format(Message.KRA_KPI_APPROVED_SUBJECT_TO_EMPLOYEE);
             String message=String.format(Message.KRA_KPI_APPROVED_MESSAGE_TO_EMPLOYEE,employee.getName());
             emailService.sendEmail(employee.getEmailId(),sub,message);
@@ -473,7 +488,7 @@ public class ManagerServiceImpl implements ManagerService{
             e.printStackTrace();
         }
         try{
-
+// sending email to HR
             String sub=String.format(Message.KRA_KPI_APPROVED_SUBJECT_TO_HR);
             String message=String.format(Message.KRA_KPI_APPROVED_MESSAGE_TO_HR,employee.getName(),employee.getEmpId());
 //            emailService.sendEmail(,sub,message);
@@ -485,9 +500,14 @@ public class ManagerServiceImpl implements ManagerService{
     }
 
     @Override
-    public Map<String,String> managerReview(String managerName,String employeeId, KraKpiRequestDto data) {
-        Optional<EmployeeInformation> employeeById =  null;
-//        Optional<EmployeeInformation> employeeById = employeeInformationRepository.findByReportingManagerAndEmpId(managerName, employeeId);
+    public Map<String,String> managerReview(String managerId,String employeeId, KraKpiRequestDto data) {
+        Optional<Manager> optionalManager = managerRepository.findByManagerId(managerId);
+        if(optionalManager.isEmpty()){
+            throw new ManagerNotFoundException(managerId);
+        }
+        Manager manager = optionalManager.get();
+
+        Optional<EmployeeInformation> employeeById = employeeInformationRepository.findByManagerAndEmpId(manager, employeeId);
         if(employeeById.isPresent()){
             EmployeeInformation employee = employeeById.get();
             Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
@@ -563,6 +583,25 @@ public class ManagerServiceImpl implements ManagerService{
 
                 // Save the entire structure (KraKpi -> KRA -> KPI)
                 kraKpiRepository.saveAndFlush(kraKpi);
+
+                try{
+
+                    // Sending email to employee
+                    String sub=String.format(Message.MANAGER_REVIEW_COMPLETED_SUBJECT_TO_EMPLOYEE);
+                    String message=String.format(Message.MANAGER_REVIEW_COMPLETED_MESSAGE_TO_EMPLOYEE,employee.getName());
+                    emailService.sendEmail(employee.getEmailId(),sub,message);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+
+//                try{
+////                    // Sending email to HR
+////                    String sub=String.format(Message.MANAGER_REVIEW_COMPLETED_SUBJECT_TO_HR);
+////                    String message=String.format(Message.MANAGER_REVIEW_COMPLETED_MESSAGE_TO_HR,employee.getName(),employee.getEmpId());
+//
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                }
 
             }else{
                 throw new KraKpiNotFoundException("Kra Kpi not found for employee with id "+employeeId);

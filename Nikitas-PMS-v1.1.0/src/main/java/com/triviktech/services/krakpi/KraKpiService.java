@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface KraKpiService {
 
-    KraKpiResponseDto registerKraKpi(KraKpiRequestDto kraKpiRequestDto);
+    Map<String,String> registerKraKpi(KraKpiRequestDto kraKpiRequestDto);
 
     KraKpiResponseDto kraKpiForEmployee(String employeeId);
 

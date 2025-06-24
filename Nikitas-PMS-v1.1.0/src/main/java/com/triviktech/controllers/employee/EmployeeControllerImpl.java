@@ -1,6 +1,5 @@
 package com.triviktech.controllers.employee;
 
-import com.triviktech.payloads.request.employee.EmployeeInformationRequestDto;
 import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeInformationResponseDto;
@@ -25,10 +24,6 @@ public class EmployeeControllerImpl implements EmployeeController{
         this.kraKpiService = kraKpiService;
     }
 
-    @Override
-    public ResponseEntity<?> registerEmployee(EmployeeInformationRequestDto employeeInformationRequestDto) {
-        return new ResponseEntity<>(employeeService.registerEmployee(employeeInformationRequestDto), HttpStatus.CREATED);
-    }
 
     @Override
     public ResponseEntity<List<EmployeeInformationResponseDto>> listOfEmployees(int pageSize, int pageNumber) {
@@ -42,9 +37,9 @@ public class EmployeeControllerImpl implements EmployeeController{
     }
 
     @Override
-    public ResponseEntity<KraKpiResponseDto> kraKpiRegistrationForEmployee(KraKpiRequestDto kraKpiRequestDto) {
-        KraKpiResponseDto kraKpiResponseDto = kraKpiService.registerKraKpi(kraKpiRequestDto);
-        return new ResponseEntity<>(kraKpiResponseDto,HttpStatus.CREATED);
+    public ResponseEntity<Map<String,String>> kraKpiRegistrationForEmployee(KraKpiRequestDto kraKpiRequestDto) {
+        Map<String, String> response = kraKpiService.registerKraKpi(kraKpiRequestDto);
+        return new ResponseEntity<>(response,HttpStatus.CREATED);
 
     }
 

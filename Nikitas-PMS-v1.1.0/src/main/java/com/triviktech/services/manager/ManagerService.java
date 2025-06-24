@@ -28,7 +28,7 @@ public interface ManagerService {
 
     KraKpiResponseDto getEmployeeKarKpi(String managerName, String employeeId);
 
-    Map <String, String> approveKra (KraKpiRequestDto kraKpiRequestDto, String employeeId, String reportingManager);
+    Map <String, String> approveKra (KraKpiRequestDto kraKpiRequestDto, String employeeId, String managerId);
     Map<String,String> managerReview(String managerId,String employeeId, KraKpiRequestDto data);
 
 

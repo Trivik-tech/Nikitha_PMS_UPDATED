@@ -1,31 +1,19 @@
 package com.triviktech.services.hr;
 
-import com.triviktech.entities.address.Country;
-import com.triviktech.entities.address.Location;
-import com.triviktech.entities.address.State;
+
 import com.triviktech.entities.department.Department;
 import com.triviktech.entities.employee.EmployeeInformation;
-import com.triviktech.entities.hr.HR;
 import com.triviktech.entities.krakpi.KraKpi;
 import com.triviktech.entities.manager.Manager;
-import com.triviktech.entities.project.Project;
 import com.triviktech.exception.employee.EmployeeNotFoundException;
-import com.triviktech.exception.hr.HRNotFoundException;
 import com.triviktech.exception.krakpi.KraKpiNotFoundException;
-import com.triviktech.payloads.request.department.DepartmentRequestDto;
 import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
-import com.triviktech.payloads.response.address.CountryResponseDto;
-import com.triviktech.payloads.response.address.LocationResponseDto;
-import com.triviktech.payloads.response.address.StateResponseDto;
 import com.triviktech.payloads.response.department.DepartmentResponseDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
-import com.triviktech.payloads.response.employeeslist.EmployeesList;
-import com.triviktech.payloads.response.global.Response;
 import com.triviktech.payloads.response.hr.HrResponseDto;
-import com.triviktech.payloads.response.project.ProjectResponseDto;
 import com.triviktech.repositories.address.LocationRepository;
 import com.triviktech.repositories.address.StateRepository;
 import com.triviktech.repositories.department.DepartmentRepository;
@@ -33,20 +21,20 @@ import com.triviktech.repositories.employee.EmployeeInformationRepository;
 import com.triviktech.repositories.hr.HRRepository;
 import com.triviktech.repositories.krakpi.KraKpiRepository;
 import com.triviktech.repositories.manager.ManagerRepository;
-import com.triviktech.repositories.project.ProjectRepository;
 import com.triviktech.utilities.email.EmailService;
 import com.triviktech.utilities.email.Message;
 import com.triviktech.utilities.entitydtoconversion.EntityDtoConversion;
 import com.triviktech.utilities.xlsxsupport.XlsxSupport;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -255,7 +243,7 @@ public class HrServiceImpl implements HrService {
                     employee.getManager() != null ? employee.getManager().getName() : "N/A"
             );
 
-            dto.setRole("EMPLOYEE");
+
 
             return dto;
         }).collect(Collectors.toList());
@@ -272,7 +260,7 @@ public class HrServiceImpl implements HrService {
                     manager.getReportingManager() != null ? manager.getReportingManager() : "N/A"
             );
 
-            dto.setRole("MANAGER");
+
 
             return dto;
         }).collect(Collectors.toList());
@@ -421,25 +409,34 @@ public class HrServiceImpl implements HrService {
         return val != null ? val.toLowerCase() : "";
     }
 
-
-
     @Override
     public Map<String, String> deleteEmployee(String employeeId) {
         Map<String, String> response = new HashMap<>();
         Optional<EmployeeInformation> employeeById = employeeInformationRepository.findById(employeeId);
+        Optional<Manager> optionalManager = managerRepository.findByManagerId(employeeId);
         if (employeeById.isPresent()) {
             EmployeeInformation employeeInformation = employeeById.get();
             employeeInformationRepository.delete(employeeInformation);
             response.put("message", "Employee deleted with ID  " + employeeId);
             return response;
+        } else if (optionalManager.isPresent()) {
+            Manager manager = optionalManager.get();
+            managerRepository.delete(manager);
+            response.put("message", "Employee deleted with ID  " + employeeId);
+            return response;
+
         } else {
             throw new EmployeeNotFoundException(employeeId);
         }
+
     }
 
     @Override
-    public EmployeeInfo updateEmployee(String empId, Employee employee) {
+    public Map<String, String> updateEmployee(String empId, Employee employee) {
+        Map<String,String> response=new HashMap<>();
+
         Optional<EmployeeInformation> savedEmployee = employeeInformationRepository.findById(empId);
+        Optional<Manager> optionalManager = managerRepository.findByManagerId(empId);
 
         if (savedEmployee.isPresent()) {
             EmployeeInformation employee1 = savedEmployee.get();
@@ -461,7 +458,7 @@ public class HrServiceImpl implements HrService {
             employee1.setLastWorkingDay(lwdStr);
             employee1.setMobileNumber(employee.getMobileNumber());
             employee1.setOfficialEmailId(employee.getOfficialEmailId());
-            employee1.setRole(employee.getRole());
+            employee1.setRole(employee.getRole().toUpperCase());
 
             // Set department name
             Department department = employee1.getDepartment();
@@ -481,27 +478,68 @@ public class HrServiceImpl implements HrService {
 
             // Save and convert to DTO
             EmployeeInformation save = employeeInformationRepository.save(employee1);
-            EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(save, EmployeeInfo.class);
-            if (save.getManager() != null) {
-                employeeInfo.setReportingManager(save.getManager().getName());
-            } else {
-                employeeInfo.setReportingManager("N/A");
-            }
-            if (save.getDepartment() != null) {
-                employeeInfo.setDepartment(save.getDepartment().getName());
-            } else {
-                employeeInfo.setDepartment("N/A");
-            }
+
 
             try{
                 String sub=String.format(Message.EMPLOYEE_DETAILS_UPDATED_SUBJECT);
-                String message=String.format(Message.EMPLOYEE_DETAILS_UPDATED_MESSAGE,employeeInfo.getName());
-                emailService.sendEmail(employeeInfo.getEmailId(),sub,message);
+                String message=String.format(Message.EMPLOYEE_DETAILS_UPDATED_MESSAGE,save.getName());
+                emailService.sendEmail(save.getEmailId(),sub,message);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            response.put("Status","Employee Information Updated Successfully");
+
+            return response;
+        }
+        if(optionalManager.isPresent()){
+            Manager manager = optionalManager.get();
+            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+
+            // Convert date fields to String
+//            String lwdStr = employee.getLastWorkingDate() != null ? formatter.format(employee.getLastWorkingDate()) : null;
+
+            // Set values
+            manager.setBranch(employee.getBranch());
+            manager.setCategory(employee.getCategory());
+            manager.setDob(employee.getDob());
+            manager.setName(employee.getName());
+            manager.setCurrentDesignation(employee.getCurrentDesignation());
+            manager.setDateOfJoining(employee.getDateOfJoining());
+            manager.setEmailId(employee.getEmailId());
+//            manager.setLastWorkingDate(lwdStr);
+            manager.setMobileNumber(employee.getMobileNumber());
+            manager.setOfficialEmailId(employee.getOfficialEmailId());
+            manager.setRole(employee.getRole());
+
+
+            // Set department name
+            Department department = manager.getDepartment();
+            if (department == null) {
+                department = departmentRepository.findByName(employee.getDepartment());
+            } else {
+                department.setName(employee.getDepartment());
+            }
+            manager.setDepartment(department);
+
+            manager.setReportingManager(employee.getReportingManager());
+
+            // Save and convert to DTO
+            Manager saved = managerRepository.save(manager);
+
+
+
+            try{
+                String sub=String.format(Message.EMPLOYEE_DETAILS_UPDATED_SUBJECT);
+                String message=String.format(Message.EMPLOYEE_DETAILS_UPDATED_MESSAGE,saved.getName());
+                emailService.sendEmail(saved.getEmailId(),sub,message);
             }catch (Exception e){
                 e.printStackTrace();
             }
 
-            return employeeInfo;
+            response.put("Status","Employee Information Updated Successfully");
+
+            return response;
+
         }
 
         throw new EmployeeNotFoundException(empId);
@@ -650,8 +688,19 @@ public class HrServiceImpl implements HrService {
                 KraKpi kraKpi = krakpi.get();
                 kraKpi.setPmsInitiated(pms.get("pms_initiated"));
                 kraKpiRepository.save(kraKpi);
+
                 try{
-                    // Place to send notifications if needed
+                    LocalDate futureDate = LocalDate.now().plusDays(5);
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    String formattedDate = futureDate.format(formatter);
+                    LocalDate startDate = LocalDate.now();
+                    LocalDate endDate = startDate.plusDays(30);
+
+                    String duration = startDate.format(formatter) + " to " + endDate.format(formatter);
+                    String submissionDeadline = LocalDate.now().plusDays(5).format(formatter);
+                    String sub=String.format(Message.PMS_SUBJECT,formattedDate);
+                    String message=String.format(Message.PMS_MESSAGE,employee.getName(),duration,submissionDeadline);
+                    emailService.sendEmail(employee.getEmailId(),sub,message);
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -747,32 +796,7 @@ public class HrServiceImpl implements HrService {
             }
         });
 
-        // Managers
-        managerRepository.findAll().forEach(manager -> {
-            Optional<KraKpi> kraKpiOptional = null;
-//            Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByManager(manager);
-            if (kraKpiOptional.isPresent()) {
-                KraKpi kraKpi = kraKpiOptional.get();
-                boolean managerApproval = Boolean.TRUE.equals(kraKpi.getManagerApproval());
-                boolean selfCompleted = kraKpi.isSelfCompleted();
-                boolean managerCompleted = kraKpi.isManagerCompleted();
-                if (managerApproval && !(selfCompleted && managerCompleted)) {
-                    EmployeeInfo managerInfo = entityDtoConversion.entityToDtoConversion(manager, EmployeeInfo.class);
-                    if (manager.getDepartment() != null) {
-                        managerInfo.setDepartment(manager.getDepartment().getName());
-                    } else {
-                        managerInfo.setDepartment("N/A");
-                    }
-                    // For reporting manager of a manager, use reportingManager string or "N/A"
-                    if (manager.getReportingManager() != null && !manager.getReportingManager().trim().isEmpty()) {
-                        managerInfo.setReportingManager(manager.getReportingManager());
-                    } else {
-                        managerInfo.setReportingManager("N/A");
-                    }
-                    result.add(managerInfo);
-                }
-            }
-        });
+
 
         return result;
     }

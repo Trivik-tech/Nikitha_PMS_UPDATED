@@ -71,7 +71,7 @@ const EmployeeDashboard = () => {
             <Link to="/employee-dashboard" className="active" onClick={handleSidebarClose}>My Dashboard</Link>
           </li>
           <li>
-            <Link to={`/self-review/CNT139`} onClick={handleSidebarClose}>Start PMS</Link>
+            <Link to={`/self-review/EMP1235`} onClick={handleSidebarClose}>Start PMS</Link>
           </li>
           <li>
             <Link to="/employee-performance" onClick={handleSidebarClose}>My Performance</Link>
