@@ -94,9 +94,10 @@ public class ManagerControllerImpl implements ManagerController {
     @Override
     public ResponseEntity<Map<String, String>> approveKraKpi(String employeeId, String managerId, KraKpiRequestDto kraKpiRequestDto) {
         // Send a notification to employee
+        String emp ="EMP1235";
         String destination = "/queue/employee-notification";
         String content = "KraKpi Approved for employee ID: " + kraKpiRequestDto.getEmployeeId();
-        notificationService.sendMessageWithRecent("System", employeeId, content, destination);
+        notificationService.sendMessageWithRecent("System", emp, content, destination);
 
         return ResponseEntity.ok(managerService.approveKra(kraKpiRequestDto, employeeId, managerId));
     }

@@ -59,7 +59,7 @@ public class EmployeeControllerImpl implements EmployeeController {
 
     @Override
     public ResponseEntity<Map<String, String>> kraKpiRegistrationForEmployee(KraKpiRequestDto kraKpiRequestDto) {
-        String reportingManager = "NB238";
+        String reportingManager = "EMP1234";
         String destination = "/queue/manager-notification";
         String content = "KraKpi Registered for employee ID: " + kraKpiRequestDto.getEmployeeId();
 
@@ -69,26 +69,7 @@ public class EmployeeControllerImpl implements EmployeeController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("/recent")
-    public ResponseEntity<List<Notification>> getRecentMessages() {
-        String username = "EMP1234"; // This should come from SecurityContext in real implementation
-        System.out.println("✅ Authenticated username: " + username);
-
-        List<Notification> undelivered = notificationService.getPendingNotification(username);
-        int remaining = 50 - undelivered.size();
-
-        List<Notification> recent = notificationRepository
-                .findTop50ByReceiverAndDeliveredTrueOrderByTimestampDesc(username)
-                .stream()
-                .limit(Math.max(remaining, 0))
-                .toList();
-
-        List<Notification> all = new ArrayList<>();
-        all.addAll(undelivered);
-        all.addAll(recent);
-
-        return ResponseEntity.ok(all);
-    }
+    
 
     @Override
     public ResponseEntity<EmployeeInfo> profile(String employeeId) {
