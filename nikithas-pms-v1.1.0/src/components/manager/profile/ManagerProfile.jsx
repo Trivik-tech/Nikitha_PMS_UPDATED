@@ -13,41 +13,41 @@ const ManagerProfile = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const token = localStorage.getItem("token");
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const token = localStorage.getItem("token");
 
-      if (!token) {
-        console.error("No token found. Redirecting to login...");
-        navigate("/login");
-        return;
-      }
+  //     if (!token) {
+  //       console.error("No token found. Redirecting to login...");
+  //       navigate("/login");
+  //       return;
+  //     }
 
-      try {
-        const response = await axios.get("http://localhost:8080/api/v1/pms/manager/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setManagerData(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        if (error.response && error.response.status === 401) {
-          console.error("Unauthorized! Redirecting to login...");
-          localStorage.removeItem("token");
-          navigate("/login");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
+  //     try {
+  //       const response = await axios.get("http://localhost:8080/api/v1/pms/manager/profile", {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //       setManagerData(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //       if (error.response && error.response.status === 401) {
+  //         console.error("Unauthorized! Redirecting to login...");
+  //         localStorage.removeItem("token");
+  //         navigate("/login");
+  //       }
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchData();
-  }, [navigate]);
+  //   fetchData();
+  // }, [navigate]);
 
   return (
     <div className="manager-container">
-      {loading && <Loader />}
+      {/* {loading && <Loader />} */}
       <header className="manager-header">
         <div className="header-left">
           <Link to="/manager-dashboard" className="icon-link">
