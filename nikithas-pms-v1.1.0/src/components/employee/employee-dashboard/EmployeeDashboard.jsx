@@ -31,7 +31,7 @@ const EmployeeDashboard = () => {
   const [allMessages, setAllMessages] = useState([]);
   const [newAndUndelivered, setNewAndUndelivered] = useState([]);
 
-  const jwtToken = 'PASTE_YOUR_EMPLOYEE_JWT_TOKEN_HERE';
+  const jwtToken =localStorage.getItem("token");
 
   useEffect(() => {
     const socket = new SockJS(`http://localhost:8080/ws?token=${jwtToken}`);

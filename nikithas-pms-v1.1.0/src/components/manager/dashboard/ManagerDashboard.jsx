@@ -45,7 +45,7 @@ const ManagerDashboard = () => {
           const updated = [newMsg, ...notifications];
 
           try {
-            const res = await fetch("http://localhost:8080/api/v1/pms/employee/recent", {
+            const res = await fetch("http://localhost:8080/api/v1/pms/recent", {
               headers: { Authorization: `Bearer ${token}` }
             });
 
