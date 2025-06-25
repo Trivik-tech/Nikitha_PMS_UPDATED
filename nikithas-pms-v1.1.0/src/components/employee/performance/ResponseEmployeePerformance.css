@@ -1,14 +1,30 @@
 @media (max-width: 767px) {
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 95%;
+        overflow-x: hidden;
+        box-sizing: border-box;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
     .employee-module-container {
-        padding: 15px;
-        margin: 10px;
-        overflow-x: auto;
-        margin-bottom: 70px;
+        margin: 0 !important;
+        padding: 10px !important;
+        width: 100vw;
+        overflow-x: hidden;
     }
 
     .employee-module-header {
+        display: flex;
         flex-direction: column;
         align-items: flex-start;
+        position: relative;
+        width: 100%;
+        padding: 10px;
     }
 
     .employee-module-header h1 {
@@ -17,10 +33,12 @@
         margin-bottom: 10px;
     }
 
-    .employee-module-header img {
-        max-width: 70px; 
+    .employee-module-header .employee-module-company-logo {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        max-width: 80px;
         height: auto;
-        margin-top: 10px;
     }
 
     .employee-module-section h2 {
@@ -37,6 +55,13 @@
         flex-direction: column;
         gap: 8px;
     }
+.employee-module-per-page-title {
+    text-align: center;
+    margin-right: 30px;
+    width: 100%;
+    display: block;
+    margin: 0 auto;
+}
 
     .employee-module-overall-performance {
         flex-direction: column;
