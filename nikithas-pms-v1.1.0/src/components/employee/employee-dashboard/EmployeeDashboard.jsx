@@ -30,8 +30,7 @@ const EmployeeDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [allMessages, setAllMessages] = useState([]);
   const [newAndUndelivered, setNewAndUndelivered] = useState([]);
-
-  const jwtToken =localStorage.getItem("token");
+  const jwtToken = localStorage.getItem("token");
 
   useEffect(() => {
     const socket = new SockJS(`http://localhost:8080/ws?token=${jwtToken}`);
@@ -126,6 +125,8 @@ const EmployeeDashboard = () => {
         <span />
         <span />
       </div>
+
+      {/* Mobile Bell */}
       <div
         className="employee-dashboard-bell-topright"
         onClick={() => {
@@ -136,12 +137,15 @@ const EmployeeDashboard = () => {
         tabIndex={0}
         role="button"
       >
-        <Bell className="employee-dashboard-notificationButton" />
-        {newAndUndelivered.length > 0 && (
-          <span className="notif-count">{newAndUndelivered.length}</span>
-        )}
+        <div style={{ position: 'relative' }}>
+          <Bell className="employee-dashboard-notificationButton" />
+          {newAndUndelivered.length > 0 && (
+            <span className="notif-count">{newAndUndelivered.length}</span>
+          )}
+        </div>
       </div>
 
+      {/* Sidebar */}
       <aside className={`employee-dashboard-sidebar${sidebarOpen ? ' open' : ''}`}>
         <div className="employee-profile-container">
           <img src={employeeData.profileImage} alt="Profile" className="employee-profile-img" />
@@ -164,23 +168,28 @@ const EmployeeDashboard = () => {
         <Link to="/" className="employee-sidebar-logout-btn">Logout</Link>
       </aside>
 
+      {/* Main Content */}
       <main className="employee-main-content">
         <header className="employee-dashboard-header">
           <div className="employee-dashboard-title">Employee Dashboard</div>
           <div className="employee-dashboard-logo">
             <img src={logo} alt="Nikitha PMS" />
           </div>
+
+          {/* Desktop Bell */}
           <div className="employee-dashboard-actions">
-            <Bell
-              className="employee-dashboard-notificationButton employee-dashboard-bell-desktop"
-              onClick={() => {
-                setNotificationOpen(!notificationOpen);
-                if (!notificationOpen) setNewAndUndelivered([]);
-              }}
-            />
-            {newAndUndelivered.length > 0 && (
-              <span className="notif-count">{newAndUndelivered.length}</span>
-            )}
+            <div style={{ position: 'relative' }}>
+              <Bell
+                className="employee-dashboard-notificationButton employee-dashboard-bell-desktop"
+                onClick={() => {
+                  setNotificationOpen(!notificationOpen);
+                  if (!notificationOpen) setNewAndUndelivered([]);
+                }}
+              />
+              {newAndUndelivered.length > 0 && (
+                <span className="notif-count">{newAndUndelivered.length}</span>
+              )}
+            </div>
             <Link to="/" className="employee-logout-btn">Logout</Link>
           </div>
         </header>
