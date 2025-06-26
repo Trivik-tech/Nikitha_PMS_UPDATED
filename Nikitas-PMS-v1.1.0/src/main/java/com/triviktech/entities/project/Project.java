@@ -1,7 +1,5 @@
 package com.triviktech.entities.project;
 
-import com.triviktech.entities.employee.EmployeeInformation;
-import com.triviktech.entities.hr.HR;
 import com.triviktech.entities.manager.Manager;
 import jakarta.persistence.*;
 
@@ -18,22 +16,9 @@ public class Project {
     @Column(name = "name")
     private String name;
 
-    @ManyToMany(mappedBy = "projects")
-    private Set<EmployeeInformation> employees ;
 
     @ManyToMany(mappedBy = "projects")
     private Set<Manager> managers ;
-
-    @ManyToMany(mappedBy = "projects")
-    private Set<HR> hr;
-
-    public Set<HR> getHr() {
-        return hr;
-    }
-
-    public void setHr(Set<HR> hr) {
-        this.hr = hr;
-    }
 
     public Set<Manager> getManagers() {
         return managers;
@@ -59,13 +44,7 @@ public class Project {
         this.name = name;
     }
 
-    public Set<EmployeeInformation> getEmployees() {
-        return employees;
-    }
 
-    public void setEmployees(Set<EmployeeInformation> employees) {
-        this.employees = employees;
-    }
 
 
 }

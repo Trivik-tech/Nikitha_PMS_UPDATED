@@ -46,10 +46,6 @@ public class EmployeeControllerImpl implements EmployeeController {
         this.messagingTemplate = messagingTemplate;
     }
 
-    @Override
-    public ResponseEntity<List<EmployeeInformationResponseDto>> listOfEmployees(int pageSize, int pageNumber) {
-        return ResponseEntity.ok(employeeService.listOfEmployees(pageSize, pageNumber));
-    }
 
     @Override
     public ResponseEntity<KraKpiResponseDto> kraKpiForEmployee(String employeeId) {

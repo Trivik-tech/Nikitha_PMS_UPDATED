@@ -51,28 +51,6 @@ public class EmployeeServiceImpl implements EmployeeService{
 
 
     @Override
-    public List<EmployeeInformationResponseDto> listOfEmployees(int pageSize,int pageNumber) {
-
-        PageRequest pageRequest = PageRequest.of(pageNumber, pageSize);
-        Page<EmployeeInformation> all = employeeInformationRepository.findAll(pageRequest);
-
-        List<EmployeeInformation> content = all.getContent();
-       return content.stream().map(employee->{
-
-            EmployeeInformationResponseDto employeeInformationResponseDto = entityDtoConversion.entityToDtoConversion(employee, EmployeeInformationResponseDto.class);
-
-            employeeInformationResponseDto.setProjects(employee.getProjects().stream()
-                    .map(project -> entityDtoConversion.entityToDtoConversion(project,ProjectResponseDto.class)).collect(Collectors.toSet()));
-
-            employeeInformationResponseDto.setDepartment(entityDtoConversion.entityToDtoConversion(employee.getDepartment(),DepartmentResponseDto.class));
-//            employeeInformationResponseDto.setManager(entityDtoConversion.entityToDtoConversion(employee.getManager(), ManagerResponseDto.class));
-            return employeeInformationResponseDto;
-
-        }).toList();
-
-    }
-
-    @Override
     public EmployeeInfo profile(String employeeId) {
         Optional<EmployeeInformation> byId = employeeInformationRepository.findById(employeeId);
           if(byId.isPresent()) {

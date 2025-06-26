@@ -16,6 +16,15 @@ public class ManagerDto {
     private String mobileNumber;
     private String reportingManager;
     private String emailId;
+    private String hrName;
+
+    public String getHrName() {
+        return hrName;
+    }
+
+    public void setHrName(String hrName) {
+        this.hrName = hrName;
+    }
 
     public String getEmpId() {
         return empId;

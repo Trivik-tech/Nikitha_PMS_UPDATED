@@ -3,6 +3,7 @@ package com.triviktech.entities.manager;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.triviktech.entities.address.Location;
 import com.triviktech.entities.department.Department;
+import com.triviktech.entities.hr.HR;
 import com.triviktech.entities.project.Project;
 import com.triviktech.entities.employee.EmployeeInformation; // Import EmployeeInformation entity
 import jakarta.persistence.*;
@@ -81,14 +82,16 @@ public class Manager {
     @OneToMany(mappedBy = "manager", orphanRemoval = true)
     private Set<EmployeeInformation> employeeInformations = new LinkedHashSet<>();
 
+    @ManyToOne
+    @JoinColumn(name = "hr_id")
+    private HR hR;
 
-    public Set<EmployeeInformation> getEmployeeInformations() {
-        return employeeInformations;
+    public HR getHR() {
+        return hR;
     }
 
-
-    public void setEmployeeInformations(Set<EmployeeInformation> employeeInformations) {
-        this.employeeInformations = employeeInformations;
+    public void setHR(HR hR) {
+        this.hR = hR;
     }
 
     public String getManagerId() {
@@ -163,8 +166,6 @@ public class Manager {
         this.projects = projects;
     }
 
-
-
     public String getPassword() {
         return password;
     }
@@ -227,5 +228,21 @@ public class Manager {
 
     public void setReportingManager(String reportingManager) {
         this.reportingManager = reportingManager;
+    }
+
+    public Set<EmployeeInformation> getEmployeeInformations() {
+        return employeeInformations;
+    }
+
+    public void setEmployeeInformations(Set<EmployeeInformation> employeeInformations) {
+        this.employeeInformations = employeeInformations;
+    }
+
+    public HR gethR() {
+        return hR;
+    }
+
+    public void sethR(HR hR) {
+        this.hR = hR;
     }
 }

@@ -1,10 +1,9 @@
 package com.triviktech.entities.hr;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.triviktech.entities.address.Location;
 import com.triviktech.entities.department.Department;
-import com.triviktech.entities.project.Project;
-import com.triviktech.entities.manager.Manager; // Import Manager entity
+import com.triviktech.entities.employee.EmployeeInformation;
+import com.triviktech.entities.manager.Manager;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -18,49 +17,67 @@ public class HR {
     @Column(name = "hr_id", nullable = false, updatable = false)
     private String hrId;
 
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
+    @Column(name = "first_name")
+    private String name;
 
-    @Column(name = "last_name")
-    private String lastName;
+    @Column(name = "email", length = 500)
+    private String emailId;
 
-    @Column(name = "email", nullable = false, unique = true, length = 500)
-    private String email; 
-
-    @Column(name = "contact_number", nullable = false)
-    private Long contactNumber;
+    @Column(name = "mobile_number")
+    private String mobileNumber;
 
     @Temporal(TemporalType.DATE)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
-    @Column(name = "date_of_birth", nullable = false)
-    private Date dateOfBirth;
+    @Column(name = "dob")
+    private Date dob;
 
-    @Column(name = "role", nullable = false)
+    @Column(name = "role")
     private String role;
 
-    @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "location_id")
-    private Location location;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "hr_project",
-            joinColumns = @JoinColumn(name = "hr_id"),
-            inverseJoinColumns = @JoinColumn(name = "project_id")
-    )
-    private Set<Project> projects = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "hr", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Department> departments = new LinkedHashSet<>();
-
     @ManyToOne
-    @JoinColumn(name = "reporting_manager_id") // Foreign key column for the manager
-    private Manager reportingManager;
+    @JoinColumn(name = "department_id", nullable = true)
+    private Department department;
 
-    @Column(name = "password", nullable = false, length = 500)
+    @Column(name = "password", length = 500)
     private String password;
 
-    // Getters and Setters
+    @Column(name = "current_designation")
+    private String currentDesignation;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "date_of_joining")
+    private Date dateOfJoining;
+
+    @Column(name = "branch")
+    private String branch;
+
+    @Column(name = "category")
+    private String category;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "last_working_date")
+    private Date lastWorkingDate;
+
+    @Column(name = "official_email_id", length = 500)
+    private String officialEmailId;
+
+    @Column(name = "reporting_manager")
+    private String reportingManager;
+
+    @OneToMany(mappedBy = "hR", orphanRemoval = true)
+    private Set<EmployeeInformation> employeeInformations = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "hR", orphanRemoval = true)
+    private Set<Manager> managers = new LinkedHashSet<>();
+
+    public Set<Manager> getManagers() {
+        return managers;
+    }
+
+    public void setManagers(Set<Manager> managers) {
+        this.managers = managers;
+    }
+
     public String getHrId() {
         return hrId;
     }
@@ -69,44 +86,36 @@ public class HR {
         this.hrId = hrId;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getEmailId() {
+        return emailId;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setEmailId(String emailId) {
+        this.emailId = emailId;
     }
 
-    public String getEmail() {
-        return email;
+    public String getMobileNumber() {
+        return mobileNumber;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
     }
 
-    public Long getContactNumber() {
-        return contactNumber;
+    public Date getDob() {
+        return dob;
     }
 
-    public void setContactNumber(Long contactNumber) {
-        this.contactNumber = contactNumber;
-    }
-
-    public Date getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
+    public void setDob(Date dob) {
+        this.dob = dob;
     }
 
     public String getRole() {
@@ -117,36 +126,12 @@ public class HR {
         this.role = role;
     }
 
-    public Location getLocation() {
-        return location;
+    public Department getDepartment() {
+        return department;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public Set<Project> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(Set<Project> projects) {
-        this.projects = projects;
-    }
-
-    public Set<Department> getDepartments() {
-        return departments;
-    }
-
-    public void setDepartments(Set<Department> departments) {
-        this.departments = departments;
-    }
-
-    public Manager getReportingManager() {
-        return reportingManager;
-    }
-
-    public void setReportingManager(Manager reportingManager) {
-        this.reportingManager = reportingManager;
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
     public String getPassword() {
@@ -155,5 +140,69 @@ public class HR {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getCurrentDesignation() {
+        return currentDesignation;
+    }
+
+    public void setCurrentDesignation(String currentDesignation) {
+        this.currentDesignation = currentDesignation;
+    }
+
+    public Date getDateOfJoining() {
+        return dateOfJoining;
+    }
+
+    public void setDateOfJoining(Date dateOfJoining) {
+        this.dateOfJoining = dateOfJoining;
+    }
+
+    public String getBranch() {
+        return branch;
+    }
+
+    public void setBranch(String branch) {
+        this.branch = branch;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public Date getLastWorkingDate() {
+        return lastWorkingDate;
+    }
+
+    public void setLastWorkingDate(Date lastWorkingDate) {
+        this.lastWorkingDate = lastWorkingDate;
+    }
+
+    public String getOfficialEmailId() {
+        return officialEmailId;
+    }
+
+    public void setOfficialEmailId(String officialEmailId) {
+        this.officialEmailId = officialEmailId;
+    }
+
+    public String getReportingManager() {
+        return reportingManager;
+    }
+
+    public void setReportingManager(String reportingManager) {
+        this.reportingManager = reportingManager;
+    }
+
+    public Set<EmployeeInformation> getEmployeeInformations() {
+        return employeeInformations;
+    }
+
+    public void setEmployeeInformations(Set<EmployeeInformation> employeeInformations) {
+        this.employeeInformations = employeeInformations;
     }
 }
