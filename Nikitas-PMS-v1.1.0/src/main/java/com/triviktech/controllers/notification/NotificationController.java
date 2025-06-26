@@ -1,6 +1,8 @@
 package com.triviktech.controllers.notification;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -12,5 +14,5 @@ import java.util.List;
 public interface NotificationController {
 
     @GetMapping("/recent")
-    ResponseEntity<List<Notification>> getRecentMessages();
+    ResponseEntity<List<Notification>> getRecentMessages(@AuthenticationPrincipal UserDetails data);
 }
