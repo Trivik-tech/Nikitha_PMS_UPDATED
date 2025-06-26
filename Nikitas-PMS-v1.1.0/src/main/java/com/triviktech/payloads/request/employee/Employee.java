@@ -49,6 +49,12 @@ public class Employee {
     @NotEmpty(message = "Role Should not be empty")
     private String role;
 
+    @NotEmpty(message = "HR name Should not be empty")
+    private String hrName;
+
+
+
+
     public String getRole() {
         return role;
     }
@@ -161,22 +167,11 @@ public class Employee {
         this.emailId = emailId;
     }
 
-    @Override
-    public String toString() {
-        return "Employee{" +
-                "empId='" + empId + '\'' +
-                ", name='" + name + '\'' +
-                ", dob=" + dob +
-                ", dateOfJoining=" + dateOfJoining +
-                ", currentDesignation='" + currentDesignation + '\'' +
-                ", department='" + department + '\'' +
-                ", branch='" + branch + '\'' +
-                ", category='" + category + '\'' +
-                ", lastWorkingDate=" + lastWorkingDate +
-                ", officialEmailId='" + officialEmailId + '\'' +
-                ", mobileNumber='" + mobileNumber + '\'' +
-                ", reportingManager='" + reportingManager + '\'' +
-                ", emailId='" + emailId + '\'' +
-                '}';
+    public  String getHrName() {
+        return hrName;
+    }
+
+    public void setHrName( String hrName) {
+        this.hrName = hrName;
     }
 }

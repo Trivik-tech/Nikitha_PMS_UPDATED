@@ -40,4 +40,7 @@ public interface EmployeeInformationRepository extends JpaRepository<EmployeeInf
     @Query("select e from EmployeeInformation e where e.name=:name")
     Optional<EmployeeInformation> findByName(@Param("name") String name);
 
+    boolean existsByEmailId(String emailId);
+
+    Optional<EmployeeInformation> findByEmailId(String emailId);
 }

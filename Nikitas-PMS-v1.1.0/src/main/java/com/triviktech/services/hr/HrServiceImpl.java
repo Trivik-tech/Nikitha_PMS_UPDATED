@@ -2,12 +2,16 @@ package com.triviktech.services.hr;
 
 import com.triviktech.entities.department.Department;
 import com.triviktech.entities.employee.EmployeeInformation;
+import com.triviktech.entities.hr.HR;
 import com.triviktech.entities.krakpi.KraKpi;
 import com.triviktech.entities.manager.Manager;
+import com.triviktech.exception.employee.EmployeeAlreadyExistsException;
 import com.triviktech.exception.employee.EmployeeNotFoundException;
 import com.triviktech.exception.krakpi.KraKpiNotFoundException;
+import com.triviktech.exception.manager.ManagerAlreadyExistsException;
 import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
+import com.triviktech.payloads.request.manager.ManagerDto;
 import com.triviktech.payloads.response.department.DepartmentResponseDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
@@ -815,43 +819,106 @@ public class HrServiceImpl implements HrService {
 
     @Override
     public Map<String, String> employeeRegistration(Employee employee) {
-        // Creating response object
         Map<String, String> response = new HashMap<>();
-
-        // Converting Employee Dto class to EmployeeInformation entity class
-        EmployeeInformation employeeInformation = entityDtoConversion.dtoToEntityConversion(employee,
-                EmployeeInformation.class);
-        Department department = departmentRepository.findByName(employee.getDepartment());
-        employeeInformation.setDepartment(department);
-
-        // converting date into string
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        String lwdStr = employee.getLastWorkingDate() != null ? formatter.format(employee.getLastWorkingDate()) : null;
-        employeeInformation.setLastWorkingDay(lwdStr);
 
-        // Set reporting manager (now a Manager object)
-        Manager reportingManagerObj = null;
-        if (employee.getReportingManager() != null && !employee.getReportingManager().trim().isEmpty()) {
-            reportingManagerObj = managerRepository.findByName(employee.getReportingManager()).get();
-        }
-        employeeInformation.setManager(reportingManagerObj);
+        Optional<EmployeeInformation> employeeByEmail = employeeInformationRepository.findByEmailId(employee.getEmailId());
 
-        EmployeeInformation saved = employeeInformationRepository.save(employeeInformation);
-
-        try {
-            String subject = String.format(Message.REGISTRATION_SUBJECT, saved.getName());
-            String message = String.format(Message.REGISTRATION_MESSAGE, saved.getName(), new Date(), saved.getEmpId());
-            emailService.sendEmail(saved.getEmailId(), subject, message);
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        if(employeeByEmail.isPresent()){
+            throw new EmployeeAlreadyExistsException(employee.getEmailId());
         }
 
-        String mesg = saved != null ? "Employee Registration Successful" : "Employee Registration Failed";
+        Optional<EmployeeInformation> employeeBYId = employeeInformationRepository.findById(employee.getEmpId());
+        if(employeeBYId.isPresent()){
+            throw new EmployeeAlreadyExistsException(employee.getEmpId());
+        }
 
-        response.put("status", mesg);
+        Optional<Manager> byEmailId = managerRepository.findByEmailId(employee.getEmailId());
+        if(byEmailId.isPresent()){
+            throw new ManagerAlreadyExistsException(employee.getEmailId());
+        }
+
+        Optional<Manager> managerById = managerRepository.findByManagerId(employee.getEmpId());
+        if(managerById.isPresent()){
+            throw new ManagerAlreadyExistsException(employee.getEmpId());
+        }
+
+        if (employee.getRole().equalsIgnoreCase("EMPLOYEE")) {
+            EmployeeInformation employeeInformation = entityDtoConversion.dtoToEntityConversion(employee, EmployeeInformation.class);
+
+            Department department = departmentRepository.findByName(employee.getDepartment());
+            employeeInformation.setDepartment(department);
+
+            String lwdStr = employee.getLastWorkingDate() != null ? formatter.format(employee.getLastWorkingDate()) : null;
+            employeeInformation.setLastWorkingDay(lwdStr);
+
+            // Set Manager
+            if (employee.getReportingManager() != null && !employee.getReportingManager().trim().isEmpty()) {
+                Optional<Manager> optionalManager = managerRepository.findByName(employee.getReportingManager());
+                optionalManager.ifPresent(employeeInformation::setManager);
+            }
+
+            // Set HR
+            if (employee.getHrName() != null && !employee.getHrName().trim().isEmpty()) {
+                Optional<HR> optionalHR = hrRepository.findByName(employee.getHrName());
+                optionalHR.ifPresent(employeeInformation::sethR);
+            }
+
+            String hashedPassword = BCrypt.hashpw("trivik", BCrypt.gensalt(10));
+            employeeInformation.setPassword(hashedPassword);
+
+            EmployeeInformation saved = employeeInformationRepository.save(employeeInformation);
+
+            try {
+                String subject = String.format(Message.REGISTRATION_SUBJECT, saved.getName());
+                String message = String.format(Message.REGISTRATION_MESSAGE, saved.getName(), new Date(), saved.getEmpId());
+                emailService.sendEmail(saved.getEmailId(), subject, message);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            response.put("status", saved != null ? "Employee Registration Successful" : "Employee Registration Failed");
+            return response;
+        }
+
+        if (employee.getRole().equalsIgnoreCase("MANAGER") || employee.getCategory().equalsIgnoreCase("MANAGER")) {
+            Manager manager = entityDtoConversion.dtoToEntityConversion(employee, Manager.class);
+            manager.setManagerId(employee.getEmpId());
+            Department department = departmentRepository.findByName(employee.getDepartment());
+            manager.setDepartment(department);
+
+            String lwdStr = employee.getLastWorkingDate() != null ? formatter.format(employee.getLastWorkingDate()) : null;
+
+            // Set Reporting Manager
+            if (employee.getReportingManager() != null && !employee.getReportingManager().trim().isEmpty()) {
+                Optional<Manager> reportingManagerOpt = managerRepository.findByName(employee.getReportingManager());
+                reportingManagerOpt.ifPresent(rm -> manager.setReportingManager(rm.getName()));
+            }
+
+            // Set HR
+            if (employee.getHrName() != null && !employee.getHrName().trim().isEmpty()) {
+                Optional<HR> hrOpt = hrRepository.findByName(employee.getHrName());
+                hrOpt.ifPresent(manager::setHR);
+            }
+
+            Manager saved = managerRepository.save(manager);
+
+            try {
+                String sub = String.format(Message.REGISTRATION_SUBJECT, saved.getName());
+                String message = String.format(Message.REGISTRATION_MESSAGE, saved.getName(), new Date(), saved.getManagerId());
+                emailService.sendEmail(manager.getEmailId(), sub, message);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            response.put("status", saved != null ? "Employee Registration Successful" : "Employee Registration Failed");
+            return response;
+        }
+
+        response.put("status", "Something went wrong during the registration process");
         return response;
     }
+
 
     @Override
     public Map<String, Object> getdepartment() {
