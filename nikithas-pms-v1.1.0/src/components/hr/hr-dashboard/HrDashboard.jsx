@@ -27,6 +27,8 @@ import profile from "../../../assets/images/profile1.jpg";
 import Notification from "../../modal/notification/Notification";
 import axios from "axios";
 import { baseUrl } from "../../urls/CommenUrl";
+import SockJS from "sockjs-client";
+import { Client } from "@stomp/stompjs";
 
 ChartJS.register(
   CategoryScale,
@@ -50,6 +52,7 @@ const HrDashboard = () => {
   const [employeeCount, setEmployeeCount] = useState([]);
   const [completed, setCompleted] = useState(0);
   const [pending, setPending] = useState(0);
+  const [notifications, setNotifications] = useState([]);
 
   const isMobile = () => window.innerWidth <= 768;
 
@@ -100,6 +103,80 @@ const HrDashboard = () => {
     getDepartmentsEmployeeCount();
     getKeyMatrix();
   };
+  useEffect(() => {
+  const token = localStorage.getItem("token");
+
+  const socket = new SockJS(`${baseUrl.replace('/api/v1/pms', '')}/ws?token=${token}`);
+  const client = new Client({
+    webSocketFactory: () => socket,
+    reconnectDelay: 5000,
+
+    onConnect: async () => {
+      client.subscribe("/user/queue/hr-notification", async (message) => {
+        const newMsg = {
+          title: "New Notification",
+          message: message.body,
+          timestamp: new Date().toISOString(),
+        };
+
+        const updated = [newMsg, ...notifications];
+
+        try {
+          const res = await axios.get(`${baseUrl}/recent`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          const recent = res.data.map((msg) => ({
+            title: "Recent Notification",
+            message: msg.message || msg.content,
+            timestamp: msg.timestamp,
+          }));
+
+          const filtered = recent.filter((msg) => {
+            const newTime = Math.floor(new Date(newMsg.timestamp).getTime() / 1000);
+            const msgTime = Math.floor(new Date(msg.timestamp).getTime() / 1000);
+            return !(msgTime === newTime && msg.message === newMsg.message);
+          });
+
+          const combined = [...updated, ...filtered];
+
+          const unique = Array.from(new Map(
+            combined.map((msg) => [`${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.message}`, msg])
+          ).values());
+
+          setNotifications(unique.slice(0, 50));
+          setNotificationOpen(true);
+        } catch (err) {
+          console.error("Recent fetch error", err);
+        }
+      });
+
+      // Initial recent fetch
+      try {
+        const res = await axios.get(`${baseUrl}/recent`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const formatted = res.data.map((msg) => ({
+          title: "Recent Notification",
+          message: msg.message || msg.content,
+          timestamp: msg.timestamp,
+        }));
+
+        const unique = Array.from(new Map(
+          formatted.map((msg) => [`${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.message}`, msg])
+        ).values());
+
+        setNotifications(unique.slice(0, 50));
+      } catch (err) {
+        console.error("Initial recent error", err);
+      }
+    },
+  });
+
+  client.activate();
+  return () => client.deactivate();
+}, []);
 
   const getKeyMatrix = async () => {
     try {
@@ -351,7 +428,10 @@ const HrDashboard = () => {
 
       {notificationOpen && (
         <div className="notification-modal-wrapper">
-          <Notification onClose={() => setNotificationOpen(false)} />
+         <Notification
+  onClose={() => setNotificationOpen(false)}
+  notifications={notifications}
+/>
         </div>
       )}
     </>
