@@ -1,6 +1,6 @@
 package com.triviktech.config.security;
 
-import com.triviktech.config.constants.Origins;
+
 import com.triviktech.config.filter.JwtRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

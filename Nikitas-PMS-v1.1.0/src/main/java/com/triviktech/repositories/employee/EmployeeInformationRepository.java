@@ -1,6 +1,7 @@
 package com.triviktech.repositories.employee;
 
 import com.triviktech.entities.employee.EmployeeInformation;
+import com.triviktech.entities.hr.HR;
 import com.triviktech.entities.manager.Manager;
 import org.hibernate.query.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,7 +36,8 @@ public interface EmployeeInformationRepository extends JpaRepository<EmployeeInf
 //    @Query("select e from EmployeeInformation e where e.reportingManager=:reportingManager")
 //    List<EmployeeInformation> findAllByReportingManager(@Param("reportingManager") String reportingManager);
 
-    Optional<EmployeeInformation> findByOfficialEmailId(String officialEmailId);
+    boolean existsByEmailId(String officialEmailId);
+    Optional<EmployeeInformation> findByEmailId(String email);
 
     @Query("select e from EmployeeInformation e where e.name=:name")
     Optional<EmployeeInformation> findByName(@Param("name") String name);
