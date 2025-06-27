@@ -3,6 +3,11 @@ package com.triviktech.services.auth;
 import java.security.SecureRandom;
 import java.util.Optional;
 
+import com.triviktech.entities.hr.HR;
+import com.triviktech.entities.manager.Manager;
+import com.triviktech.repositories.hr.HRRepository;
+import com.triviktech.repositories.manager.ManagerRepository;
+import com.triviktech.utilities.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -22,25 +27,33 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     private final HttpSession session;
     private final CacheManager cacheManager;
     private final EmployeeInformationRepository employeeInformationRepository;
+    private final EmailService emailService;
+    private final HRRepository hrRepository;
+    private final ManagerRepository managerRepository;
 
     public ForgotPasswordServiceImpl(
             HttpSession session,
             CacheManager cacheManager,
-            EmployeeInformationRepository employeeInformationRepository) {
+            EmployeeInformationRepository employeeInformationRepository, EmailService emailService, EmailService emailService1, HRRepository hrRepository, ManagerRepository managerRepository) {
         this.session = session;
         this.cacheManager = cacheManager;
         this.employeeInformationRepository = employeeInformationRepository;
+
+
+        this.emailService = emailService1;
+        this.hrRepository = hrRepository;
+        this.managerRepository = managerRepository;
     }
 
     private static final int OTP_LENGTH = 6;
     private static final SecureRandom secureRandom = new SecureRandom();
 
-    @Override
-
     @Cacheable(value = "otpCache", key = "#email")
+    @Override
     public String genrateOtp(String email) {
-        Optional<EmployeeInformation> user = employeeInformationRepository.findByOfficialEmailId(email);
-        if (!user.isPresent()) {
+        boolean isRegistered =
+        employeeInformationRepository.existsByEmailId(email) || hrRepository.existsByEmail(email) || managerRepository.existsByEmailId(email);
+        if (!isRegistered) {
             throw new IllegalArgumentException("Email not Registered");
         } else {
             session.setAttribute("email", email);
@@ -52,13 +65,23 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
             if (cache != null) {
                 cache.put(email, otp.toString());
             }
-            // try {
-            // gmailOAuth2Service.sendOtpMail(email, otp.toString());
-            // } catch (Exception e) {
-            // throw new RuntimeException("Failed to send OTP", e);
-            // }
+
+
+            try {
+                String subject = "Your OTP Code";
+                String message = "Your OTP is: " + otp;
+
+                emailService.sendEmail(email, subject, message);
+                System.out.println("OTP Email sent to: " + email);
+
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to send OTP", e);
+            }
+
+
             return otp.toString();
         }
+
     }
 
     @Override
@@ -77,6 +100,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
         if (valueWrapper == null) {
             return false;
         }
+
 
         String cachedOtp = (String) valueWrapper.get();
         if (cachedOtp == null) {
@@ -105,20 +129,45 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
             return false;
         }
 
-        Optional<EmployeeInformation> userOptional = employeeInformationRepository.findByOfficialEmailId(email);
-        if (!userOptional.isPresent()) {
-            return false;
+        String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt(10));
+
+        // Check and update in Employee repository
+        Optional<EmployeeInformation> empOptional = employeeInformationRepository.findByEmailId(email);
+        if (empOptional.isPresent()) {
+            empOptional.get().setPassword(hashedPassword);
+            employeeInformationRepository.save(empOptional.get());
+            cleanupAfterReset(email);
+            return true;
         }
 
-        EmployeeInformation user = userOptional.get();
-        String hashedPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt(10));
-        user.setPassword(hashedPassword);
-        employeeInformationRepository.save(user);
+        // Check and update in HR repository
+        Optional<HR> hrOptional = hrRepository.findByEmail(email);
+        if (hrOptional.isPresent()) {
+            hrOptional.get().setPassword(hashedPassword);
+            hrRepository.save(hrOptional.get());
+            cleanupAfterReset(email);
+            return true;
+        }
 
-        // Clear the OTP and session
-        cache.evict(email);
-        session.removeAttribute("email");
-        return true;
+        // Check and update in Manager repository
+        Optional<Manager> managerOptional = managerRepository.findByEmailId(email);
+        if (managerOptional.isPresent()) {
+            managerOptional.get().setPassword(hashedPassword);
+            managerRepository.save(managerOptional.get());
+            cleanupAfterReset(email);
+            return true;
+        }
+
+        // Not found in any repository
+        return false;
     }
 
+
+    private void cleanupAfterReset(String email) {
+        Cache cache = cacheManager.getCache("otpCache");
+        if (cache != null) {
+            cache.evict(email);
+        }
+        session.removeAttribute("email");
+    }
 }

@@ -6,32 +6,23 @@ import './ResetResponsive.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../modal/Modal';
-import { Link } from 'react-router-dom';
 import Loader from '../modal/loader/Loader';
 
 const Reset = () => {
-  const [login, setLogin] = useState({ username: '', password: '' });
+  const [otp, setOtp] = useState('');
+  const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState('');
-  const [timeLeft, setTimeLeft] = useState(600); // 600 seconds = 10 minutes
+  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes
 
-  const navigation = useNavigate();
-  const { username, password } = login;
+  const navigate = useNavigate(); 
 
-  const onInputChange = (e) => {
-    setLogin({ ...login, [e.target.name]: e.target.value });
-  };
-
-  // Timer countdown
+  // OTP Countdown Timer
   useEffect(() => {
     if (timeLeft <= 0) return;
-
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
-
+    const timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
     return () => clearInterval(timer);
   }, [timeLeft]);
 
@@ -41,26 +32,12 @@ const Reset = () => {
     return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
   };
 
-  const handleHardcodedLogin = (e) => {
+  const handleResetSubmit = async (e) => {
     e.preventDefault();
 
-    if (!username.trim() && !password.trim()) {
-      setErrorMessage('Username and password are required.');
-      setTitle('Login Error');
-      setShowModal(true);
-      return;
-    }
-
-    if (!username.trim()) {
-      setErrorMessage('Username is required.');
-      setTitle('Login Error');
-      setShowModal(true);
-      return;
-    }
-
-    if (!password.trim()) {
-      setErrorMessage('Password is required.');
-      setTitle('Login Error');
+    if (!otp.trim() || !password.trim()) {
+      setErrorMessage('OTP and new password are required.');
+      setTitle('Validation Error');
       setShowModal(true);
       return;
     }
@@ -72,41 +49,24 @@ const Reset = () => {
       return;
     }
 
-    if (username === 'MG1234' && password === '12345') {
-      navigation('/manager-dashboard');
-    } else if (username === 'HR1234' && password === '12345') {
-      navigation('/hr-dashboard');
-    } else if (username === 'EMP1234' && password === '12345') {
-      navigation('/employee-dashboard');
-    } else {
-      setErrorMessage('Invalid credentials. Please try again.');
-      setTitle('Login Error');
-      setShowModal(true);
-    }
-  };
-
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMessage('');
-    setTitle('');
-    setShowModal(false);
     setLoading(true);
-
     try {
-      const response = await axios.post('http://localhost:8080/api/v1/pms/auth/login', login);
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        await navigateTo(response.data.token);
-      }
+      const response = await axios.post(
+        `http://localhost:8080/api/v1/pms/auth/validate-reset?otp=${otp}`,
+        { password },{withCredentials:true}
+      );
+      setTitle('Password Reset Successfully');
+      setPassword(response.data.message || 'Password reset successfully.');
+      setShowModal(true);
+      // Optional: Redirect to login page after 2s
+      setTimeout(() => navigate('/'), 2000);
     } catch (error) {
       if (error.response) {
-        setErrorMessage('Invalid credentials. Please try again.');
-        setTitle('Login Error');
-      } else if (error.request) {
-        setErrorMessage('Unable to connect to the server. Please check if the backend is running.');
-        setTitle('Server Error');
+        setErrorMessage(error.response.data.message || 'Invalid OTP or password.');
+        setTitle('Reset Failed');
       } else {
-        setErrorMessage('An unexpected error occurred. Please try again later.');
+        setErrorMessage('Server error. Please try again later.');
+        setTitle('Error');
       }
       setShowModal(true);
     } finally {
@@ -114,24 +74,7 @@ const Reset = () => {
     }
   };
 
-  const navigateTo = async (token) => {
-    try {
-      const response = await axios.get(`http://localhost:8080/api/v1/pms/auth/${token}`);
-      if (response.data.role === 'MANAGER') {
-        navigation('/manager-dashboard');
-      } else if (response.data.role === 'HR') {
-        navigation('/hr-dashboard');
-      } else if (response.data.role === 'EMPLOYEE') {
-        navigation('/employee-dashboard');
-      }
-    } catch (error) {
-      console.error('Error navigating:', error);
-    }
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
-  };
+  const closeModal = () => setShowModal(false);
 
   return (
     <div className="reset-password-container">
@@ -146,18 +89,18 @@ const Reset = () => {
         <h1>PMS</h1>
         <h3>Reset Password</h3>
 
-        <form onSubmit={handleHardcodedLogin}>
+        <form onSubmit={handleResetSubmit}>
           <div className="reset-password-input-group">
-            <label htmlFor="username">OTP</label>
+            <label htmlFor="otp">OTP</label>
             <div className="reset-password-input-wrapper">
               <FaUser className="reset-password-input-icon" />
               <input
-                id="username"
+                id="otp"
                 type="text"
-                name="username"
+                name="otp"
                 placeholder="Enter OTP"
-                value={username}
-                onChange={onInputChange}
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
               />
             </div>
             <div className="otp-timer">
@@ -177,9 +120,9 @@ const Reset = () => {
                 id="password"
                 type="password"
                 name="password"
-                placeholder="Enter New password"
+                placeholder="Enter new password"
                 value={password}
-                onChange={onInputChange}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
           </div>
@@ -194,4 +137,3 @@ const Reset = () => {
 };
 
 export default Reset;
- 

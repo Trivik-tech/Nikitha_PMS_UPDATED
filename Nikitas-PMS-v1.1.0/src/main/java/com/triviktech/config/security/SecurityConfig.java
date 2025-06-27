@@ -31,8 +31,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**", "/ws/**","/api/v1/pms/hr/upload","/api/v1/pms/employee/register-kra-kpi","/api/v1/pms/manager/employee-list/EMP1234").permitAll()
-                        // Uncomment for role-based access control
+                        .requestMatchers(
+                                "/api/v1/auth/**",
+                                "/ws/**",
+                                "/api/v1/pms/hr/upload",
+                                "/api/v1/pms/employee/register-kra-kpi",
+                                "/api/v1/pms/manager/employee-list/EMP1234"
+                        ).permitAll()
+                        // Uncomment below lines for role-based access
                         .requestMatchers("/api/v1/pms/manager/**").hasRole("MANAGER")
                         // .requestMatchers("/api/v1/pms/hr/**").hasRole("HR")
                         // .requestMatchers("/api/v1/pms/employee/**").hasRole("EMPLOYEE")
@@ -45,7 +51,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(Origins.localUrl, Origins.serverUrl,Origins.localUrl3001));
+        configuration.setAllowedOrigins(Arrays.asList(Origins.localUrl, Origins.serverUrl, Origins.localUrl3001));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         configuration.setAllowCredentials(true);

@@ -12,14 +12,9 @@ import com.triviktech.services.auth.ForgotPasswordService;
 
 @RestController
 public class ForgotPasswordControllerImpl implements ForgotPasswordController {
+    @Autowired
+    private ForgotPasswordService forgotPasswordService;
 
-    private final ForgotPasswordService forgotPasswordService;
-
-    public ForgotPasswordControllerImpl(ForgotPasswordService forgotPasswordService) {
-        this.forgotPasswordService = forgotPasswordService;
-    }
-
-    @Override
     public ResponseEntity<String> generateOtp(@RequestParam String email) {
         String otp = forgotPasswordService.genrateOtp(email);
         return ResponseEntity.ok("OTP sent successfully: " + otp);
