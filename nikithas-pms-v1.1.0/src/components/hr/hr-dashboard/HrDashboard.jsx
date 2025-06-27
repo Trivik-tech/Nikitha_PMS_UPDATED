@@ -103,10 +103,10 @@ const HrDashboard = () => {
     getDepartmentsEmployeeCount();
     getKeyMatrix();
   };
-  useEffect(() => {
-  const token = localStorage.getItem("token");
+ useEffect(() => {
+  const jwtToken = localStorage.getItem("token");
 
-  const socket = new SockJS(`${baseUrl.replace('/api/v1/pms', '')}/ws?token=${token}`);
+  const socket = new SockJS(`http://localhost:8080/ws?token=${jwtToken}`);
   const client = new Client({
     webSocketFactory: () => socket,
     reconnectDelay: 5000,
@@ -119,11 +119,9 @@ const HrDashboard = () => {
           timestamp: new Date().toISOString(),
         };
 
-        const updated = [newMsg, ...notifications];
-
         try {
-          const res = await axios.get(`${baseUrl}/recent`, {
-            headers: { Authorization: `Bearer ${token}` },
+          const res = await axios.get(`${baseUrl}/api/v1/pms/recent`, {
+            headers: { Authorization: `Bearer ${jwtToken}` },
           });
 
           const recent = res.data.map((msg) => ({
@@ -132,17 +130,23 @@ const HrDashboard = () => {
             timestamp: msg.timestamp,
           }));
 
+          // First filter recent messages against newMsg
           const filtered = recent.filter((msg) => {
-            const newTime = Math.floor(new Date(newMsg.timestamp).getTime() / 1000);
             const msgTime = Math.floor(new Date(msg.timestamp).getTime() / 1000);
+            const newTime = Math.floor(new Date(newMsg.timestamp).getTime() / 1000);
             return !(msgTime === newTime && msg.message === newMsg.message);
           });
 
-          const combined = [...updated, ...filtered];
+          const combined = [newMsg, ...filtered];
 
-          const unique = Array.from(new Map(
-            combined.map((msg) => [`${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.message}`, msg])
-          ).values());
+          const unique = Array.from(
+            new Map(
+              combined.map((msg) => [
+                `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.message}`,
+                msg,
+              ])
+            ).values()
+          );
 
           setNotifications(unique.slice(0, 50));
           setNotificationOpen(true);
@@ -151,10 +155,10 @@ const HrDashboard = () => {
         }
       });
 
-      // Initial recent fetch
+      // Initial fetch only once
       try {
-        const res = await axios.get(`${baseUrl}/recent`, {
-          headers: { Authorization: `Bearer ${token}` },
+        const res = await axios.get(`${baseUrl}/api/v1/pms/recent`, {
+          headers: { Authorization: `Bearer ${jwtToken}` },
         });
 
         const formatted = res.data.map((msg) => ({
@@ -163,9 +167,14 @@ const HrDashboard = () => {
           timestamp: msg.timestamp,
         }));
 
-        const unique = Array.from(new Map(
-          formatted.map((msg) => [`${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.message}`, msg])
-        ).values());
+        const unique = Array.from(
+          new Map(
+            formatted.map((msg) => [
+              `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.message}`,
+              msg,
+            ])
+          ).values()
+        );
 
         setNotifications(unique.slice(0, 50));
       } catch (err) {

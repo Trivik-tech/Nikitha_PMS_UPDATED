@@ -58,6 +58,9 @@ public class EmployeeControllerImpl implements EmployeeController {
         String reportingManager = "EMP1234";
         String destination = "/queue/manager-notification";
         String content = "KraKpi Registered for employee ID: " + kraKpiRequestDto.getEmployeeId();
+        // String reportingManager = "EMP001";
+        // String destination = "/queue/hr-notification";
+        // String content = "KraKpi Registered for employee ID: " + kraKpiRequestDto.getEmployeeId();
 
         notificationService.sendMessageWithRecent("System", reportingManager, content, destination);
 
