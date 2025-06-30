@@ -1,0 +1,191 @@
+/* EmployeeModuleResponsive.css */
+
+/* Base styles: ensure KRA and KPI inputs always have the same width */
+.employee-module-kra-input,
+.employee-module-kpi-input {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  display: block;
+}
+
+/* Mobile Devices (max-width: 600px) */
+@media (max-width: 600px) {
+  .employee-module-fullscreen-wrapper {
+    padding: 5px;
+    margin-right: -10px !important;
+    width: 100vw !important;
+    
+  }
+
+  .employee-module-container {
+    
+    width: 95vw;
+  }
+
+  .employee-module-header-title {
+    font-size: 18px;
+    margin-bottom: 10px;
+    margin-left: 20px;
+  }
+
+  .employee-module-page-title {
+    margin-left: 30px;
+    font-size: 18px;
+    margin-top: 15px;
+  }
+
+  .employee-module-logo {
+    width: 80px;
+    top: 0px;
+    right: 0px;
+  }
+
+  .employee-module-home-icon {
+    font-size: 30px;
+    top: 5px;
+    left: -20px;
+  }
+
+  .employee-module-kra-box,
+  .employee-module-kpi-box {
+    flex-direction: column;
+    padding: 8px;
+  }
+  .employee-module-kpi-input{
+    width: 105% !important;
+    margin-left: 75px;
+    padding: 12px 12px;
+  }
+
+  .employee-module-kra-input,
+  
+  .employee-module-weightage-input {
+    width: 100% !important;
+    flex: none;
+    margin-bottom: 8px;
+    box-sizing: border-box;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    display: block;
+  }
+
+  .employee-module-kra-add-remove-btn {
+    width: max-content;
+    margin-bottom: 10px;
+  }
+
+  button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .employee-module-action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .employee-module-kra-header {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .employee-module-kra-header .employee-module-remove-btn {
+    order: 2;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    width: max-content !important;
+  }
+
+  .employee-module-kra-header .employee-module-kra-input {
+    order: 1;
+  }
+}
+
+/* Tablet Devices (601px to 1024px) */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .employee-module-container {
+    padding: 15px;
+    width: 96vw;
+  }
+
+  .employee-module-page-title {
+    margin-left: 30px;
+    font-size: 18px;
+  }
+
+  .employee-module-logo {
+    width: 100px;
+  }
+
+  .employee-module-home-icon {
+    font-size: 24px;
+  }
+
+  .employee-module-kra-box,
+  .employee-module-kpi-box {
+    padding: 10px;
+  }
+
+  .employee-module-kra-input,
+  .employee-module-kpi-input,
+  .employee-module-weightage-input {
+    width: 100% !important;
+    padding: 5px;
+    box-sizing: border-box;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    display: block;
+  }
+
+  .employee-module-kra-add-remove-btn {
+    width: max-content;
+    margin-bottom: 10px;
+  }
+
+  .employee-module-action-buttons {
+    justify-content: center;
+    gap: 8px;
+  }
+}
+
+/* Small Laptops (1025px to 1366px) */
+@media (min-width: 1025px) and (max-width: 1366px) {
+  .employee-module-container {
+    width: 98vw;
+  }
+
+  .employee-module-page-title {
+    margin-left: 60px !important;
+  }
+
+  .employee-module-logo {
+    width: 110px;
+  }
+
+  .employee-module-home-icon {
+    font-size: 26px;
+  }
+
+  .employee-module-kra-input,
+  .employee-module-kpi-input {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    display: block;
+  }
+
+  .employee-module-kra-add-remove-btn {
+    flex-direction: column !important;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .employee-module-action-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

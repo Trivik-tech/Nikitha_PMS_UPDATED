@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./Krakpi.css";
+import "./KrakpiResponsive.css"
 import logo from "../../../assets/images/nikithas-logo.png";
 import { FaHome } from "react-icons/fa";
 import "./Animation.css";
@@ -108,7 +109,7 @@ const Krakpi = () => {
             <FaHome className="employee-module-home-icon" />
           </Link>
           <h2 className="employee-module-page-title">
-            Employee's KRA/KPI Registration Form
+             KRA/KPI Registration Form
           </h2>
           <img
             src={logo}

@@ -48,14 +48,15 @@
     height: 50px;
   }
   .employee-module-review-title-section {
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
     gap: 10px;
+    margin-top: 0px;
   }
   .employee-module-review-title {
-    font-size: 30px;
-    margin-left: 0;
-    margin-top: 5px;
+    font-size: 20px !important;
+    margin-left: 20px;
+    /* margin-top: 15px; */
     text-align: left;
     font-weight: bold;
   }
