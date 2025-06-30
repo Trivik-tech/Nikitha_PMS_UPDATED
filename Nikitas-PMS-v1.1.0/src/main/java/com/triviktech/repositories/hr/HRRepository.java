@@ -10,7 +10,7 @@ public interface HRRepository extends JpaRepository<HR, String> {
 
     Optional<HR> findByName(String hrName);
 
-    boolean existsByEmail(String officialEmailId);
+    boolean existsByEmailId(String officialEmailId);
 
-    Optional<HR> findByEmail(String email);
+    Optional<HR> findByEmailId(String email);
 }

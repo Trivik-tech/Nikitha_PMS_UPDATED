@@ -123,6 +123,8 @@ button {
 .employee-module-remove-btn {
   background-color: #dc3545;
   color: white;
+  width: max-content;
+  margin-left: auto;
 }
 
 .employee-module-draft-btn {

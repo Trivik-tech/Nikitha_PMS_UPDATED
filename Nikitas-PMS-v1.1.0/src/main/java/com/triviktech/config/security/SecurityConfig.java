@@ -35,10 +35,10 @@ public class SecurityConfig {
                                 "/api/v1/auth/**",
                                 "/ws/**",
                                 "/api/v1/pms/hr/upload",
-                                "/api/v1/pms/employee/register-kra-kpi",
-                                "/api/v1/pms/manager/employee-list/EMP1234"
+                                "/api/v1/pms/employee/register-kra-kpi"
+                                // "/api/v1/pms/manager/employee-list/EMP1234"
                         ).permitAll()
-                        // Uncomment the following lines to enable role-based access:
+                        // Uncomment below lines to enable role-based access
                         // .requestMatchers("/api/v1/pms/manager/**").hasRole("MANAGER")
                         // .requestMatchers("/api/v1/pms/hr/**").hasRole("HR")
                         // .requestMatchers("/api/v1/pms/employee/**").hasRole("EMPLOYEE")
