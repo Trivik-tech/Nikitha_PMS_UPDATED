@@ -28,7 +28,7 @@ const employeeData = {
 const EmployeeDashboard = () => {
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [allMessages, setAllMessages] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [newAndUndelivered, setNewAndUndelivered] = useState([]);
   const jwtToken = localStorage.getItem("token");
 
@@ -37,64 +37,71 @@ const EmployeeDashboard = () => {
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
+
       onConnect: async () => {
         client.subscribe('/user/queue/employee-notification', async (message) => {
           const newMsg = {
-            content: message.body,
-            timestamp: new Date().toISOString(),
-            delivered: true,
+            title: "New Notification",
+            message: message.body,
+            timestamp: new Date().toISOString()
           };
-          const updatedNew = [newMsg, ...newAndUndelivered];
-          setNewAndUndelivered(updatedNew);
+
+          setNewAndUndelivered(prev => [newMsg, ...prev]);
 
           try {
             const res = await axios.get(`${baseUrl}/api/v1/pms/recent`, {
               headers: { Authorization: `Bearer ${jwtToken}` }
             });
+
             const recent = res.data;
+            const formattedRecent = recent.map(msg => ({
+              title: "Recent Notification",
+              message: msg.message || msg.content || "No content",
+              timestamp: msg.timestamp || new Date().toISOString()
+            }));
 
-            const filteredRecent = recent.filter(msg => {
-              const msgTime = Math.floor(new Date(msg.timestamp).getTime() / 1000);
-              const newMsgTime = Math.floor(new Date(newMsg.timestamp).getTime() / 1000);
-              return !(msgTime === newMsgTime && msg.content === newMsg.content);
-            });
+            const allMessages = [newMsg, ...formattedRecent];
 
-            const combined = [...updatedNew, ...filteredRecent];
-            const unique = Array.from(new Map(
-              combined.map(msg => [
-                `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.content}`,
-                msg
-              ])
-            ).values());
+            const unique = Array.from(
+              new Map(
+                allMessages.map(msg => [
+                  `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.message}`,
+                  msg
+                ])
+              ).values()
+            );
 
-            setAllMessages(unique.slice(0, 50));
+            setNotifications(unique.slice(0, 50));
           } catch (err) {
-            console.error('Error fetching recent:', err);
+            console.error("❌ Error fetching recent:", err);
           }
         });
 
+        // Initial fetch
         try {
           const res = await axios.get(`${baseUrl}/api/v1/pms/recent`, {
             headers: { Authorization: `Bearer ${jwtToken}` }
           });
 
-          const messages = res.data;
-          const undelivered = messages.filter(m => !m.delivered);
-          const recent = messages.filter(m => m.delivered);
+          const recent = res.data;
+          const formatted = recent.map(msg => ({
+            title: "Recent Notification",
+            message: msg.message || msg.content || "No content",
+            timestamp: msg.timestamp || new Date().toISOString()
+          }));
 
-          setNewAndUndelivered(undelivered);
+          const unique = Array.from(
+            new Map(
+              formatted.map(msg => [
+                `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.message}`,
+                msg
+              ])
+            ).values()
+          );
 
-          const combined = [...undelivered, ...recent];
-          const unique = Array.from(new Map(
-            combined.map(msg => [
-              `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.content}`,
-              msg
-            ])
-          ).values());
-
-          setAllMessages(unique.slice(0, 50));
+          setNotifications(unique.slice(0, 50));
         } catch (err) {
-          console.error('Initial fetch error:', err);
+          console.error("❌ Initial fetch error:", err);
         }
       }
     });
@@ -103,36 +110,29 @@ const EmployeeDashboard = () => {
     return () => client.deactivate();
   }, []);
 
-  const handleSidebarClose = () => setSidebarOpen(false);
+  const handleNotificationToggle = () => {
+    setNotificationOpen(!notificationOpen);
+    if (!notificationOpen) setNewAndUndelivered([]);
+  };
 
   return (
     <div className="employee-dashboard-container">
+      {/* Sidebar Overlay */}
       <div
         className={`employee-dashboard-sidebar-overlay ${sidebarOpen ? 'visible' : 'hidden'}`}
-        onClick={handleSidebarClose}
-        aria-label="Close sidebar"
-        tabIndex={sidebarOpen ? 0 : -1}
+        onClick={() => setSidebarOpen(false)}
         style={{ display: sidebarOpen ? 'block' : 'none' }}
       />
-      <div
-        className="employee-dashboard-hamburger"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        aria-label="Open sidebar"
-        tabIndex={0}
-        role="button"
-      >
-        <span />
-        <span />
-        <span />
+
+      {/* Hamburger */}
+      <div className="employee-dashboard-hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>
+        <span /><span /><span />
       </div>
 
-      {/* Mobile Bell */}
+      {/* Notification Bell (Mobile) */}
       <div
         className="employee-dashboard-bell-topright"
-        onClick={() => {
-          setNotificationOpen(!notificationOpen);
-          if (!notificationOpen) setNewAndUndelivered([]);
-        }}
+        onClick={handleNotificationToggle}
         aria-label="Show notifications"
         tabIndex={0}
         role="button"
@@ -152,18 +152,10 @@ const EmployeeDashboard = () => {
           <h2 className="employee-name">{employeeData.name}</h2>
         </div>
         <ul>
-          <li>
-            <Link to="/employee-dashboard" className="active" onClick={handleSidebarClose}>My Dashboard</Link>
-          </li>
-          <li>
-            <Link to={`/self-review/EMP1235`} onClick={handleSidebarClose}>Start PMS</Link>
-          </li>
-          <li>
-            <Link to="/employee-performance" onClick={handleSidebarClose}>My Performance</Link>
-          </li>
-          <li>
-            <Link to="/add-krakpi" onClick={handleSidebarClose}>Add KRA|KPI</Link>
-          </li>
+          <li><Link to="/employee-dashboard" className="active" onClick={() => setSidebarOpen(false)}>My Dashboard</Link></li>
+          <li><Link to={`/self-review/${employeeData.id}`} onClick={() => setSidebarOpen(false)}>Start PMS</Link></li>
+          <li><Link to="/employee-performance" onClick={() => setSidebarOpen(false)}>My Performance</Link></li>
+          <li><Link to="/add-krakpi" onClick={() => setSidebarOpen(false)}>Add KRA|KPI</Link></li>
         </ul>
         <Link to="/" className="employee-sidebar-logout-btn">Logout</Link>
       </aside>
@@ -172,19 +164,12 @@ const EmployeeDashboard = () => {
       <main className="employee-main-content">
         <header className="employee-dashboard-header">
           <div className="employee-dashboard-title">Employee Dashboard</div>
-          <div className="employee-dashboard-logo">
-            <img src={logo} alt="Nikitha PMS" />
-          </div>
-
-          {/* Desktop Bell */}
+          <div className="employee-dashboard-logo"><img src={logo} alt="Nikitha PMS" /></div>
           <div className="employee-dashboard-actions">
             <div style={{ position: 'relative' }}>
               <Bell
                 className="employee-dashboard-notificationButton employee-dashboard-bell-desktop"
-                onClick={() => {
-                  setNotificationOpen(!notificationOpen);
-                  if (!notificationOpen) setNewAndUndelivered([]);
-                }}
+                onClick={handleNotificationToggle}
               />
               {newAndUndelivered.length > 0 && (
                 <span className="notif-count">{newAndUndelivered.length}</span>
@@ -194,6 +179,7 @@ const EmployeeDashboard = () => {
           </div>
         </header>
 
+        {/* Info Section */}
         <section className="employee-info-container">
           <div className="employee-info">
             <h3 className='employee-dashboard-info-h3'>Primary Details</h3>
@@ -223,8 +209,12 @@ const EmployeeDashboard = () => {
         </section>
       </main>
 
+      {/* Notification Modal */}
       {notificationOpen && (
-        <Notification onClose={() => setNotificationOpen(false)} allMessages={allMessages} />
+        <Notification
+          onClose={() => setNotificationOpen(false)}
+          notifications={notifications}
+        />
       )}
     </div>
   );

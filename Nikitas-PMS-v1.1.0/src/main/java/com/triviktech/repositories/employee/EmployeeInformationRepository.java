@@ -2,13 +2,13 @@ package com.triviktech.repositories.employee;
 
 import com.triviktech.entities.employee.EmployeeInformation;
 import com.triviktech.entities.manager.Manager;
-import org.hibernate.query.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.*;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public interface EmployeeInformationRepository extends JpaRepository<EmployeeInformation, String> {
 
@@ -23,8 +23,6 @@ public interface EmployeeInformationRepository extends JpaRepository<EmployeeInf
             "OR LOWER(e.category) LIKE LOWER(CONCAT('%', :search, '%'))")
     List<EmployeeInformation> searchEmployees(@Param("search") String search);
 
-
-
     List<EmployeeInformation> findByEmpIdIn(Set<String> empIds);
 
     Optional<EmployeeInformation> findByManagerAndEmpId(Manager manager, String employeeId);
@@ -32,15 +30,12 @@ public interface EmployeeInformationRepository extends JpaRepository<EmployeeInf
     @Query("SELECT e.department.name, COUNT(e) FROM EmployeeInformation e GROUP BY e.department.name")
     List<Object[]> countEmployeesByDepartment();
 
-
     List<EmployeeInformation> findAllByManager(Manager manager);
-
-    Optional<EmployeeInformation> findByOfficialEmailId(String officialEmailId);
-
-    @Query("select e from EmployeeInformation e where e.name=:name")
-    Optional<EmployeeInformation> findByName(@Param("name") String name);
 
     boolean existsByEmailId(String emailId);
 
     Optional<EmployeeInformation> findByEmailId(String emailId);
+
+    @Query("SELECT e FROM EmployeeInformation e WHERE e.name = :name")
+    Optional<EmployeeInformation> findByName(@Param("name") String name);
 }

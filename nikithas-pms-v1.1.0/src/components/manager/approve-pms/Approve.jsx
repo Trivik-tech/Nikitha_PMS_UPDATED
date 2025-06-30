@@ -21,12 +21,16 @@ const Approve = () => {
   const [loading, setLoading] = useState(false);
 
   const emplId = useParams();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const loadKraKpis = async () => {
       try {
         const result = await axios.get(
-          `${baseUrl}/api/v1/pms/manager/kra-kpi/EMP1234/${emplId.id}`
+          `${baseUrl}/api/v1/pms/manager/kra-kpi/EMP1234/${emplId.id}`,{
+            headers: { Authorization: `Bearer ${token}` }
+          }
+
         );
         setKraKpis(result.data.kra || []);
         setName(result.data.employee.name);
@@ -87,11 +91,15 @@ const Approve = () => {
         })),
       };
 
-      console.log(payload)
-      const result= await axios.patch(
-        `${baseUrl}/api/v1/pms/manager/approve-krakpi/${emplId.id}/EMP1234`,
-        payload
-      );
+      const result = await axios.patch(
+  `${baseUrl}/api/v1/pms/manager/approve-krakpi/${emplId.id}/EMP1234`,
+  payload,
+  {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
       console.log(result.data)
 
       setErrorMessage("KRA/KPI updates saved successfully.");

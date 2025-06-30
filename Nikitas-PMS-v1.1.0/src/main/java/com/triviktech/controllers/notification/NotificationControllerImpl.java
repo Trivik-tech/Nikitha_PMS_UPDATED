@@ -7,7 +7,9 @@ import com.triviktech.services.notification.NotificationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -27,9 +29,9 @@ public class NotificationControllerImpl implements NotificationController {
     }
 
     @Override
-    public ResponseEntity<List<Notification>> getRecentMessages() {
+    public ResponseEntity<List<Notification>> getRecentMessages(@AuthenticationPrincipal UserDetails manager) {
         // In real implementation, fetch authenticated username from SecurityContext
-         String username = "EMP1234";
+         String username = manager.getUsername();
         System.out.println("✅ Authenticated username: " + username);
 
         List<Notification> undelivered = notificationService.getPendingNotification(username);

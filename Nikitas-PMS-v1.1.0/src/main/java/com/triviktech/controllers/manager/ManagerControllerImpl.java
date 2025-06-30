@@ -98,6 +98,10 @@ public class ManagerControllerImpl implements ManagerController {
         String destination = "/queue/employee-notification";
         String content = "KraKpi Approved for employee ID: " + kraKpiRequestDto.getEmployeeId();
         notificationService.sendMessageWithRecent("System", emp, content, destination);
+        String hr = "EMP001";
+        String hrdestination = "/queue/hr-notification";
+        String hrcontent = "KraKpi Registered for employee ID: " + kraKpiRequestDto.getEmployeeId();
+        notificationService.sendMessageWithRecent("System", hr, hrcontent, hrdestination);
 
         return ResponseEntity.ok(managerService.approveKra(kraKpiRequestDto, employeeId, managerId));
     }
