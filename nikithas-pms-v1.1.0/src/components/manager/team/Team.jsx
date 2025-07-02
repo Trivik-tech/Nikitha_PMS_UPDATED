@@ -19,8 +19,13 @@ export default function TeamPage() {
 
   const loadTeam = async () => {
     try {
+      const token=localStorage.getItem('token')
       const result = await axios.get(
-        `${baseUrl}/api/v1/pms/manager/employee-list/EMP1234`
+        `${baseUrl}/api/v1/pms/manager/employee-list/EMP1234`,{
+            headers:{
+              Authorization:`Bearer ${token}`
+            }
+          }
       );
       setTeamList(result.data);
       // console.log(result.data)

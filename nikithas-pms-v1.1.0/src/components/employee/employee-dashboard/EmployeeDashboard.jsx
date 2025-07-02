@@ -152,13 +152,13 @@ const EmployeeDashboard = () => {
             <Link to="/employee-dashboard" className="active" onClick={handleSidebarClose}>My Dashboard</Link>
           </li>
           <li>
-            <Link to={`/self-review/EMP1235`} onClick={handleSidebarClose}>Start PMS</Link>
+            <Link to={`/self-review/EMP1212`} onClick={handleSidebarClose}>Start PMS</Link>
           </li>
           <li>
             <Link to="/employee-performance" onClick={handleSidebarClose}>My Performance</Link>
           </li>
           <li>
-            <Link to="/add-krakpi" onClick={handleSidebarClose}>Add KRA|KPI</Link>
+            <Link to="/add-krakpi/EMP1212" onClick={handleSidebarClose}>Add KRA|KPI</Link>
           </li>
         </ul>
         <Link to="/" className="employee-sidebar-logout-btn">Logout</Link>

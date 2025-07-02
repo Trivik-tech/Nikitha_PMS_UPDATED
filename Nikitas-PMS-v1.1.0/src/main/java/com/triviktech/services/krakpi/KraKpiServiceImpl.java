@@ -256,4 +256,15 @@ public class KraKpiServiceImpl implements KraKpiService {
         return Map.of("status", "Employee Review successful");
     }
 
+    @Override
+    public Map<String, Boolean> existsByEmployee(String employeeId) {
+        Optional<EmployeeInformation> byId = employeeInformationRepository.findById(employeeId);
+        if(byId.isEmpty()){
+            throw new EmployeeNotFoundException(employeeId);
+        }
+        EmployeeInformation employee = byId.get();
+        boolean status = kraKpiRepository.existsByEmployeeInformation(employee);
+        return Map.of("status",status);
+    }
+
 }

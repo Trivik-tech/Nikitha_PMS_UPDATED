@@ -18,4 +18,6 @@ public interface KraKpiRepository extends JpaRepository<KraKpi, Long> {
                                                           @Param("kraKpiId") long kraKpiId);
 
     Optional<KraKpi> findByManager(Manager manager);
+
+    boolean existsByEmployeeInformation(EmployeeInformation employeeId);
 }

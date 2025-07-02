@@ -5,7 +5,7 @@ import { FaHome } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
 import Modal from "../../modal/Modal";
 import axios from "axios";
-import {baseUrl} from '../../urls/CommenUrl'
+import { baseUrl } from '../../urls/CommenUrl';
 
 const PerformanceReview = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -43,7 +43,6 @@ const PerformanceReview = () => {
       const result = await axios.get(
         `${baseUrl}/api/v1/pms/manager/kra-kpi/${reportingManager}/${employeeId}`
       );
-      // console.log(result.data)
       const data = result.data;
       setKraKpi(data.kra || []);
       setEmployeeName(data.employee.name);
@@ -52,7 +51,7 @@ const PerformanceReview = () => {
       setDueDate(formatDate(data.dueDate || "2025-05-25"));
       setEmployeeReviewDate(formatDate(data.selfReviewDate || "2025-05-23"));
       setManagerReviewDate(formatDate(data.managerReviewDate || "2025-05-24"));
-      setRemarks(data.remark)
+      setRemarks(data.remark);
       setPmsData(data);
     } catch (error) {
       console.error("Failed to load KRA/KPI:", error);
@@ -61,7 +60,13 @@ const PerformanceReview = () => {
 
   const handleInputChange = (kraIndex, kpiIndex, field, value) => {
     const updatedKraKpi = [...krakpi];
-    updatedKraKpi[kraIndex].kpi[kpiIndex][field] = parseFloat(value) || 0;
+    const weightage = updatedKraKpi[kraIndex].kpi[kpiIndex].weightage;
+    let numericValue = parseFloat(value) || 0;
+
+    if (numericValue < 0) numericValue = 0;
+    if (numericValue > weightage) numericValue = weightage;
+
+    updatedKraKpi[kraIndex].kpi[kpiIndex][field] = numericValue;
     setKraKpi(updatedKraKpi);
   };
 
@@ -239,6 +244,8 @@ const PerformanceReview = () => {
                       <td>
                         <input
                           type="number"
+                          min="0"
+                          max={kpi.weightage}
                           value={kpi.managerScore || ""}
                           onChange={(e) =>
                             handleInputChange(kraIndex, kpiIndex, "managerScore", e.target.value)

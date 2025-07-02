@@ -1,4 +1,3 @@
-// Approve.jsx
 import React, { useEffect, useState } from "react";
 import "./Approve.css";
 import "./ResponsiveApprovePms.css"
@@ -20,19 +19,28 @@ const Approve = () => {
   const [manager, setManager] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // NEW: Track approval status to disable buttons
+  const [managerApproval, setManagerApproval] = useState(false);
+
   const emplId = useParams();
 
   useEffect(() => {
     const loadKraKpis = async () => {
       try {
+        const token = localStorage.getItem('token');
         const result = await axios.get(
-          `${baseUrl}/api/v1/pms/manager/kra-kpi/EMP1234/${emplId.id}`
+          `${baseUrl}/api/v1/pms/manager/kra-kpi/EMP1234/${emplId.id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }
         );
         setKraKpis(result.data.kra || []);
         setName(result.data.employee.name);
         setDesignation(result.data.employee.currentDesignation);
         setDepartment(result.data.employee.department);
         setManager(result.data.employee.reportingManager);
+        setManagerApproval(result.data.managerApproval === true); // <-- Set approval state
       } catch (error) {
         console.error("Error loading KRA/KPI data:", error);
       }
@@ -68,7 +76,7 @@ const Approve = () => {
         managerCompleted: false,
         dueDate: null,
         managerReviewDate: null,
-        selfReviewDate:null,
+        selfReviewDate: null,
         pmsInitiated: false,
         review2: false,
         managerApproval: true,
@@ -87,16 +95,23 @@ const Approve = () => {
         })),
       };
 
-      console.log(payload)
-      const result= await axios.patch(
+      const token = localStorage.getItem('token');
+      const result = await axios.patch(
         `${baseUrl}/api/v1/pms/manager/approve-krakpi/${emplId.id}/EMP1234`,
-        payload
+        payload, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
       );
-      console.log(result.data)
-
       setErrorMessage("KRA/KPI updates saved successfully.");
       setTitle("Save Successful");
       setShowModal(true);
+
+      // If approved, set managerApproval to true (disable buttons)
+      if (payload.managerApproval) {
+        setManagerApproval(true);
+      }
     } catch (error) {
       console.error("Error saving KRA/KPI updates:", error);
       setErrorMessage("Failed to save updates.");
@@ -116,6 +131,8 @@ const Approve = () => {
       setErrorMessage("PMS has been rejected successfully.");
       setTitle("PMS Reject");
       setShowModal(true);
+      // On reject, you may want to set managerApproval to true to disable buttons
+      setManagerApproval(true);
     } catch (error) {
       console.error("Rejection error:", error);
       setErrorMessage("Error occurred during rejection.");
@@ -125,13 +142,10 @@ const Approve = () => {
   };
 
   const handleApproveClick = async () => {
-    // Optionally, save changes first before approval
     await handleSaveChanges();
-    
   };
 
   const handleRejectClick = async () => {
-    // Optionally, save changes first before rejection
     await handleSaveChanges();
     await rejectKraKpi();
   };
@@ -178,12 +192,13 @@ const Approve = () => {
               <div className="kra-weightage-container">
                 <input
                   type="text"
-                  value={kra.weightage||""}
+                  value={kra.weightage || ""}
                   onChange={(e) =>
                     handleKRAWeightageChange(kraIndex, e.target.value)
                   }
                   placeholder="KRA Weightage"
                   className="manager-weightage-input"
+                  disabled={managerApproval}
                 />
               </div>
             </div>
@@ -202,7 +217,7 @@ const Approve = () => {
                     <td>
                       <input
                         type="text"
-                        value={kpiItem.weightage||""}
+                        value={kpiItem.weightage || ""}
                         onChange={(e) =>
                           handleKPIWeightageChange(
                             kraIndex,
@@ -212,6 +227,7 @@ const Approve = () => {
                         }
                         placeholder="KPI Weightage"
                         className="manager-weightage-input"
+                        disabled={managerApproval}
                       />
                     </td>
                   </tr>
@@ -226,14 +242,14 @@ const Approve = () => {
         <button
           className="manager-approve-submit-btn approve-btn"
           onClick={handleApproveClick}
-          disabled={loading}
+          disabled={loading || managerApproval}
         >
           Approve
         </button>
         <button
           className="manager-approve-submit-btn reject-btn"
           onClick={handleRejectClick}
-          disabled={loading}
+          disabled={loading || managerApproval}
         >
           Reject
         </button>

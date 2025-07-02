@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import Modal from '../modal/Modal';
 import { Link } from 'react-router-dom';
 import Loader from '../modal/loader/Loader';
+import { baseUrl } from '../urls/CommenUrl';
 
 const Login = () => {
   const [login, setLogin] = useState({ username: '', password: '' });
@@ -70,7 +71,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:8080/api/v1/pms/auth/login', login);
+      const response = await axios.post(`${baseUrl}/api/v1/pms/auth/login`, login);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         await navigateTo(response.data.token);
@@ -93,7 +94,7 @@ const Login = () => {
 
   const navigateTo = async (token) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/pms/auth/${token}`);
+      const response = await axios.get(`${baseUrl}/api/v1/pms/auth/${token}`);
       if (response.data.role === 'MANAGER') {
         navigation('/manager-dashboard');
       } else if (response.data.role === 'HR') {
@@ -161,7 +162,7 @@ const Login = () => {
             <a href="/forgot-password" className="login-forgot-password">Forgot password?</a>
           </div>
 
-          <button type="submit" className="login-button" onClick={(e)=>onSubmit(e)}>Login</button>
+          <button type="submit" className="login-button" onClick={(e)=>onSubmit(e)} >Login</button>
         </form>
       </div>
 

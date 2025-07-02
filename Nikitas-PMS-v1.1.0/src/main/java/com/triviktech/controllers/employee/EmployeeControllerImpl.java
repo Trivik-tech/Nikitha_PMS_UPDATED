@@ -76,4 +76,9 @@ public class EmployeeControllerImpl implements EmployeeController {
     public ResponseEntity<Map<String, String>> selfReview(KraKpiRequestDto kraKpiRequestDto, String employeeId) {
         return ResponseEntity.ok(kraKpiService.employeeReview(kraKpiRequestDto, employeeId));
     }
+
+    @Override
+    public ResponseEntity<Map<String, Boolean>> checkKraKpiAlreadyExists(String employeeId) {
+        return ResponseEntity.ok(kraKpiService.existsByEmployee(employeeId));
+    }
 }
