@@ -1,29 +1,48 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "./Complete.css";
-import './ResponsiveManagerCompleted.css'; 
+import "./ResponsiveManagerCompleted.css";
 import { FaSearch, FaHome } from "react-icons/fa";
 import logo from '../../../../assets/images/nikithas-logo.png';
-
-const teamMembers = [
-  { name: "Sarah Wilson", department: "Product Design", position: "Senior Designer", self: "Completed", manager: "Completed" },
-  { name: "John Doe", department: "Engineering", position: "Software Engineer", self: "Completed", manager: "Completed" },
-  { name: "Alex Johnson", department: "Marketing", position: "Content Strategist", self: "Completed", manager: "Completed" },
-  { name: "David Lee", department: "Sales", position: "Sales Director", self: "Completed", manager: "Completed"},
-];
+import axios from "axios";
 
 export default function Complete() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [completedTeam, setCompletedTeam] = useState([]);
   const navigate = useNavigate();
+  const {id:managerId}=useParams();
+  const token =localStorage.getItem("token");
   const entriesPerPage = 6;
+
+  const reportingManagerId = localStorage.getItem("managerId"); // Or hardcoded for testing
 
   useEffect(() => {
     document.body.classList.add("fade-in");
     return () => document.body.classList.remove("fade-in");
   }, []);
 
-  const filteredTeam = teamMembers.filter(member =>
+  useEffect(() => {
+    fetchCompletedEmployees();
+  }, []);
+
+  const fetchCompletedEmployees = async () => {
+    try {
+
+      const res = await axios.get(`http://localhost:8080/api/v1/pms/manager/completed/${managerId}`,
+        {
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        }
+      );
+      setCompletedTeam(res.data);
+    } catch (err) {
+      console.error("Failed to fetch completed employees:", err);
+    }
+  };
+
+  const filteredTeam = completedTeam.filter((member) =>
     member.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -41,7 +60,10 @@ export default function Complete() {
     <div className="complete-team-container">
       <div className="complete-header">
         <div className="complete-header-title">
-          <FaHome className="complete-home-icon" onClick={() => navigate('/manager-dashboard')} />
+          <FaHome
+            className="complete-home-icon"
+            onClick={() => navigate("/manager-dashboard")}
+          />
           <h1>Assessment Completion List</h1>
         </div>
         <div className="complete-search-bar">
@@ -70,14 +92,15 @@ export default function Complete() {
           <tbody>
             {currentEntries.map((member, index) => (
               <tr key={index}>
-                <td className="complete-team-member">
-                  {/* <img src={member.image} alt={member.name} className="complete-profile-pic" /> */}
-                  {member.name}
+                <td className="complete-team-member">{member.name}</td>
+                <td>{member.department?.name || "N/A"}</td>
+                <td>{member.currentDesignation}</td>
+                <td style={{ color: member.selfCompleted ? "green" : "red" }}>
+                  {member.selfCompleted ? "Completed" : "Pending"}
                 </td>
-                <td>{member.department}</td>
-                <td>{member.position}</td>
-                <td style={{ color: "green" }}>{member.self}</td>
-                <td style={{ color: "green" }}>{member.manager}</td>
+                <td style={{ color: member.managerCompleted ? "green" : "red" }}>
+                  {member.managerCompleted ? "Completed" : "Pending"}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -85,11 +108,19 @@ export default function Complete() {
       </div>
 
       <div className="complete-pagination">
-        <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
           Prev
         </button>
-        <span> Page {currentPage} of {totalPages} </span>
-        <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages}>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
           Next
         </button>
       </div>

@@ -8,114 +8,8 @@ import { MdCallMade } from "react-icons/md";
 import logo from "../../../../assets/images/nikithas-logo.png";
 import Modal from "../../../modal/Modal";
 
-const teamMembers = [
-  {
-    name: "Sarah Wilson",
-    department: "Product Design",
-    position: "Senior Designer",
-    self: "Pending",
-    manager: "pending",
-    image: "https://randomuser.me/api/portraits/women/1.jpg",
-  },
-  {
-    name: "John Doe",
-    department: "Engineering",
-    position: "Software Engineer",
-    self: "Completed",
-    manager: "Pending",
-    image: "https://randomuser.me/api/portraits/men/1.jpg",
-  },
-  {
-    name: "Alex Johnson",
-    department: "Marketing",
-    position: "Content Strategist",
-    self: "completed",
-    manager: "Pending",
-    image: "https://randomuser.me/api/portraits/men/2.jpg",
-  },
-  {
-    name: "David Lee",
-    department: "Sales",
-    position: "Sales Director",
-    self: "Pending",
-    manager: "Pending",
-    image: "https://randomuser.me/api/portraits/men/3.jpg",
-  },
-  {
-    name: "Emily Brown",
-    department: "HR",
-    position: "HR Manager",
-    self: "Pending",
-    manager: "Pending",
-    image: "https://randomuser.me/api/portraits/women/2.jpg",
-  },
-  {
-    name: "Robert Taylor",
-    department: "Engineering",
-    position: "DevOps Engineer",
-    self: "Pending",
-    manager: "Pending",
-    image: "https://randomuser.me/api/portraits/men/4.jpg",
-  },
-  {
-    name: "Lisa Wang",
-    department: "Product Design",
-    position: "UI/UX Designer",
-    self: "Completed",
-    manager: "Pending",
-    image: "https://randomuser.me/api/portraits/women/3.jpg",
-  },
-  {
-    name: "James Wilson",
-    department: "Marketing",
-    position: "SEO Specialist",
-    self: "Pending",
-    manager: "Pending",
-    image: "https://randomuser.me/api/portraits/men/5.jpg",
-  },
-  {
-    name: "Maria Garcia",
-    department: "Sales",
-    position: "Account Manager",
-    self: "Pending",
-    manager: "Pending",
-    image: "https://randomuser.me/api/portraits/women/4.jpg",
-  },
-  {
-    name: "Thomas Anderson",
-    department: "Engineering",
-    position: "Backend Developer",
-    self: "Pending",
-    manager: "Pending",
-    image: "https://randomuser.me/api/portraits/men/6.jpg",
-  },
-  {
-    name: "James Wilson",
-    department: "Marketing",
-    position: "SEO Specialist",
-    self: "Pending",
-    manager: "Pending",
-    image: "https://randomuser.me/api/portraits/men/5.jpg",
-  },
-  {
-    name: "Maria Garcia",
-    department: "Sales",
-    position: "Account Manager",
-    self: "Pending",
-    manager: "Pending",
-    image: "https://randomuser.me/api/portraits/women/4.jpg",
-  },
-  {
-    name: "Thomas Anderson",
-    department: "Engineering",
-    position: "Backend Developer",
-    self: "Pending",
-    manager: "Pending",
-    image: "https://randomuser.me/api/portraits/men/6.jpg",
-  },
-];
-
 export default function PendingList() {
+  const [teamMembers, setTeamMembers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [errorMessage, setErrorMessage] = useState("");
@@ -125,18 +19,36 @@ export default function PendingList() {
   const navigate = useNavigate();
   const entriesPerPage = 10;
 
+  useEffect(() => {
+    const fetchPendingEmployees = async () => {
+      const token = localStorage.getItem("token");
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/api/v1/pms/hr/pending",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setTeamMembers(response.data);
+      } catch (error) {
+        console.error("Error fetching pending employees:", error);
+      }
+    };
+
+    fetchPendingEmployees();
+  }, []);
+
   const filteredTeam = teamMembers.filter(
     (member) =>
-      member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.department.toLowerCase().includes(searchTerm.toLowerCase())
+      member.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      member.department?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const totalPages = Math.ceil(filteredTeam.length / entriesPerPage);
   const startIndex = (currentPage - 1) * entriesPerPage;
-  const currentEntries = filteredTeam.slice(
-    startIndex,
-    startIndex + entriesPerPage
-  );
+  const currentEntries = filteredTeam.slice(startIndex, startIndex + entriesPerPage);
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
@@ -144,14 +56,34 @@ export default function PendingList() {
     }
   };
 
-  const notifyEmployee = (employeeName) => {
-    setErrorMessage(`Notification has been sent to ${employeeName}.`);
-    setTitle("Notification");
-    setShowModal(true);
-  };
-
   const closeModal = () => {
     setShowModal(false);
+  };
+
+  const notifyEmployee = async (empId, employeeName) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/api/v1/pms/hr/notify/employee-and-manager/${empId}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const { message } = response.data;
+
+      setErrorMessage(message || `Notification sent to ${employeeName} and their Manager.`);
+      setTitle("Notification");
+      setShowModal(true);
+    } catch (err) {
+      setErrorMessage(`Failed to notify ${employeeName} and their Manager.`);
+      setTitle("Error");
+      setShowModal(true);
+    }
   };
 
   return (
@@ -159,6 +91,7 @@ export default function PendingList() {
       {showModal && (
         <Modal message={errorMessage} closeModal={closeModal} title={title} />
       )}
+
       <div className="hr-pending-header">
         <div className="hr-pending-header-title">
           <FaHome
@@ -182,6 +115,7 @@ export default function PendingList() {
           className="hr-pending-company-logo"
         />
       </div>
+
       <div className="hr-pending-table-container">
         <table className="hr-pending-team-table">
           <thead>
@@ -197,34 +131,19 @@ export default function PendingList() {
           <tbody>
             {currentEntries.map((member, index) => (
               <tr key={index}>
-                <td className="hr-pending-team-member">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="hr-pending-profile-pic"
-                  />
-                  {member.name}
+                <td>{member.name}</td>
+                <td>{member.department?.name}</td>
+                <td>{member.currentDesignation}</td>
+                <td style={{ color: member.selfCompleted ? "green" : "orange" }}>
+                  {member.selfCompleted ? "Completed" : "Pending"}
                 </td>
-                <td>{member.department}</td>
-                <td>{member.position}</td>
-                <td
-                  style={{
-                    color: member.self === "Completed" ? "green" : "orange",
-                  }}
-                >
-                  {member.self}
-                </td>
-                <td
-                  style={{
-                    color: member.manager === "Completed" ? "green" : "orange",
-                  }}
-                >
-                  {member.manager}
+                <td style={{ color: member.managerCompleted ? "green" : "orange" }}>
+                  {member.managerCompleted ? "Completed" : "Pending"}
                 </td>
                 <td className="hr-pending-notify-icon">
                   <MdCallMade
                     className="notify-bell"
-                    onClick={() => notifyEmployee(member.name)}
+                    onClick={() => notifyEmployee(member.empId, member.name)}
                   />
                 </td>
               </tr>
@@ -232,6 +151,7 @@ export default function PendingList() {
           </tbody>
         </table>
       </div>
+
       <div className="hr-pagination-container">
         <button
           onClick={() => handlePageChange(currentPage - 1)}

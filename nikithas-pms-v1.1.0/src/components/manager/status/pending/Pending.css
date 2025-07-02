@@ -77,8 +77,8 @@ body{
   text-align:center;                /* ⬅️  Center alignment */
   border-bottom:1px solid #ddd;
   vertical-align:middle;
-  height:44px;
-  font-size:14px;
+  height:55px;
+  font-size:15px;
   line-height:1.4;
 }
 .pending-team-table td *{margin:0;padding:0;font-size:inherit;text-align:center;} /* keep inner text centred */
@@ -116,6 +116,11 @@ body{
   font-size:13px;
   font-weight:500;
   color:#555;
+}
+.disabled-bell {
+  pointer-events: none;
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 .pending-pagination button{
   padding:6px 12px;

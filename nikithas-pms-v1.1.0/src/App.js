@@ -61,8 +61,8 @@ function App() {
 
           <Route exact path="/manager-profile" element={<ManagerProfile/>} />
           <Route exact path="/manager-review/:id/:manager" element={<PerformanceReview/>} />
-          <Route exact path="/completed-assessments" element={<Complete/>} />
-          <Route exact path="/pending-assessments" element={<Pending/>} />
+          <Route exact path="/completed-assessments/:id" element={<Complete/>} />
+          <Route exact path="/pending-assessments/:id" element={<Pending/>} />
           
 
           <Route exact path="/add-employee" element={<EmployeeDetails/>} />

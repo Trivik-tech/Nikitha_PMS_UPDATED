@@ -670,41 +670,54 @@ public class HrServiceImpl implements HrService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> pms) {
-        Optional<EmployeeInformation> employeeById = employeeInformationRepository.findById(employeeId);
-        if (employeeById.isPresent()) {
-            EmployeeInformation employee = employeeById.get();
-            Optional<KraKpi> krakpi = kraKpiRepository.findByEmployeeInformation(employee);
-            if (krakpi.isPresent()) {
-                KraKpi kraKpi = krakpi.get();
-                kraKpi.setPmsInitiated(pms.get("pms_initiated"));
-                kraKpiRepository.save(kraKpi);
+   @Override
+public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> pms) {
+    Map<String, String> response = new HashMap<>();
 
-                try{
-                    LocalDate futureDate = LocalDate.now().plusDays(5);
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                    String formattedDate = futureDate.format(formatter);
-                    LocalDate startDate = LocalDate.now();
-                    LocalDate endDate = startDate.plusDays(30);
-
-                    String duration = startDate.format(formatter) + " to " + endDate.format(formatter);
-                    String submissionDeadline = LocalDate.now().plusDays(5).format(formatter);
-                    String sub=String.format(Message.PMS_SUBJECT,formattedDate);
-                    String message=String.format(Message.PMS_MESSAGE,employee.getName(),duration,submissionDeadline);
-                    emailService.sendEmail(employee.getEmailId(),sub,message);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            } else {
-                throw new KraKpiNotFoundException("Kra Kpi not found for employee with id " + employeeId);
-            }
-        } else {
-            throw new EmployeeNotFoundException(employeeId);
-        }
-        return Map.of("status", "Pms Initiated successfully");
+    Optional<EmployeeInformation> employeeById = employeeInformationRepository.findById(employeeId);
+    if (employeeById.isEmpty()) {
+        response.put("status", "failure");
+        response.put("message", "Employee not found");
+        return response;
     }
 
+    EmployeeInformation employee = employeeById.get();
+
+    Optional<KraKpi> krakpi = kraKpiRepository.findByEmployeeInformation(employee);
+    if (krakpi.isEmpty()) {
+        response.put("status", "failure");
+        response.put("message", "KRA/KPI not found for this employee");
+        return response;
+    }
+
+    KraKpi kraKpi = krakpi.get();
+    kraKpi.setPmsInitiated(pms.getOrDefault("pms_initiated", false));
+    kraKpiRepository.save(kraKpi);
+
+    try {
+        LocalDate futureDate = LocalDate.now().plusDays(5);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String formattedDate = futureDate.format(formatter);
+
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plusDays(30);
+
+        String duration = startDate.format(formatter) + " to " + endDate.format(formatter);
+        String submissionDeadline = formattedDate;
+
+        String sub = String.format(Message.PMS_SUBJECT, formattedDate);
+        String message = String.format(Message.PMS_MESSAGE, employee.getName(), duration, submissionDeadline);
+        emailService.sendEmail(employee.getEmailId(), sub, message);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        // Optional: don't fail whole process due to email failure
+    }
+
+    response.put("status", "success");
+    response.put("message", "PMS initiated successfully");
+    return response;
+}
     @Override
     public List<Long> getEmployeeCountByDepartment() {
         // Get employee counts by department

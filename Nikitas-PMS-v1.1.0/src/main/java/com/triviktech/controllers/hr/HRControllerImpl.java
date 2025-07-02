@@ -7,8 +7,12 @@ import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
 import com.triviktech.payloads.response.hr.HrResponseDto;
+import com.triviktech.repositories.employee.EmployeeInformationRepository;
+import com.triviktech.repositories.krakpi.KraKpiRepository;
 import com.triviktech.services.hr.HrService;
+import com.triviktech.services.notification.NotificationService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -22,6 +26,13 @@ import java.util.Map;
 
 @RestController
 public class HRControllerImpl implements HRController {
+    @Autowired
+    NotificationService notificationService;
+    @Autowired
+    private KraKpiRepository kraKpiRepository;
+
+    @Autowired
+    private EmployeeInformationRepository employeeRepository;
 
     private final HrService hrService;
 
@@ -104,11 +115,21 @@ public class HRControllerImpl implements HRController {
 
     @Override
     public ResponseEntity<Map<String, String>> pmsInitiated(String employeeId, Map<String, Boolean> pms) {
-        return ResponseEntity.ok(hrService.initiatePms(employeeId, pms));
+        Map<String, String> response = hrService.initiatePms(employeeId, pms);
+
+        // Only send message if PMS initiation is successful
+        if ("success".equalsIgnoreCase(response.get("status"))) {
+            String destination = "/queue/employee-notification";
+            String content = "PMS has been initiated for you. Please complete your KRA/KPI self-review.";
+            notificationService.sendMessageWithRecent("System", employeeId, content, destination);
+        }
+
+        return ResponseEntity.ok(response);
     }
 
     @Override
     public ResponseEntity<List<EmployeeInfo>> pmsInitiatedEmployees() {
+
         return ResponseEntity.ok(hrService.pmsInitiatedEmployees());
     }
 
@@ -134,4 +155,64 @@ public class HRControllerImpl implements HRController {
     public ResponseEntity<PmsPercentageDto> getPmsPercentageForHR() {
         return ResponseEntity.ok(hrService.getPmsPercentageForHR());
     }
+@Override
+public ResponseEntity<Map<String, String>> notifyEmployeeAndManager(String employeeId) {
+    try {
+        System.out.println("🔔 Notify called for employeeId: " + employeeId);
+
+        boolean selfCompleted = kraKpiRepository.findSelfCompletedStatusByEmployeeId(employeeId).orElse(false);
+        System.out.println("✅ Self completed: " + selfCompleted);
+
+        String managerId = employeeRepository.findReportingManagerIdByEmployeeId(employeeId);
+        System.out.println("👤 Manager ID: " + managerId);
+
+        String employeeName = employeeRepository.findNameByEmpId(employeeId).orElse("Unknown");
+
+        if (managerId == null || managerId.isBlank()) {
+            System.out.println("❌ Manager not found for " + employeeId);
+            return ResponseEntity.status(400).body(Map.of(
+                "status", "error",
+                "message", "Manager not found for this employee."
+            ));
+        }
+
+        String empDestination = "/queue/employee-notification";
+        String managerDestination = "/queue/manager-notification";
+
+        try {
+            if (selfCompleted) {
+                // Only manager gets notified with a different message
+                String managerContent = "Reminder: " + employeeName + " has completed self-review. Please complete your Manager review.";
+                notificationService.sendMessageWithRecent("System", managerId, managerContent, managerDestination);
+            } else {
+                // Both get notified with appropriate messages
+                String empContent = "Reminder: Please complete your PMS self-review.";
+                String managerContent = "Reminder: " + employeeName + " has not yet completed self-review. Please follow up.";
+
+                notificationService.sendMessageWithRecent("System", employeeId, empContent, empDestination);
+                notificationService.sendMessageWithRecent("System", managerId, managerContent, managerDestination);
+            }
+
+        } catch (Exception ex) {
+            System.out.println("❌ ERROR inside sendMessageWithRecent: " + ex.getMessage());
+            ex.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of(
+                "status", "error",
+                "message", "Notification failed: " + ex.getMessage()
+            ));
+        }
+
+        return ResponseEntity.ok(Map.of(
+            "status", "success",
+            "message", "Notification sent based on PMS status."
+        ));
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        return ResponseEntity.status(500).body(Map.of(
+            "status", "error",
+            "message", "Notification failed: " + e.getMessage()
+        ));
+    }
+}
 }

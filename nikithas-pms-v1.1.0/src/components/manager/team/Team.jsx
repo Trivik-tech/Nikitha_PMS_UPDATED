@@ -16,12 +16,13 @@ export default function TeamPage() {
   const navigate = useNavigate();
   const entriesPerPage = 6;
   const intervalRef = useRef(null);
-
+const jwtToken = localStorage.getItem("token");
   const loadTeam = async () => {
     try {
       const result = await axios.get(
-        `${baseUrl}/api/v1/pms/manager/employee-list/EMP1234`
-      );
+        `${baseUrl}/api/v1/pms/manager/employee-list/EMP1234`,{
+          headers: { Authorization: `Bearer ${jwtToken}` }
+     } );
       setTeamList(result.data);
       // console.log(result.data)
     } catch (error) {

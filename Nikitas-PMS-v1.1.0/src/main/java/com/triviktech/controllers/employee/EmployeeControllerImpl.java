@@ -6,6 +6,7 @@ import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeInformationResponseDto;
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
+import com.triviktech.repositories.employee.EmployeeInformationRepository;
 import com.triviktech.repositories.notification.NotificationRepository;
 import com.triviktech.services.employee.EmployeeService;
 import com.triviktech.services.krakpi.KraKpiService;
@@ -30,6 +31,8 @@ public class EmployeeControllerImpl implements EmployeeController {
     private final EmployeeService employeeService;
     private final KraKpiService kraKpiService;
     private final SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private EmployeeInformationRepository employeeRepository;
 
     @Autowired
     private NotificationService notificationService;
@@ -41,12 +44,11 @@ public class EmployeeControllerImpl implements EmployeeController {
     private NotificationRepository notificationRepository;
 
     public EmployeeControllerImpl(EmployeeService employeeService, KraKpiService kraKpiService,
-                                  SimpMessagingTemplate messagingTemplate) {
+            SimpMessagingTemplate messagingTemplate) {
         this.employeeService = employeeService;
         this.kraKpiService = kraKpiService;
         this.messagingTemplate = messagingTemplate;
     }
-
 
     @Override
     public ResponseEntity<KraKpiResponseDto> kraKpiForEmployee(String employeeId) {
@@ -55,20 +57,35 @@ public class EmployeeControllerImpl implements EmployeeController {
 
     @Override
     public ResponseEntity<Map<String, String>> kraKpiRegistrationForEmployee(KraKpiRequestDto kraKpiRequestDto) {
-        String reportingManager = "EMP1234";
-        String destination = "/queue/manager-notification";
-        String content = "KraKpi Registered for employee ID: " + kraKpiRequestDto.getEmployeeId();
-        // String reportingManager = "EMP001";
-        // String destination = "/queue/hr-notification";
-        // String content = "KraKpi Registered for employee ID: " + kraKpiRequestDto.getEmployeeId();
-
-        notificationService.sendMessageWithRecent("System", reportingManager, content, destination);
-
+        // Step 1: Call service to register KRA/KPI
         Map<String, String> response = kraKpiService.registerKraKpi(kraKpiRequestDto);
+
+        // Step 2: Check if registration was successful
+        if ("Success".equalsIgnoreCase(response.get("Status"))) {
+            String employeeId = kraKpiRequestDto.getEmployeeId();
+
+            // Step 3: Dynamically fetch the reporting manager ID
+            String reportingManagerId = employeeRepository.findReportingManagerIdByEmployeeId(employeeId);
+            System.out.println(reportingManagerId);
+
+            // Step 4: Send WebSocket notification if manager ID is found
+            if (reportingManagerId != null && !reportingManagerId.isEmpty()) {
+                String destination = "/queue/manager-notification";
+                String content = "KRA/KPI registered for Employee ID: " + employeeId;
+
+                // Send real-time notification to the manager
+                notificationService.sendMessageWithRecent("System", reportingManagerId, content, destination);
+            } else {
+                System.out.printf("No reporting manager found for employee ID: {}", employeeId);
+
+            }
+        } else {
+            System.out.printf("KRA/KPI registration failed for employee ID: {}", kraKpiRequestDto.getEmployeeId());
+        }
+
+        // Step 5: Return the original service response to the frontend
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-
-    
 
     @Override
     public ResponseEntity<EmployeeInfo> profile(String employeeId) {
@@ -77,6 +94,20 @@ public class EmployeeControllerImpl implements EmployeeController {
 
     @Override
     public ResponseEntity<Map<String, String>> selfReview(KraKpiRequestDto kraKpiRequestDto, String employeeId) {
-        return ResponseEntity.ok(kraKpiService.employeeReview(kraKpiRequestDto, employeeId));
+        Map<String, String> response = kraKpiService.employeeReview(kraKpiRequestDto, employeeId);
+
+        if ("success".equalsIgnoreCase(response.get("status"))) {
+            // Get manager ID dynamically
+            String reportingManagerId = employeeRepository.findReportingManagerIdByEmployeeId(employeeId);
+
+            if (reportingManagerId != null && !reportingManagerId.isEmpty()) {
+                String destination = "/queue/manager-notification";
+                String content = "Employee " + employeeId + " has submitted self review.";
+
+                notificationService.sendMessageWithRecent("System", reportingManagerId, content, destination);
+            }
+        }
+
+        return ResponseEntity.ok(response);
     }
 }

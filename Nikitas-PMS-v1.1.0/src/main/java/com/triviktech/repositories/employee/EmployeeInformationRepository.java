@@ -38,4 +38,13 @@ public interface EmployeeInformationRepository extends JpaRepository<EmployeeInf
 
     @Query("SELECT e FROM EmployeeInformation e WHERE e.name = :name")
     Optional<EmployeeInformation> findByName(@Param("name") String name);
+
+    @Query("SELECT e.manager.managerId FROM EmployeeInformation e WHERE e.empId = :employeeId")
+    String findReportingManagerIdByEmployeeId(@Param("employeeId") String employeeId);
+
+    @Query("SELECT e.hR.hrId FROM EmployeeInformation e WHERE e.empId = :employeeId")
+    Optional<String> findHrIdByEmployeeId(@Param("employeeId") String employeeId);
+
+    @Query("SELECT e.name FROM EmployeeInformation e WHERE e.empId = :employeeId")
+    Optional<String> findNameByEmpId(@Param("employeeId") String employeeId);
 }

@@ -5,6 +5,7 @@
     width: 100%;
     height: auto;
     padding: 20px;
+    box-shadow:black;
   }
 
   .forgot-password-form-section {

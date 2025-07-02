@@ -47,7 +47,7 @@ public interface HRController {
     ResponseEntity<Map<String, String>> deleteEmployee(@PathVariable String employeeId);
 
     @PutMapping("/update-employee/{empId}")
-    ResponseEntity<Map<String,String>> updateEmployee(@PathVariable String empId, @RequestBody Employee employee);
+    ResponseEntity<Map<String, String>> updateEmployee(@PathVariable String empId, @RequestBody Employee employee);
 
     @GetMapping("/employee-list")
     ResponseEntity<List<EmployeeInfo>> employeeListWithKraKpiApproved();
@@ -72,11 +72,15 @@ public interface HRController {
     ResponseEntity<List<EmployeeWithPmsStatus>> getCompletedPmsForHR();
 
     @PostMapping("/register-employee")
-    ResponseEntity<Map<String,String>> registerEmployee(@Valid @RequestBody Employee employee, BindingResult bindingResult);
+    ResponseEntity<Map<String, String>> registerEmployee(@Valid @RequestBody Employee employee,
+            BindingResult bindingResult);
 
     @GetMapping("/pending")
     ResponseEntity<List<EmployeeWithPmsStatus>> getPendingPmsForHR();
 
     @GetMapping("/percentage")
     ResponseEntity<PmsPercentageDto> getPmsPercentageForHR();
+
+    @PostMapping("/notify/employee-and-manager/{employeeId}")
+    ResponseEntity<Map<String, String>> notifyEmployeeAndManager(@PathVariable String employeeId);
 }
