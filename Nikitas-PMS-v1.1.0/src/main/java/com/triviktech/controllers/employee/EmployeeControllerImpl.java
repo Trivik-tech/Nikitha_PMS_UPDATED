@@ -110,4 +110,9 @@ public class EmployeeControllerImpl implements EmployeeController {
 
         return ResponseEntity.ok(response);
     }
+
+    @Override
+    public ResponseEntity<Map<String, Boolean>> checkKraKpiAlreadyExists(String employeeId) {
+        return ResponseEntity.ok(kraKpiService.existsByEmployee(employeeId));
+    }
 }

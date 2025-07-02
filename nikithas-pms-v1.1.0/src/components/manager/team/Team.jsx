@@ -6,7 +6,7 @@ import "./ResponsiveTeam.css";
 import { FaSearch, FaHome } from "react-icons/fa";
 import logo from "../../../assets/images/nikithas-logo.png";
 // import Loader from "../../modal/loader/Loader";
-import {baseUrl} from '../../urls/CommenUrl'
+import { baseUrl } from '../../urls/CommenUrl';
 
 export default function TeamPage() {
   const [teamList, setTeamList] = useState([]);
@@ -16,13 +16,19 @@ export default function TeamPage() {
   const navigate = useNavigate();
   const entriesPerPage = 6;
   const intervalRef = useRef(null);
-const jwtToken = localStorage.getItem("token");
+  const jwtToken = localStorage.getItem("token");
+
   const loadTeam = async () => {
     try {
+      const token = localStorage.getItem('token');
       const result = await axios.get(
-        `${baseUrl}/api/v1/pms/manager/employee-list/EMP1234`,{
-          headers: { Authorization: `Bearer ${jwtToken}` }
-     } );
+        `${baseUrl}/api/v1/pms/manager/employee-list/EMP1234`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
       setTeamList(result.data);
       // console.log(result.data)
     } catch (error) {
@@ -36,6 +42,7 @@ const jwtToken = localStorage.getItem("token");
     loadTeam();
     intervalRef.current = setInterval(loadTeam, 1000);
     return () => clearInterval(intervalRef.current);
+    // eslint-disable-next-line
   }, []);
 
   const filteredTeam = teamList.filter(

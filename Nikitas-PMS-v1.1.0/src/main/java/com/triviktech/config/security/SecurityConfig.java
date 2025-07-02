@@ -36,12 +36,13 @@ public class SecurityConfig {
                                 "/ws/**",
                                 "/api/v1/pms/hr/upload",
                                 "/api/v1/pms/employee/register-kra-kpi"
-                                // "/api/v1/pms/manager/employee-list/EMP1234"
                         ).permitAll()
-                        // Uncomment below lines to enable role-based access
+
+                        // Uncomment below lines to enable role-based access control
                         // .requestMatchers("/api/v1/pms/manager/**").hasRole("MANAGER")
                         // .requestMatchers("/api/v1/pms/hr/**").hasRole("HR")
                         // .requestMatchers("/api/v1/pms/employee/**").hasRole("EMPLOYEE")
+
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtRequestFilter, AuthorizationFilter.class)
@@ -53,8 +54,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(
                 Origins.localUrl,
-                Origins.serverUrl,
-                Origins.localUrl3001
+                Origins.serverUrl
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));

@@ -9,6 +9,7 @@ import com.triviktech.exception.employee.EmployeeAlreadyExistsException;
 import com.triviktech.exception.employee.EmployeeNotFoundException;
 import com.triviktech.exception.krakpi.KraKpiNotFoundException;
 import com.triviktech.exception.manager.ManagerAlreadyExistsException;
+import com.triviktech.exception.validation.InvalidEmailIdException;
 import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.request.manager.ManagerDto;
@@ -27,6 +28,7 @@ import com.triviktech.repositories.manager.ManagerRepository;
 import com.triviktech.utilities.email.EmailService;
 import com.triviktech.utilities.email.Message;
 import com.triviktech.utilities.entitydtoconversion.EntityDtoConversion;
+import com.triviktech.utilities.validation.Validation;
 import com.triviktech.utilities.xlsxsupport.XlsxSupport;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -801,32 +803,6 @@ public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> p
             }
         });
 
-        // Managers
-        managerRepository.findAll().forEach(manager -> {
-            Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByManager(manager);
-            if (kraKpiOptional != null && kraKpiOptional.isPresent()) {
-                KraKpi kraKpi = kraKpiOptional.get();
-                boolean managerApproval = Boolean.TRUE.equals(kraKpi.getManagerApproval());
-                boolean selfCompleted = kraKpi.isSelfCompleted();
-                boolean managerCompleted = kraKpi.isManagerCompleted();
-                if (managerApproval && !(selfCompleted && managerCompleted)) {
-                    EmployeeInfo managerInfo = entityDtoConversion.entityToDtoConversion(manager, EmployeeInfo.class);
-                    if (manager.getDepartment() != null) {
-                        managerInfo.setDepartment(manager.getDepartment().getName());
-                    } else {
-                        managerInfo.setDepartment("N/A");
-                    }
-                    // For reporting manager of a manager, use reportingManager string or "N/A"
-                    if (manager.getReportingManager() != null && !manager.getReportingManager().trim().isEmpty()) {
-                        managerInfo.setReportingManager(manager.getReportingManager());
-                    } else {
-                        managerInfo.setReportingManager("N/A");
-                    }
-                    result.add(managerInfo);
-                }
-            }
-        });
-
         return result;
     }
 
@@ -880,6 +856,13 @@ public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> p
             String hashedPassword = BCrypt.hashpw("trivik", BCrypt.gensalt(10));
             employeeInformation.setPassword(hashedPassword);
 
+            if(!Validation.emailValidation(employee.getEmailId())){
+                throw new InvalidEmailIdException("Invalid email id");
+            }
+            if(!Validation.emailValidation(employee.getOfficialEmailId())){
+                throw new InvalidEmailIdException("Invalid email id");
+            }
+
             EmployeeInformation saved = employeeInformationRepository.save(employeeInformation);
 
             try {
@@ -912,6 +895,13 @@ public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> p
             if (employee.getHrName() != null && !employee.getHrName().trim().isEmpty()) {
                 Optional<HR> hrOpt = hrRepository.findByName(employee.getHrName());
                 hrOpt.ifPresent(manager::setHR);
+            }
+
+            if(!Validation.emailValidation(employee.getEmailId())){
+                throw new InvalidEmailIdException("Invalid email id");
+            }
+            if(!Validation.emailValidation(employee.getOfficialEmailId())){
+                throw new InvalidEmailIdException("Invalid email id");
             }
 
             Manager saved = managerRepository.save(manager);

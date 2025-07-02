@@ -10,6 +10,7 @@ import com.triviktech.exception.manager.ManagerAlreadyExistsException;
 import com.triviktech.exception.manager.ManagerNotFoundException;
 import com.triviktech.exception.project.ProjectNotFoundException;
 import com.triviktech.exception.token.TokenExpiredException;
+import com.triviktech.exception.validation.InvalidEmailIdException;
 import com.triviktech.exception.validation.ValidationException;
 import com.triviktech.payloads.exception.ExceptionMessage;
 import jakarta.servlet.ServletException;
@@ -124,6 +125,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmployeeAlreadyExistsException.class)
     public ResponseEntity<ExceptionMessage> handleEmployeeAlreadyExistsException(EmployeeAlreadyExistsException e){
+        ExceptionMessage exceptionMessage=new ExceptionMessage();
+        exceptionMessage.setMessage(e.getMessage());
+        return new ResponseEntity<>(exceptionMessage,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(InvalidEmailIdException.class)
+    public ResponseEntity<ExceptionMessage> handleInvalidEmailIdException(InvalidEmailIdException e){
         ExceptionMessage exceptionMessage=new ExceptionMessage();
         exceptionMessage.setMessage(e.getMessage());
         return new ResponseEntity<>(exceptionMessage,HttpStatus.INTERNAL_SERVER_ERROR);

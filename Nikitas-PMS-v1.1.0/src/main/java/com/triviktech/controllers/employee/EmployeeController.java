@@ -25,4 +25,7 @@ public interface EmployeeController {
     @PutMapping("/self-review/{employeeId}")
     ResponseEntity<Map<String,String >> selfReview(@RequestBody KraKpiRequestDto kraKpiRequestDto,@PathVariable String employeeId);
 
+    @GetMapping("/check-kra-kpi/{employeeId}")
+    ResponseEntity<Map<String,Boolean>> checkKraKpiAlreadyExists(@PathVariable String employeeId);
+
 }

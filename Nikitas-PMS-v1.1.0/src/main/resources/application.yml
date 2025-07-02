@@ -4,20 +4,16 @@ spring:
   cache:
     type: caffeine
   datasource:
-    url: jdbc:mysql://localhost:3308/nikithas_pms
+    url: jdbc:mysql://localhost:3306/nikithas_pms
     username: root
-    password: 12345
-
-
+    password: guru8296jadhav@
   jpa:
     hibernate:
       ddl-auto: update
-
   servlet:
     multipart:
-      max-file-size : 10MB
+      max-file-size: 10MB
       max-request-size: 10MB
-
   mail:
     host: smtp.gmail.com
     port: 587
@@ -29,18 +25,12 @@ spring:
           auth: true
           starttls:
             enable: true
-    
-
 
 security:
   secretKey: hgdyugdvhxv-ssididgvxhsv-687dhvuygdvghvd
+  issuer: triviktech
+  expiration: 86400000
 
-  issuer : triviktech
-  expiration : 86400000
-
-
-
-
-sever:
+server:
   address: 0.0.0.0
   port: 8080
