@@ -52,7 +52,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
     @Override
     public String genrateOtp(String email) {
         boolean isRegistered =
-        employeeInformationRepository.existsByEmailId(email) || hrRepository.existsByEmail(email) || managerRepository.existsByEmailId(email);
+        employeeInformationRepository.existsByEmailId(email) || hrRepository.existsByEmailId(email) || managerRepository.existsByEmailId(email);
         if (!isRegistered) {
             throw new IllegalArgumentException("Email not Registered");
         } else {
@@ -141,7 +141,7 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
         }
 
         // Check and update in HR repository
-        Optional<HR> hrOptional = hrRepository.findByEmail(email);
+        Optional<HR> hrOptional = hrRepository.findByEmailId(email);
         if (hrOptional.isPresent()) {
             hrOptional.get().setPassword(hashedPassword);
             hrRepository.save(hrOptional.get());

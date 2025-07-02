@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { FaHome } from "react-icons/fa";
 import "./EmployeeInfo.css";
+import "./InfoResponsive.css"
 import logo from "../../../assets/images/nikithas-logo.png";
 import profile from "../../../assets/images/profile1.jpg";
 import Loader from "../../modal/loader/Loader";

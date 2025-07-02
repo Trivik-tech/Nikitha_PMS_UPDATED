@@ -1,85 +1,74 @@
 @media (max-width: 768px) {
-  body {
-    overflow: auto; /* Allow scroll on small screens */
-    height: auto;
-  }
-
-  .employee-list-container {
-    height: auto;
-    overflow: auto;
-    padding-bottom: 50px; /* Add some space at bottom */
-  }
-
-  .employee-list-content {
-    overflow-y: visible;
-    padding: 10px;
-  }
-
-  .employee-list-table-container {
-    overflow-x: auto; /* Allow horizontal scroll */
-  }
-
-  .employee-list-team-table {
-    min-width: 600px; /* Prevent table from squishing too much */
-  }
-
-  .employee-list-add-button-container {
-    position: static;
-    justify-content: center;
-    margin-top: 20px;
-  }
-
-  .employee-list-add-button-container .employee-list-add-button {
-    position: relative;
-    left: unset;
-    bottom: unset;
-  }
-
-  .header {
+  .employee-list-header-flex {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
+    align-items: stretch;
+    position: relative; /* enable absolute positioning of logo */
   }
 
-  .header-left,
-  .search-box,
-  .header-right {
-    width: 100%;
+  .employee-list-left {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-  }
-
-  .search-box {
-    justify-content: flex-start;
-  }
-
-  .search-box input {
+    gap: 5px;
     width: 100%;
-    max-width: 100%;
   }
 
-  .header-right {
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .add-btn {
+  .employee-list-company-logo {
+    position: absolute;
+    margin-top: 0px;
+    top: 0px;
+    right: 0px;
+    height: 60px;
     width: auto;
   }
 
-  .logo {
-    height: 40px;
-    margin-left: auto;
+  .employee-list-center {
+    width: 80%;
+    margin-top: 10px; /* prevent overlap with absolute logo */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 
-  .table-container {
-    overflow-x: auto;
+  .employee-list-right {
     width: 100%;
+    justify-content:center;
   }
 
-  table {
-    min-width: 600px;
+  .employee-list-add-button {
+    width: 200px;
+    font-size: 18px !important;
+    height: 40px;
+    text-align: center;
+    padding: 10px !important;
+    
   }
+  .employee-list-table-container {
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(95vh - 240px);
+  margin-bottom: 20px;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.employee-list-team-table {
+  width: 1000px !important;
+  border-collapse: collapse;
+}
+
+.employee-list-team-table th,
+.employee-list-team-table td {
+  padding: 10px !important;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+  
+}
+
+.employee-list-team-table th {
+  background: #f1f1f1;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
 }

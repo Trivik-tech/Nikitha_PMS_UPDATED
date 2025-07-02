@@ -57,26 +57,23 @@ export default function EmployeeList() {
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
 
- const searchEmployees = async (e) => {
-  const search = e.target.value;
-  
-  if (!search.trim()) {
-    fetchEmployees();
-    return;
-  }
-
-  try {
-   
-    const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees/${search}`);
-    const employees = response.data;
-    setTeam(employees);
-    setHasServerError(false);
-  } catch (error) {
-    console.error("Search failed:", error.message);
-    setHasServerError(true);
-  }
-};
-
+  const searchEmployees = async (e) => {
+    const search = e.target.value;
+    setSearchTerm(search);
+    if (!search.trim()) {
+      fetchEmployees();
+      return;
+    }
+    try {
+      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees/${search}`);
+      const employees = response.data;
+      setTeam(employees);
+      setHasServerError(false);
+    } catch (error) {
+      console.error("Search failed:", error.message);
+      setHasServerError(true);
+    }
+  };
 
   const handleDeleteClick = (id, employeeName) => {
     setEmployeeToDelete(id);
@@ -107,32 +104,45 @@ export default function EmployeeList() {
     return `${day}-${month}-${year}`;
   };
 
+  // Responsive: For mobile, render cards instead of table
+  const  isMobile = false; // Always show table view, even on mobile
+
   return (
     <div className="employee-list-fullpage">
       <div className="employee-list-container">
         <div className="employee-list-content">
-          <div className="employee-list-header">
-            <div className="employee-list-header-title">
-              <Link to="/hr-dashboard" className="icon-link">
-                <FaHome className="employee-list-home-icon" />
-              </Link>
-              <h1 className="hr-module-employee-list-text">Employee List</h1>
-            </div>
-            <div className="employee-list-search-bar">
-              <FaSearch className="employee-list-search-icon" />
-              <input
-                type="text"
-                placeholder="Search employees..."
-                onChange={(e) => searchEmployees(e)}
-              />
-            </div>
-            <div className="employee-list-add-button-container">
-              <Link to="/add-employee" className="employee-list-add-button">
-                Add Employee
-              </Link>
-            </div>
-            <img src={logo} alt="Company Logo" className="employee-list-company-logo" />
-          </div>
+          <div className="employee-list-header-flex">
+  <div className="employee-list-left">
+    <FaHome
+      className="employee-list-home-icon"
+      onClick={() => navigate("/hr-dashboard")}
+    />
+    <h1 className="employee-list-title">Employee List</h1>
+    
+  </div>
+  
+
+  <div className="employee-list-center">
+    
+    <input
+      type="text"
+      placeholder="Search employees..."
+      value={searchTerm}
+      onChange={searchEmployees}
+    />
+    <div className="employee-list-right">
+    <Link to="/add-employee" className="employee-list-add-button">
+      Add Employee
+    </Link>
+    
+  </div>
+  
+  </div>
+  <img src={logo} alt="Company Logo" className="employee-list-company-logo" />
+
+  
+</div>
+
 
           {hasServerError && (
             <div className="employee-list-error-message">
@@ -142,48 +152,100 @@ export default function EmployeeList() {
 
           <div className="employee-list-table-container">
             <div className="employee-list-table-scroll">
-              <table className="employee-list-team-table">
-                <thead>
-                  <tr>
-                    <th onClick={handleSort} style={{ cursor: "pointer" }}>Id</th>
-                    <th>Name</th>
-                    <th>Department</th>
-                    <th>Email</th>
-                    <th>Date of Joining</th>
-                    <th>Role</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentEntries.map((member) => (
-                    <tr
-                      key={member.id}
-                      onClick={() =>{
-                        const encryptedId = encrypt(member.empId);
-                         navigate(`/employee-info/${encryptedId || member.managerId}`)}}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <td>{member.empId || "-"}</td>
-                      <td>{member.name || "-"}</td>
-                      <td>{member.department || "-"}</td>
-                      <td>{member.officialEmailId || "-"}</td>
-                      <td>{formatDate(member.dateOfJoining)}</td>
-                      <td>{member.role || "-"}</td>
-                      <td onClick={(e) => e.stopPropagation()}>
-                        <FaEdit className="employee-list-edit-icon" title="Edit" onClick={() => {
+              {!isMobile ? (
+                <table className="employee-list-team-table">
+                  <thead>
+                    <tr>
+                      <th onClick={handleSort} style={{ cursor: "pointer" }}>Id</th>
+                      <th>Name</th>
+                      <th>Department</th>
+                      <th>Email</th>
+                      <th>Date of Joining</th>
+                      <th>Role</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentEntries.map((member) => (
+                      <tr
+                        key={member.id}
+                        onClick={() => {
+                          const encryptedId = encrypt(member.empId);
+                          navigate(`/employee-info/${encryptedId || member.managerId}`)
+                        }}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <td>{member.empId || "-"}</td>
+                        <td>{member.name || "-"}</td>
+                        <td>{member.department || "-"}</td>
+                        <td>{member.officialEmailId || "-"}</td>
+                        <td>{formatDate(member.dateOfJoining)}</td>
+                        <td>{member.role || "-"}</td>
+                        <td onClick={(e) => e.stopPropagation()}>
+                          <FaEdit className="employee-list-edit-icon" title="Edit" onClick={() => {
                             const encryptedId = encrypt(member.empId);
                             navigate(`/update-employee/${encryptedId}`);
                           }}/>
+                          <FaTrash
+                            className="employee-list-delete-icon"
+                            title="Delete"
+                            onClick={() => handleDeleteClick(member.empId, member.name)}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="employee-list-mobile-cards">
+                  {currentEntries.map((member) => (
+                    <div
+                      key={member.id}
+                      className="employee-list-mobile-card"
+                      onClick={() => {
+                        const encryptedId = encrypt(member.empId);
+                        navigate(`/employee-info/${encryptedId || member.managerId}`)
+                      }}
+                    >
+                      <div className="employee-list-mobile-card-row">
+                        <span className="employee-list-mobile-label">ID:</span>
+                        <span>{member.empId || "-"}</span>
+                      </div>
+                      <div className="employee-list-mobile-card-row">
+                        <span className="employee-list-mobile-label">Name:</span>
+                        <span>{member.name || "-"}</span>
+                      </div>
+                      <div className="employee-list-mobile-card-row">
+                        <span className="employee-list-mobile-label">Dept:</span>
+                        <span>{member.department || "-"}</span>
+                      </div>
+                      <div className="employee-list-mobile-card-row">
+                        <span className="employee-list-mobile-label">Email:</span>
+                        <span>{member.officialEmailId || "-"}</span>
+                      </div>
+                      <div className="employee-list-mobile-card-row">
+                        <span className="employee-list-mobile-label">Joined:</span>
+                        <span>{formatDate(member.dateOfJoining)}</span>
+                      </div>
+                      <div className="employee-list-mobile-card-row">
+                        <span className="employee-list-mobile-label">Role:</span>
+                        <span>{member.role || "-"}</span>
+                      </div>
+                      <div className="employee-list-mobile-card-actions" onClick={e => e.stopPropagation()}>
+                        <FaEdit className="employee-list-edit-icon" title="Edit" onClick={() => {
+                          const encryptedId = encrypt(member.empId);
+                          navigate(`/update-employee/${encryptedId}`);
+                        }}/>
                         <FaTrash
                           className="employee-list-delete-icon"
                           title="Delete"
                           onClick={() => handleDeleteClick(member.empId, member.name)}
                         />
-                      </td>
-                    </tr>
+                      </div>
+                    </div>
                   ))}
-                </tbody>
-              </table>
+                </div>
+              )}
             </div>
           </div>
 
