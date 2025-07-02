@@ -3,8 +3,9 @@ import { Chart, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie, getElementsAtEvent } from "react-chartjs-2";
 import { Link, useNavigate, NavLink } from "react-router-dom";
 import { Users, NotebookPen, CheckCircle, Bell } from "lucide-react";
-import { Client } from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
+import { Client } from "@stomp/stompjs";
+import SockJS from "sockjs-client";
+import axios from "axios";
 
 import Notification from "../../modal/notification/Notification";
 import "./ManagerDashboard.css";
@@ -20,18 +21,51 @@ const ManagerDashboard = () => {
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [managerData, setManagerData] = useState(null);
   const [notifications, setNotifications] = useState([]);
+  const [percentageData, setPercentageData] = useState({
+    completedPercentage: 0,
+    pendingPercentage: 0,
+  });
+  const [managerId, setManagerId] = useState("");
+  const token = localStorage.getItem("token");
 
   const chartRef = useRef();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token") // Replace with real token or get from localStorage
+    const getProfile = async () => {
+      try {
+        const res = await axios.get("http://localhost:8080/api/v1/pms/manager/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const id = res.data.managerId;
+        setManagerId(id);
+        setManagerData(res.data);
+        await getpercentage(id); // ✅ Call getpercentage with the actual ID
+      } catch (error) {
+        console.error("❌ Error fetching profile:", error);
+      }
+    };
 
+    getProfile();
+  }, []);
+
+  const getpercentage = async (id) => {
+    try {
+      const res = await axios.get(`http://localhost:8080/api/v1/pms/manager/percentage/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setPercentageData(res.data);
+      console.log("✅ PMS Percentage:", res.data);
+    } catch (error) {
+      console.error("❌ Error fetching percentage:", error);
+    }
+  };
+
+  useEffect(() => {
     const socket = new SockJS(`http://localhost:8080/ws?token=${token}`);
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
-
       onConnect: async () => {
         console.log("✅ WebSocket connected");
 
@@ -39,24 +73,23 @@ const ManagerDashboard = () => {
           const newMsg = {
             title: "New Notification",
             message: message.body,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
           };
 
           const updated = [newMsg, ...notifications];
 
           try {
             const res = await fetch("http://localhost:8080/api/v1/pms/recent", {
-              headers: { Authorization: `Bearer ${token}` }
+              headers: { Authorization: `Bearer ${token}` },
             });
-
             const recent = await res.json();
-            const formattedRecent = recent.map(msg => ({
+            const formattedRecent = recent.map((msg) => ({
               title: "Recent Notification",
               message: msg.message || msg.content || "No content",
-              timestamp: msg.timestamp || new Date().toISOString()
+              timestamp: msg.timestamp || new Date().toISOString(),
             }));
 
-            const filteredRecent = formattedRecent.filter(msg => {
+            const filteredRecent = formattedRecent.filter((msg) => {
               const msgTime = Math.floor(new Date(msg.timestamp).getTime() / 1000);
               const newMsgTime = Math.floor(new Date(newMsg.timestamp).getTime() / 1000);
               return !(msgTime === newMsgTime && msg.message === newMsg.message);
@@ -65,9 +98,9 @@ const ManagerDashboard = () => {
             const combined = [...updated, ...filteredRecent];
             const unique = Array.from(
               new Map(
-                combined.map(msg => [
+                combined.map((msg) => [
                   `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.message}`,
-                  msg
+                  msg,
                 ])
               ).values()
             );
@@ -79,24 +112,23 @@ const ManagerDashboard = () => {
           }
         });
 
-        // Initial fetch of recent notifications
         try {
           const res = await fetch("http://localhost:8080/api/v1/pms/recent", {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${token}` },
           });
 
           const messages = await res.json();
-          const formatted = messages.map(msg => ({
+          const formatted = messages.map((msg) => ({
             title: "Recent Notification",
             message: msg.message || msg.content || "No content",
-            timestamp: msg.timestamp || new Date().toISOString()
+            timestamp: msg.timestamp || new Date().toISOString(),
           }));
 
           const unique = Array.from(
             new Map(
-              formatted.map(msg => [
+              formatted.map((msg) => [
                 `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.message}`,
-                msg
+                msg,
               ])
             ).values()
           );
@@ -109,21 +141,18 @@ const ManagerDashboard = () => {
 
       onStompError: (frame) => {
         console.error("🔴 STOMP error:", frame);
-      }
+      },
     });
 
     client.activate();
-
-    return () => {
-      client.deactivate();
-    };
-  }, []);
+    return () => client.deactivate();
+  }, [token]);
 
   const data = {
     labels: ["Completed", "Pending"],
     datasets: [
       {
-        data: [75, 25],
+        data: [percentageData.completedPercentage, percentageData.pendingPercentage],
         backgroundColor: ["#4CAF50", "#FF9800"],
         borderWidth: 1,
       },
@@ -136,8 +165,8 @@ const ManagerDashboard = () => {
     const elements = getElementsAtEvent(chart, event);
     if (elements.length > 0) {
       const clickedIndex = elements[0].index;
-      if (clickedIndex === 0) navigate("/completed-assessments");
-      else if (clickedIndex === 1) navigate("/pending-assessments");
+      if (clickedIndex === 0) navigate(`/completed-assessments/${managerId}`);
+      else if (clickedIndex === 1) navigate(`/pending-assessments/${managerId}`);
     }
   };
 
@@ -157,7 +186,7 @@ const ManagerDashboard = () => {
             </NavLink>
           </li>
           <li>
-            <Link to={`/my-team/${managerData?.managerId}`}>My Team</Link>
+            <Link to={`/my-team/${managerId}`}>My Team</Link>
           </li>
           <li>
             <Link to="/manager-profile">My Profile</Link>
