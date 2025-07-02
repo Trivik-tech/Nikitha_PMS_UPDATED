@@ -161,7 +161,7 @@ const Login = () => {
             <a href="/forgot-password" className="login-forgot-password">Forgot password?</a>
           </div>
 
-          <button type="submit" className="login-button" onClick={(e)=>onSubmit(e)}>Login</button>
+          <button type="submit" className="login-button" >Login</button>
         </form>
       </div>
 
