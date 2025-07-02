@@ -14,41 +14,40 @@
     border-radius: 0;
     box-shadow: none;
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   .manager-team-header {
     flex-direction: column;
     align-items: stretch;
     position: relative;
-    padding: 5px; /* Reduced padding */
+    padding: 5px;
     gap: 5px;
   }
 
-  /* Home icon top-left */
   .manager-team-home-icon {
     position: absolute;
-    top: -10px;
+    top: -5px;
     left: 0;
-    font-size: 26px; /* Reduced icon size */
+    font-size: 35px;
     color: #333;
     z-index: 10;
   }
 
-  /* Logo top-right */
   .manager-team-company-logo {
     position: absolute;
-    top: -10px;
+    top: 0;
     right: 0;
-    width: 75px; /* Smaller logo */
+    width: 75px;
     height: auto;
     object-fit: contain;
     z-index: 10;
   }
 
-  /* My Team heading */
   .manager-team-header-left {
     position: relative;
-    height: 30px; /* Adjusted height */
+    height: 30px;
   }
 
   .manager-team-header-left h1 {
@@ -57,7 +56,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     margin: 0;
-    font-size: 14px; /* Smaller text */
+    font-size: 14px;
     line-height: 1.2;
     text-align: center;
     z-index: 5;
@@ -67,24 +66,28 @@
     padding: 6px;
     flex: 1;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
   }
 
+  /* Search bar styling with space below */
   .manager-team-search-bar {
     width: 100%;
-    margin-top: 8px;
+    margin: 15px 0 15px 0; /* Add bottom margin for spacing */
     position: relative;
   }
 
   .manager-team-search-bar input {
     width: 100%;
-    padding-left: 30px;
-    font-size: 13px;
+    padding-left: 50px;
+    font-size: 15px;
+    height: 35px;
   }
 
   .manager-team-search-icon {
     position: absolute;
     top: 50%;
-    left: 8px;
+    left: 10px;
     transform: translateY(-50%);
     font-size: 20px;
   }
@@ -93,18 +96,26 @@
     overflow-x: auto;
     overflow-y: auto;
     height: auto;
-    max-height: unset;
+    flex: 1;
   }
 
   .manager-team-table {
-    min-width: 600px;
+    width: 1100px;
+    /* width: 200%; */
+    margin-left: 2px;
+    margin-right: 2px;
+    border-collapse: collapse;
   }
 
   .manager-team-table th,
   .manager-team-table td {
-    font-size: 14px;
-    padding: 6px;
-    text-align: center;
+    font-size: 16px;
+    padding-left: -50px;
+    
+    /* padding: 10px; */
+    text-align: center; /* Align all text to center */
+    vertical-align: middle;
+    white-space: nowrap;
   }
 
   .manager-team-start-pms-button {
@@ -115,6 +126,7 @@
   .manager-team-profile-pic {
     width: 22px;
     height: 22px;
+    border-radius: 50%;
   }
 
   .manager-team-member {
