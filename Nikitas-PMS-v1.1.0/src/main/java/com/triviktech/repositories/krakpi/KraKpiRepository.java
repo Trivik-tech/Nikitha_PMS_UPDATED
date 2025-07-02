@@ -12,10 +12,12 @@ import java.util.Optional;
 public interface KraKpiRepository extends JpaRepository<KraKpi, Long> {
     Optional<KraKpi> findByEmployeeInformation(EmployeeInformation employee);
 
-
     @Query("SELECT k FROM KraKpi k WHERE k.employeeInformation = :employee AND k.kraKpiId = :kraKpiId")
     Optional<KraKpi> findByEmployeeInformationAndKraKpiId(@Param("employee") EmployeeInformation employee,
-                                                          @Param("kraKpiId") long kraKpiId);
+            @Param("kraKpiId") long kraKpiId);
 
     Optional<KraKpi> findByManager(Manager manager);
+
+    @Query("SELECT k.selfCompleted FROM KraKpi k WHERE k.employeeInformation.empId = :employeeId")
+    Optional<Boolean> findSelfCompletedStatusByEmployeeId(@Param("employeeId") String employeeId);
 }

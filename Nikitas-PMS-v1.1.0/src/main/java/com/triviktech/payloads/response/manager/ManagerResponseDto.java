@@ -11,17 +11,17 @@ public class ManagerResponseDto {
 
     private String managerId;
 
-    private String firstName;
+    private String name;
 
-    private String lastName;
+    private String emailId;
 
-    private String email;
+    private Long mobileNumber;
 
-    private Long contactNumber;
-
-    private Date dateOfBirth;
+    private Date dob;
 
     private String role;
+
+    private DepartmentResponseDto department;
 
     public String getManagerId() {
         return managerId;
@@ -31,49 +31,36 @@ public class ManagerResponseDto {
         this.managerId = managerId;
     }
 
-    // Updated to reflect a single department
-    private DepartmentResponseDto department;
-
-   
-
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getEmailId() {
+        return emailId;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setEmailId(String emailId) {
+        this.emailId = emailId;
     }
 
-    public String getEmail() {
-        return email;
+    public Long getMobileNumber() {
+        return mobileNumber;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setMobileNumber(Long mobileNumber) {
+        this.mobileNumber = mobileNumber;
     }
 
-    public Long getContactNumber() {
-        return contactNumber;
+    public Date getDob() {
+        return dob;
     }
 
-    public void setContactNumber(Long contactNumber) {
-        this.contactNumber = contactNumber;
-    }
-
-    public Date getDateOfBirth() {
-        return dateOfBirth;
-    }
-
-    public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
+    public void setDob(Date dob) {
+        this.dob = dob;
     }
 
     public String getRole() {
@@ -93,5 +80,4 @@ public class ManagerResponseDto {
         this.department = department;
     }
 
-   
 }

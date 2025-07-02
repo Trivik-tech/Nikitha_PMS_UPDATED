@@ -117,6 +117,11 @@ body{
   font-weight:500;
   color:#555;
 }
+.disabled-bell {
+  pointer-events: none;
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 .pending-pagination button{
   padding:6px 12px;
   background:#007bff;

@@ -92,12 +92,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exceptionMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ExceptionMessage> handleRootExceptions(Exception e){
-        ExceptionMessage exceptionMessage=new ExceptionMessage();
-        exceptionMessage.setMessage(e.getMessage());
-        return new ResponseEntity<>(exceptionMessage, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    // @ExceptionHandler(Exception.class)
+    // public ResponseEntity<ExceptionMessage> handleRootExceptions(Exception e){
+    //     ExceptionMessage exceptionMessage=new ExceptionMessage();
+    //     exceptionMessage.setMessage(e.getMessage());
+    //     return new ResponseEntity<>(exceptionMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+    // }
 
     @ExceptionHandler(TokenExpiredException.class)
     public ResponseEntity<ExceptionMessage> handleTokenExpiredException(TokenExpiredException exception){

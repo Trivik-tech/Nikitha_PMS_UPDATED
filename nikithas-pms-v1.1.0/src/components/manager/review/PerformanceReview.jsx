@@ -20,6 +20,7 @@ const PerformanceReview = () => {
   const [managerReviewDate, setManagerReviewDate] = useState("");
   const [remarks, setRemarks] = useState("");
   const [pmsData, setPmsData] = useState({});
+  const jwtToken = localStorage.getItem("token");
 
   const { id: employeeId, manager: reportingManager } = useParams();
 
@@ -41,7 +42,11 @@ const PerformanceReview = () => {
   const loadKraKpi = async (employeeId, reportingManager) => {
     try {
       const result = await axios.get(
-        `${baseUrl}/api/v1/pms/manager/kra-kpi/${reportingManager}/${employeeId}`
+        `${baseUrl}/api/v1/pms/manager/kra-kpi/${reportingManager}/${employeeId}`,
+        {
+         headers: { Authorization: `Bearer ${jwtToken}` }
+        }
+
       );
       // console.log(result.data)
       const data = result.data;
@@ -170,11 +175,19 @@ const PerformanceReview = () => {
       })),
     };
 
-    const result = await axios.patch(
-      `${baseUrl}/api/v1/pms/manager/manager-review/${reportingManager}/${employeeId}`,
-      payload
-    );
-    console.log(result);
+   
+
+const result = await axios.patch(
+  `${baseUrl}/api/v1/pms/manager/manager-review/${reportingManager}/${employeeId}`,
+  payload,
+  {
+    headers: {
+      Authorization: `Bearer ${jwtToken}`, 
+    },
+  }
+);
+
+console.log(result);
   };
 
   const isSubmitButtonDisabled = () => {

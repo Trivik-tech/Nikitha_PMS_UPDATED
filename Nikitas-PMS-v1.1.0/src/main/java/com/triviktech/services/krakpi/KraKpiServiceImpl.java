@@ -141,11 +141,13 @@ public class KraKpiServiceImpl implements KraKpiService {
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.put("Status", "Something went wrong");
+            response.put("Status", "Failure");
+            response.put("Message", "Something went wrong");
             return response;
         }
 
-        response.put("Status", "KRA KPI Registration Completed");
+        response.put("Status", "Success");
+        response.put("Message", "KRA KPI Registration Completed");
         return response;
     }
 
@@ -170,90 +172,94 @@ public class KraKpiServiceImpl implements KraKpiService {
         return response;
     }
 
-    @Override
-    public Map<String, String> employeeReview(KraKpiRequestDto kraKpiRequestDto, String employeeId) {
-        Optional<EmployeeInformation> employeeById = employeeInformationRepository.findById(employeeId);
+   @Override
+public Map<String, String> employeeReview(KraKpiRequestDto kraKpiRequestDto, String employeeId) {
+    Optional<EmployeeInformation> employeeById = employeeInformationRepository.findById(employeeId);
+    if (employeeById.isEmpty()) {
+        return Map.of(
+            "status", "failure",
+            "message", "Employee not found"
+        );
+    }
 
-        if (employeeById.isEmpty()) {
-            return Map.of("error", "employee not found");
+    EmployeeInformation employee = employeeById.get();
+    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+    if (kraKpiOptional.isEmpty()) {
+        return Map.of(
+            "status", "failure",
+            "message", "KRA/KPI not found for employee"
+        );
+    }
+
+    KraKpi kraKpi = kraKpiOptional.get();
+    kraKpi.setSelfCompleted(kraKpiRequestDto.getSelfCompleted());
+
+    Set<KRA> existingKras = kraKpi.getKra();
+    Set<KRA> updatedKras = new HashSet<>();
+
+    for (KraRequestDto kraDto : kraKpiRequestDto.getKra()) {
+        KRA kra = existingKras.stream()
+            .filter(existingKra -> existingKra.getKraId().equals(kraDto.getKraId()))
+            .findFirst()
+            .orElse(new KRA());
+
+        kra.setKraKpi(kraKpi);
+        kra.setKraName(kraDto.getKraName());
+        kra.setWeightage(kraDto.getWeightage());
+
+        Set<KPI> existingKpis = kra.getKpi() != null ? kra.getKpi() : new HashSet<>();
+        Set<KPI> updatedKpis = new HashSet<>();
+
+        for (KpiRequestDto kpiDto : kraDto.getKpi()) {
+            KPI kpi = existingKpis.stream()
+                .filter(existingKpi -> existingKpi.getKpiId().equals(kpiDto.getKpiId()))
+                .findFirst()
+                .orElse(new KPI());
+
+            kpi.setKra(kra);
+            kpi.setDescription(kpiDto.getDescription());
+            kpi.setWeightage(kpiDto.getWeightage());
+            kpi.setSelfScore(kpiDto.getSelfScore());
+            kpi.setManagerScore(kpiDto.getManagerScore());
+            kpi.setAverage((float) (kpiDto.getSelfScore() + kpiDto.getManagerScore()) / 2);
+            kpi.setReview2(kpiDto.getReview2());
+
+            updatedKpis.add(kpi);
         }
 
-        EmployeeInformation employee = employeeById.get();
-        Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
-
-        if (kraKpiOptional.isEmpty()) {
-            return Map.of("error", "kra-kpi not found");
-        }
-
-        KraKpi kraKpi = kraKpiOptional.get();
-        kraKpi.setSelfCompleted(kraKpiRequestDto.getSelfCompleted());
-        Set<KRA> existingKras = kraKpi.getKra();
-        Set<KRA> updatedKras = new HashSet<>();
-
-        for (KraRequestDto kraDto : kraKpiRequestDto.getKra()) {
-            // Find existing or create new KRA
-            KRA kra = existingKras.stream()
-                    .filter(existingKra -> existingKra.getKraId().equals(kraDto.getKraId()))
-                    .findFirst()
-                    .orElse(new KRA());
-
-            kra.setKraKpi(kraKpi);
-            kra.setKraName(kraDto.getKraName());
-            kra.setWeightage(kraDto.getWeightage());
-
-            // Update KPIs
-            Set<KPI> existingKpis = kra.getKpi() != null ? kra.getKpi() : new HashSet<>();
-            Set<KPI> updatedKpis = new HashSet<>();
-
-            for (KpiRequestDto kpiDto : kraDto.getKpi()) {
-                KPI kpi = existingKpis.stream()
-                        .filter(existingKpi -> existingKpi.getKpiId().equals(kpiDto.getKpiId()))
-                        .findFirst()
-                        .orElse(new KPI());
-
-                kpi.setKra(kra);
-                kpi.setDescription(kpiDto.getDescription());
-                kpi.setWeightage(kpiDto.getWeightage());
-                kpi.setSelfScore(kpiDto.getSelfScore());
-                kpi.setManagerScore(kpiDto.getManagerScore());
-                kpi.setAverage((float) (kpiDto.getSelfScore() + kpiDto.getManagerScore()) / 2);
-                kpi.setReview2(kpiDto.getReview2());
-
-                updatedKpis.add(kpi);
-            }
-
-            // Remove KPIs that are not in the update
-            existingKpis.removeIf(existingKpi ->
-                    updatedKpis.stream().noneMatch(updatedKpi ->
-                            updatedKpi.getKpiId().equals(existingKpi.getKpiId()))
-            );
-
-            existingKpis.addAll(updatedKpis);
-            kra.setKpi(existingKpis);
-            updatedKras.add(kra);
-        }
-
-        // Remove KRAs that are not in the update
-        existingKras.removeIf(existingKra ->
-                updatedKras.stream().noneMatch(updatedKra ->
-                        updatedKra.getKraId().equals(existingKra.getKraId()))
+        existingKpis.removeIf(existingKpi ->
+            updatedKpis.stream().noneMatch(updatedKpi ->
+                updatedKpi.getKpiId().equals(existingKpi.getKpiId()))
         );
 
-        existingKras.addAll(updatedKras);
-        kraKpi.setKra(existingKras);
-
-        kraKpiRepository.saveAndFlush(kraKpi);
-
-        try {
-            String sub = String.format(Message.SELF_APPRAISAL_SUBJECT_TO_MANAGER, employee.getName());
-            String message = String.format(Message.SELF_APPRAISAL_MESSAGE_TO_MANAGER, employee.getManager().getName(), employee.getName(), employee.getEmpId());
-            String to = employee.getManager().getEmailId();
-            emailService.sendEmail(to, sub, message);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return Map.of("status", "Employee Review successful");
+        existingKpis.addAll(updatedKpis);
+        kra.setKpi(existingKpis);
+        updatedKras.add(kra);
     }
+
+    existingKras.removeIf(existingKra ->
+        updatedKras.stream().noneMatch(updatedKra ->
+            updatedKra.getKraId().equals(existingKra.getKraId()))
+    );
+
+    existingKras.addAll(updatedKras);
+    kraKpi.setKra(existingKras);
+    kraKpiRepository.saveAndFlush(kraKpi);
+
+    try {
+        String sub = String.format(Message.SELF_APPRAISAL_SUBJECT_TO_MANAGER, employee.getName());
+        String message = String.format(Message.SELF_APPRAISAL_MESSAGE_TO_MANAGER,
+                employee.getManager().getName(), employee.getName(), employee.getEmpId());
+        String to = employee.getManager().getEmailId();
+        emailService.sendEmail(to, sub, message);
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return Map.of(
+        "status", "success",
+        "message", "Employee Review submitted successfully"
+    );
+}
 
 }

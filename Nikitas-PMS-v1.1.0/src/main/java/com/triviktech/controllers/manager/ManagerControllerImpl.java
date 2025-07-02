@@ -7,6 +7,8 @@ import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
+import com.triviktech.repositories.employee.EmployeeInformationRepository;
+import com.triviktech.repositories.krakpi.KraKpiRepository;
 import com.triviktech.services.krakpi.KraKpiService;
 import com.triviktech.services.manager.ManagerService;
 import com.triviktech.services.notification.NotificationService;
@@ -23,9 +25,14 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 public class ManagerControllerImpl implements ManagerController {
+    @Autowired
+    private EmployeeInformationRepository employeeRepository;
+    @Autowired
+    private KraKpiRepository kraKpiRepository;
 
     @Autowired
     private NotificationService notificationService;
@@ -82,8 +89,26 @@ public class ManagerControllerImpl implements ManagerController {
     }
 
     @Override
-    public ResponseEntity<Map<String, String>> managerReview(String managerId, String employeeId, KraKpiRequestDto data) {
-        return ResponseEntity.ok(managerService.managerReview(managerId, employeeId, data));
+    public ResponseEntity<Map<String, String>> managerReview(String managerId, String employeeId,
+            KraKpiRequestDto data) {
+        Map<String, String> response = managerService.managerReview(managerId, employeeId, data);
+
+        if ("success".equalsIgnoreCase(response.get("status"))) {
+            // 1. Send WebSocket notification to employee
+            String empDestination = "/queue/employee-notification";
+            String empContent = "Manager Review has been completed for Employee ID: " + employeeId;
+            notificationService.sendMessageWithRecent("System", employeeId, empContent, empDestination);
+
+            // 2. Fetch HR of the employee and send WebSocket notification
+            Optional<String> optionalHrId = employeeRepository.findHrIdByEmployeeId(employeeId);
+            optionalHrId.ifPresent(hrId -> {
+                String hrDestination = "/queue/hr-notification";
+                String hrContent = "Manager Review completed for Employee ID: " + employeeId;
+                notificationService.sendMessageWithRecent("System", hrId, hrContent, hrDestination);
+            });
+        }
+
+        return ResponseEntity.ok(response);
     }
 
     @Override
@@ -92,18 +117,29 @@ public class ManagerControllerImpl implements ManagerController {
     }
 
     @Override
-    public ResponseEntity<Map<String, String>> approveKraKpi(String employeeId, String managerId, KraKpiRequestDto kraKpiRequestDto) {
-        // Send a notification to employee
-        String emp ="EMP1235";
-        String destination = "/queue/employee-notification";
-        String content = "KraKpi Approved for employee ID: " + kraKpiRequestDto.getEmployeeId();
-        notificationService.sendMessageWithRecent("System", emp, content, destination);
-        String hr = "EMP001";
-        String hrdestination = "/queue/hr-notification";
-        String hrcontent = "KraKpi Registered for employee ID: " + kraKpiRequestDto.getEmployeeId();
-        notificationService.sendMessageWithRecent("System", hr, hrcontent, hrdestination);
+    public ResponseEntity<Map<String, String>> approveKraKpi(String employeeId, String managerId,
+            KraKpiRequestDto kraKpiRequestDto) {
+        Map<String, String> response = managerService.approveKra(kraKpiRequestDto, employeeId, managerId);
 
-        return ResponseEntity.ok(managerService.approveKra(kraKpiRequestDto, employeeId, managerId));
+        if ("Approved".equalsIgnoreCase(response.get("status"))) {
+
+            // Notify employee
+            String destination = "/queue/employee-notification";
+            String content = "KRA/KPI approved for Employee ID: " + employeeId;
+            notificationService.sendMessageWithRecent("System", employeeId, content, destination);
+
+            // Get employee -> find assigned HR
+            Optional<String> optionalHrId = employeeRepository.findHrIdByEmployeeId(employeeId);
+            System.out.println(optionalHrId);
+            if (optionalHrId.isPresent()) {
+                String hrId = optionalHrId.get();
+                String hrDestination = "/queue/hr-notification";
+                String hrContent = "KRA/KPI approved for Employee ID: " + employeeId;
+                notificationService.sendMessageWithRecent("System", hrId, hrContent, hrDestination);
+            }
+        }
+
+        return ResponseEntity.ok(response);
     }
 
     @Override
@@ -119,5 +155,29 @@ public class ManagerControllerImpl implements ManagerController {
     @Override
     public ResponseEntity<PmsPercentageDto> getPmsPercentageForManager(String reportingManager) {
         return ResponseEntity.ok(managerService.getPmsPercentageForManager(reportingManager));
+    }
+
+    @Override
+    public ResponseEntity<Map<String, String>> notifyEmployee(String employeeId) {
+        // 1. Check if employee has completed self-review
+        boolean selfCompleted = kraKpiRepository.findSelfCompletedStatusByEmployeeId(employeeId).orElse(false);
+
+        // 2. If not completed, send notification
+        if (!selfCompleted) {
+            String destination = "/queue/employee-notification";
+            String content = "Reminder: Please complete your PMS self-assessment.";
+
+            // Send message and persist
+            notificationService.sendMessageWithRecent("System", employeeId, content, destination);
+
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "message", "Notification sent successfully to the employee"));
+        }
+
+        // 3. If already completed, don't send
+        return ResponseEntity.ok(Map.of(
+                "status", "skipped",
+                "message", "No notification sent. Self-assessment already completed."));
     }
 }
