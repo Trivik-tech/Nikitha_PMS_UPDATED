@@ -27,6 +27,7 @@ const employeeData = {
 
 const EmployeeDashboard = () => {
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0); // ✅ NEW: Notification badge count
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [newAndUndelivered, setNewAndUndelivered] = useState([]);
@@ -50,9 +51,9 @@ const EmployeeDashboard = () => {
             message: message.body,
             timestamp: new Date().toISOString()
           };
-
+setNotificationOpen(true);
           setNewAndUndelivered(prev => [newMsg, ...prev]);
-
+setNotificationCount(prev => prev + 1); // ✅ INCREASE count for red badge
           try {
             const res = await axios.get(`${baseUrl}/api/v1/pms/recent`, {
               headers: { Authorization: `Bearer ${jwtToken}` }
@@ -117,9 +118,12 @@ const EmployeeDashboard = () => {
   }, []);
 
   const handleNotificationToggle = () => {
-    setNotificationOpen(!notificationOpen);
-    if (!notificationOpen) setNewAndUndelivered([]);
-  };
+  setNotificationOpen(!notificationOpen);
+  if (!notificationOpen) {
+    setNewAndUndelivered([]);
+    setNotificationCount(0); // ✅ RESET red badge when opened
+  }
+};
 
   return (
     <div className="employee-dashboard-container">
@@ -145,9 +149,9 @@ const EmployeeDashboard = () => {
       >
         <div style={{ position: 'relative' }}>
           <Bell className="employee-dashboard-notificationButton" />
-          {newAndUndelivered.length > 0 && (
-            <span className="notif-count">{newAndUndelivered.length}</span>
-          )}
+         {notificationCount > 0 && (
+  <span className="notif-count">{notificationCount}</span>
+)}
         </div>
       </div>
 
@@ -185,9 +189,9 @@ const EmployeeDashboard = () => {
                 className="employee-dashboard-notificationButton employee-dashboard-bell-desktop"
                 onClick={handleNotificationToggle}
               />
-              {newAndUndelivered.length > 0 && (
-                <span className="notif-count">{newAndUndelivered.length}</span>
-              )}
+              {notificationCount > 0 && (
+  <span className="notif-count">{notificationCount}</span>
+)}
             </div>
             <Link to="/" className="employee-logout-btn">Logout</Link>
           </div>

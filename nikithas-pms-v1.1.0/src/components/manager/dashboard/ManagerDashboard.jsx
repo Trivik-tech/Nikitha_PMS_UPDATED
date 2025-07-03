@@ -19,6 +19,7 @@ Chart.register(ArcElement, Tooltip, Legend);
 const ManagerDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
   const [managerData, setManagerData] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [percentageData, setPercentageData] = useState({
@@ -77,6 +78,7 @@ const ManagerDashboard = () => {
           };
 
           const updated = [newMsg, ...notifications];
+          setNotificationCount((prev) => prev + 1);
 
           try {
             const res = await fetch("http://localhost:8080/api/v1/pms/recent", {
@@ -148,27 +150,34 @@ const ManagerDashboard = () => {
     return () => client.deactivate();
   }, [token]);
 
-  const data = {
-    labels: ["Completed", "Pending"],
-    datasets: [
-      {
-        data: [percentageData.completedPercentage, percentageData.pendingPercentage],
-        backgroundColor: ["#4CAF50", "#FF9800"],
-        borderWidth: 1,
-      },
-    ],
-  };
+ const hasData = percentageData.completedPercentage !== 0 || percentageData.pendingPercentage !== 0;
 
-  const handleChartClick = (event) => {
-    const chart = chartRef.current;
-    if (!chart) return;
-    const elements = getElementsAtEvent(chart, event);
-    if (elements.length > 0) {
-      const clickedIndex = elements[0].index;
-      if (clickedIndex === 0) navigate(`/completed-assessments/${managerId}`);
-      else if (clickedIndex === 1) navigate(`/pending-assessments/${managerId}`);
-    }
-  };
+const data = {
+  labels: hasData ? ["Completed", "Pending"] : ["No Data"],
+  datasets: [
+    {
+      data: hasData
+        ? [percentageData.completedPercentage, percentageData.pendingPercentage]
+        : [1],
+      backgroundColor: hasData
+        ? ["#4CAF50", "#FF9800"]
+        : ["#d3d3d3"], // gray for no data
+      borderWidth: 1,
+    },
+  ],
+};
+
+const handleChartClick = (event) => {
+  if (!hasData) return; 
+  const chart = chartRef.current;
+  if (!chart) return;
+  const elements = getElementsAtEvent(chart, event);
+  if (elements.length > 0) {
+    const clickedIndex = elements[0].index;
+    if (clickedIndex === 0) navigate(`/completed-assessments/${managerId}`);
+    else if (clickedIndex === 1) navigate(`/pending-assessments/${managerId}`);
+  }
+};
 
   return (
     <div className="dashboard-container">
@@ -202,8 +211,19 @@ const ManagerDashboard = () => {
           <button className="sidebar-toggle hum-btn" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
           <h1>Manager PMS Dashboard</h1>
           <img src={logo} alt="Logo" className="dashboard-logo" />
-          <div className="header-icons">
-            <Bell className="notification-icon" onClick={() => setNotificationOpen(!notificationOpen)} />
+          <div className="header-icons" style={{ position: "relative" }}>
+  <div style={{ position: "relative" }}>
+    <Bell
+      className="notification-icon"
+      onClick={() => {
+        setNotificationOpen(!notificationOpen);
+        if (!notificationOpen) setNotificationCount(0); // ✅ Reset count on open
+      }}
+    />
+    {notificationCount > 0 && (
+      <span className="notification-badge">{notificationCount}</span> // ✅ Show badge
+    )}
+  </div>
             {notificationOpen && (
               <Notification
                 notifications={Array.isArray(notifications) ? notifications : []}

@@ -633,11 +633,16 @@ public class HrServiceImpl implements HrService {
             }
         }
 
-        double completedPercentage = totalInitiated > 0
-                ? (completedCount * 100.0) / totalInitiated
-                : 0.0;
+       // If no PMS was started or no valid KraKpi found
+        if (totalInitiated == 0) {
+            return new PmsPercentageDto(0.0, 0.0);
+        }
 
+        double completedPercentage = (completedCount * 100.0) / totalInitiated;
         double pendingPercentage = 100.0 - completedPercentage;
+
+        completedPercentage = Math.round(completedPercentage * 100.0) / 100.0;
+        pendingPercentage = Math.round(pendingPercentage * 100.0) / 100.0;
 
         return new PmsPercentageDto(completedPercentage, pendingPercentage);
     }
