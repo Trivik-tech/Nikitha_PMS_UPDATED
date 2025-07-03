@@ -150,7 +150,7 @@ body::-webkit-scrollbar {
 
 .manager-approve-submit-btn.reject-btn:hover,
 .manager-approve-submit-btn.approve-btn:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .manager-approve-table {
@@ -195,4 +195,14 @@ body::-webkit-scrollbar {
   justify-content: flex-end;
   gap: 10px;
   margin-top: 15px;
+}
+/* Add these styles for disabled approve/reject buttons */
+.manager-approve-submit-btn:disabled,
+.manager-approve-submit-btn[disabled] {
+  background-color: #cccccc !important;
+  color: #888888 !important;
+  cursor: not-allowed !important;
+  opacity: 0.7;
+  border: 1px solid #bbbbbb !important;
+  box-shadow: none !important;
 }

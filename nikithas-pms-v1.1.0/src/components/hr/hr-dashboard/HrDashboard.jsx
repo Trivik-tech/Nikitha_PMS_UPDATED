@@ -43,6 +43,7 @@ ChartJS.register(
 const HrDashboard = () => {
   const navigate = useNavigate();
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
   const [totalEmployees, setTotalEmployees] = useState(null);
   const [completionRate, setCompletionRate] = useState(0);
   const [pendingRate, setPendingRate] = useState(0);
@@ -118,7 +119,7 @@ const HrDashboard = () => {
           message: message.body,
           timestamp: new Date().toISOString(),
         };
-
+setNotificationCount((prev) => prev + 1);
         try {
           const res = await axios.get(`${baseUrl}/api/v1/pms/recent`, {
             headers: { Authorization: `Bearer ${jwtToken}` },
@@ -278,43 +279,45 @@ const HrDashboard = () => {
     animation: { duration: 1000, easing: "easeOutQuart" },
   };
 
-  const pieData = {
-    labels: ["Completed", "Pending"],
-    datasets: [
-      {
-        data: [completionRate, pendingRate],
-        backgroundColor: ["#28a745", "#ffa500"],
-        borderColor: ["#1e7e34", "#e0a800"],
-        borderWidth: 2,
-      },
-    ],
-  };
+ const hasPieData = completionRate !== 0 || pendingRate !== 0;
 
-  const pieOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: "bottom",
-        labels: { padding: 20, font: { size: 12 } },
-      },
-      title: {
-        display: true,
-        text: "Overall Assessment Status",
-        font: { size: 16, weight: "bold" },
-        padding: { top: 10, bottom: 20 },
-      },
+const pieData = {
+  labels: hasPieData ? ["Completed", "Pending"] : ["No Data"],
+  datasets: [
+    {
+      data: hasPieData ? [completionRate, pendingRate] : [1],
+      backgroundColor: hasPieData ? ["#28a745", "#ffa500"] : ["#d3d3d3"],
+      borderColor: hasPieData ? ["#1e7e34", "#e0a800"] : ["#aaaaaa"],
+      borderWidth: 2,
     },
-    onClick: (event, elements) => {
-      if (elements.length > 0) {
-        const index = elements[0].index;
-        if (index === 0) navigate("/hr/completed-assessments");
-        else if (index === 1) navigate("/hr/pending-assessments");
-      }
-    },
-    animation: { duration: 1000, easing: "easeOutQuart" },
-  };
+  ],
+};
 
+const pieOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      position: "bottom",
+      labels: { padding: 20, font: { size: 12 } },
+    },
+    title: {
+      display: true,
+      text: "Overall Assessment Status",
+      font: { size: 16, weight: "bold" },
+      padding: { top: 10, bottom: 20 },
+    },
+  },
+  onClick: (event, elements) => {
+    if (!hasPieData) return; 
+    if (elements.length > 0) {
+      const index = elements[0].index;
+      if (index === 0) navigate("/hr/completed-assessments");
+      else if (index === 1) navigate("/hr/pending-assessments");
+    }
+  },
+  animation: { duration: 1000, easing: "easeOutQuart" },
+};
   const renderSidebarOverlay = () =>
     isMobile() && sidebarOpen ? (
       <div
@@ -396,18 +399,18 @@ const HrDashboard = () => {
               <img src={logo} alt="Nikitha PMS" className="hr-dashboard-logo" />
               <h1 className="hr-dashboard-title">HR PMS Dashboard</h1>
             </div>
-            <div className="hr-dashboard-actions">
-              <Bell className=".hr-dashboard-notificationButton" onClick={() => setNotificationOpen(!notificationOpen)} />
-              <button
-                className="hr-dashboard-logoutButton desktop-only"
-                onClick={() => {
-                  localStorage.clear();
-                  navigate("/");
-                }}
-              >
-                Logout
-              </button>
-            </div>
+            <div style={{ position: "relative" }}>
+  <Bell
+    className="hr-dashboard-notificationButton"
+    onClick={() => {
+      setNotificationOpen(!notificationOpen);
+      if (!notificationOpen) setNotificationCount(0);
+    }}
+  />
+  {notificationCount > 0 && (
+    <span className="notification-badge">{notificationCount}</span>
+  )}
+</div>
           </header>
 
           <section className="hr-dashboard-stats-container fade-in-up">

@@ -79,7 +79,7 @@ function App() {
           <Route exact path="/hr/completed-assessments"  element={<CompletedList/>}/>
 
           <Route exact path="/employee-performance"  element={<Performance/>}/>
-          <Route exact path="/add-krakpi"  element={<KrakpiRegistration/>}/>
+          <Route exact path="/add-krakpi/:id"  element={<KrakpiRegistration/>}/>
 
 
 

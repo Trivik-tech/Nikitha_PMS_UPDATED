@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import Modal from '../modal/Modal';
 import { Link } from 'react-router-dom';
 import Loader from '../modal/loader/Loader';
+import { baseUrl } from '../urls/CommenUrl';
 
 const Login = () => {
   const [login, setLogin] = useState({ username: '', password: '' });
@@ -19,47 +20,8 @@ const Login = () => {
   const navigation = useNavigate();
   const { username, password } = login;
 
-  const onInputChange = (e) => {  
+  const onInputChange = (e) => {
     setLogin({ ...login, [e.target.name]: e.target.value });
-  };
-
-  const handleHardcodedLogin = (e) => {
-    e.preventDefault();
-    
-    // Handle validation for username and password fields individually
-    if (!username.trim() && !password.trim()) {
-      setErrorMessage('Username and password are required.');
-      setTitle('Login Error');
-      setShowModal(true);
-      return;
-    }
-
-    if (!username.trim()) {
-      setErrorMessage('Username is required.');
-      setTitle('Login Error');
-      setShowModal(true);
-      return;
-    }
-
-    if (!password.trim()) {
-      setErrorMessage('Password is required.');
-      setTitle('Login Error');
-      setShowModal(true);
-      return;
-    }
-
-    // Check hardcoded login credentials
-    if (username === 'MG1234' && password === '12345') {
-      navigation('/manager-dashboard');
-    } else if (username === 'HR1234' && password === '12345') {
-      navigation('/hr-dashboard');
-    } else if (username === 'EMP1234' && password === '12345') {
-      navigation('/employee-dashboard');
-    } else {
-      setErrorMessage('Invalid credentials. Please try again.');
-      setTitle('Login Error');
-      setShowModal(true);
-    }
   };
 
   const onSubmit = async (e) => {
@@ -69,8 +31,32 @@ const Login = () => {
     setShowModal(false);
     setLoading(true);
 
+    if (!username.trim() && !password.trim()) {
+      setErrorMessage('Username and password are required.');
+      setTitle('Login Error');
+      setShowModal(true);
+      setLoading(false);
+      return;
+    }
+
+    if (!username.trim()) {
+      setErrorMessage('Username is required.');
+      setTitle('Login Error');
+      setShowModal(true);
+      setLoading(false);
+      return;
+    }
+
+    if (!password.trim()) {
+      setErrorMessage('Password is required.');
+      setTitle('Login Error');
+      setShowModal(true);
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await axios.post('http://localhost:8080/api/v1/pms/auth/login', login);
+      const response = await axios.post(`${baseUrl}/api/v1/pms/auth/login`, login);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
         await navigateTo(response.data.token);
@@ -84,6 +70,7 @@ const Login = () => {
         setTitle('Server Error');
       } else {
         setErrorMessage('An unexpected error occurred. Please try again later.');
+        setTitle('Unexpected Error');
       }
       setShowModal(true);
     } finally {
@@ -93,7 +80,7 @@ const Login = () => {
 
   const navigateTo = async (token) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/pms/auth/${token}`);
+      const response = await axios.get(`${baseUrl}/api/v1/pms/auth/${token}`);
       if (response.data.role === 'MANAGER') {
         navigation('/manager-dashboard');
       } else if (response.data.role === 'HR') {
@@ -123,7 +110,7 @@ const Login = () => {
         <h1>PMS</h1>
         <h3>Login</h3>
 
-        <form onSubmit={handleHardcodedLogin}>
+        <form>
           <div className="login-input-group">
             <label htmlFor="username">Username</label>
             <div className="login-input-wrapper">
@@ -161,7 +148,13 @@ const Login = () => {
             <a href="/forgot-password" className="login-forgot-password">Forgot password?</a>
           </div>
 
-          <button type="submit" className="login-button" >Login</button>
+          <button
+            type="submit"
+            className="login-button"
+            onClick={(e) => onSubmit(e)}
+          >
+            Login
+          </button>
         </form>
       </div>
 

@@ -278,6 +278,14 @@ body::-webkit-scrollbar {
     background-color: rgb(177, 216, 231);
     transform: translateY(-2px);
 }
+.employee-module-review-submit-review-btn:disabled,.employee-module-review-draft-btn:disabled {
+  background-color: #cccccc !important;
+  color: #888888 !important;
+  cursor: not-allowed !important;
+  opacity: 0.7;
+  border: 1px solid #bbbbbb !important;
+  box-shadow: none !important;
+}
 
 /* Animation Keyframes */
 @keyframes fadeIn {

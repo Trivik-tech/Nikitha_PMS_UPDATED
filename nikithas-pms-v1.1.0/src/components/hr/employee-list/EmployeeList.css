@@ -1,14 +1,13 @@
-/* Updated CSS */
 body {
   min-height: 100vh;
   background-color: var(--base-clr);
+  color: var(--text-clr);
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: var(--text-clr);
-  margin: 0;
-  overflow: hidden;
-  padding: 0;
 }
 
 .employee-list-container {
@@ -24,38 +23,39 @@ body {
 }
 
 .employee-list-content {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  flex: 1;
   padding: 20px;
-  animation: slideUp 0.6s ease-in-out;
   overflow-y: auto;
+  animation: slideUp 0.6s ease-in-out;
 }
 
-.employee-list-header {
+/* Unified Header */
+.employee-list-header-flex {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  position: sticky;
+  justify-content: space-between; /* Keep logo and title at ends */
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 20px;
+  border-bottom: 1px solid #ddd;
   background: white;
   z-index: 100;
-  border-bottom: 1px solid #ddd;
-  height: 25%;
-  width: 100%;
   animation: slideDown 0.5s ease-in-out;
 }
 
-.employee-list-header-title {
+
+.employee-list-left {
   display: flex;
   align-items: center;
   gap: 10px;
-  flex-wrap: nowrap;
-  color: #525252;
-  margin-left: 0;
 }
 
-.hr-module-employee-list-text {
+.employee-list-title {
   font-size: 25px;
+  font-weight: 600;
+  color: #525252;
 }
 
 .employee-list-home-icon {
@@ -68,103 +68,69 @@ body {
 .employee-list-home-icon:hover {
   transform: scale(1.1);
   color: #0056b3;
+  align-self: start;
 }
 
-.employee-list-search-filter-container {
+.employee-list-center {
   display: flex;
   align-items: center;
-  gap: 10px;
-  position: relative;
-  animation: fadeIn 0.8s ease-in-out;
+  gap: 8px;
+  flex: 1;
+  max-width: 400px;
 }
 
-.employee-list-search-bar {
-  position: relative;
+.employee-list-center input {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
 }
 
 .employee-list-search-icon {
-  position: absolute;
-  left: 47%;
-  top: 50%;
-  transform: translateY(-50%);
   color: gray;
 }
 
-.employee-list-search-bar input {
-  padding: 8px 10px 8px 30px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 300px;
-  margin-left: 15rem;
-  transition: box-shadow 0.3s ease-in-out;
-}
-
-.employee-list-search-bar input:focus {
-  box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.6);
-}
-
-.employee-list-filter-button {
-  background: none;
-  border: 1px solid #ccc;
-  padding: 8px 12px;
-  border-radius: 5px;
-  font-size: 16px;
+.employee-list-right {
   display: flex;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.3s ease-in-out;
-}
-
-.employee-list-filter-button:hover {
-  background: #f1f1f1;
-  transform: scale(1.1);
-}
-
-.employee-list-filter-icon {
-  color: gray;
-  font-size: 16px;
+  align-items: center;
+  gap: 15px;
 }
 
 .employee-list-company-logo {
-  width: 120px;
-  height: auto;
+  height: 80px;
+  width: 100px;
   object-fit: contain;
-  margin-bottom: 5%;
   animation: zoomIn 0.6s ease-in-out;
 }
 
-.employee-list-add-button-container {
-  display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-  margin-top: 9%;
-}
-
-.employee-list-add-button-container .employee-list-add-button {
+.employee-list-add-button {
   background-color: #565756;
+  align-items: center;
   color: white;
-  position: absolute;
-  bottom: 15px;
-  left: 85%;
-  padding: 10px 15px;
+  padding: 5px 40px; /* Increased horizontal padding */
   border: none;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   border-radius: 5px;
-  transition: background 0.3s, transform 0.3s ease-in-out;
   text-decoration: none;
+  transition: background 0.3s, transform 0.3s ease-in-out;
+  width: 100%;
+  text-align: center;
 }
+
 
 .employee-list-add-button:hover {
   background-color: #333533;
-  transform: scale(1);
+  transform: scale(1.05);
 }
 
+/* Table */
 .employee-list-table-container {
   flex: 1;
   overflow-y: auto;
   max-height: calc(95vh - 240px);
-  animation: fadeIn 0.8s ease-in-out;
   margin-bottom: 20px;
+  animation: fadeIn 0.8s ease-in-out;
 }
 
 .employee-list-team-table {
@@ -172,6 +138,7 @@ body {
   border-collapse: collapse;
 }
 
+.employee-list-team-table th,
 .employee-list-team-table td {
   padding: 15px;
   text-align: center;
@@ -180,15 +147,13 @@ body {
 
 .employee-list-team-table th {
   background: #f1f1f1;
-  padding: 10px;
-  text-align: center;
-  border-bottom: 1px solid #ddd;
   position: sticky;
   top: 0;
   z-index: 10;
   animation: fadeIn 0.5s ease-in-out;
 }
 
+/* Action icons */
 .employee-list-edit-icon,
 .employee-list-delete-icon {
   cursor: pointer;
@@ -201,18 +166,19 @@ body {
   color: #007bff;
 }
 
-.employee-list-delete-icon {
-  color: #dc3545;
-}
-
 .employee-list-edit-icon:hover {
   color: #0056b3;
+}
+
+.employee-list-delete-icon {
+  color: #dc3545;
 }
 
 .employee-list-delete-icon:hover {
   color: #a71d2a;
 }
 
+/* Pagination */
 .employee-list-pagination {
   display: flex;
   justify-content: flex-end;
@@ -221,9 +187,9 @@ body {
   padding: 15px;
   background: white;
   border-top: 1px solid #ddd;
-  animation: fadeIn 0.8s ease-in-out;
   position: sticky;
   bottom: 0;
+  animation: fadeIn 0.8s ease-in-out;
 }
 
 .employee-list-pagination button {
@@ -245,94 +211,20 @@ body {
   font-weight: bold;
 }
 
-/* Tablet View */
-@media (max-width: 1024px) {
-  .employee-list-container {
-    width: 95vw;
-  }
-
-  .employee-list-header {
+/* Media Query for Mobile */
+/* @media (max-width: 768px) {
+  .employee-list-header-flex {
     flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 10px;
+    align-items: flex-start;
   }
 
-  .employee-list-search-bar {
-    display: flex;
-    width: 80%;
-    max-width: 100%;
-    margin-top: 0.5rem;
-  }
-
-  .employee-list-pagination {
-    justify-content: center;
-  }
-}
-
-/* Mobile View */
-@media (max-width: 768px) {
-  .employee-list-header {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .employee-list-search-bar {
-    width: 90%;
-  }
-
-  .employee-list-team-table th,
-  .employee-list-team-table td {
-    padding: 10px;
-    font-size: 14px;
-  }
-
-  .employee-list-add-button-container {
-    justify-content: center;
-    margin-top: 5%;
-  }
-
-  .employee-list-pagination {
-    flex-direction: column;
-    gap: 5px;
-    align-items: center;
-  }
-}
-
-/* Small Screen View */
-@media (max-width: 480px) {
-  .employee-list-container {
-    width: 98vw;
-    height: auto;
-  }
-
-  .employee-list-header-title {
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-  }
-
-  .employee-list-home-icon {
-    font-size: 1.8rem;
-  }
-
-  .employee-list-search-bar {
+  .employee-list-center,
+  .employee-list-right {
     width: 100%;
   }
 
-  .employee-list-team-table th,
-  .employee-list-team-table td {
-    padding: 8px;
-    font-size: 12px;
+  .employee-list-company-logo {
+    height: 35px;
+    width: 50px;
   }
-
-  .employee-list-pagination {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .employee-list-add-button {
-    width: 100%;
-    text-align: center;
-  }
-}
+} */

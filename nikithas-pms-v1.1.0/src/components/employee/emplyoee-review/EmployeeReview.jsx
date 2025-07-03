@@ -18,12 +18,19 @@ const PerformanceReview = () => {
   const [employeeName, setEmployeeName] = useState("");
   const [designation, setDesignation] = useState("");
   const [department, setDepartment] = useState("");
+  const [selfCompleted, setSelfCompleted] = useState(false); // <-- NEW STATE
 
   const { id: employeeId } = useParams();
 
   const handleSelfScoreChange = (kraIndex, kpiIndex, value) => {
+    let numericValue = Number(value);
+    const weightage = krakpi[kraIndex].kpi[kpiIndex].weightage;
+
+    if (numericValue < 0) numericValue = 0;
+    if (numericValue > weightage) numericValue = weightage;
+
     const updatedKra = [...krakpi];
-    updatedKra[kraIndex].kpi[kpiIndex].selfScore = Number(value);
+    updatedKra[kraIndex].kpi[kpiIndex].selfScore = numericValue;
     setKraKpi(updatedKra);
   };
 
@@ -45,7 +52,7 @@ const PerformanceReview = () => {
   };
 
   const printHandler = () => {
-    window.print(); // basic browser print
+    window.print();
   };
 
   useEffect(() => {
@@ -58,6 +65,7 @@ const PerformanceReview = () => {
         setEmployeeName(result.data.employee.name);
         setDueDate(result.data.dueDate || "20/5/2025");
         setSelfReviewDate(result.data.selfReviewDate || "15/5/2025");
+        setSelfCompleted(result.data.selfCompleted === true); // <-- SET SELF COMPLETED
       } catch (error) {
         console.error(error);
       }
@@ -96,7 +104,7 @@ const PerformanceReview = () => {
 
       const result = await axios.put(`${baseUrl}/api/v1/pms/employee/self-review/${employeeId}`, payload);
       console.log("Review submitted:", payload);
-      console.log(result.data)
+      console.log(result.data);
     } catch (error) {
       console.error("Error submitting review:", error);
     }
@@ -139,7 +147,6 @@ const PerformanceReview = () => {
       <div className="employee-module-review-sections">
         {krakpi.map((kra, kraIndex) => (
           <div key={kraIndex} className="employee-module-review-section">
-            {/* WRAP header + table for proper responsive scroll alignment */}
             <div className="employee-module-review-section-inner">
               <div className="employee-module-review-section-header">
                 <h3>KRA - {kra.kraName}</h3>
@@ -161,8 +168,11 @@ const PerformanceReview = () => {
                       <td>
                         <input
                           type="number"
+                          min="0"
+                          max={kpi.weightage}
                           value={kpi.selfScore || ""}
                           onChange={(e) => handleSelfScoreChange(kraIndex, kpiIndex, e.target.value)}
+                          disabled={selfCompleted} // <-- DISABLE ON SELF COMPLETED
                         />
                       </td>
                     </tr>
@@ -176,8 +186,16 @@ const PerformanceReview = () => {
 
       <div className="employee-module-review-actions">
         <button className="employee-module-review-print-btn" onClick={printHandler}>Print</button>
-        <button className="employee-module-review-draft-btn" onClick={draftSave}>Save as Draft</button>
-        <button className="employee-module-review-submit-review-btn" onClick={reviewSubmit}>Submit Review</button>
+        <button className="employee-module-review-draft-btn" onClick={draftSave} 
+        disabled={selfCompleted}
+        >Save as Draft</button>
+        <button
+          className="employee-module-review-submit-review-btn"
+          onClick={reviewSubmit}
+          disabled={selfCompleted} // <-- DISABLE ON SELF COMPLETED
+        >
+          Submit Review
+        </button>
       </div>
     </div>
   );

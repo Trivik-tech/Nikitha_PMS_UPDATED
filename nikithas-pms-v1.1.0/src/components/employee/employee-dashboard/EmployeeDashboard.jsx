@@ -27,10 +27,16 @@ const employeeData = {
 
 const EmployeeDashboard = () => {
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0); // ✅ NEW: Notification badge count
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [newAndUndelivered, setNewAndUndelivered] = useState([]);
   const jwtToken = localStorage.getItem("token");
+
+  // Helper for closing sidebar
+  const handleSidebarClose = () => {
+    setSidebarOpen(false);
+  };
 
   useEffect(() => {
     const socket = new SockJS(`http://localhost:8080/ws?token=${jwtToken}`);
@@ -45,9 +51,9 @@ const EmployeeDashboard = () => {
             message: message.body,
             timestamp: new Date().toISOString()
           };
-
+setNotificationOpen(true);
           setNewAndUndelivered(prev => [newMsg, ...prev]);
-
+setNotificationCount(prev => prev + 1); // ✅ INCREASE count for red badge
           try {
             const res = await axios.get(`${baseUrl}/api/v1/pms/recent`, {
               headers: { Authorization: `Bearer ${jwtToken}` }
@@ -108,19 +114,23 @@ const EmployeeDashboard = () => {
 
     client.activate();
     return () => client.deactivate();
+    // eslint-disable-next-line
   }, []);
 
   const handleNotificationToggle = () => {
-    setNotificationOpen(!notificationOpen);
-    if (!notificationOpen) setNewAndUndelivered([]);
-  };
+  setNotificationOpen(!notificationOpen);
+  if (!notificationOpen) {
+    setNewAndUndelivered([]);
+    setNotificationCount(0); // ✅ RESET red badge when opened
+  }
+};
 
   return (
     <div className="employee-dashboard-container">
       {/* Sidebar Overlay */}
       <div
         className={`employee-dashboard-sidebar-overlay ${sidebarOpen ? 'visible' : 'hidden'}`}
-        onClick={() => setSidebarOpen(false)}
+        onClick={handleSidebarClose}
         style={{ display: sidebarOpen ? 'block' : 'none' }}
       />
 
@@ -139,9 +149,9 @@ const EmployeeDashboard = () => {
       >
         <div style={{ position: 'relative' }}>
           <Bell className="employee-dashboard-notificationButton" />
-          {newAndUndelivered.length > 0 && (
-            <span className="notif-count">{newAndUndelivered.length}</span>
-          )}
+         {notificationCount > 0 && (
+  <span className="notif-count">{notificationCount}</span>
+)}
         </div>
       </div>
 
@@ -152,10 +162,18 @@ const EmployeeDashboard = () => {
           <h2 className="employee-name">{employeeData.name}</h2>
         </div>
         <ul>
-          <li><Link to="/employee-dashboard" className="active" onClick={() => setSidebarOpen(false)}>My Dashboard</Link></li>
-          <li><Link to={`/self-review/${employeeData.id}`} onClick={() => setSidebarOpen(false)}>Start PMS</Link></li>
-          <li><Link to="/employee-performance" onClick={() => setSidebarOpen(false)}>My Performance</Link></li>
-          <li><Link to="/add-krakpi" onClick={() => setSidebarOpen(false)}>Add KRA|KPI</Link></li>
+          <li>
+            <Link to="/employee-dashboard" className="active" onClick={handleSidebarClose}>My Dashboard</Link>
+          </li>
+          <li>
+            <Link to={`/self-review/${employeeData.id}`} onClick={handleSidebarClose}>Start PMS</Link>
+          </li>
+          <li>
+            <Link to="/employee-performance" onClick={handleSidebarClose}>My Performance</Link>
+          </li>
+          <li>
+            <Link to={`/add-krakpi/${employeeData.id}`} onClick={handleSidebarClose}>Add KRA|KPI</Link>
+          </li>
         </ul>
         <Link to="/" className="employee-sidebar-logout-btn">Logout</Link>
       </aside>
@@ -171,9 +189,9 @@ const EmployeeDashboard = () => {
                 className="employee-dashboard-notificationButton employee-dashboard-bell-desktop"
                 onClick={handleNotificationToggle}
               />
-              {newAndUndelivered.length > 0 && (
-                <span className="notif-count">{newAndUndelivered.length}</span>
-              )}
+              {notificationCount > 0 && (
+  <span className="notif-count">{notificationCount}</span>
+)}
             </div>
             <Link to="/" className="employee-logout-btn">Logout</Link>
           </div>
