@@ -377,6 +377,7 @@ const HrDashboard = () => {
   return (
     <>
       <div className="hr-dashboard-container">
+        {/* Sidebar */}
         <aside
           className={`hr-dashboard-sidebar${sidebarOpen ? " open" : " closed"}${isMobile() ? " mobile" : ""}`}
           style={
@@ -391,12 +392,12 @@ const HrDashboard = () => {
               : {}
           }
         >
-          {isMobile() && sidebarOpen && (
+          {/* Hamburger only for mobile and only when sidebar is open */}
+          {isMobile() && (
             <button
-              className="hamburger sidebar-hamburger"
+              className="sidebar-hamburger"
               aria-label="Close sidebar"
               onClick={() => setSidebarOpen(false)}
-              style={{ position: "absolute", top: 5, right: 150 }}
             >
               ☰
             </button>
@@ -423,12 +424,12 @@ const HrDashboard = () => {
 
         <main className="hr-dashboard-main-content">
           <header className="hr-dashboard-header fade-in-down">
+            {/* Hamburger for opening sidebar */}
             {isMobile() && !sidebarOpen && (
               <button
                 className="hamburger"
                 aria-label="Open sidebar"
                 onClick={() => setSidebarOpen(true)}
-                style={{ top: -7, left: -30 }}
               >
                 ☰
               </button>

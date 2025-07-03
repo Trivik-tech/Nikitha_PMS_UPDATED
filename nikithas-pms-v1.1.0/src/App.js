@@ -99,7 +99,8 @@ function App() {
             <Route path="/auth/:token" element={<AuthHandler />} />
 
             {/* HR Routes */}
-            <Route path="/hr-dashboard" element={<RequireAuth allowedRoles={['HR']}><HrDashboard /></RequireAuth>} />
+            <Route path="/hr-dashboard" element={<HrDashboard />} />
+            {/* <Route path="/hr-dashboard" element={<RequireAuth allowedRoles={['HR']}><HrDashboard /></RequireAuth>} /> */}
             <Route path="/add-employee" element={<RequireAuth allowedRoles={['HR']}><EmployeeDetails /></RequireAuth>} />
             <Route path="/hr-profile" element={<RequireAuth allowedRoles={['HR']}><HrProfile /></RequireAuth>} />
             <Route path="/hr-startpms" element={<RequireAuth allowedRoles={['HR']}><StartPms /></RequireAuth>} />

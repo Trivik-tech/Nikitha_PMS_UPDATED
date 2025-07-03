@@ -128,16 +128,15 @@ const Login = () => {
           </div>
 
           <div className="login-links-container">
-            {/* <span>
-              Not Registered? <Link to="/signup" className="login-register-link">Register</Link>
-            </span> */}
+            
             <a href="/forgot-password" className="login-forgot-password">Forgot password?</a>
           </div>
 
           <button
             type="submit"
             className="login-button"
-            onClick={(e) => onSubmit(e)}
+            // onClick={(e) => onSubmit(e)}
+            
           >
             Login
           </button>
