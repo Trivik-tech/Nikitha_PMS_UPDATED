@@ -97,7 +97,7 @@ body {
 /* Proper placement of the search icon inside input */
 .hr-pending-search-icon {
   position: absolute;
-  left: 45px; /* Align icon inside input */
+  left: 10px; /* Align icon inside input */
   top: 50%;
   transform: translateY(-50%);
   color: gray;

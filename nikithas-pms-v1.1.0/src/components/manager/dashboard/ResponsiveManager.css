@@ -1,6 +1,4 @@
-
 @media screen and (max-width: 768px) {
-
   .sidebar-toggle {
     display: block;
     position: absolute;
@@ -12,7 +10,6 @@
     cursor: pointer;
     z-index: 1100;
   }
-  
 
   .sidebar {
     position: fixed;
@@ -42,7 +39,6 @@
   .profile-pic {
     width: 100px !important;
     height: 100px !important;
-    
     border-radius: 50%;
   }
 
@@ -53,13 +49,11 @@
 
   .sidebar ul li {
     text-align: center;
-    /* padding: 10px 0; */
   }
 
   .sidebar ul li a {
     text-decoration: none;
     color: black;
-    
   }
 
   .sidebar ul li a.active {
@@ -71,13 +65,13 @@
     display: none;
   }
 
+  /* ✅ Updated notification icon style */
   .notification-icon {
-    position: absolute;
-    top: 10px;
-    right: 15px;
+    position: fixed;
+    top: 23px;
+    right: 20px;
     z-index: 1200;
-    font-size: 24px;
-    cursor: pointer;
+    font-size: 26px;
   }
 
   .dashboard-header {
@@ -123,7 +117,6 @@
   }
 
   .chart-container {
-    /* margin-top: 5px; */
     margin-bottom: 50px;
   }
 
