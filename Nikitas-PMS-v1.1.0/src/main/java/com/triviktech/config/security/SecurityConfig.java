@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/v1/auth/**",
+                                "/api/v1/pms/auth/**",
                                 "/ws/**",
                                 "/api/v1/pms/hr/upload",
                                 "/api/v1/pms/employee/register-kra-kpi"
