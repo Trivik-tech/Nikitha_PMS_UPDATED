@@ -50,7 +50,7 @@ public class Employee {
     private String role;
 
     @NotEmpty(message = "HR name Should not be empty")
-    private String hrName;
+    private String hrId;
 
 
 
@@ -167,11 +167,11 @@ public class Employee {
         this.emailId = emailId;
     }
 
-    public  String getHrName() {
-        return hrName;
+    public @NotEmpty(message = "HR name Should not be empty") String getHrId() {
+        return hrId;
     }
 
-    public void setHrName( String hrName) {
-        this.hrName = hrName;
+    public void setHrId(@NotEmpty(message = "HR name Should not be empty") String hrId) {
+        this.hrId = hrId;
     }
 }

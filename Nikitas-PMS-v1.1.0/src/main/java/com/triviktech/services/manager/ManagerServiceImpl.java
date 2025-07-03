@@ -604,6 +604,17 @@ public class ManagerServiceImpl implements ManagerService {
         return new PmsPercentageDto(completedPercentage, pendingPercentage);
     }
 
+    @Override
+    public Map<String, Integer> getTimeSize(String managerId) {
+        Optional<Manager> optionalManager = managerRepository.findByManagerId(managerId);
+        if(optionalManager.isEmpty()){
+            throw new ManagerNotFoundException(managerId);
+        }
+        Manager manager = optionalManager.get();
+        int size = employeeInformationRepository.findAllByManager(manager).size();
+        return Map.of("team",size);
+    }
+
     // Helper record to carry both Employee and KraKpi together in the stream
     private record EmployeeWithKraKpi(EmployeeInformation employee, KraKpi kraKpi) {
     }

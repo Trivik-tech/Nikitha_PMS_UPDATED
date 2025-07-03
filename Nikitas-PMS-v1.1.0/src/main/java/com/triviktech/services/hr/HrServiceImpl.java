@@ -7,6 +7,7 @@ import com.triviktech.entities.krakpi.KraKpi;
 import com.triviktech.entities.manager.Manager;
 import com.triviktech.exception.employee.EmployeeAlreadyExistsException;
 import com.triviktech.exception.employee.EmployeeNotFoundException;
+import com.triviktech.exception.hr.HRNotFoundException;
 import com.triviktech.exception.krakpi.KraKpiNotFoundException;
 import com.triviktech.exception.manager.ManagerAlreadyExistsException;
 import com.triviktech.exception.validation.InvalidEmailIdException;
@@ -648,6 +649,18 @@ public class HrServiceImpl implements HrService {
     }
 
     @Override
+    public HrResponseDto profile(String hrId) {
+        Optional<HR> byId = hrRepository.findById(hrId);
+        if(byId.isEmpty()){
+            throw new HRNotFoundException(hrId);
+        }
+        HR hr = byId.get();
+        HrResponseDto response = entityDtoConversion.entityToDtoConversion(hr, HrResponseDto.class);
+        response.setDepartment(hr.getDepartment().getName());
+        return response;
+    }
+
+    @Override
     public List<EmployeeInfo> employeesWithKraKpiApproval() {
         List<EmployeeInformation> allEmployees = employeeInformationRepository.findAll();
 
@@ -853,8 +866,8 @@ public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> p
             }
 
             // Set HR
-            if (employee.getHrName() != null && !employee.getHrName().trim().isEmpty()) {
-                Optional<HR> optionalHR = hrRepository.findByName(employee.getHrName());
+            if (employee.getHrId() != null && !employee.getHrId().trim().isEmpty()) {
+                Optional<HR> optionalHR = hrRepository.findById(employee.getHrId());
                 optionalHR.ifPresent(employeeInformation::sethR);
             }
 
@@ -897,8 +910,8 @@ public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> p
             }
 
             // Set HR
-            if (employee.getHrName() != null && !employee.getHrName().trim().isEmpty()) {
-                Optional<HR> hrOpt = hrRepository.findByName(employee.getHrName());
+            if (employee.getHrId() != null && !employee.getHrId().trim().isEmpty()) {
+                Optional<HR> hrOpt = hrRepository.findById(employee.getHrId());
                 hrOpt.ifPresent(manager::setHR);
             }
 

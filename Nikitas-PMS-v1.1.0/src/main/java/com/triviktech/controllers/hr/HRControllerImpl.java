@@ -15,6 +15,7 @@ import com.triviktech.services.notification.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -215,4 +216,16 @@ public ResponseEntity<Map<String, String>> notifyEmployeeAndManager(String emplo
         ));
     }
 }
+
+    @Override
+    public ResponseEntity<Map<String, HrResponseDto>> profile(UserDetails hr) {
+        Map<String,HrResponseDto> response=new HashMap<>();
+        HrResponseDto profile = hrService.profile(hr.getUsername());
+        if(profile!=null){
+            response.put("profile",profile);
+            return ResponseEntity.ok(response);
+        }
+        response.put("message",null);
+        return ResponseEntity.ok(response);
+    }
 }

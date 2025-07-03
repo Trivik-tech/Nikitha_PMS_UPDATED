@@ -58,5 +58,7 @@ public interface HrService {
 
     PmsPercentageDto getPmsPercentageForHR();
 
+    HrResponseDto profile(String hrId);
+
 
 }

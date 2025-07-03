@@ -5,6 +5,7 @@ import "./CompletedListResponsive.css";
 import { FaSearch, FaHome } from "react-icons/fa";
 import logo from '../../../../assets/images/nikithas-logo.png';
 import axios from "axios";
+import {baseUrl} from '../../../urls/CommenUrl'
 
 export default function CompletedList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -12,6 +13,7 @@ export default function CompletedList() {
   const [employees, setEmployees] = useState([]);
   const navigate = useNavigate();
   const entriesPerPage = 6;
+  const token =localStorage.getItem('token')
 
   useEffect(() => {
     document.body.classList.add("fade-in");
@@ -24,7 +26,11 @@ export default function CompletedList() {
 
   const loadCompletedEmployees = async () => {
     try {
-      const result = await axios.get("http://localhost:8080/api/v1/pms/hr/completed");
+      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/completed`,{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      });
       setEmployees(result.data);
       console.log(result.data);
     } catch (error) {

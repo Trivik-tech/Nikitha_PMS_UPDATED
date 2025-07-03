@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../modal/Modal';
 import Loader from '../modal/loader/Loader';
+import {baseUrl} from '../urls/CommenUrl'
 
 const Forgot = () => {
   const [email, setEmail] = useState('');
@@ -39,7 +40,7 @@ const Forgot = () => {
   setLoading(true);
 
   try {
-    const response = await axios.post(`http://localhost:8080/api/v1/pms/auth/generate?email=${email}`,{},{withCredentials:true});
+    const response = await axios.post(`${baseUrl}/api/v1/pms/auth/generate?email=${email}`,{},{withCredentials:true});
     console.log(response.data);
 
     setModalTitle('Success');

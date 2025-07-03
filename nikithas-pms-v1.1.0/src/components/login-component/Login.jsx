@@ -6,7 +6,6 @@ import './LoginResponsive.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../modal/Modal';
-import { Link } from 'react-router-dom';
 import Loader from '../modal/loader/Loader';
 import { baseUrl } from '../urls/CommenUrl';
 
@@ -31,6 +30,7 @@ const Login = () => {
     setShowModal(false);
     setLoading(true);
 
+    // Client-side validation
     if (!username.trim() && !password.trim()) {
       setErrorMessage('Username and password are required.');
       setTitle('Login Error');
@@ -59,7 +59,8 @@ const Login = () => {
       const response = await axios.post(`${baseUrl}/api/v1/pms/auth/login`, login);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
-        await navigateTo(response.data.token);
+        // Redirect to /auth/:token to trigger AuthHandler
+        navigation(`/auth/${response.data.token}`);
       }
     } catch (error) {
       if (error.response) {
@@ -75,21 +76,6 @@ const Login = () => {
       setShowModal(true);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const navigateTo = async (token) => {
-    try {
-      const response = await axios.get(`${baseUrl}/api/v1/pms/auth/${token}`);
-      if (response.data.role === 'MANAGER') {
-        navigation('/manager-dashboard');
-      } else if (response.data.role === 'HR') {
-        navigation('/hr-dashboard');
-      } else if (response.data.role === 'EMPLOYEE') {
-        navigation('/employee-dashboard');
-      }
-    } catch (error) {
-      console.error('Error navigating:', error);
     }
   };
 

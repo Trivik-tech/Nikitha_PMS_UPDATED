@@ -10,6 +10,8 @@ import com.triviktech.payloads.response.employee.PmsPercentageDto;
 import com.triviktech.payloads.response.hr.HrResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -83,4 +85,7 @@ public interface HRController {
 
     @PostMapping("/notify/employee-and-manager/{employeeId}")
     ResponseEntity<Map<String, String>> notifyEmployeeAndManager(@PathVariable String employeeId);
+
+    @GetMapping("/profile")
+    ResponseEntity<Map<String,HrResponseDto>> profile(@AuthenticationPrincipal UserDetails hr);
 }

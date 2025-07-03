@@ -19,10 +19,15 @@ export default function EmployeeList() {
   const [employeeToDelete, setEmployeeToDelete] = useState(null);
   const [employeeName, setEmployeeName] = useState(null);
   const navigate = useNavigate();
+  const token=localStorage.getItem('token')
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees`);
+      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees`,{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      });
       const employees = response.data;
       setTeam(employees);
       setHasServerError(false);
@@ -65,7 +70,11 @@ export default function EmployeeList() {
       return;
     }
     try {
-      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees/${search}`);
+      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees/${search}`,{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      });
       const employees = response.data;
       setTeam(employees);
       setHasServerError(false);
@@ -85,7 +94,11 @@ export default function EmployeeList() {
     if (!employeeToDelete) return;
 
     try {
-      await axios.delete(`${baseUrl}/api/v1/pms/hr/delete-employee/${employeeToDelete}`);
+      await axios.delete(`${baseUrl}/api/v1/pms/hr/delete-employee/${employeeToDelete}`,{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      });
       setEmployeeToDelete(null);
       setModalOpen(false);
       fetchEmployees();

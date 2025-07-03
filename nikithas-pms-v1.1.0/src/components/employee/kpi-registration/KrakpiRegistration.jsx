@@ -9,6 +9,7 @@ import axios from "axios";
 import { baseUrl } from "../../urls/CommenUrl";
 import Modal from "../../modal/Modal"; // Import Modal
 
+
 const MAX_KRA = 5;
 const MAX_KPI = 5;
 
@@ -28,6 +29,7 @@ const Krakpi = () => {
 
   const { id: employeeId } = useParams();
   const navigate = useNavigate(); // <-- ADD THIS
+  const token=localStorage.getItem('token')
 
   // State to track if we need to redirect after OK on modal
   const [redirectToDashboard, setRedirectToDashboard] = useState(false);
@@ -158,7 +160,11 @@ const Krakpi = () => {
 
       const response = await axios.post(
         `${baseUrl}/api/v1/pms/employee/register-kra-kpi`,
-        payload
+        payload,{
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        }
       );
 
       openModal("Success", "KRA/KPI submitted successfully!", true); // <--- redirect after OK
@@ -177,7 +183,11 @@ const Krakpi = () => {
       if (!employeeId) return;
       try {
         const result = await axios.get(
-          `${baseUrl}/api/v1/pms/employee/check-kra-kpi/${employeeId}`
+          `${baseUrl}/api/v1/pms/employee/check-kra-kpi/${employeeId}`,{
+            headers:{
+              Authorization:`Bearer ${token}`
+            }
+          }
         );
         // Assuming result.data.status indicates if KRA/KPI is already registered
         if (result.data && result.data.status === true) {

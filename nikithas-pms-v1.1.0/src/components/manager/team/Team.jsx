@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useParams } from "react-router-dom";
 import axios from "axios";
 import "./Team.css";
 import "./ResponsiveTeam.css";
@@ -16,22 +16,33 @@ export default function TeamPage() {
   const navigate = useNavigate();
   const entriesPerPage = 6;
   const intervalRef = useRef(null);
-  const jwtToken = localStorage.getItem("token");
+  const { id: managerId } = useParams();
+
+  // Only poll if on desktop/laptop, not on mobile (to avoid issues with mobile browser timers)
+  const isMobile = () =>
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
 
   const loadTeam = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
+      if (!token || !managerId) {
+        setTeamList([]);
+        setLoading(false);
+        return;
+      }
       const result = await axios.get(
-        `${baseUrl}/api/v1/pms/manager/employee-list/EMP1234`,
+        `${baseUrl}/api/v1/pms/manager/employee-list/${managerId}`,
         {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
-      setTeamList(result.data);
-      // console.log(result.data)
+      setTeamList(Array.isArray(result.data) ? result.data : []);
     } catch (error) {
+      setTeamList([]);
       console.error("Error fetching team list:", error);
     } finally {
       setLoading(false);
@@ -39,11 +50,18 @@ export default function TeamPage() {
   };
 
   useEffect(() => {
+    setLoading(true);
     loadTeam();
-    intervalRef.current = setInterval(loadTeam, 1000);
-    return () => clearInterval(intervalRef.current);
+
+    if (!isMobile()) {
+      intervalRef.current = setInterval(loadTeam, 1000);
+    }
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
     // eslint-disable-next-line
-  }, []);
+  }, [managerId]);
 
   const filteredTeam = teamList.filter(
     (member) =>
@@ -51,7 +69,7 @@ export default function TeamPage() {
       member.officialEmailId?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filteredTeam.length / entriesPerPage);
+  const totalPages = Math.max(1, Math.ceil(filteredTeam.length / entriesPerPage));
   const startIndex = (currentPage - 1) * entriesPerPage;
   const currentEntries = filteredTeam.slice(
     startIndex,
@@ -138,7 +156,11 @@ export default function TeamPage() {
                       <td>{member.officialEmailId || "-"}</td>
                       <td onClick={(e) => e.stopPropagation()}>
                         <Link
-                          to={pmsEnabled ? `/manager-review/${member.empId}/EMP1234` : "#"}
+                          to={
+                            pmsEnabled
+                              ? `/manager-review/${member.empId}/${managerId}`
+                              : "#"
+                          }
                           className={`manager-team-start-pms-button ${
                             pmsEnabled ? "" : "disabled"
                           }`}

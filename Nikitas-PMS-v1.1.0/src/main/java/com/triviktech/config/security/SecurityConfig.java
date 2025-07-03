@@ -39,11 +39,11 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // Uncomment below lines to enable role-based access control
-                        // .requestMatchers("/api/v1/pms/manager/**").hasRole("MANAGER")
-                        // .requestMatchers("/api/v1/pms/hr/**").hasRole("HR")
-                        // .requestMatchers("/api/v1/pms/employee/**").hasRole("EMPLOYEE")
+                        .requestMatchers("/api/v1/pms/manager/**").hasRole("MANAGER")
+                        .requestMatchers("/api/v1/pms/hr/**").hasRole("HR")
+                        .requestMatchers("/api/v1/pms/employee/**").hasRole("EMPLOYEE")
 
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtRequestFilter, AuthorizationFilter.class)
                 .build();

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './EmployeeDashboard.css';
 import './EmployeeDashboardResponsive.css';
 import logo from '../../../assets/images/nikithas-logo.png';
+import defaultProfile from '../../../assets/images/profile1.jpg' // <-- Add this import // <-- Add this import
 import { Bell } from 'lucide-react';
 import Notification from '../../modal/notification/Notification';
 import axios from 'axios';
@@ -10,28 +11,16 @@ import { baseUrl } from '../../urls/CommenUrl';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 
-const employeeData = {
-  id: 'EMP1235',
-  name: 'Sowmya K',
-  location: 'Tumkur, Karnataka',
-  email: 'Sowmya74@gmail.com',
-  profileImage: 'https://assets.onecompiler.app/4344tsra5/43brqemzn/1000115242.jpg',
-  phone: '+91 9448576762',
-  department: 'HR Department',
-  manager: {
-    name: 'Ravindra Kulkarni',
-    position: 'VP of Product',
-    image: 'https://assets.onecompiler.app/4344tsra5/43brpvuah/1000115238.jpg',
-  }
-};
-
 const EmployeeDashboard = () => {
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0); // ✅ NEW: Notification badge count
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [newAndUndelivered, setNewAndUndelivered] = useState([]);
+  const [employeeData, setEmployeeData] = useState(null);
   const jwtToken = localStorage.getItem("token");
+
+  const navigate=useNavigate()
 
   // Helper for closing sidebar
   const handleSidebarClose = () => {
@@ -112,9 +101,11 @@ setNotificationCount(prev => prev + 1); // ✅ INCREASE count for red badge
       }
     });
 
+    loadProfile();
     client.activate();
     return () => client.deactivate();
     // eslint-disable-next-line
+
   }, []);
 
   const handleNotificationToggle = () => {
@@ -124,6 +115,28 @@ setNotificationCount(prev => prev + 1); // ✅ INCREASE count for red badge
     setNotificationCount(0); // ✅ RESET red badge when opened
   }
 };
+
+  const loadProfile = async () => {
+    try {
+      const result = await axios.get(`${baseUrl}/api/v1/pms/employee/profile`, {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`
+        }
+      });
+      setEmployeeData(result.data);
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  // Helper to format date
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-IN', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
+  };
 
   return (
     <div className="employee-dashboard-container">
@@ -158,24 +171,33 @@ setNotificationCount(prev => prev + 1); // ✅ INCREASE count for red badge
       {/* Sidebar */}
       <aside className={`employee-dashboard-sidebar${sidebarOpen ? ' open' : ''}`}>
         <div className="employee-profile-container">
-          <img src={employeeData.profileImage} alt="Profile" className="employee-profile-img" />
-          <h2 className="employee-name">{employeeData.name}</h2>
+          <img
+            src={employeeData?.profileImage ? employeeData.profileImage : defaultProfile}
+            alt="Profile"
+            className="employee-profile-img"
+          />
+          <h2 className="employee-name">{employeeData?.name}</h2>
         </div>
         <ul>
           <li>
             <Link to="/employee-dashboard" className="active" onClick={handleSidebarClose}>My Dashboard</Link>
           </li>
           <li>
-            <Link to={`/self-review/${employeeData.id}`} onClick={handleSidebarClose}>Start PMS</Link>
+            <Link to={`/self-review/${employeeData?.empId}`} onClick={handleSidebarClose}>Start PMS</Link>
           </li>
           <li>
             <Link to="/employee-performance" onClick={handleSidebarClose}>My Performance</Link>
           </li>
           <li>
-            <Link to={`/add-krakpi/${employeeData.id}`} onClick={handleSidebarClose}>Add KRA|KPI</Link>
+            <Link to={`/add-krakpi/${employeeData?.empId}`} onClick={handleSidebarClose}>Add KRA|KPI</Link>
           </li>
         </ul>
-        <Link to="/" className="employee-sidebar-logout-btn">Logout</Link>
+        <button className="employee-sidebar-logout-btn" 
+         onClick={() => {
+                  localStorage.clear();
+                  navigate("/");
+                }}
+        >Logout</button>
       </aside>
 
       {/* Main Content */}
@@ -193,7 +215,12 @@ setNotificationCount(prev => prev + 1); // ✅ INCREASE count for red badge
   <span className="notif-count">{notificationCount}</span>
 )}
             </div>
-            <Link to="/" className="employee-logout-btn">Logout</Link>
+            <button className="employee-logout-btn" 
+             onClick={() => {
+                  localStorage.clear();
+                  navigate("/");
+                }}
+            >Logout</button>
           </div>
         </header>
 
@@ -201,18 +228,24 @@ setNotificationCount(prev => prev + 1); // ✅ INCREASE count for red badge
         <section className="employee-info-container">
           <div className="employee-info">
             <h3 className='employee-dashboard-info-h3'>Primary Details</h3>
-            <p><strong>Employee ID:</strong> {employeeData.id}</p>
-            <p><strong>Employee Name:</strong> {employeeData.name}</p>
-            <p><strong>Location:</strong> {employeeData.location}</p>
+            <p><strong>Employee ID:</strong> {employeeData?.empId}</p>
+            <p><strong>Employee Name:</strong> {employeeData?.name}</p>
+            <p><strong>Current Designation:</strong> {employeeData?.currentDesignation}</p>
+           
+            <p><strong>Department:</strong> {employeeData?.department}</p>
+            
           </div>
 
           <div className="reporting-manager">
             <h3 className='employee-dashboard-info-h3'>Reporting Manager</h3>
             <div className="manager-info">
-              <img src={employeeData.manager.image} alt="Manager" className="manager-img" />
+              <img
+                src={defaultProfile}
+                alt="Manager"
+                className="manager-img"
+              />
               <div>
-                <p><strong>Reports to:</strong> {employeeData.manager.name}</p>
-                <p>{employeeData.manager.position}</p>
+                <p><strong>Reports to:</strong> {employeeData?.reportingManager}</p>
                 <button className="employee-module-contact-manager-btn">Contact Manager</button>
               </div>
             </div>
@@ -220,9 +253,9 @@ setNotificationCount(prev => prev + 1); // ✅ INCREASE count for red badge
 
           <div className="employee-info">
             <h3 className='employee-dashboard-info-h3'>Contact Information</h3>
-            <p><strong>Email:</strong> {employeeData.email}</p>
-            <p><strong>Phone:</strong> {employeeData.phone}</p>
-            <p><strong>Department:</strong> {employeeData.department}</p>
+            <p><strong>Email:</strong> {employeeData?.emailId}</p>
+            <p><strong>Official Email ID:</strong> {employeeData?.officialEmailId}</p>
+            <p><strong>Phone:</strong> {employeeData?.mobileNumber}</p>
           </div>
         </section>
       </main>

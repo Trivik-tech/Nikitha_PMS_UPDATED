@@ -5,23 +5,39 @@ import axios from "axios";
 import "./HrProfile.css";
 import "./HrResponsive.css";
 import logo from "../../../assets/images/nikithas-logo.png";
-import profile from "../../../assets/images/profile1.jpg";
+import profileImage from "../../../assets/images/profile1.jpg";
 import Loader from '../../modal/loader/Loader';
+import { baseUrl } from '../../urls/CommenUrl';
 
-const HrProfile = () => { 
-  const [managerData, setManagerData] = useState(null);
+const HrProfile = () => {
+  const [hrData, setHrData] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const token = localStorage.getItem('token');
+
+  const loadProfile = async () => {
+    try {
+      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setHrData(result.data.profile);
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000); // Simulating API loading time
+    loadProfile();
   }, []);
+
+  if (loading) return <Loader />;
 
   return (
     <div className="hr-container fade-in">
-      {/* {loading && <Loader />} */}
       <header className="hr-header slide-down">
         <div className="hr-header-left">
           <Link to="/hr-dashboard" className="hr-icon-link">
@@ -33,12 +49,12 @@ const HrProfile = () => {
 
       <div className="hr-profile-card scale-in">
         <div className="hr-profile-left">
-          <img src={profile} alt="Profile" className="hr-profile-pic" />
+          <img src={profileImage} alt="Profile" className="hr-profile-pic" />
         </div>
         <div className="hr-profile-right">
-          <h2>{managerData?.firstName || "Avinash"} {managerData?.lastName || "V"}</h2>
-          <p className="hr-designation">Senior Software Engineer</p>
-          <p className="hr-location">{managerData?.location.name || "Peenya"}, {managerData?.location.state.name || "Bangalore"}</p>
+          <h2>{hrData?.name || "N/A"}</h2>
+          <p className="hr-designation">{hrData?.currentDesignation || "N/A"}</p>
+          <p className="hr-location">{hrData?.branch || "N/A"}, India</p>
         </div>
       </div>
 
@@ -46,18 +62,25 @@ const HrProfile = () => {
         <div className="hr-section slide-left">
           <h3>Personal Information</h3>
           <div className="hr-info-list">
-            <p><strong>First Name:</strong> {managerData?.firstName || "Avinash"}</p>
-            <p><strong>Last Name:</strong> {managerData?.lastName || "SH"}</p>
-            <p><strong>Gender:</strong> Male</p>
-            <p><strong>Blood Group:</strong> A+</p>
+            <p><strong>Name:</strong> {hrData?.name || "N/A"}</p>
+            <p><strong>Date of Birth:</strong> {hrData?.dob || "N/A"}</p>
+            <p><strong>Email ID:</strong> {hrData?.emailId || "N/A"}</p>
+            <p><strong>Official Email:</strong> {hrData?.officialEmailId || "N/A"}</p>
+            <p><strong>Mobile Number:</strong> {hrData?.mobileNumber || "N/A"}</p>
           </div>
         </div>
 
         <div className="hr-section slide-right">
           <h3>Professional Details</h3>
           <div className="hr-info-list">
-            <p><strong>Reporting Manager:</strong> {managerData?.department.name || "Ravindra Kulkarni"}</p>
-            <p><strong>Office Location:</strong> {managerData?.location.name || "Bangalore"}</p>
+            <p><strong>HR ID:</strong> {hrData?.hrId || "N/A"}</p>
+            <p><strong>Designation:</strong> {hrData?.currentDesignation || "N/A"}</p>
+            <p><strong>Department:</strong> {hrData?.department || "N/A"}</p>
+            <p><strong>Category:</strong> {hrData?.category || "N/A"}</p>
+            <p><strong>Reporting Manager:</strong> {hrData?.reportingManager || "N/A"}</p>
+            <p><strong>Branch:</strong> {hrData?.branch || "N/A"}</p>
+            <p><strong>Date of Joining:</strong> {hrData?.dateOfJoining || "N/A"}</p>
+            <p><strong>Last Working Day:</strong> {hrData?.lastWorkingDay || "Currently Working"}</p>
           </div>
         </div>
       </div>
@@ -65,13 +88,13 @@ const HrProfile = () => {
       <div className="hr-contact-info">
         <h3>Contact Information</h3>
         <div className="hr-contact-card glow-hover">
-          <p><strong>Email Address:</strong> {managerData?.email || "Avinath@gmail.com"}</p>
+          <p><strong>Email:</strong> {hrData?.emailId || "N/A"}</p>
         </div>
         <div className="hr-contact-card glow-hover">
-          <p><strong>Mobile Number:</strong> {managerData?.contactNumber || "987654378"}</p>
+          <p><strong>Mobile:</strong> {hrData?.mobileNumber || "N/A"}</p>
         </div>
         <div className="hr-contact-card glow-hover">
-          <p><strong>Location:</strong> {managerData?.location.name || "Bangalore, India"}, {managerData?.location.state.name} {managerData?.location.zipCode || "15684"}</p>
+          <p><strong>Branch:</strong> {hrData?.branch || "N/A"}, India</p>
         </div>
       </div>
     </div>

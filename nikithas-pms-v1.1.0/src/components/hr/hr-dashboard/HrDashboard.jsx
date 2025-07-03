@@ -1,4 +1,3 @@
-// HrDashboard.jsx
 import React, { useState, useEffect } from "react";
 import {
   FaUsers,
@@ -20,7 +19,7 @@ import {
 import { Bell } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import "./HrDashboard.css";
-import "./Responsive.css"; // ✅ included from one branch
+import "./Responsive.css";
 import "../../urls/CommenUrl";
 import logo from "../../../assets/images/nikithas-logo.png";
 import profile from "../../../assets/images/profile1.jpg";
@@ -54,6 +53,9 @@ const HrDashboard = () => {
   const [completed, setCompleted] = useState(0);
   const [pending, setPending] = useState(0);
   const [notifications, setNotifications] = useState([]);
+  const [hrId, setHrId] = useState(null);
+
+  const token = localStorage.getItem("token");
 
   const isMobile = () => window.innerWidth <= 768;
 
@@ -68,7 +70,11 @@ const HrDashboard = () => {
   useEffect(() => {
     const fetchTotalEmployees = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/api/v1/pms/hr/total-employees`);
+        const response = await axios.get(`${baseUrl}/api/v1/pms/hr/total-employees`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setTotalEmployees(response.data);
         setError(false);
       } catch (error) {
@@ -77,12 +83,16 @@ const HrDashboard = () => {
       }
     };
     fetchTotalEmployees();
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     const fetchPercentageData = async () => {
       try {
-        const response = await axios.get(`${baseUrl}/api/v1/pms/hr/percentage`);
+        const response = await axios.get(`${baseUrl}/api/v1/pms/hr/percentage`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setCompletionRate(response.data.completedPercentage);
         setPendingRate(response.data.pendingPercentage);
         setError(false);
@@ -93,7 +103,7 @@ const HrDashboard = () => {
       }
     };
     fetchPercentageData();
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     loadAllData();
@@ -103,46 +113,76 @@ const HrDashboard = () => {
     getAllDepartment();
     getDepartmentsEmployeeCount();
     getKeyMatrix();
+    loadHr();
   };
- useEffect(() => {
-  const jwtToken = localStorage.getItem("token");
 
-  const socket = new SockJS(`http://localhost:8080/ws?token=${jwtToken}`);
-  const client = new Client({
-    webSocketFactory: () => socket,
-    reconnectDelay: 5000,
+  useEffect(() => {
+    const jwtToken = localStorage.getItem("token");
 
-    onConnect: async () => {
-      client.subscribe("/user/queue/hr-notification", async (message) => {
-        const newMsg = {
-          title: "New Notification",
-          message: message.body,
-          timestamp: new Date().toISOString(),
-        };
-setNotificationCount((prev) => prev + 1);
+    const socket = new SockJS(`http://localhost:8080/ws?token=${jwtToken}`);
+    const client = new Client({
+      webSocketFactory: () => socket,
+      reconnectDelay: 5000,
+
+      onConnect: async () => {
+        client.subscribe("/user/queue/hr-notification", async (message) => {
+          const newMsg = {
+            title: "New Notification",
+            message: message.body,
+            timestamp: new Date().toISOString(),
+          };
+          setNotificationCount((prev) => prev + 1);
+          try {
+            const res = await axios.get(`${baseUrl}/api/v1/pms/recent`, {
+              headers: { Authorization: `Bearer ${jwtToken}` },
+            });
+
+            const recent = res.data.map((msg) => ({
+              title: "Recent Notification",
+              message: msg.message || msg.content,
+              timestamp: msg.timestamp,
+            }));
+
+            // First filter recent messages against newMsg
+            const filtered = recent.filter((msg) => {
+              const msgTime = Math.floor(new Date(msg.timestamp).getTime() / 1000);
+              const newTime = Math.floor(new Date(newMsg.timestamp).getTime() / 1000);
+              return !(msgTime === newTime && msg.message === newMsg.message);
+            });
+
+            const combined = [newMsg, ...filtered];
+
+            const unique = Array.from(
+              new Map(
+                combined.map((msg) => [
+                  `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.message}`,
+                  msg,
+                ])
+              ).values()
+            );
+
+            setNotifications(unique.slice(0, 50));
+            setNotificationOpen(true);
+          } catch (err) {
+            console.error("Recent fetch error", err);
+          }
+        });
+
+        // Initial fetch only once
         try {
           const res = await axios.get(`${baseUrl}/api/v1/pms/recent`, {
             headers: { Authorization: `Bearer ${jwtToken}` },
           });
 
-          const recent = res.data.map((msg) => ({
+          const formatted = res.data.map((msg) => ({
             title: "Recent Notification",
             message: msg.message || msg.content,
             timestamp: msg.timestamp,
           }));
 
-          // First filter recent messages against newMsg
-          const filtered = recent.filter((msg) => {
-            const msgTime = Math.floor(new Date(msg.timestamp).getTime() / 1000);
-            const newTime = Math.floor(new Date(newMsg.timestamp).getTime() / 1000);
-            return !(msgTime === newTime && msg.message === newMsg.message);
-          });
-
-          const combined = [newMsg, ...filtered];
-
           const unique = Array.from(
             new Map(
-              combined.map((msg) => [
+              formatted.map((msg) => [
                 `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.message}`,
                 msg,
               ])
@@ -150,47 +190,23 @@ setNotificationCount((prev) => prev + 1);
           );
 
           setNotifications(unique.slice(0, 50));
-          setNotificationOpen(true);
         } catch (err) {
-          console.error("Recent fetch error", err);
+          console.error("Initial recent error", err);
         }
-      });
+      },
+    });
 
-      // Initial fetch only once
-      try {
-        const res = await axios.get(`${baseUrl}/api/v1/pms/recent`, {
-          headers: { Authorization: `Bearer ${jwtToken}` },
-        });
-
-        const formatted = res.data.map((msg) => ({
-          title: "Recent Notification",
-          message: msg.message || msg.content,
-          timestamp: msg.timestamp,
-        }));
-
-        const unique = Array.from(
-          new Map(
-            formatted.map((msg) => [
-              `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.message}`,
-              msg,
-            ])
-          ).values()
-        );
-
-        setNotifications(unique.slice(0, 50));
-      } catch (err) {
-        console.error("Initial recent error", err);
-      }
-    },
-  });
-
-  client.activate();
-  return () => client.deactivate();
-}, []);
+    client.activate();
+    return () => client.deactivate();
+  }, []);
 
   const getKeyMatrix = async () => {
     try {
-      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/keyMatrix`);
+      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/keyMatrix`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setCompleted(result.data.completed);
       setPending(result.data.pending);
     } catch (error) {
@@ -200,7 +216,11 @@ setNotificationCount((prev) => prev + 1);
 
   const getAllDepartment = async () => {
     try {
-      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-departments`);
+      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-departments`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setDepartments(result.data.departments);
     } catch (error) {
       console.error(error);
@@ -209,11 +229,28 @@ setNotificationCount((prev) => prev + 1);
 
   const getDepartmentsEmployeeCount = async () => {
     try {
-      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/employee-count-by-department`);
+      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/employee-count-by-department`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setEmployeeCount(result.data.employees);
-      console.log(result.data)
+      console.log(result.data);
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const loadHr = async () => {
+    try {
+      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setHrId(result.data.profile.hrId);
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
@@ -265,7 +302,7 @@ setNotificationCount((prev) => prev + 1);
           maxRotation: 45,
           minRotation: 0,
           font: { size: 11 },
-          autoSkip: false, // ✅ retain the version that avoids label cut-offs
+          autoSkip: false, // avoid label cut-offs
         },
         grid: { display: false },
       },
@@ -279,45 +316,46 @@ setNotificationCount((prev) => prev + 1);
     animation: { duration: 1000, easing: "easeOutQuart" },
   };
 
- const hasPieData = completionRate !== 0 || pendingRate !== 0;
+  const hasPieData = completionRate !== 0 || pendingRate !== 0;
 
-const pieData = {
-  labels: hasPieData ? ["Completed", "Pending"] : ["No Data"],
-  datasets: [
-    {
-      data: hasPieData ? [completionRate, pendingRate] : [1],
-      backgroundColor: hasPieData ? ["#28a745", "#ffa500"] : ["#d3d3d3"],
-      borderColor: hasPieData ? ["#1e7e34", "#e0a800"] : ["#aaaaaa"],
-      borderWidth: 2,
-    },
-  ],
-};
+  const pieData = {
+    labels: hasPieData ? ["Completed", "Pending"] : ["No Data"],
+    datasets: [
+      {
+        data: hasPieData ? [completionRate, pendingRate] : [1],
+        backgroundColor: hasPieData ? ["#28a745", "#ffa500"] : ["#d3d3d3"],
+        borderColor: hasPieData ? ["#1e7e34", "#e0a800"] : ["#aaaaaa"],
+        borderWidth: 2,
+      },
+    ],
+  };
 
-const pieOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      position: "bottom",
-      labels: { padding: 20, font: { size: 12 } },
+  const pieOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: { padding: 20, font: { size: 12 } },
+      },
+      title: {
+        display: true,
+        text: "Overall Assessment Status",
+        font: { size: 16, weight: "bold" },
+        padding: { top: 10, bottom: 20 },
+      },
     },
-    title: {
-      display: true,
-      text: "Overall Assessment Status",
-      font: { size: 16, weight: "bold" },
-      padding: { top: 10, bottom: 20 },
+    onClick: (event, elements) => {
+      if (!hasPieData) return;
+      if (elements.length > 0) {
+        const index = elements[0].index;
+        if (index === 0) navigate("/hr/completed-assessments");
+        else if (index === 1) navigate("/hr/pending-assessments");
+      }
     },
-  },
-  onClick: (event, elements) => {
-    if (!hasPieData) return; 
-    if (elements.length > 0) {
-      const index = elements[0].index;
-      if (index === 0) navigate("/hr/completed-assessments");
-      else if (index === 1) navigate("/hr/pending-assessments");
-    }
-  },
-  animation: { duration: 1000, easing: "easeOutQuart" },
-};
+    animation: { duration: 1000, easing: "easeOutQuart" },
+  };
+
   const renderSidebarOverlay = () =>
     isMobile() && sidebarOpen ? (
       <div
@@ -399,18 +437,29 @@ const pieOptions = {
               <img src={logo} alt="Nikitha PMS" className="hr-dashboard-logo" />
               <h1 className="hr-dashboard-title">HR PMS Dashboard</h1>
             </div>
-            <div style={{ position: "relative" }}>
-  <Bell
-    className="hr-dashboard-notificationButton"
-    onClick={() => {
-      setNotificationOpen(!notificationOpen);
-      if (!notificationOpen) setNotificationCount(0);
-    }}
-  />
-  {notificationCount > 0 && (
-    <span className="notification-badge">{notificationCount}</span>
-  )}
-</div>
+            <div className="hr-dashboard-actions">
+              <div className="notification-wrapper">
+                <Bell
+                  className="hr-dashboard-notificationButton"
+                  onClick={() => {
+                    setNotificationOpen(!notificationOpen);
+                    if (!notificationOpen) setNotificationCount(0);
+                  }}
+                />
+                {notificationCount > 0 && (
+                  <span className="notification-badge">{notificationCount}</span>
+                )}
+              </div>
+              <button
+                className="hr-dashboard-logoutButton desktop-only"
+                onClick={() => {
+                  localStorage.clear();
+                  navigate("/");
+                }}
+              >
+                Logout
+              </button>
+            </div>
           </header>
 
           <section className="hr-dashboard-stats-container fade-in-up">
@@ -440,10 +489,10 @@ const pieOptions = {
 
       {notificationOpen && (
         <div className="notification-modal-wrapper">
-         <Notification
-  onClose={() => setNotificationOpen(false)}
-  notifications={notifications}
-/>
+          <Notification
+            onClose={() => setNotificationOpen(false)}
+            notifications={notifications}
+          />
         </div>
       )}
     </>

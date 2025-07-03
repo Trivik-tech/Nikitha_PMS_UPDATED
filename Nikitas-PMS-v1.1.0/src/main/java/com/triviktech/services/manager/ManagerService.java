@@ -38,4 +38,6 @@ public interface ManagerService {
     List<EmployeeWithPmsStatus> getCompletedAssessmentListForManager(String reportingManager);
 
     PmsPercentageDto getPmsPercentageForManager(String reportingManager);
+
+    Map<String,Integer> getTimeSize(String managerId);
 }

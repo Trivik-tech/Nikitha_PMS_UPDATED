@@ -18,10 +18,15 @@ export default function StartPms() {
   const [hasServerError, setHasServerError] = useState(false);
 
   const navigate = useNavigate();
+  const token=localStorage.getItem('token')
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/employee-with-pms-initiated`);
+      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/employee-with-pms-initiated`,{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      });
       const employees = response.data;
       setTeam(employees);
       setHasServerError(false);

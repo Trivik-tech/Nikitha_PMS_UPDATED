@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -88,8 +89,8 @@ public class EmployeeControllerImpl implements EmployeeController {
     }
 
     @Override
-    public ResponseEntity<EmployeeInfo> profile(String employeeId) {
-        return ResponseEntity.ok(employeeService.profile(employeeId));
+    public ResponseEntity<EmployeeInfo> profile(UserDetails employee) {
+        return ResponseEntity.ok(employeeService.profile(employee.getUsername()));
     }
 
     @Override

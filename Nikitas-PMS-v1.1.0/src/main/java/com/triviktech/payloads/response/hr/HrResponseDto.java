@@ -1,25 +1,35 @@
 package com.triviktech.payloads.response.hr;
 
-import com.triviktech.payloads.response.address.LocationResponseDto;
-import com.triviktech.payloads.response.department.DepartmentResponseDto;
-import com.triviktech.payloads.response.manager.ManagerResponseDto;
-import com.triviktech.payloads.response.project.ProjectResponseDto;
-
-import java.util.Set;
+import java.util.Date;
 
 public class HrResponseDto {
 
     private String hrId;
-    private String firstName;
-    private String lastName;
-    private String email;
+    private String name;
+
+    private String mobileNumber;
+
+    private Date dateOfJoining;
+
+    private String currentDesignation;
+
+    private String department;
+
+    private String reportingManager;
+
     private String role;
-    private long contactNumber;
-    private String dateOfBirth;;
-    private LocationResponseDto locationResponseDto;
-    private Set<DepartmentResponseDto> departments;
-    private Set<ProjectResponseDto> projects;
-    private Set<ManagerResponseDto> managers;
+
+    private Date dob;
+
+    private String branch;
+
+    private String category;
+
+    private String lastWorkingDay;
+
+    private String officialEmailId;
+
+    private String emailId;
 
     public String getHrId() {
         return hrId;
@@ -29,28 +39,52 @@ public class HrResponseDto {
         this.hrId = hrId;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getMobileNumber() {
+        return mobileNumber;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
     }
 
-    public String getEmail() {
-        return email;
+    public Date getDateOfJoining() {
+        return dateOfJoining;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setDateOfJoining(Date dateOfJoining) {
+        this.dateOfJoining = dateOfJoining;
+    }
+
+    public String getCurrentDesignation() {
+        return currentDesignation;
+    }
+
+    public void setCurrentDesignation(String currentDesignation) {
+        this.currentDesignation = currentDesignation;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
+    public String getReportingManager() {
+        return reportingManager;
+    }
+
+    public void setReportingManager(String reportingManager) {
+        this.reportingManager = reportingManager;
     }
 
     public String getRole() {
@@ -61,51 +95,51 @@ public class HrResponseDto {
         this.role = role;
     }
 
-    public long getContactNumber() {
-        return contactNumber;
+    public Date getDob() {
+        return dob;
     }
 
-    public void setContactNumber(long contactNumber) {
-        this.contactNumber = contactNumber;
+    public void setDob(Date dob) {
+        this.dob = dob;
     }
 
-    public String getDateOfBirth() {
-        return dateOfBirth;
+    public String getBranch() {
+        return branch;
     }
 
-    public void setDateOfBirth(String dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
+    public void setBranch(String branch) {
+        this.branch = branch;
     }
 
-    public LocationResponseDto getLocationResponseDto() {
-        return locationResponseDto;
+    public String getCategory() {
+        return category;
     }
 
-    public void setLocationResponseDto(LocationResponseDto locationResponseDto) {
-        this.locationResponseDto = locationResponseDto;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
-    public Set<DepartmentResponseDto> getDepartments() {
-        return departments;
+    public String getLastWorkingDay() {
+        return lastWorkingDay;
     }
 
-    public void setDepartments(Set<DepartmentResponseDto> departments) {
-        this.departments = departments;
+    public void setLastWorkingDay(String lastWorkingDay) {
+        this.lastWorkingDay = lastWorkingDay;
     }
 
-    public Set<ProjectResponseDto> getProjects() {
-        return projects;
+    public String getOfficialEmailId() {
+        return officialEmailId;
     }
 
-    public void setProjects(Set<ProjectResponseDto> projects) {
-        this.projects = projects;
+    public void setOfficialEmailId(String officialEmailId) {
+        this.officialEmailId = officialEmailId;
     }
 
-    public Set<ManagerResponseDto> getManagers() {
-        return managers;
+    public String getEmailId() {
+        return emailId;
     }
 
-    public void setManagers(Set<ManagerResponseDto> managers) {
-        this.managers = managers;
+    public void setEmailId(String emailId) {
+        this.emailId = emailId;
     }
 }

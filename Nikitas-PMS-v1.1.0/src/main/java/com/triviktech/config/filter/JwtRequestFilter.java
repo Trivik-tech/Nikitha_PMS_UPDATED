@@ -57,7 +57,7 @@ protected boolean shouldNotFilter(HttpServletRequest request) {
                 }
 
                 String role = jwtService.getRole(token);
-System.out.println(role);
+                System.out.println(role);
                 if (role.equalsIgnoreCase("MANAGER")) {
                     UserDetails userDetails = managerDetailsService.loadUserByUsername(jwtService.getUsername(token));
                     if (userDetails != null) {
