@@ -45,3 +45,21 @@
         height: 60px;
     }
 }
+@media (max-width: 480px) {
+    .hr-module-profile-pic {
+        width: 70px !important;
+        height: 70px !important;
+    }
+
+    .hr-module-employee-info-wrapper {
+        padding: 0%;
+    }
+
+    .hr-module-info-sections {
+        padding: 5px;
+    }
+
+    .hr-module-info-section-container {
+        gap: 8px;
+    }
+}

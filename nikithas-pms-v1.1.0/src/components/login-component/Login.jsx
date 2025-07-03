@@ -165,7 +165,8 @@ const Login = () => {
           <button
             type="submit"
             className="login-button"
-            onClick={onSubmit}
+            // onClick={(e)=>onSubmit(e)}
+            onClick={(e)=>handleHardcodedLogin(e)}
           >
             Login
           </button>
