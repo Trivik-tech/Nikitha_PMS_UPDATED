@@ -35,6 +35,17 @@ body {
     z-index: 1001;
     position: static;
 }
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: red;
+  color: white;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  z-index: 10;
+}
 
 .hr-dashboard-profile-container {
     display: flex;
