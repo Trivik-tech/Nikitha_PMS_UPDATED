@@ -38,6 +38,7 @@ const EmployeeDetails = () => {
   const [departmentList, setDepartmentsList] = useState([]);
 
   const navigate = useNavigate();
+  const token=localStorage.getItem('token')
 
   useEffect(() => {
     loadDepartments();
@@ -86,7 +87,8 @@ const EmployeeDetails = () => {
     try {
       const result=await axios.post(`${baseUrl}/api/v1/pms/hr/upload`, formData, {
         headers: {
-          "Content-Type": "multipart/form-data"
+          "Content-Type": "multipart/form-data",
+          Authorization:`Bearer ${token}`
         }
       });
       console.log(result.data)
@@ -131,10 +133,14 @@ const EmployeeDetails = () => {
       ...payload,
       role: payload.role?.toUpperCase() || "",
       department: payload.department?.toString() || "",
-      hrName: "Guru Jadhav"
+      hrId: "Guru Jadhav"
     };
 
-    result = await axios.post(`${baseUrl}/api/v1/pms/hr/register-employee`, updatedEmployee);
+    result = await axios.post(`${baseUrl}/api/v1/pms/hr/register-employee`, updatedEmployee,{
+      headers:{
+        Authorization:`Bearer ${token}`
+      }
+    });
     console.log(result.data);
 
     setModalTitle("Save Successful");
@@ -161,7 +167,11 @@ const EmployeeDetails = () => {
 
   const loadDepartments = async () => {
     try {
-      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-departments`);
+      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-departments`,{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      });
       setDepartmentsList(result.data.departments || []);
     } catch (error) {
       console.error("Error loading departments:", error);

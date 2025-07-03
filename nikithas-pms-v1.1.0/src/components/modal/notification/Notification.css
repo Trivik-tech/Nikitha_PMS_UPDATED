@@ -1,56 +1,40 @@
 /* Notification Modal Overlay */
 .notification-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.4); /* Semi-transparent background */
-  backdrop-filter: blur(5px); /* Background blur effect */
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(32, 33, 36, 0.42);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000; /* Ensure modal is on top */
-  overflow: hidden; /* Prevent scrolling behind the modal */
-  animation: fadeInOverlay 0.4s ease-out;
+  z-index: 1000;
+  overflow: hidden;
+  animation: fadeInOverlay 0.35s ease;
 }
-
-/* Fade-in Overlay Animation */
 @keyframes fadeInOverlay {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Notification Modal */
 .notification-modal {
-  width: 600px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
-  padding: 20px;
-  max-height: 70vh;
+  width: 95vw; max-width: 530px;
+  background: linear-gradient(135deg, #f4f6fb 0%, #e3e7fb 100%);
+  border-radius: 18px;
+  box-shadow: 0 12px 48px 0 rgba(50, 57, 104, 0.20);
+  padding: 0;
+  max-height: 85vh;
   display: flex;
   flex-direction: column;
-  font-family: Arial, sans-serif;
-  animation: slideIn 0.6s ease-out; /* Smooth slide-in animation */
+  font-family: 'Segoe UI', Arial, sans-serif;
+  animation: slideIn 0.45s cubic-bezier(.43,.99,.62,1.1);
   overflow: hidden;
-  z-index: 1050; /* Ensure modal content is above overlay */
+  z-index: 1050;
 }
-
-/* Slide-in Animation for Modal */
 @keyframes slideIn {
-  from {
-    transform: translateY(-20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(-30px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
 }
 
 /* Modal Header */
@@ -58,147 +42,110 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 10px;
-  animation: fadeIn 0.6s ease-out;
+  border-bottom: 1.5px solid #e1e5f2;
+  padding: 22px 24px 14px 24px;
+  background: linear-gradient(90deg, #ecf0fc 0%, #e3e7fb 100%);
+}
+
+.modal-header h2 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1e2e4a;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  margin: 0;
 }
 
 .close-btn {
-  font-size: 24px; /* Larger close button */
+  font-size: 26px;
   font-weight: bold;
   cursor: pointer;
   background: none;
   border: none;
-  color: #555;
-  padding: 8px;
-  transition: color 0.3s ease, transform 0.3s ease;
+  color: #5c6370;
+  padding: 2px 8px;
+  border-radius: 50%;
+  transition: color 0.22s, background 0.22s, transform 0.18s;
 }
-
 .close-btn:hover {
-  color: red; /* Change close button color on hover */
-  transform: scale(1.2); /* Make the close button grow on hover */
+  color: #fff;
+  background: #f44336;
+  transform: scale(1.09);
 }
 
-/* Filter Dropdown Styling */
-.modal-header .filter-dropdown {
-  padding: 6px 6px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background: #f9f9f9;
-  width: 40%;
-  margin-left: 30px;
-  animation: fadeIn 0.6s ease-out;
-}
-
-/* Tabs Styling */
-.tabs {
-  display: flex;
-  gap: 15px;
-  border-bottom: 1px solid #ddd;
-  margin: 15px 0;
-  animation: fadeIn 0.8s ease-out;
-}
-
-.tab {
-  cursor: pointer;
-  font-size: 14px;
-  padding: 5px 0;
-  position: relative;
-  color: #666;
-  transition: color 0.3s ease;
-}
-
-.tab:hover {
-  color: #4f46e5;
-  animation: scaleEffect 0.3s ease-out; /* Scaling effect on hover */
-}
-
-/* Scaling Effect for Tabs */
-@keyframes scaleEffect {
-  from {
-    transform: scale(1);
-  }
-  to {
-    transform: scale(1.1);
-  }
-}
-
-.active-tab {
-  font-weight: bold;
-  color: #000;
-}
-
-.active-tab::after {
-  content: '';
-  width: 100%;
-  height: 2px;
-  background: #4f46e5;
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  animation: tabUnderline 0.5s ease-out;
-}
-
-/* Underline Animation for Active Tab */
-@keyframes tabUnderline {
-  from {
-    width: 0;
-    background-color: transparent;
-  }
-  to {
-    width: 100%;
-    background-color: #4f46e5;
-  }
+.filter-dropdown {
+  padding: 6px 8px;
+  font-size: 13px;
+  border: 1.2px solid #cfd9ea;
+  border-radius: 8px;
+  background: #fcfdff;
+  min-width: 140px;
+  color: #4f5c81;
+  margin-left: 10px;
 }
 
 /* Notification List */
 .notification-list {
   flex-grow: 1;
-  max-height: 300px;
+  max-height: 340px;
   overflow-y: auto;
-  margin-top: 10px; /* Add some spacing above the notifications */
+  padding: 12px 6px 10px 6px;
+  background: transparent;
+}
+
+/* Empty State */
+.no-notifications {
+  text-align: center;
+  padding: 50px 0 30px 0;
+  color: #718098;
+  font-size: 1.08rem;
 }
 
 /* Notification Item */
-.notification-item {
+.notification-item.creative {
+  display: flex;
+  align-items: flex-start;
+  padding: 14px 18px;
+  margin-bottom: 8px;
+  background: #f6f8fc;
+  border-radius: 10px;
+  box-shadow: 0 3px 14px 0 rgba(200,210,255,0.07);
+  border: 1.1px solid #e6eaff;
+  cursor: pointer;
+  gap: 14px;
+  transition: background 0.22s, box-shadow 0.22s, transform 0.15s;
+  position: relative;
+  animation: fadeInItem 0.42s ease;
+}
+.notification-item.creative:focus, .notification-item.creative:hover {
+  background: linear-gradient(90deg,#f7f8fd 70%,#e2ebfa 100%);
+  box-shadow: 0 6px 18px 0 rgba(92,104,222,0.13);
+  transform: scale(1.03) translateY(-1px);
+}
+
+@keyframes fadeInItem {
+  from { opacity: 0; transform: translateY(-18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Icon with colored circle background */
+.icon-container.creative-icon {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg,#e3e8fc 70%,#e8f3ff 100%);
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  padding: 12px;
-  border-bottom: 1px solid #f0f0f0;
-  cursor: pointer;
-  gap: 12px;
-  transition: background 0.3s ease, transform 0.3s ease;
-  animation: fadeInItem 0.6s ease-out; /* Smooth fade-in animation */
-  border-radius: 8px; /* Rounded corners */
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 2px 7px rgba(150,150,220,0.10);
+  flex-shrink: 0;
+  margin-top: 2px;
 }
-
-.notification-item:hover {
-  background: #f9f9f9;
-  transform: translateX(10px); /* Slide item to the right on hover */
-}
-
-.notification-item:active {
-  transform: translateX(0); /* Reset on active */
-  transition: transform 0.2s;
-}
-
-/* Fade-in Animation for Notification Item */
-@keyframes fadeInItem {
-  from {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* Notification Icon */
-.icon-container {
-  font-size: 24px; /* Larger icon size */
-  color: #4f46e5; /* Icon color */
+.mail-emoji {
+  font-size: 20px;
+  display: block;
 }
 
 /* Notification Content */
@@ -206,95 +153,107 @@
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
-
 .notification-content strong {
-  font-size: 14px;
-  font-weight: bold;
-  color: #333;
+  font-size: 15px;
+  font-weight: 700;
+  color: #253a5e;
+  margin-bottom: 2px;
+  letter-spacing: .2px;
 }
-
 .notification-content p {
-  font-size: 12px;
-  color: #666;
-  margin: 5px 0;
+  font-size: 13px;
+  color: #505c6e;
+  margin: 3px 0 0 0;
+  letter-spacing: .1px;
+  font-family: inherit;
 }
 
-.timestamp {
+/* Timestamp */
+.timestamp.creative-timestamp {
   font-size: 12px;
-  color: #999;
+  color: #98a4b8;
+  margin-left: 12px;
+  min-width: 80px;
   text-align: right;
+  white-space: nowrap;
 }
 
-/* Notification Details */
-.notification-details-popup {
+/* Notification Details Popup */
+.notification-details-popup.creative-details-popup {
   position: fixed;
-  top: 50%;
+  top: 54%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #fff;
-  padding: 30px;
-  z-index: 1050;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-  border-radius: 8px;
-  width: 500px;
-  max-width: 90%;
+  background: linear-gradient(135deg, #f9fafd 0%, #eaf2fb 100%);
+  padding: 36px 34px 30px 34px;
+  z-index: 1051;
+  box-shadow: 0 16px 44px rgba(70, 70, 110, 0.18);
+  border-radius: 16px;
+  width: 430px;
+  max-width: 92vw;
   max-height: 80vh;
   overflow-y: auto;
-  animation: fadeInCenter 0.5s ease-out; /* Fade in from center */
+  animation: fadeInCenter 0.4s cubic-bezier(.41,.84,.49,1.16);
+  border: 1.5px solid #d3def6;
 }
 
-/* Fade-in Animation for Notification Details */
 @keyframes fadeInCenter {
-  from {
-    opacity: 0;
-    transform: translate(-50%, -60%); /* Slight offset from the center initially */
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%); /* Align to the center */
-  }
+  from { opacity: 0; transform: translate(-50%, -60%); }
+  to   { opacity: 1; transform: translate(-50%, -50%); }
 }
 
 .details-content h3 {
-  margin: 0 0 15px;
-  font-size: 18px;
-  color: #333;
-  animation: fadeInText 0.5s ease-out;
+  margin: 0 0 13px 0;
+  font-size: 1.14rem;
+  color: #243457;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .details-content p {
-  margin: 0;
+  margin: 0 0 12px 0;
   font-size: 14px;
-  line-height: 1.6;
-  color: #666;
-  animation: fadeInText 0.5s ease-out;
+  line-height: 1.7;
+  color: #44518a;
 }
 
-/* Fade-in Animation for Text in Details */
-@keyframes fadeInText {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.details-timestamp {
+  color: #90a0c0;
+  font-size: 13px;
+  margin-bottom: 10px;
+  margin-top: 6px;
 }
 
 .close-details-btn {
-  margin-top: 20px;
-  padding: 10px 16px;
-  background: #007bff;
-  color: white;
+  margin-top: 18px;
+  padding: 9px 20px;
+  background: linear-gradient(90deg,#4f46e5 60%,#5078f5 100%);
+  color: #fff;
   border: none;
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 14px;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  font-weight: 600;
+  transition: background 0.16s, transform 0.16s;
+  box-shadow: 0 4px 16px 0 rgba(80,98,202,0.10);
 }
-
 .close-details-btn:hover {
-  background: #0056b3;
-  transform: scale(1.1); /* Grow on hover */
+  background: linear-gradient(90deg,#3a36a8 60%,#4b6bcb 100%);
+  transform: scale(1.06);
 }
 
+/* Scrollbar for notification list */
+.notification-list::-webkit-scrollbar {
+  width: 7px;
+}
+.notification-list::-webkit-scrollbar-thumb {
+  background: #e0e5f8;
+  border-radius: 6px;
+}
+.notification-list::-webkit-scrollbar-track {
+  background: #f6f8fc;
+}

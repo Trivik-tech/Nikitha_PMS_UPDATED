@@ -7,6 +7,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../modal/Modal';
 import Loader from '../modal/loader/Loader';
+import { baseUrl } from '../urls/CommenUrl';
 
 const Reset = () => {
   const [otp, setOtp] = useState('');
@@ -52,7 +53,7 @@ const Reset = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/v1/pms/auth/validate-reset?otp=${otp}`,
+        `${baseUrl}/api/v1/pms/auth/validate-reset?otp=${otp}`,
         { password },{withCredentials:true}
       );
       setTitle('Password Reset Successfully');

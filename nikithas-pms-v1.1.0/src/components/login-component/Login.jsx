@@ -6,7 +6,6 @@ import './LoginResponsive.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../modal/Modal';
-import { Link } from 'react-router-dom';
 import Loader from '../modal/loader/Loader';
 import { baseUrl } from '../urls/CommenUrl';
 
@@ -64,48 +63,34 @@ const Login = () => {
   };
 
   const onSubmit = async (e) => {
-    e.preventDefault();
-    setErrorMessage('');
-    setTitle('');
-    setShowModal(false);
-    setLoading(true);
+  e.preventDefault();
+  setErrorMessage('');
+  setTitle('');
+  setShowModal(false);
+  setLoading(true);
 
-    try {
-      const response = await axios.post(`${baseUrl}/api/v1/pms/auth/login`, login);
-      if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        await navigateTo(response.data.token);
-      }
-    } catch (error) {
-      if (error.response) {
-        setErrorMessage('Invalid credentials. Please try again.');
-        setTitle('Login Error');
-      } else if (error.request) {
-        setErrorMessage('Unable to connect to the server. Please check if the backend is running.');
-        setTitle('Server Error');
-      } else {
-        setErrorMessage('An unexpected error occurred. Please try again later.');
-      }
-      setShowModal(true);
-    } finally {
-      setLoading(false);
+  try {
+    const response = await axios.post(`${baseUrl}/api/v1/pms/auth/login`, login);
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+      // 🔁 Redirect to /auth/:token to trigger AuthHandler
+      navigation(`/auth/${response.data.token}`);
     }
-  };
-
-  const navigateTo = async (token) => {
-    try {
-      const response = await axios.get(`${baseUrl}/api/v1/pms/auth/${token}`);
-      if (response.data.role === 'MANAGER') {
-        navigation('/manager-dashboard');
-      } else if (response.data.role === 'HR') {
-        navigation('/hr-dashboard');
-      } else if (response.data.role === 'EMPLOYEE') {
-        navigation('/employee-dashboard');
-      }
-    } catch (error) {
-      console.error('Error navigating:', error);
+  } catch (error) {
+    if (error.response) {
+      setErrorMessage('Invalid credentials. Please try again.');
+      setTitle('Login Error');
+    } else if (error.request) {
+      setErrorMessage('Unable to connect to the server. Please check if the backend is running.');
+      setTitle('Server Error');
+    } else {
+      setErrorMessage('An unexpected error occurred. Please try again later.');
     }
-  };
+    setShowModal(true);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const closeModal = () => {
     setShowModal(false);
@@ -165,7 +150,8 @@ const Login = () => {
           <button
             type="submit"
             className="login-button"
-            onClick={onSubmit}
+          //  onClick={(e)=>handleHardcodedLogin(e)}
+          onClick={(e)=>onSubmit(e)}
           >
             Login
           </button>

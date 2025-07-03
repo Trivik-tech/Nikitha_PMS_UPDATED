@@ -8,6 +8,7 @@ import com.triviktech.entities.manager.Manager;
 import com.triviktech.repositories.hr.HRRepository;
 import com.triviktech.repositories.manager.ManagerRepository;
 import com.triviktech.utilities.email.EmailService;
+import com.triviktech.utilities.email.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -68,8 +69,9 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
 
 
             try {
-                String subject = "Your OTP Code";
-                String message = "Your OTP is: " + otp;
+
+                String subject= String.format(Message.OTP_SUBJECT,"Reset Password");
+                String message=String.format(Message.OTP_MESSAGE,"User",otp,10);
 
                 emailService.sendEmail(email, subject, message);
                 System.out.println("OTP Email sent to: " + email);
@@ -136,6 +138,16 @@ public class ForgotPasswordServiceImpl implements ForgotPasswordService {
         if (empOptional.isPresent()) {
             empOptional.get().setPassword(hashedPassword);
             employeeInformationRepository.save(empOptional.get());
+            String subject=String.format(Message.PASSWORD_RESET_SUCCESS_SUBJECT);
+            String message=String.format(Message.PASSWORD_RESET_SUCCESS_MESSAGE,"User");
+
+            emailService.sendEmail(email,subject,message);
+
+            try{
+
+            }catch (Exception e){
+                e.printStackTrace();
+            }
             cleanupAfterReset(email);
             return true;
         }

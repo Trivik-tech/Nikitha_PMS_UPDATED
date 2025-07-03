@@ -73,4 +73,8 @@ public interface ManagerController {
 
         @PostMapping("/notify/employee/{employeeId}")
         ResponseEntity<Map<String, String>> notifyEmployee(@PathVariable String employeeId);
+
+        @GetMapping("/get-team-size/{managerId}")
+        ResponseEntity<Map<String,Integer>> getTeamSize(@PathVariable String managerId);
 }
+

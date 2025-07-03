@@ -4,6 +4,8 @@ import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -19,8 +21,8 @@ public interface EmployeeController {
     @PostMapping("/register-kra-kpi")
     ResponseEntity<Map<String,String>> kraKpiRegistrationForEmployee(@RequestBody KraKpiRequestDto kraKpiRequestDto);
 
-    @GetMapping("/profile/{employeeId}")
-    ResponseEntity<EmployeeInfo> profile(@PathVariable String employeeId);
+    @GetMapping("/profile")
+    ResponseEntity<EmployeeInfo> profile(@AuthenticationPrincipal UserDetails employee);
 
     @PutMapping("/self-review/{employeeId}")
     ResponseEntity<Map<String,String >> selfReview(@RequestBody KraKpiRequestDto kraKpiRequestDto,@PathVariable String employeeId);

@@ -15,6 +15,7 @@ const EmployeeInfo = () => {
   const [loading, setLoading] = useState(true);
  const { id: encodedId } = useParams();
   const id = decrypt(encodedId);
+  const token=localStorage.getItem('token')
 
   const formatDateToDDMMYYYY = (dateString) => {
     if (!dateString) return "-";
@@ -30,7 +31,12 @@ const EmployeeInfo = () => {
     const loadEmployeeData = async () => {
       try {
         const response = await axios.get(
-          `${baseUrl}/api/v1/pms/hr/get-employee/${id}`
+          `${baseUrl}/api/v1/pms/hr/get-employee/${id}`,{
+            headers:{
+              Authorization:`Bearer ${token}`
+            }
+
+          }
         );
 
         const data = response.data;

@@ -100,6 +100,17 @@ public class Message {
                     "Best regards,\n" +
                     "HR Team";
 
+    public static final String PASSWORD_RESET_SUCCESS_SUBJECT = "Your Password Has Been Reset Successfully";
+
+    public static final String PASSWORD_RESET_SUCCESS_MESSAGE =
+            "Dear %s,\n\n" +
+                    "Your password has been successfully reset. You can now log in using your new password.\n\n" +
+                    "If you did not request this change, please contact our support team immediately to secure your account.\n\n" +
+                    "For security reasons, please do not share your password with anyone.\n\n" +
+                    "Best regards,\n" +
+                    "Security Team";
+
+
 
 
 

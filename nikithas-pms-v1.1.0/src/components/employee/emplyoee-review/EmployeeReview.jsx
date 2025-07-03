@@ -21,6 +21,7 @@ const PerformanceReview = () => {
   const [selfCompleted, setSelfCompleted] = useState(false); // <-- NEW STATE
 
   const { id: employeeId } = useParams();
+  const token=localStorage.getItem('token')
 
   const handleSelfScoreChange = (kraIndex, kpiIndex, value) => {
     let numericValue = Number(value);
@@ -58,7 +59,11 @@ const PerformanceReview = () => {
   useEffect(() => {
     const loadKraKpi = async () => {
       try {
-        const result = await axios.get(`${baseUrl}/api/v1/pms/employee/kra-kpi-list/${employeeId}`);
+        const result = await axios.get(`${baseUrl}/api/v1/pms/employee/kra-kpi-list/${employeeId}`,{
+          headers:{
+            Authorization: `Bearer ${token}`
+          }
+        });
         setKraKpi(result.data.kra);
         setDepartment(result.data.employee.department.name || "Engineering");
         setDesignation(result.data.employee.currentDesignation);
@@ -102,7 +107,11 @@ const PerformanceReview = () => {
         })),
       };
 
-      const result = await axios.put(`${baseUrl}/api/v1/pms/employee/self-review/${employeeId}`, payload);
+      const result = await axios.put(`${baseUrl}/api/v1/pms/employee/self-review/${employeeId}`, payload,{
+        headers:{
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log("Review submitted:", payload);
       console.log(result.data);
     } catch (error) {

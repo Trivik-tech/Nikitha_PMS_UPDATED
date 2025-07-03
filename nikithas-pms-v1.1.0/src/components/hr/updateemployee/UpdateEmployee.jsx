@@ -36,6 +36,7 @@ const UpdateEmployee = () => {
   const navigate = useNavigate();
   const { id: encodedId } = useParams();
   const id = decrypt(encodedId);
+  const token=localStorage.getItem('token')
 
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
@@ -52,7 +53,11 @@ const UpdateEmployee = () => {
 
   const loadDepartments = async () => {
     try {
-      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-departments`);
+      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-departments`,{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      });
       setDepartmentList(result.data.departments || []);
     } catch (error) {
       console.error("Error loading departments:", error);
@@ -62,7 +67,11 @@ const UpdateEmployee = () => {
   const loadEmployee = async () => {
     try {
       setLoading(true);
-      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-employee/${id}`);
+      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-employee/${id}`,{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      });
       const empData = result.data;
 
       empData.dob = formatDate(empData.dob);
@@ -92,7 +101,11 @@ const UpdateEmployee = () => {
         department: employee.department?.toString() || ""
       };
 
-      const result = await axios.put(`${baseUrl}/api/v1/pms/hr/update-employee/${id}`, updatedEmployee);
+      const result = await axios.put(`${baseUrl}/api/v1/pms/hr/update-employee/${id}`, updatedEmployee,{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      });
       setModalTitle("Success");
       setModalMessage("Employee updated successfully!");
       setStatusModal(true);

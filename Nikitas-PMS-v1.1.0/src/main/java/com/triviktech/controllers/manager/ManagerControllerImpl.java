@@ -180,4 +180,10 @@ public class ManagerControllerImpl implements ManagerController {
                 "status", "skipped",
                 "message", "No notification sent. Self-assessment already completed."));
     }
+
+    @Override
+    public ResponseEntity<Map<String, Integer>> getTeamSize(String managerId) {
+        return ResponseEntity.ok(managerService.getTimeSize(managerId));
+    }
+
 }

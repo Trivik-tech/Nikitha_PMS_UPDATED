@@ -13,6 +13,7 @@ import "./ResponsiveManager.css";
 
 import logo from "../../../assets/images/nikithas-logo.png";
 import profile from "../../../assets/images/profile1.jpg";
+import { baseUrl } from '../../urls/CommenUrl'
 
 Chart.register(ArcElement, Tooltip, Legend);
 
@@ -21,6 +22,7 @@ const ManagerDashboard = () => {
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [managerData, setManagerData] = useState(null);
   const [notifications, setNotifications] = useState([]);
+  const [teamSize, setTeamSize] = useState(0);
   const [percentageData, setPercentageData] = useState({
     completedPercentage: 0,
     pendingPercentage: 0,
@@ -34,13 +36,13 @@ const ManagerDashboard = () => {
   useEffect(() => {
     const getProfile = async () => {
       try {
-        const res = await axios.get("http://localhost:8080/api/v1/pms/manager/profile", {
+        const res = await axios.get(`${baseUrl}/api/v1/pms/manager/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const id = res.data.managerId;
         setManagerId(id);
         setManagerData(res.data);
-        await getpercentage(id); // ✅ Call getpercentage with the actual ID
+        await getpercentage(id);
       } catch (error) {
         console.error("❌ Error fetching profile:", error);
       }
@@ -49,26 +51,43 @@ const ManagerDashboard = () => {
     getProfile();
   }, []);
 
+  useEffect(() => {
+    if (managerId) {
+      loadTeamSize(managerId);
+    }
+  }, [managerId]);
+
   const getpercentage = async (id) => {
     try {
-      const res = await axios.get(`http://localhost:8080/api/v1/pms/manager/percentage/${id}`, {
+      const res = await axios.get(`${baseUrl}/api/v1/pms/manager/percentage/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPercentageData(res.data);
-      console.log("✅ PMS Percentage:", res.data);
     } catch (error) {
       console.error("❌ Error fetching percentage:", error);
     }
   };
 
+  const loadTeamSize = async (id) => {
+    try {
+      if (!id) return;
+      const result = await axios.get(`${baseUrl}/api/v1/pms/manager/get-team-size/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setTeamSize(result.data?.team || 0);
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+
   useEffect(() => {
-    const socket = new SockJS(`http://localhost:8080/ws?token=${token}`);
+    const socket = new SockJS(`${baseUrl}/ws?token=${token}`);
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
       onConnect: async () => {
-        console.log("✅ WebSocket connected");
-
         client.subscribe("/user/queue/manager-notification", async (message) => {
           const newMsg = {
             title: "New Notification",
@@ -79,7 +98,7 @@ const ManagerDashboard = () => {
           const updated = [newMsg, ...notifications];
 
           try {
-            const res = await fetch("http://localhost:8080/api/v1/pms/recent", {
+            const res = await fetch(`${baseUrl}/api/v1/pms/recent`, {
               headers: { Authorization: `Bearer ${token}` },
             });
             const recent = await res.json();
@@ -113,7 +132,7 @@ const ManagerDashboard = () => {
         });
 
         try {
-          const res = await fetch("http://localhost:8080/api/v1/pms/recent", {
+          const res = await fetch(`${baseUrl}/api/v1/pms/recent`, {
             headers: { Authorization: `Bearer ${token}` },
           });
 
@@ -146,6 +165,7 @@ const ManagerDashboard = () => {
 
     client.activate();
     return () => client.deactivate();
+    // eslint-disable-next-line
   }, [token]);
 
   const data = {
@@ -176,7 +196,7 @@ const ManagerDashboard = () => {
         <div className="profile-container">
           <img src={profile} alt="Profile" className="profile-pic" />
           <h2>
-            {managerData?.firstName || "Ravindra"} {managerData?.lastName || "Kulkarni"}
+            {managerData?.name || "Ravindra"}
           </h2>
         </div>
         <ul>
@@ -186,13 +206,30 @@ const ManagerDashboard = () => {
             </NavLink>
           </li>
           <li>
-            <Link to={`/my-team/${managerId}`}>My Team</Link>
+            {/* Use Link for "My Team" */}
+            <Link
+              to={managerId ? `/my-team/${managerId}` : "#"}
+              className={`sidebar-link-btn${!managerId ? " disabled" : ""}`}
+              style={{
+                pointerEvents: managerId ? "auto" : "none",
+                opacity: managerId ? 1 : 0.5,
+                textDecoration: "none",
+                color: "inherit"
+              }}
+            >
+              My Team
+            </Link>
           </li>
           <li>
             <Link to="/manager-profile">My Profile</Link>
           </li>
           <li>
-            <Link to="/" className="logout button">Logout</Link>
+            <button className="logout button" 
+            onClick={() => {
+                  localStorage.clear();
+                  navigate("/");
+                }}
+            >Logout</button>
           </li>
         </ul>
       </div>
@@ -210,7 +247,13 @@ const ManagerDashboard = () => {
                 onClose={() => setNotificationOpen(false)}
               />
             )}
-            <Link to="/" className="logout-btn desktop-only">Logout</Link>
+            <button  className="logout-btn desktop-only" 
+            
+             onClick={() => {
+                  localStorage.clear();
+                  navigate("/");
+                }}
+            >Logout</button>
           </div>
         </div>
 
@@ -219,7 +262,7 @@ const ManagerDashboard = () => {
             <Users className="stat-icon team-icon" />
             <div className="stat-text">
               <h2>Total Team Members</h2>
-              <p>2</p>
+              <p>{teamSize}</p>
             </div>
           </div>
           <div className="stat-card">

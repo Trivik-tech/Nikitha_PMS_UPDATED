@@ -7,6 +7,7 @@ import { FaSearch, FaHome } from "react-icons/fa";
 import { MdCallMade } from "react-icons/md";
 import logo from "../../../../assets/images/nikithas-logo.png";
 import Modal from "../../../modal/Modal";
+import {baseUrl} from '../../../urls/CommenUrl'
 
 export default function PendingList() {
   const [teamMembers, setTeamMembers] = useState([]);
@@ -24,7 +25,7 @@ export default function PendingList() {
       const token = localStorage.getItem("token");
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/v1/pms/hr/pending",
+          `${baseUrl}/api/v1/pms/hr/pending`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -65,7 +66,7 @@ export default function PendingList() {
 
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/v1/pms/hr/notify/employee-and-manager/${empId}`,
+        `${baseUrl}/api/v1/pms/hr/notify/employee-and-manager/${empId}`,
         {},
         {
           headers: {

@@ -21,7 +21,45 @@ public class ManagerResponseDto {
 
     private String role;
 
+    private String currentDesignation;
+
+    private String officialEmailId;
+
     private DepartmentResponseDto department;
+    private String reportingManager;
+    private String branch;
+
+    public String getBranch() {
+        return branch;
+    }
+
+    public void setBranch(String branch) {
+        this.branch = branch;
+    }
+
+    public String getReportingManager() {
+        return reportingManager;
+    }
+
+    public void setReportingManager(String reportingManager) {
+        this.reportingManager = reportingManager;
+    }
+
+    public String getOfficialEmailId() {
+        return officialEmailId;
+    }
+
+    public void setOfficialEmailId(String officialEmailId) {
+        this.officialEmailId = officialEmailId;
+    }
+
+    public String getCurrentDesignation() {
+        return currentDesignation;
+    }
+
+    public void setCurrentDesignation(String currentDesignation) {
+        this.currentDesignation = currentDesignation;
+    }
 
     public String getManagerId() {
         return managerId;

@@ -32,18 +32,16 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/v1/auth/**",
-                                "/ws/**",
-                                "/api/v1/pms/hr/upload",
-                                "/api/v1/pms/employee/register-kra-kpi"
+                                "/api/v1/pms/auth/**",
+                                "/ws/**"
                         ).permitAll()
 
                         // Uncomment below lines to enable role-based access control
-                        // .requestMatchers("/api/v1/pms/manager/**").hasRole("MANAGER")
-                        // .requestMatchers("/api/v1/pms/hr/**").hasRole("HR")
-                        // .requestMatchers("/api/v1/pms/employee/**").hasRole("EMPLOYEE")
+                         .requestMatchers("/api/v1/pms/manager/**").hasRole("MANAGER")
+                         .requestMatchers("/api/v1/pms/hr/**").hasRole("HR")
+                         .requestMatchers("/api/v1/pms/employee/**").hasRole("EMPLOYEE")
 
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtRequestFilter, AuthorizationFilter.class)
                 .build();
