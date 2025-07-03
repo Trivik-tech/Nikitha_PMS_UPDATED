@@ -1,2 +1,5 @@
+// Set your server URL here for local development
 let serverUrl = "http://192.168.0.189:8080";
-export let baseUrl = serverUrl; // Use this during local development
+
+// Export the base URL for use across the app
+export let baseUrl = serverUrl;
