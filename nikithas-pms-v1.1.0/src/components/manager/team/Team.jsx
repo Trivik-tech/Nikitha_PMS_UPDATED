@@ -5,8 +5,7 @@ import "./Team.css";
 import "./ResponsiveTeam.css";
 import { FaSearch, FaHome } from "react-icons/fa";
 import logo from "../../../assets/images/nikithas-logo.png";
-// import Loader from "../../modal/loader/Loader";
-import { baseUrl } from '../../urls/CommenUrl';
+import { baseUrl } from "../../urls/CommenUrl";
 
 export default function TeamPage() {
   const [teamList, setTeamList] = useState([]);
@@ -18,7 +17,6 @@ export default function TeamPage() {
   const intervalRef = useRef(null);
   const { id: managerId } = useParams();
 
-  // Only poll if on desktop/laptop, not on mobile (to avoid issues with mobile browser timers)
   const isMobile = () =>
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
@@ -41,6 +39,7 @@ export default function TeamPage() {
         }
       );
       setTeamList(Array.isArray(result.data) ? result.data : []);
+      console.log(result.data)
     } catch (error) {
       setTeamList([]);
       console.error("Error fetching team list:", error);
@@ -82,20 +81,46 @@ export default function TeamPage() {
     }
   };
 
-  // The button should ONLY be enabled if:
-  // - selfCompleted === true
-  // - pmsInitiated === true
-  // - managerCompleted === null OR managerCompleted === false
-  // The button should be DISABLED if:
-  // - selfCompleted !== true OR
-  // - pmsInitiated !== true OR
-  // - managerCompleted === true
+  const getButtonUI = (member) => {
+    const { selfCompleted, pmsInitiated, managerCompleted,kraKpiRegistered } = member;
 
-  const isPmsEnabled = (member) => {
+    // Condition for Start PMS
+    if (
+      selfCompleted === true &&
+      pmsInitiated === true &&
+      (managerCompleted === null || managerCompleted === false)
+    ) {
+      return (
+        <Link
+          to={`/manager-review/${member.empId}/${managerId}`}
+          className="manager-team-start-pms-button"
+        >
+          Start PMS
+        </Link>
+      );
+    }
+
+    // Condition for Start Review
+    if (kraKpiRegistered===true && selfCompleted===false && pmsInitiated===false && managerCompleted===false) {
+      return (
+        <button
+          className="manager-team-start-pms-button"
+          onClick={() => navigate(`/approve-pms/${member.empId}`)}
+        >
+          Assign Weightage
+        </button>
+      );
+    }
+
+    // Disabled button for all other cases
     return (
-      member.selfCompleted === true &&
-      member.pmsInitiated === true &&
-      (member.managerCompleted === null || member.managerCompleted === false)
+      <button
+        className="manager-team-start-pms-button disabled"
+        disabled
+        style={{ opacity: 0.5, pointerEvents: "none" }}
+      >
+        Start PMS
+      </button>
     );
   };
 
@@ -140,46 +165,20 @@ export default function TeamPage() {
             </thead>
             <tbody>
               {currentEntries.length > 0 ? (
-                currentEntries.map((member) => {
-                  const pmsEnabled = isPmsEnabled(member);
-
-                  return (
-                    <tr
-                      key={member.empId}
-                      onClick={() => navigate(`/approve-pms/${member.empId}`)}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <td>{member.empId || "-"}</td>
-                      <td>{member.name || "-"}</td>
-                      <td>{member.department?.name || "-"}</td>
-                      <td>{member.currentDesignation || "-"}</td>
-                      <td>{member.officialEmailId || "-"}</td>
-                      <td onClick={(e) => e.stopPropagation()}>
-                        <Link
-                          to={
-                            pmsEnabled
-                              ? `/manager-review/${member.empId}/${managerId}`
-                              : "#"
-                          }
-                          className={`manager-team-start-pms-button ${
-                            pmsEnabled ? "" : "disabled"
-                          }`}
-                          onClick={(e) => {
-                            if (!pmsEnabled) e.preventDefault();
-                          }}
-                          tabIndex={pmsEnabled ? 0 : -1}
-                          aria-disabled={!pmsEnabled}
-                          style={{
-                            pointerEvents: pmsEnabled ? "auto" : "none",
-                            opacity: pmsEnabled ? 1 : 0.5,
-                          }}
-                        >
-                          Start PMS
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })
+                currentEntries.map((member) => (
+                  <tr
+                    key={member.empId}
+                  >
+                    <td>{member.empId || "-"}</td>
+                    <td>{member.name || "-"}</td>
+                    <td>{member.department?.name || "-"}</td>
+                    <td>{member.currentDesignation || "-"}</td>
+                    <td>{member.officialEmailId || "-"}</td>
+                    <td onClick={(e) => e.stopPropagation()}>
+                      {getButtonUI(member)}
+                    </td>
+                  </tr>
+                ))
               ) : (
                 <tr>
                   <td colSpan="6" style={{ textAlign: "center" }}>

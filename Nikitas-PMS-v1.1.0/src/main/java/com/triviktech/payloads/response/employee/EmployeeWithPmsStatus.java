@@ -15,6 +15,15 @@ public class EmployeeWithPmsStatus {
     private Boolean managerCompleted;
     private Boolean pmsInitiated;
     private DepartmentResponseDto department;
+    private Boolean kraKpiRegistered;
+
+    public Boolean getKraKpiRegistered() {
+        return kraKpiRegistered;
+    }
+
+    public void setKraKpiRegistered(Boolean kraKpiRegistered) {
+        this.kraKpiRegistered = kraKpiRegistered;
+    }
 
     public DepartmentResponseDto getDepartment() {
         return department;

@@ -58,17 +58,7 @@ public class KraKpi {
     @Column(name = "manager_approval")
     private Boolean managerApproval;
 
-    @OneToOne(orphanRemoval = true)
-    @JoinColumn(name = "manager_manager_id")
-    private Manager manager;
 
-    public Manager getManager() {
-        return manager;
-    }
-
-    public void setManager(Manager manager) {
-        this.manager = manager;
-    }
 
     public Boolean getManagerApproval() {
         return managerApproval;

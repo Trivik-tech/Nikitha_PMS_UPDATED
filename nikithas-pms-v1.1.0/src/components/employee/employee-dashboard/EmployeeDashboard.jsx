@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './EmployeeDashboard.css';
 import './EmployeeDashboardResponsive.css';
 import logo from '../../../assets/images/nikithas-logo.png';
-import defaultProfile from '../../../assets/images/profile1.jpg' // <-- Add this import // <-- Add this import
+import defaultProfile from '../../../assets/images/profile1.jpg';
 import { Bell } from 'lucide-react';
 import Notification from '../../modal/notification/Notification';
 import axios from 'axios';
@@ -13,22 +13,21 @@ import SockJS from 'sockjs-client';
 
 const EmployeeDashboard = () => {
   const [notificationOpen, setNotificationOpen] = useState(false);
-  const [notificationCount, setNotificationCount] = useState(0); // ✅ NEW: Notification badge count
+  const [notificationCount, setNotificationCount] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [newAndUndelivered, setNewAndUndelivered] = useState([]);
   const [employeeData, setEmployeeData] = useState(null);
   const jwtToken = localStorage.getItem("token");
 
-  const navigate=useNavigate()
+  const navigate=useNavigate();
 
-  // Helper for closing sidebar
   const handleSidebarClose = () => {
     setSidebarOpen(false);
   };
 
   useEffect(() => {
-    const socket = new SockJS(`http://localhost:8080/ws?token=${jwtToken}`);
+    const socket = new SockJS(`${baseUrl}/ws?token=${jwtToken}`);
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
@@ -40,9 +39,9 @@ const EmployeeDashboard = () => {
             message: message.body,
             timestamp: new Date().toISOString()
           };
-setNotificationOpen(true);
+          setNotificationOpen(true);
           setNewAndUndelivered(prev => [newMsg, ...prev]);
-setNotificationCount(prev => prev + 1); // ✅ INCREASE count for red badge
+          setNotificationCount(prev => prev + 1);
           try {
             const res = await axios.get(`${baseUrl}/api/v1/pms/recent`, {
               headers: { Authorization: `Bearer ${jwtToken}` }
@@ -104,17 +103,16 @@ setNotificationCount(prev => prev + 1); // ✅ INCREASE count for red badge
     loadProfile();
     client.activate();
     return () => client.deactivate();
-    // eslint-disable-next-line
 
   }, []);
 
   const handleNotificationToggle = () => {
-  setNotificationOpen(!notificationOpen);
-  if (!notificationOpen) {
-    setNewAndUndelivered([]);
-    setNotificationCount(0); // ✅ RESET red badge when opened
-  }
-};
+    setNotificationOpen(!notificationOpen);
+    if (!notificationOpen) {
+      setNewAndUndelivered([]);
+      setNotificationCount(0);
+    }
+  };
 
   const loadProfile = async () => {
     try {
@@ -125,11 +123,15 @@ setNotificationCount(prev => prev + 1); // ✅ INCREASE count for red badge
       });
       setEmployeeData(result.data);
     } catch (error) {
-      console.log(error)
+      console.log("Profile fetch error:", error);
+      // Handle token expiration: redirect to login if unauthorized
+      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        localStorage.clear();
+        navigate("/");
+      }
     }
-  }
+  };
 
-  // Helper to format date
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
@@ -162,9 +164,9 @@ setNotificationCount(prev => prev + 1); // ✅ INCREASE count for red badge
       >
         <div style={{ position: 'relative' }}>
           <Bell className="employee-dashboard-notificationButton" />
-         {notificationCount > 0 && (
-  <span className="notif-count">{notificationCount}</span>
-)}
+          {notificationCount > 0 && (
+            <span className="notif-count">{notificationCount}</span>
+          )}
         </div>
       </div>
 
@@ -212,8 +214,8 @@ setNotificationCount(prev => prev + 1); // ✅ INCREASE count for red badge
                 onClick={handleNotificationToggle}
               />
               {notificationCount > 0 && (
-  <span className="notif-count">{notificationCount}</span>
-)}
+                <span className="notif-count">{notificationCount}</span>
+              )}
             </div>
             <button className="employee-logout-btn" 
              onClick={() => {
@@ -231,9 +233,7 @@ setNotificationCount(prev => prev + 1); // ✅ INCREASE count for red badge
             <p><strong>Employee ID:</strong> {employeeData?.empId}</p>
             <p><strong>Employee Name:</strong> {employeeData?.name}</p>
             <p><strong>Current Designation:</strong> {employeeData?.currentDesignation}</p>
-           
             <p><strong>Department:</strong> {employeeData?.department}</p>
-            
           </div>
 
           <div className="reporting-manager">

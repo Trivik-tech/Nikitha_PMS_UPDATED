@@ -17,8 +17,6 @@ public interface KraKpiRepository extends JpaRepository<KraKpi, Long> {
     Optional<KraKpi> findByEmployeeInformationAndKraKpiId(@Param("employee") EmployeeInformation employee,
                                                           @Param("kraKpiId") long kraKpiId);
 
-    Optional<KraKpi> findByManager(Manager manager);
-
     @Query("SELECT k.selfCompleted FROM KraKpi k WHERE k.employeeInformation.empId = :employeeId")
     Optional<Boolean> findSelfCompletedStatusByEmployeeId(@Param("employeeId") String employeeId);
 

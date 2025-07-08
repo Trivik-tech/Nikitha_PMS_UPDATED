@@ -135,7 +135,7 @@ const Krakpi = () => {
 
     try {
       const payload = {
-        employeeId: employeeId || "EMP1212",
+        employeeId: employeeId,
         remark: "",
         selfCompleted: false,
         managerCompleted: false,
@@ -166,6 +166,9 @@ const Krakpi = () => {
           }
         }
       );
+      console.log(response.data)
+      console.log(token)
+      console.log(payload)
 
       openModal("Success", "KRA/KPI submitted successfully!", true); // <--- redirect after OK
     } catch (error) {

@@ -18,6 +18,9 @@ import { baseUrl } from '../../urls/CommenUrl'
 Chart.register(ArcElement, Tooltip, Legend);
 
 const ManagerDashboard = () => {
+  const navigate = useNavigate();
+  const chartRef = useRef();
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
@@ -29,11 +32,18 @@ const ManagerDashboard = () => {
     pendingPercentage: 0,
   });
   const [managerId, setManagerId] = useState("");
+
   const token = localStorage.getItem("token");
 
-  const chartRef = useRef();
-  const navigate = useNavigate();
+  // Logout if token is missing
+  useEffect(() => {
+    if (!token) {
+      localStorage.clear();
+      navigate("/");
+    }
+  }, [token, navigate]);
 
+  // Load profile
   useEffect(() => {
     const getProfile = async () => {
       try {
@@ -43,22 +53,23 @@ const ManagerDashboard = () => {
         const id = res.data.managerId;
         setManagerId(id);
         setManagerData(res.data);
-        await getpercentage(id);
+        await getPercentage(id);
       } catch (error) {
         console.error("❌ Error fetching profile:", error);
+        if (error.response?.status === 401) {
+          localStorage.clear();
+          navigate("/");
+        }
       }
     };
-
-    getProfile();
-  }, []);
+    if (token) getProfile();
+  }, [token, navigate]);
 
   useEffect(() => {
-    if (managerId) {
-      loadTeamSize(managerId);
-    }
+    if (managerId) loadTeamSize(managerId);
   }, [managerId]);
 
-  const getpercentage = async (id) => {
+  const getPercentage = async (id) => {
     try {
       const res = await axios.get(`${baseUrl}/api/v1/pms/manager/percentage/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -71,19 +82,19 @@ const ManagerDashboard = () => {
 
   const loadTeamSize = async (id) => {
     try {
-      if (!id) return;
       const result = await axios.get(`${baseUrl}/api/v1/pms/manager/get-team-size/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: { Authorization: `Bearer ${token}` },
       });
       setTeamSize(result.data?.team || 0);
     } catch (error) {
-      console.log(error.message)
+      console.error("❌ Error fetching team size:", error.message);
     }
-  }
+  };
 
+  // WebSocket Notifications
   useEffect(() => {
+    if (!token) return;
+
     const socket = new SockJS(`${baseUrl}/ws?token=${token}`);
     const client = new Client({
       webSocketFactory: () => socket,
@@ -104,13 +115,13 @@ const ManagerDashboard = () => {
               headers: { Authorization: `Bearer ${token}` },
             });
             const recent = await res.json();
-            const formattedRecent = recent.map((msg) => ({
+            const formatted = recent.map((msg) => ({
               title: "Recent Notification",
               message: msg.message || msg.content || "No content",
               timestamp: msg.timestamp || new Date().toISOString(),
             }));
 
-            const filteredRecent = formattedRecent.filter((msg) => {
+            const filteredRecent = formatted.filter((msg) => {
               const msgTime = Math.floor(new Date(msg.timestamp).getTime() / 1000);
               const newMsgTime = Math.floor(new Date(newMsg.timestamp).getTime() / 1000);
               return !(msgTime === newMsgTime && msg.message === newMsg.message);
@@ -159,7 +170,6 @@ const ManagerDashboard = () => {
           console.error("❌ Initial fetch error:", err);
         }
       },
-
       onStompError: (frame) => {
         console.error("🔴 STOMP error:", frame);
       },
@@ -167,46 +177,41 @@ const ManagerDashboard = () => {
 
     client.activate();
     return () => client.deactivate();
-    // eslint-disable-next-line
-  }, [token]);
+  }, [token, notifications]);
 
- const hasData = percentageData.completedPercentage !== 0 || percentageData.pendingPercentage !== 0;
+  const hasData = percentageData.completedPercentage !== 0 || percentageData.pendingPercentage !== 0;
 
-const data = {
-  labels: hasData ? ["Completed", "Pending"] : ["No Data"],
-  datasets: [
-    {
-      data: hasData
-        ? [percentageData.completedPercentage, percentageData.pendingPercentage]
-        : [1],
-      backgroundColor: hasData
-        ? ["#4CAF50", "#FF9800"]
-        : ["#d3d3d3"], // gray for no data
-      borderWidth: 1,
-    },
-  ],
-};
+  const data = {
+    labels: hasData ? ["Completed", "Pending"] : ["No Data"],
+    datasets: [
+      {
+        data: hasData
+          ? [percentageData.completedPercentage, percentageData.pendingPercentage]
+          : [1],
+        backgroundColor: hasData ? ["#4CAF50", "#FF9800"] : ["#d3d3d3"],
+        borderWidth: 1,
+      },
+    ],
+  };
 
-const handleChartClick = (event) => {
-  if (!hasData) return; 
-  const chart = chartRef.current;
-  if (!chart) return;
-  const elements = getElementsAtEvent(chart, event);
-  if (elements.length > 0) {
-    const clickedIndex = elements[0].index;
-    if (clickedIndex === 0) navigate(`/completed-assessments/${managerId}`);
-    else if (clickedIndex === 1) navigate(`/pending-assessments/${managerId}`);
-  }
-};
+  const handleChartClick = (event) => {
+    if (!hasData) return;
+    const chart = chartRef.current;
+    if (!chart) return;
+    const elements = getElementsAtEvent(chart, event);
+    if (elements.length > 0) {
+      const clickedIndex = elements[0].index;
+      if (clickedIndex === 0) navigate(`/completed-assessments/${managerId}`);
+      else if (clickedIndex === 1) navigate(`/pending-assessments/${managerId}`);
+    }
+  };
 
   return (
     <div className="dashboard-container">
       <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="profile-container">
           <img src={profile} alt="Profile" className="profile-pic" />
-          <h2>
-            {managerData?.name || "Ravindra"}
-          </h2>
+          <h2>{managerData?.name || "Manager"}</h2>
         </div>
         <ul>
           <li>
@@ -215,7 +220,6 @@ const handleChartClick = (event) => {
             </NavLink>
           </li>
           <li>
-            {/* Use Link for "My Team" */}
             <Link
               to={managerId ? `/my-team/${managerId}` : "#"}
               className={`sidebar-link-btn${!managerId ? " disabled" : ""}`}
@@ -233,12 +237,15 @@ const handleChartClick = (event) => {
             <Link to="/manager-profile">My Profile</Link>
           </li>
           <li>
-            <button className="logout button" 
-            onClick={() => {
-                  localStorage.clear();
-                  navigate("/");
-                }}
-            >Logout</button>
+            <button
+              className="logout button"
+              onClick={() => {
+                localStorage.clear();
+                navigate("/");
+              }}
+            >
+              Logout
+            </button>
           </li>
         </ul>
       </div>
@@ -249,31 +256,33 @@ const handleChartClick = (event) => {
           <h1>Manager PMS Dashboard</h1>
           <img src={logo} alt="Logo" className="dashboard-logo" />
           <div className="header-icons" style={{ position: "relative" }}>
-  <div style={{ position: "relative" }}>
-    <Bell
-      className="notification-icon"
-      onClick={() => {
-        setNotificationOpen(!notificationOpen);
-        if (!notificationOpen) setNotificationCount(0); // ✅ Reset count on open
-      }}
-    />
-    {notificationCount > 0 && (
-      <span className="notification-badge">{notificationCount}</span> // ✅ Show badge
-    )}
-  </div>
+            <div style={{ position: "relative" }}>
+              <Bell
+                className="notification-icon"
+                onClick={() => {
+                  setNotificationOpen(!notificationOpen);
+                  if (!notificationOpen) setNotificationCount(0);
+                }}
+              />
+              {notificationCount > 0 && (
+                <span className="notification-badge">{notificationCount}</span>
+              )}
+            </div>
             {notificationOpen && (
               <Notification
                 notifications={Array.isArray(notifications) ? notifications : []}
                 onClose={() => setNotificationOpen(false)}
               />
             )}
-            <button  className="logout-btn desktop-only" 
-            
-             onClick={() => {
-                  localStorage.clear();
-                  navigate("/");
-                }}
-            >Logout</button>
+            <button
+              className="logout-btn desktop-only"
+              onClick={() => {
+                localStorage.clear();
+                navigate("/");
+              }}
+            >
+              Logout
+            </button>
           </div>
         </div>
 

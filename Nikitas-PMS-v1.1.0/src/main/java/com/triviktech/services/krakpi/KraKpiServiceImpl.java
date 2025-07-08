@@ -109,10 +109,9 @@ public class KraKpiServiceImpl implements KraKpiService {
             kras.add(kra);
         }
 
-        EmployeeInformation employee = kraKpi.getEmployeeInformation();
-        Manager manager = employee.getManager();
+
         kraKpi.setKra(kras);
-        kraKpi.setManager(manager);
+
         kraKpi = kraKpiRepository.saveAndFlush(kraKpi); // Final update
 
         // Unified git conflict resolution: Use robust manager/employee null-check and send email

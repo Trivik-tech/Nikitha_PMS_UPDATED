@@ -32,7 +32,7 @@ public class NotificationControllerImpl implements NotificationController {
     public ResponseEntity<List<Notification>> getRecentMessages(@AuthenticationPrincipal UserDetails manager) {
         // In real implementation, fetch authenticated username from SecurityContext
          String username = manager.getUsername();
-        System.out.println("✅ Authenticated username: " + username);
+//        System.out.println("✅ Authenticated username: " + username);
 
         List<Notification> undelivered = notificationService.getPendingNotification(username);
         int remaining = 50 - undelivered.size();

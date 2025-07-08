@@ -32,13 +32,40 @@ import Forgot from './components/forgot-password/Forgot';
 import Reset from './components/reset-password/Reset';
 
 import { baseUrl } from './components/urls/CommenUrl';
-import Loader from './components/modal/loader/Loader'; // ✅ Added import for Loader
+import Loader from './components/modal/loader/Loader';
 
 const AuthContext = createContext();
 
 function AuthProvider({ children }) {
-  const [role, setRole] = useState(null);
-  return <AuthContext.Provider value={{ role, setRole }}>{children}</AuthContext.Provider>;
+  // Try to load role from localStorage on mount
+  const [role, setRoleState] = useState(() => localStorage.getItem('role'));
+  const [token, setTokenState] = useState(() => localStorage.getItem('token'));
+
+  // Persist role and token to localStorage
+  const setRole = (newRole) => {
+    setRoleState(newRole);
+    if (newRole) {
+      localStorage.setItem('role', newRole);
+    } else {
+      localStorage.removeItem('role');
+    }
+  };
+
+  const setToken = (newToken) => {
+    setTokenState(newToken);
+    if (newToken) {
+      localStorage.setItem('token', newToken);
+    } else {
+      localStorage.removeItem('token');
+    }
+  };
+
+  // Provide role, setRole, token, setToken to context
+  return (
+    <AuthContext.Provider value={{ role, setRole, token, setToken }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 function useAuth() {
@@ -47,11 +74,12 @@ function useAuth() {
   return context;
 }
 
+// This handler will store the token and role in localStorage to persist after reload
 function AuthHandler() {
   const navigation = useNavigate();
   const { token } = useParams();
-  const { setRole } = useAuth();
-  const [loading, setLoading] = useState(true); // ✅ Loader state
+  const { setRole, setToken } = useAuth();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchRole() {
@@ -59,30 +87,67 @@ function AuthHandler() {
         const response = await axios.get(`${baseUrl}/api/v1/pms/auth/${token}`);
         const role = response.data?.role;
         setRole(role);
+        setToken(token);
 
-        if (role === 'HR') navigation('/hr-dashboard');
-        else if (role === 'MANAGER') navigation('/manager-dashboard');
-        else if (role === 'EMPLOYEE') navigation('/employee-dashboard');
-        else navigation('/');
+        if (role === 'HR') navigation('/hr-dashboard', { replace: true });
+        else if (role === 'MANAGER') navigation('/manager-dashboard', { replace: true });
+        else if (role === 'EMPLOYEE') navigation('/employee-dashboard', { replace: true });
+        else navigation('/', { replace: true });
       } catch (error) {
         console.error('Error fetching role:', error);
-        navigation('/');
+        setRole(null);
+        setToken(null);
+        navigation('/', { replace: true });
       } finally {
         setLoading(false);
       }
     }
 
     if (token) fetchRole();
-    else navigation('/');
-  }, [token, navigation, setRole]);
+    else navigation('/', { replace: true });
+    // eslint-disable-next-line
+  }, [token]);
 
-  return loading ? <Loader /> : null; // ✅ Show loader while fetching
+  return loading ? <Loader /> : null;
 }
 
+// This checks for authentication and optionally validates the token on reload
 function RequireAuth({ children, allowedRoles }) {
-  const { role } = useAuth();
-  if (!role) return <Navigate to="/" replace />;
-  if (!allowedRoles.includes(role)) return <Navigate to="/" replace />;
+  const { role, token } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [valid, setValid] = useState(true);
+
+  // Validate the token on mount (only if role exists but token might be expired or invalid)
+  useEffect(() => {
+    async function validateToken() {
+      if (!token || !role) {
+        setValid(false);
+        return;
+      }
+      setLoading(true);
+      try {
+        // Validate token using your backend endpoint
+        const response = await axios.get(`${baseUrl}/api/v1/pms/auth/${token}`);
+        const serverRole = response.data?.role;
+        if (serverRole !== role || !allowedRoles.includes(role)) {
+          setValid(false);
+        } else {
+          setValid(true);
+        }
+      } catch (err) {
+        setValid(false);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // Only validate if token or role changes
+    validateToken();
+    // eslint-disable-next-line
+  }, [token, role]);
+
+  if (loading) return <Loader />;
+  if (!role || !token || !valid || !allowedRoles.includes(role)) return <Navigate to="/" replace />;
   return children;
 }
 

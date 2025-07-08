@@ -28,80 +28,66 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private final EmployeeDetailsService employeeDetailsService;
 
     public JwtRequestFilter(JwtService jwtService, ManagerDetailsService managerDetailsService,
-            HrDetailsService hrDetailsService, EmployeeDetailsService employeeDetailsService) {
+                            HrDetailsService hrDetailsService, EmployeeDetailsService employeeDetailsService) {
         this.jwtService = jwtService;
         this.managerDetailsService = managerDetailsService;
         this.hrDetailsService = hrDetailsService;
         this.employeeDetailsService = employeeDetailsService;
     }
-@Override
-protected boolean shouldNotFilter(HttpServletRequest request) {
-    String path = request.getRequestURI();
-    return path.startsWith("/ws") || path.contains("sockjs");
-}
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/ws") || path.contains("sockjs");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-                // ✅ ADD THESE 2 LINES AT THE VERY TOP TO DEBUG
-    System.out.println("🔍 Path: " + request.getRequestURI());
-    System.out.println("🔐 Auth Header: " + request.getHeader("Authorization"));
+        // Debug: Print path and token
+//        System.out.println("🔍 Path: " + request.getRequestURI());
+//        System.out.println("🔐 Auth Header: " + request.getHeader("Authorization"));
+
         String tokenHeader = request.getHeader("Authorization");
         if (tokenHeader != null && tokenHeader.startsWith("Bearer ")) {
             String token = tokenHeader.substring(7);
             jwtToken = token;
-            System.out.println(token);
+//            System.out.println("JWT Token: " + token);
+
             try {
                 if (!jwtService.isTokenValid(token)) {
                     throw new TokenExpiredException("Token Expired , Please log in again");
                 }
 
                 String role = jwtService.getRole(token);
-                System.out.println(role);
+//                System.out.println("Role from token: " + role);
+                UserDetails userDetails = null;
+                String username = jwtService.getUsername(token);
+
                 if (role.equalsIgnoreCase("MANAGER")) {
-                    UserDetails userDetails = managerDetailsService.loadUserByUsername(jwtService.getUsername(token));
-                    if (userDetails != null) {
-                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-
-                        authToken.setDetails(new WebAuthenticationDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authToken);
-                    }
-
+                    userDetails = managerDetailsService.loadUserByUsername(username);
                 } else if (role.equalsIgnoreCase("HR")) {
-                    UserDetails userDetails = hrDetailsService.loadUserByUsername(jwtService.getUsername(token));
-                    if (userDetails != null) {
-                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
+                    userDetails = hrDetailsService.loadUserByUsername(username);
+                } else if (role.equalsIgnoreCase("EMPLOYEE")) {
+                    userDetails = employeeDetailsService.loadUserByUsername(username);
+                }
 
-                        authToken.setDetails(new WebAuthenticationDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authToken);
-
-                    }
-
-                } else {
-                    UserDetails userDetails = employeeDetailsService.loadUserByUsername(jwtService.getUsername(token));
-                    if (userDetails != null) {
-                        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-
-                        authToken.setDetails(new WebAuthenticationDetails(request));
-                        SecurityContextHolder.getContext().setAuthentication(authToken);
-
-                    }
+                if (userDetails != null) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
                 filterChain.doFilter(request, response);
 
             } catch (TokenExpiredException e) {
                 sendErrorResponse(response, "Token Expired. Please log in again.", HttpServletResponse.SC_UNAUTHORIZED);
             } catch (Exception e) {
-                sendErrorResponse(response, "Invalid Token", HttpServletResponse.SC_UNAUTHORIZED);
+                e.printStackTrace();
+                sendErrorResponse(response, "Invalid Token: " + e.getMessage(), HttpServletResponse.SC_UNAUTHORIZED);
             }
         } else {
             filterChain.doFilter(request, response);
-
         }
-
     }
 
     private void sendErrorResponse(HttpServletResponse response, String message, int status) throws IOException {
@@ -109,5 +95,4 @@ protected boolean shouldNotFilter(HttpServletRequest request) {
         response.setContentType("application/json");
         response.getWriter().write("{ \"error\": \"" + message + "\" }");
     }
-
 }

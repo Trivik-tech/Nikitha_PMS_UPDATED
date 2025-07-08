@@ -33,16 +33,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/v1/pms/auth/**",
-                                "/ws/**",
-                                "/api/v1/pms/hr/upload",
-                                "/api/v1/pms/employee/register-kra-kpi"
+                                "/ws/**"
                         ).permitAll()
-
-                        // Uncomment below lines to enable role-based access control
                         .requestMatchers("/api/v1/pms/manager/**").hasRole("MANAGER")
                         .requestMatchers("/api/v1/pms/hr/**").hasRole("HR")
                         .requestMatchers("/api/v1/pms/employee/**").hasRole("EMPLOYEE")
-
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtRequestFilter, AuthorizationFilter.class)

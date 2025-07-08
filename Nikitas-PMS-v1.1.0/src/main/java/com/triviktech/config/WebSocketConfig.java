@@ -19,49 +19,51 @@ import com.triviktech.utilities.jwt.JwtService;
 
 @Configuration
 @EnableWebSocketMessageBroker
-public class webSocketConfig implements WebSocketMessageBrokerConfigurer {
+public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Autowired
-    JwtService jwt;
+    private JwtService jwt;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOriginPatterns("http://localhost:3000")
+        registry.addEndpoint("/ws")
+                .setAllowedOriginPatterns("http://localhost:3000", "http://192.168.0.184:3000")
                 .setHandshakeHandler(new DefaultHandshakeHandler() {
-
                     @Override
-                    protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wSocketHandler,
-                            Map<String, Object> attributes) {
+                    protected Principal determineUser(ServerHttpRequest request,
+                                                      WebSocketHandler wsHandler,
+                                                      Map<String, Object> attributes) {
+//                        System.out.println("🔵 [WebSocket] Handshake started...");
 
-                        System.out.println(" [WebSocket] Handshake started...");
                         String token = extractTokenFromRequest(request);
 
                         if (token != null) {
-                            System.out.println(" [WebSocket] Extracted token: " + token);
+//                            System.out.println("🔵 [WebSocket] Extracted token: " + token);
+
                             boolean isValid = jwt.isTokenValid(token);
-                            System.out.println(" [WebSocket] Is token valid? " + isValid);
+//                            System.out.println("🔵 [WebSocket] Is token valid? " + isValid);
 
                             if (isValid) {
                                 String username = jwt.getUsername(token);
-                                System.out.println(" [WebSocket] Extracted username from token: " + username);
+//                                System.out.println("🟢 [WebSocket] Authenticated user: " + username);
 
-                                return () -> username;
+                                return () -> username; // returning Principal object
                             } else {
-                                System.out.println(" [WebSocket] Token is invalid.");
+//                                System.out.println("🔴 [WebSocket] Invalid token.");
                             }
                         } else {
-                            System.out.println(" [WebSocket] No token found in request.");
+//                            System.out.println("⚠️ [WebSocket] Token not found in request.");
                         }
 
-                        return null;
+                        return null; // Returning null rejects the handshake with 403
                     }
-
-                }).withSockJS();
+                })
+                .withSockJS(); // Enable SockJS fallback
     }
 
     private String extractTokenFromRequest(ServerHttpRequest request) {
+        // 1. Try Authorization header first
         List<String> authHeaders = request.getHeaders().get("Authorization");
-
         if (authHeaders != null && !authHeaders.isEmpty()) {
             String bearer = authHeaders.get(0);
             if (bearer.startsWith("Bearer ")) {
@@ -69,25 +71,24 @@ public class webSocketConfig implements WebSocketMessageBrokerConfigurer {
             }
         }
 
+        // 2. Try URL query param ?token=...
         URI uri = request.getURI();
         String query = uri.getQuery();
-
         if (query != null && query.contains("token=")) {
-            String[] params = query.split("&");
-            for (String param : params) {
+            for (String param : query.split("&")) {
                 if (param.startsWith("token=")) {
-                    return param.substring(6); // token=NB238 -> NB238
+                    return param.substring(6); // remove 'token='
                 }
             }
         }
 
-        return null;
+        return null; // not found
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic", "/queue");
-        registry.setApplicationDestinationPrefixes("/app");
-        registry.setUserDestinationPrefix("/user");
+        registry.enableSimpleBroker("/topic", "/queue"); // for subscription
+        registry.setApplicationDestinationPrefixes("/app"); // for sending
+        registry.setUserDestinationPrefix("/user"); // for user-specific messaging
     }
 }

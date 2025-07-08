@@ -184,6 +184,7 @@ public class ManagerServiceImpl implements ManagerService {
                     employeeResponse.setPmsInitiated(kraKpi.getPmsInitiated());
                     employeeResponse.setSelfCompleted(kraKpi.isSelfCompleted());
                     employeeResponse.setManagerCompleted(kraKpi.isManagerCompleted());
+                    employeeResponse.setKraKpiRegistered(Boolean.TRUE);
                 });
 
                 return employeeResponse;

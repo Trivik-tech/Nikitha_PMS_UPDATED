@@ -15,58 +15,49 @@ import java.util.Date;
 public class JwtService {
 
     @Value("${security.secretKey}")
-    private String secreteKey;
+    private String secretKey;
 
     @Value("${security.issuer}")
     private String issuer;
 
     @Value("${security.expiration}")
-    private int expiration;
+    private long expiration; // make sure this is long and in ms
 
     private Algorithm algorithm;
 
-    private final static String USER_NAME="username";
-    private final static String USER_ROLE="role";
+    private final static String USER_NAME = "username";
+    private final static String USER_ROLE = "role";
 
     @PostConstruct
-    public void postConstruct(){
-        algorithm=Algorithm.HMAC256(secreteKey);
+    public void init() {
+        algorithm = Algorithm.HMAC256(secretKey);
     }
 
-    public String generateToken(String username, String role){
-       return JWT.create()
-                .withClaim(USER_NAME,username)
-                .withClaim(USER_ROLE,role)
-               .withIssuer(issuer)
-                .withExpiresAt(new Date(System.currentTimeMillis()+expiration))
+    public String generateToken(String username, String role) {
+        return JWT.create()
+                .withClaim(USER_NAME, username)
+                .withClaim(USER_ROLE, role)
+                .withIssuer(issuer)
+                .withExpiresAt(new Date(System.currentTimeMillis() + expiration))
                 .sign(algorithm);
     }
 
-    public String getUsername(String token){
-        DecodedJWT verify = JWT.require(algorithm)
-                .withIssuer(issuer)
-                .build().verify(token);
-        return verify.getClaim(USER_NAME).asString();
+    public String getUsername(String token) {
+        return verifyToken(token).getClaim(USER_NAME).asString();
     }
 
-    public String getRole(String token){
-        DecodedJWT verify = JWT.require(algorithm)
-               .withIssuer(issuer)
-               .build().verify(token);
-        return verify.getClaim(USER_ROLE).asString();
+    public String getRole(String token) {
+        return verifyToken(token).getClaim(USER_ROLE).asString();
     }
 
     public boolean isTokenValid(String token) {
         try {
-            DecodedJWT decodedJWT = verifyToken(token);
-            return !decodedJWT.getExpiresAt().before(new Date());
-        } catch (TokenExpiredException e) {
-            throw new TokenExpiredException("Token expired please log in again");
+            DecodedJWT jwt = verifyToken(token);
+            return jwt.getExpiresAt().after(new Date());
         } catch (JWTVerificationException e) {
-            return false;
+            throw new TokenExpiredException("Invalid or expired token");
         }
     }
-
 
     private DecodedJWT verifyToken(String token) {
         return JWT.require(algorithm)
@@ -74,6 +65,4 @@ public class JwtService {
                 .build()
                 .verify(token);
     }
-
-
 }

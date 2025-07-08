@@ -7,6 +7,7 @@ import { FaSearch, FaHome } from "react-icons/fa";
 import logo from "../../../../assets/images/nikithas-logo.png";
 import { MdNotificationsActive } from "react-icons/md";
 import Modal from "../../../modal/Modal";
+import {baseUrl} from '../../../urls/CommenUrl'
 
 export default function Pending() {
   const [teamList, setTeamList] = useState([]);
@@ -27,7 +28,7 @@ export default function Pending() {
 
   const fetchPendingEmployees = async () => {
     try {
-      const res = await axios.get(`http://localhost:8080/api/v1/pms/manager/pending/${managerId}`, {
+      const res = await axios.get(`${baseUrl}/api/v1/pms/manager/pending/${managerId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -45,7 +46,7 @@ export default function Pending() {
   const notifyEmployee = async (empId, employeeName) => {
     try {
       const response = await axios.post(
-        `http://localhost:8080/api/v1/pms/manager/notify/employee/${empId}`,
+        `${baseUrl}/api/v1/pms/manager/notify/employee/${empId}`,
         {},
         {
           headers: {

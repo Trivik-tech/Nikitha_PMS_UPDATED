@@ -59,7 +59,6 @@ const Login = () => {
       const response = await axios.post(`${baseUrl}/api/v1/pms/auth/login`, login);
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
-        // Redirect to /auth/:token to trigger AuthHandler
         navigation(`/auth/${response.data.token}`);
       }
     } catch (error) {

@@ -774,21 +774,15 @@ public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> p
                         Collectors.counting()));
 
         // Managers (for those who also have KraKpi)
-        Map<Boolean, Long> mgrResult = managerRepository.findAll()
-                .stream()
-                .map(kraKpiRepository::findByManager)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.partitioningBy(
-                        kraKpi -> kraKpi.isManagerCompleted() && kraKpi.isSelfCompleted(),
-                        Collectors.counting()));
 
-        long completed = empResult.getOrDefault(true, 0L) + mgrResult.getOrDefault(true, 0L);
-        long pending = empResult.getOrDefault(false, 0L) + mgrResult.getOrDefault(false, 0L);
+
+//        long completed = empResult.getOrDefault(true, 0L) + mgrResult.getOrDefault(true, 0L);
+//        long pending = empResult.getOrDefault(false, 0L) + mgrResult.getOrDefault(false, 0L);
 
         return Map.of(
-                "completed", (int) completed,
-                "pending", (int) pending
+//                "completed", (int) completed,
+//                "pending", (int) pending
+
         );
     }
 

@@ -119,7 +119,7 @@ const HrDashboard = () => {
   useEffect(() => {
     const jwtToken = localStorage.getItem("token");
 
-    const socket = new SockJS(`http://localhost:8080/ws?token=${jwtToken}`);
+    const socket = new SockJS(`${baseUrl}/ws?token=${jwtToken}`);
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,

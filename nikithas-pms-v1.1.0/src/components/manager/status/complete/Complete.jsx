@@ -5,6 +5,7 @@ import "./ResponsiveManagerCompleted.css";
 import { FaSearch, FaHome } from "react-icons/fa";
 import logo from '../../../../assets/images/nikithas-logo.png';
 import axios from "axios";
+import {baseUrl} from '../../../urls/CommenUrl'
 
 export default function Complete() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -29,7 +30,7 @@ export default function Complete() {
   const fetchCompletedEmployees = async () => {
     try {
 
-      const res = await axios.get(`http://localhost:8080/api/v1/pms/manager/completed/${managerId}`,
+      const res = await axios.get(`${baseUrl}/api/v1/pms/manager/completed/${managerId}`,
         {
           headers:{
             Authorization:`Bearer ${token}`
