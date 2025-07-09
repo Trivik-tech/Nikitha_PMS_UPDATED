@@ -20,7 +20,8 @@ import StartPms from './components/hr/pms/StartPms';
 import Approve from './components/manager/approve-pms/Approve';
 
 import PendingList from './components/hr/status/pending/PendingList';
-import CompletedList from './components/hr/status/complete/CompletedList';
+import CompletedList  from './components/hr/status/complete/CompletedList';
+
 import EmployeeList from './components/hr/employee-list/EmployeeList';
 
 import Performance from './components/employee/performance/Performance';
@@ -106,7 +107,7 @@ function App() {
             <Route path="/hr-startpms" element={<RequireAuth allowedRoles={['HR']}><StartPms /></RequireAuth>} />
             <Route path="/employee-list" element={<RequireAuth allowedRoles={['HR']}><EmployeeList /></RequireAuth>} />
             <Route path="/hr/pending-assessments" element={<RequireAuth allowedRoles={['HR']}><PendingList /></RequireAuth>} />
-            <Route path="/hr/completed-assessments" element={<RequireAuth allowedRoles={['HR']}><CompletedList /></RequireAuth>} />
+            <Route path="/hr/completed-assessments" element={<RequireAuth allowedRoles={['HR']}><CompletedList/></RequireAuth>} />
             <Route path="/employee-info/:id" element={<RequireAuth allowedRoles={['HR']}><EmployeeInfo /></RequireAuth>} />
             <Route path="/update-employee/:id" element={<RequireAuth allowedRoles={['HR']}><UpdateEmployee /></RequireAuth>} />
 
@@ -123,7 +124,7 @@ function App() {
             <Route path="/employee-dashboard" element={<RequireAuth allowedRoles={['EMPLOYEE']}><EmployeeDashboard /></RequireAuth>} />
             <Route path="/employee-performance" element={<RequireAuth allowedRoles={['EMPLOYEE']}><Performance /></RequireAuth>} />
             <Route path="/add-krakpi/:id" element={<RequireAuth allowedRoles={['EMPLOYEE']}><KrakpiRegistration /></RequireAuth>} />
-            <Route path="/self-review/:id" element={<RequireAuth allowedRoles={['EMPLOYEE']}><EmployeeReview /></RequireAuth>} />
+            <Route path="/self-review/:id" element={<EmployeeReview />} />
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />

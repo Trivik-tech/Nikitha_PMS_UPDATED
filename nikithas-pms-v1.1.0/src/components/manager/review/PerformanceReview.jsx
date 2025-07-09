@@ -6,6 +6,7 @@ import { Link, useParams } from "react-router-dom";
 import Modal from "../../modal/Modal";
 import axios from "axios";
 import { baseUrl } from '../../urls/CommenUrl';
+import { BsChatText } from "react-icons/bs";
 
 const PerformanceReview = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -21,6 +22,11 @@ const PerformanceReview = () => {
   const [remarks, setRemarks] = useState("");
   const [pmsData, setPmsData] = useState({});
   const jwtToken = localStorage.getItem("token");
+
+  const [remarksModalOpen, setRemarksModalOpen] = useState(false);
+    const [activeKraIndex, setActiveKraIndex] = useState(null);
+    const [activeKpiIndex, setActiveKpiIndex] = useState(null);
+    const [remarkInput, setRemarkInput] = useState("");
 
   const { id: employeeId, manager: reportingManager } = useParams();
 
@@ -82,6 +88,26 @@ const PerformanceReview = () => {
     const total = scores.reduce((sum, score) => sum + score, 0);
     return (total / scores.length).toFixed(2);
   };
+
+  const handleRemarkSave = () => {
+    if (activeKraIndex !== null && activeKpiIndex !== null) {
+      const updatedKra = [...krakpi];
+      updatedKra[activeKraIndex].kpi[activeKpiIndex].remark = remarkInput;
+      setKraKpi(updatedKra);
+    }
+    setRemarksModalOpen(false);
+    setRemarkInput("");
+    setActiveKraIndex(null);
+    setActiveKpiIndex(null);
+  };
+
+  const openRemarksModal = (kraIndex, kpiIndex, currentRemark = "") => {
+    setActiveKraIndex(kraIndex);
+    setActiveKpiIndex(kpiIndex);
+    setRemarkInput(currentRemark);
+    setRemarksModalOpen(true);
+  };
+
 
   const calculateOverallScores = () => {
     let totalWeightage = 0;
@@ -210,6 +236,23 @@ console.log(result);
       {showModal && (
         <Modal message={errorMessage} closeModal={closeModal} title={title} />
       )}
+      {remarksModalOpen && (
+        <div className="remarks-modal-overlay">
+          <div className="remarks-modal">
+            <h3>Add Remarks</h3>
+            <textarea
+              value={remarkInput}
+              onChange={(e) => setRemarkInput(e.target.value)}
+              placeholder="Enter your remarks here..."
+              rows="5"
+            />
+            <div className="remarks-modal-actions">
+              <button onClick={handleRemarkSave}>Save</button>
+              <button onClick={() => setRemarksModalOpen(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <header className="prf-header">
         <div className="prf-title-section">
@@ -241,11 +284,12 @@ console.log(result);
               <table className="prf-table">
                 <thead>
                   <tr>
-                    <th>KPI's</th>
-                    <th>Weightage</th>
-                    <th>Self Rating</th>
-                    <th><span style={{ color: "red", fontSize: "20px" }}>*</span> Review-1</th>
-                    <th>Average</th>
+                    <th style={{ width: "5%" }}>KPI's</th>
+                    <th style={{ width: "5%" }}>Weightage</th>
+                    <th style={{ width: "5%" }}>Self Rating</th>
+                    <th><span style={{ color: "red", fontSize: "20px" ,width:"3%"}}>*</span> Review-1</th>
+                    <th style={{ width: "5%" }}>Average</th>
+                     <th style={{ width: "5%" }}>Remarks</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -269,6 +313,14 @@ console.log(result);
                       <td>
                         <input type="text" readOnly value={calculateAverage(kpi)} />
                       </td>
+                       <td>
+                                            <BsChatText className="remarks-btn"
+                                                                     onClick={() => openRemarksModal(kraIndex, kpiIndex, kpi.remark || "")} />
+                                                                   
+                                                                   {kpi.remark && <span className="remarks-preview">✔</span>}
+                                                                   </td>
+                                          
+                      
                     </tr>
                   ))}
                 </tbody>
@@ -305,7 +357,7 @@ console.log(result);
 
         <div className="prf-overall-remarks">
           <h3>Overall Remarks</h3>
-          <label>Overall Remarks</label>
+         
           <textarea
             placeholder="Enter your overall remarks..."
             value={remarks}
@@ -323,6 +375,7 @@ console.log(result);
           >
             Submit Review
           </button>
+
         </div>
       </div>
     </div>

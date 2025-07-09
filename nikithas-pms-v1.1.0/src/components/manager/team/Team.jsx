@@ -40,6 +40,7 @@ export default function TeamPage() {
           },
         }
       );
+      console.log(result.data)
       setTeamList(Array.isArray(result.data) ? result.data : []);
     } catch (error) {
       setTeamList([]);

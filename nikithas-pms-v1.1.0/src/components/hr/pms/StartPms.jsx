@@ -94,8 +94,15 @@ export default function StartPms() {
       }
       // console.log(id)
 
-      const result=await axios.patch(`${baseUrl}/api/v1/pms/hr/pms-initiated/${id}`,pms);
+      const result=await axios.patch(`${baseUrl}/api/v1/pms/hr/pms-initiated/${id}`,pms,
+        {
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+      });
+      
       console.log(result.data)
+      // console.log(result.data)
 
     }catch(error){
       console.error(error)

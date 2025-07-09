@@ -165,19 +165,19 @@ body::-webkit-scrollbar {
 .prf-table td:nth-child(4),
 .prf-table th:nth-child(5),
 .prf-table td:nth-child(5) {
-    width: 12%; /* Self, Lead, Peer Ratings */
+    width: 5%; /* Self, Lead, Peer Ratings */
     text-align: center;
 }
 
 .prf-table th:nth-child(6),
 .prf-table td:nth-child(6) {
-    width: 12%; /* Average */
+    width: 5% !important; /* Average */
     text-align: center;
 }
 
 /* Input Inside Table */
 .prf-table input {
-    width: 90%;
+    width: 70%;
     padding: 4px;
     border: 1px solid #ddd;
     border-radius: 4px;
