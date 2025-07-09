@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 public class EmployeeControllerImpl implements EmployeeController {
@@ -65,28 +66,38 @@ public class EmployeeControllerImpl implements EmployeeController {
         if ("Success".equalsIgnoreCase(response.get("Status"))) {
             String employeeId = kraKpiRequestDto.getEmployeeId();
 
-            // Step 3: Dynamically fetch the reporting manager ID
+            // Step 3: Fetch reporting manager ID
             String reportingManagerId = employeeRepository.findReportingManagerIdByEmployeeId(employeeId);
-            System.out.println(reportingManagerId);
+            System.out.println("Reporting Manager ID: " + reportingManagerId);
 
-            // Step 4: Send WebSocket notification if manager ID is found
+            // Step 4: Proceed only if manager ID is found
             if (reportingManagerId != null && !reportingManagerId.isEmpty()) {
-                String destination = "/queue/manager-notification";
-                String content = "KRA/KPI registered for Employee ID: " + employeeId;
 
-                // Send real-time notification to the manager
-                notificationService.sendMessageWithRecent("System", reportingManagerId, content, destination);
+                // Step 5: Fetch employee name and send notification if present
+                Optional<String> employeeNameOpt = employeeRepository.findNameByEmpId(employeeId);
+
+                if (employeeNameOpt.isPresent()) {
+                    String employeeName = employeeNameOpt.get();
+                    String content = "KRA/KPI registered for " + employeeName + " (" + employeeId + ")";
+                    String destination = "/queue/manager-notification";
+
+                    // Send WebSocket notification to the manager
+                    notificationService.sendMessageWithRecent("System", reportingManagerId, content, destination);
+                } else {
+                    System.out.printf("Employee name not found for employee ID: ", employeeId);
+                }
+
             } else {
-                System.out.printf("No reporting manager found for employee ID: {}", employeeId);
-
+                System.out.printf("No reporting manager found for employee ID: ", employeeId);
             }
         } else {
-            System.out.printf("KRA/KPI registration failed for employee ID: {}", kraKpiRequestDto.getEmployeeId());
+            System.out.printf("KRA/KPI registration failed for employee ID: ", kraKpiRequestDto.getEmployeeId());
         }
 
-        // Step 5: Return the original service response to the frontend
+        // Step 6: Return the service response to the frontend
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
+
 
     @Override
     public ResponseEntity<EmployeeInfo> profile(UserDetails employee) {
@@ -98,14 +109,29 @@ public class EmployeeControllerImpl implements EmployeeController {
         Map<String, String> response = kraKpiService.employeeReview(kraKpiRequestDto, employeeId);
 
         if ("success".equalsIgnoreCase(response.get("status"))) {
-            // Get manager ID dynamically
+            // Get reporting manager ID
             String reportingManagerId = employeeRepository.findReportingManagerIdByEmployeeId(employeeId);
 
             if (reportingManagerId != null && !reportingManagerId.isEmpty()) {
-                String destination = "/queue/manager-notification";
-                String content = "Employee " + employeeId + " has submitted self review.";
 
-                notificationService.sendMessageWithRecent("System", reportingManagerId, content, destination);
+                // Fetch employee name
+                Optional<String> employeeNameOpt = employeeRepository.findNameByEmpId(employeeId);
+
+                if (employeeNameOpt.isPresent()) {
+                    String employeeName = employeeNameOpt.get();
+
+                    // Compose personalized notification
+                    String destination = "/queue/manager-notification";
+                    String content = employeeName + " (" + employeeId + ") has submitted self review.";
+
+                    // Send notification to manager
+                    notificationService.sendMessageWithRecent("System", reportingManagerId, content, destination);
+                } else {
+                    System.out.printf("Employee name not found for employee ID: ", employeeId);
+                }
+
+            } else {
+                System.out.printf("No reporting manager found for employee ID: ", employeeId);
             }
         }
 

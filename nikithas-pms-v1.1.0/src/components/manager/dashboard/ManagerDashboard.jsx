@@ -13,7 +13,7 @@ import "./ResponsiveManager.css";
 
 import logo from "../../../assets/images/nikithas-logo.png";
 import profile from "../../../assets/images/profile1.jpg";
-import { baseUrl } from '../../urls/CommenUrl'
+import { baseUrl } from "../../urls/CommenUrl";
 
 Chart.register(ArcElement, Tooltip, Legend);
 
@@ -35,7 +35,6 @@ const ManagerDashboard = () => {
 
   const token = localStorage.getItem("token");
 
-  // Logout if token is missing
   useEffect(() => {
     if (!token) {
       localStorage.clear();
@@ -43,7 +42,6 @@ const ManagerDashboard = () => {
     }
   }, [token, navigate]);
 
-  // Load profile
   useEffect(() => {
     const getProfile = async () => {
       try {
@@ -55,7 +53,6 @@ const ManagerDashboard = () => {
         setManagerData(res.data);
         await getPercentage(id);
       } catch (error) {
-        console.error("❌ Error fetching profile:", error);
         if (error.response?.status === 401) {
           localStorage.clear();
           navigate("/");
@@ -75,9 +72,7 @@ const ManagerDashboard = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPercentageData(res.data);
-    } catch (error) {
-      console.error("❌ Error fetching percentage:", error);
-    }
+    } catch (error) {}
   };
 
   const loadTeamSize = async (id) => {
@@ -86,12 +81,9 @@ const ManagerDashboard = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTeamSize(result.data?.team || 0);
-    } catch (error) {
-      console.error("❌ Error fetching team size:", error.message);
-    }
+    } catch (error) {}
   };
 
-  // WebSocket Notifications
   useEffect(() => {
     if (!token) return;
 
@@ -108,7 +100,6 @@ const ManagerDashboard = () => {
           };
 
           const updated = [newMsg, ...notifications];
-          setNotificationCount((prev) => prev + 1);
 
           try {
             const res = await fetch(`${baseUrl}/api/v1/pms/recent`, {
@@ -138,10 +129,13 @@ const ManagerDashboard = () => {
             );
 
             setNotifications(unique.slice(0, 50));
-            setNotificationOpen(true);
-          } catch (err) {
-            console.error("❌ Error fetching recent:", err);
-          }
+
+            const unseenCount = unique.filter((msg) => {
+              const key = `viewed-${msg.timestamp}-${msg.message}`;
+              return !sessionStorage.getItem(key);
+            }).length;
+            setNotificationCount(unseenCount);
+          } catch (err) {}
         });
 
         try {
@@ -166,18 +160,29 @@ const ManagerDashboard = () => {
           );
 
           setNotifications(unique.slice(0, 50));
-        } catch (err) {
-          console.error("❌ Initial fetch error:", err);
-        }
-      },
-      onStompError: (frame) => {
-        console.error("🔴 STOMP error:", frame);
+          const unseenCount = unique.filter((msg) => {
+            const key = `viewed-${msg.timestamp}-${msg.message}`;
+            return !sessionStorage.getItem(key);
+          }).length;
+          setNotificationCount(unseenCount);
+        } catch (err) {}
       },
     });
 
     client.activate();
     return () => client.deactivate();
   }, [token, notifications]);
+
+  useEffect(() => {
+    if (notificationCount > 0 && !notificationOpen && notifications.length > 0) {
+      const latest = notifications[0];
+      const key = `viewed-${latest.timestamp}-${latest.message}`;
+      if (!sessionStorage.getItem(key)) {
+        setNotificationOpen(true);
+        sessionStorage.setItem(key, "true");
+      }
+    }
+  }, [notificationCount, notifications, notificationOpen]);
 
   const hasData = percentageData.completedPercentage !== 0 || percentageData.pendingPercentage !== 0;
 
@@ -215,37 +220,16 @@ const ManagerDashboard = () => {
         </div>
         <ul>
           <li>
-            <NavLink to="/manager-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>
-              Dashboard
-            </NavLink>
+            <NavLink to="/manager-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>Dashboard</NavLink>
           </li>
           <li>
-            <Link
-              to={managerId ? `/my-team/${managerId}` : "#"}
-              className={`sidebar-link-btn${!managerId ? " disabled" : ""}`}
-              style={{
-                pointerEvents: managerId ? "auto" : "none",
-                opacity: managerId ? 1 : 0.5,
-                textDecoration: "none",
-                color: "inherit"
-              }}
-            >
-              My Team
-            </Link>
+            <Link to={managerId ? `/my-team/${managerId}` : "#"} className={`sidebar-link-btn${!managerId ? " disabled" : ""}`}>My Team</Link>
           </li>
           <li>
             <Link to="/manager-profile">My Profile</Link>
           </li>
-          <li>
-            <button
-              className="logout button"
-              onClick={() => {
-                localStorage.clear();
-                navigate("/");
-              }}
-            >
-              Logout
-            </button>
+          <li className="mobile-only">
+            <button className="logout button" onClick={() => { localStorage.clear(); navigate("/"); }}>Logout</button>
           </li>
         </ul>
       </div>
@@ -257,32 +241,25 @@ const ManagerDashboard = () => {
           <img src={logo} alt="Logo" className="dashboard-logo" />
           <div className="header-icons" style={{ position: "relative" }}>
             <div style={{ position: "relative" }}>
-              <Bell
-                className="notification-icon"
-                onClick={() => {
-                  setNotificationOpen(!notificationOpen);
-                  if (!notificationOpen) setNotificationCount(0);
-                }}
-              />
-              {notificationCount > 0 && (
-                <span className="notification-badge">{notificationCount}</span>
-              )}
+              <Bell className="notification-icon" onClick={() => {
+                setNotificationOpen(!notificationOpen);
+                if (!notificationOpen) {
+                  notifications.forEach((msg) => {
+                    const key = `viewed-${msg.timestamp}-${msg.message}`;
+                    sessionStorage.setItem(key, "true");
+                  });
+                  setNotificationCount(0);
+                }
+              }} />
+              {notificationCount > 0 && <span className="notification-badge">{notificationCount}</span>}
             </div>
             {notificationOpen && (
-              <Notification
-                notifications={Array.isArray(notifications) ? notifications : []}
-                onClose={() => setNotificationOpen(false)}
-              />
+              <Notification notifications={Array.isArray(notifications) ? notifications : []} onClose={() => setNotificationOpen(false)} />
             )}
-            <button
-              className="logout-btn desktop-only"
-              onClick={() => {
-                localStorage.clear();
-                navigate("/");
-              }}
-            >
-              Logout
-            </button>
+            <button className="logout-btn desktop-only" onClick={() => {
+              localStorage.clear();
+              navigate("/");
+            }}>Logout</button>
           </div>
         </div>
 

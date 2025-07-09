@@ -90,26 +90,39 @@ public class ManagerControllerImpl implements ManagerController {
 
     @Override
     public ResponseEntity<Map<String, String>> managerReview(String managerId, String employeeId,
-            KraKpiRequestDto data) {
+                                                             KraKpiRequestDto data) {
+
         Map<String, String> response = managerService.managerReview(managerId, employeeId, data);
 
         if ("success".equalsIgnoreCase(response.get("status"))) {
-            // 1. Send WebSocket notification to employee
-            String empDestination = "/queue/employee-notification";
-            String empContent = "Manager Review has been completed for Employee ID: " + employeeId;
-            notificationService.sendMessageWithRecent("System", employeeId, empContent, empDestination);
 
-            // 2. Fetch HR of the employee and send WebSocket notification
-            Optional<String> optionalHrId = employeeRepository.findHrIdByEmployeeId(employeeId);
-            optionalHrId.ifPresent(hrId -> {
-                String hrDestination = "/queue/hr-notification";
-                String hrContent = "Manager Review completed for Employee ID: " + employeeId;
-                notificationService.sendMessageWithRecent("System", hrId, hrContent, hrDestination);
-            });
+            // Step 1: Get employee name
+            Optional<String> employeeNameOpt = employeeRepository.findNameByEmpId(employeeId);
+
+            if (employeeNameOpt.isPresent()) {
+                String employeeName = employeeNameOpt.get();
+
+                // Step 2: Notify employee
+                String empDestination = "/queue/employee-notification";
+                String empContent = "Manager Review has been completed for " + employeeName + " (" + employeeId + ")";
+                notificationService.sendMessageWithRecent("System", employeeId, empContent, empDestination);
+
+                // Step 3: Notify HR (if available)
+                Optional<String> optionalHrId = employeeRepository.findHrIdByEmployeeId(employeeId);
+                optionalHrId.ifPresent(hrId -> {
+                    String hrDestination = "/queue/hr-notification";
+                    String hrContent = "Manager Review completed for " + employeeName + " (" + employeeId + ")";
+                    notificationService.sendMessageWithRecent("System", hrId, hrContent, hrDestination);
+                });
+
+            } else {
+                System.out.printf("Employee name not found for employee ID: ", employeeId);
+            }
         }
 
         return ResponseEntity.ok(response);
     }
+
 
     @Override
     public ResponseEntity<KraKpiResponseDto> getKraKpis(String managerId, String employeeId) {
@@ -118,24 +131,38 @@ public class ManagerControllerImpl implements ManagerController {
 
     @Override
     public ResponseEntity<Map<String, String>> approveKraKpi(String employeeId, String managerId,
-            KraKpiRequestDto kraKpiRequestDto) {
+                                                             KraKpiRequestDto kraKpiRequestDto) {
+
         Map<String, String> response = managerService.approveKra(kraKpiRequestDto, employeeId, managerId);
 
         if ("Approved".equalsIgnoreCase(response.get("status"))) {
 
-            // Notify employee
-            String destination = "/queue/employee-notification";
-            String content = "KRA/KPI approved for Employee ID: " + employeeId;
-            notificationService.sendMessageWithRecent("System", employeeId, content, destination);
+            // Fetch employee name
+            Optional<String> employeeNameOpt = employeeRepository.findNameByEmpId(employeeId);
 
-            // Get employee -> find assigned HR
-            Optional<String> optionalHrId = employeeRepository.findHrIdByEmployeeId(employeeId);
-            System.out.println(optionalHrId);
-            if (optionalHrId.isPresent()) {
-                String hrId = optionalHrId.get();
-                String hrDestination = "/queue/hr-notification";
-                String hrContent = "KRA/KPI approved for Employee ID: " + employeeId;
-                notificationService.sendMessageWithRecent("System", hrId, hrContent, hrDestination);
+            if (employeeNameOpt.isPresent()) {
+                String employeeName = employeeNameOpt.get();
+
+                // Notify employee
+                String empDestination = "/queue/employee-notification";
+                String empContent = "KRA/KPI approved for " + employeeName + " (" + employeeId + ")";
+                notificationService.sendMessageWithRecent("System", employeeId, empContent, empDestination);
+
+                // Get employee → assigned HR
+                Optional<String> optionalHrId = employeeRepository.findHrIdByEmployeeId(employeeId);
+                System.out.println("Assigned HR ID: " + optionalHrId);
+
+                if (optionalHrId.isPresent()) {
+                    String hrId = optionalHrId.get();
+                    String hrDestination = "/queue/hr-notification";
+                    String hrContent = "KRA/KPI approved for " + employeeName + " (" + employeeId + ")";
+                    notificationService.sendMessageWithRecent("System", hrId, hrContent, hrDestination);
+                } else {
+                    System.out.printf("No HR assigned to employee ID: ", employeeId);
+                }
+
+            } else {
+                System.out.printf("Employee name not found for employee ID: ", employeeId);
             }
         }
 

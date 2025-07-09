@@ -122,7 +122,7 @@ const PerformanceReview = () => {
     try {
       await submitReview(true);
       setErrorMessage("PMS Review is successfully submitted.");
-      setTitle("PMS Review");
+      setTitle(" ");
       setShowModal(true);
     } catch (err) {
       console.error("Error submitting review", err);
@@ -133,7 +133,7 @@ const PerformanceReview = () => {
     try {
       await submitReview(false);
       setErrorMessage("PMS Review has been saved as a draft.");
-      setTitle("PMS Review");
+      setTitle(" ");
       setShowModal(true);
     } catch (err) {
       console.error("Error saving draft", err);

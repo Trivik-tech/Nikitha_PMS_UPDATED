@@ -37,14 +37,14 @@ const PerformanceReview = () => {
 
   const reviewSubmit = async () => {
     setErrorMessage("PMS Review is successfully completed.");
-    setTitle("PMS Review");
+    setTitle(" ");
     setShowModal(true);
     await selfReview();
   };
 
   const draftSave = () => {
     setErrorMessage("PMS Review has been saved as a draft.");
-    setTitle("PMS Review");
+    setTitle(" ");
     setShowModal(true);
   };
 

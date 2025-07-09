@@ -404,3 +404,22 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 1500;
 }
+
+/* Notification wrapper to position badge relative to the bell */
+.notification-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+/* Notification badge (red dot with count) - adjusted positioning */
+.notification-badge {
+  position: absolute;
+  top: -3px;         /* Adjusted closer to bell */
+  right: 0px;        /* Aligns better to top-right corner of bell */
+  background-color: red;
+  color: white;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  z-index: 10;
+}

@@ -6,7 +6,6 @@ const PmsInitiated = ({ onClose, employeeName, employeeId }) => {
     <div className="pms-modal-overlay" onClick={onClose}>
       <div className="pms-modal" onClick={(e) => e.stopPropagation()}>
         <div className="pms-modal-header">
-          <h3>PMS Initiated Successfully</h3>
         </div>
         <div className="pms-modal-body">
           <p>
