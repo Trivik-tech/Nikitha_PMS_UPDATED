@@ -6,9 +6,8 @@ import { FaHome } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
 import Modal from "../../modal/Modal";
 import axios from "axios";
-import { baseUrl } from '../../urls/CommenUrl'
+import { baseUrl } from '../../urls/CommenUrl';
 import { BsChatText } from "react-icons/bs";
-
 
 const PerformanceReview = () => {
   const [errorMessage, setErrorMessage] = useState("");
@@ -20,12 +19,12 @@ const PerformanceReview = () => {
   const [employeeName, setEmployeeName] = useState("");
   const [designation, setDesignation] = useState("");
   const [department, setDepartment] = useState("");
-  const [selfCompleted, setSelfCompleted] = useState(false); // <-- NEW STATE
+  const [selfCompleted, setSelfCompleted] = useState(false); // ✅ Disable if submitted
 
   const [remarksModalOpen, setRemarksModalOpen] = useState(false);
   const [activeKraIndex, setActiveKraIndex] = useState(null);
   const [activeKpiIndex, setActiveKpiIndex] = useState(null);
-  const [remarkInput, setRemarkInput] = useState("");
+  const [employeeRemark, setEmployeeRemark] = useState(""); // ✅ For KPI-level remarks
 
   const { id: employeeId } = useParams();
   const token = localStorage.getItem('token');
@@ -45,11 +44,11 @@ const PerformanceReview = () => {
   const handleRemarkSave = () => {
     if (activeKraIndex !== null && activeKpiIndex !== null) {
       const updatedKra = [...krakpi];
-      updatedKra[activeKraIndex].kpi[activeKpiIndex].remark = remarkInput;
+      updatedKra[activeKraIndex].kpi[activeKpiIndex].employeeRemark = employeeRemark; // ✅ Save KPI remark
       setKraKpi(updatedKra);
     }
     setRemarksModalOpen(false);
-    setRemarkInput("");
+    setEmployeeRemark(""); // Clear remark input
     setActiveKraIndex(null);
     setActiveKpiIndex(null);
   };
@@ -57,7 +56,7 @@ const PerformanceReview = () => {
   const openRemarksModal = (kraIndex, kpiIndex, currentRemark = "") => {
     setActiveKraIndex(kraIndex);
     setActiveKpiIndex(kpiIndex);
-    setRemarkInput(currentRemark);
+    setEmployeeRemark(currentRemark); // ✅ Pre-fill existing remark
     setRemarksModalOpen(true);
   };
 
@@ -96,7 +95,7 @@ const PerformanceReview = () => {
         setEmployeeName(result.data.employee.name);
         setDueDate(result.data.dueDate || "20/5/2025");
         setSelfReviewDate(result.data.selfReviewDate || "15/5/2025");
-        setSelfCompleted(result.data.selfCompleted === true); // <-- SET SELF COMPLETED
+        setSelfCompleted(result.data.selfCompleted === true); // ✅ Disable editing if submitted
       } catch (error) {
         console.error(error);
       }
@@ -109,7 +108,6 @@ const PerformanceReview = () => {
     try {
       const payload = {
         employeeId: employeeId,
-        remark: "",
         selfCompleted: true,
         managerCompleted: false,
         dueDate: dueDate,
@@ -129,7 +127,7 @@ const PerformanceReview = () => {
             selfScore: kpi.selfScore || 0,
             managerScore: kpi.managerScore || 0,
             review2: kpi.review2 || 0,
-            remark: kpi.remark || "", // <-- INCLUDE REMARK
+            employeeRemark: kpi.employeeRemark || "", // ✅ Send KPI remark
           })),
         })),
       };
@@ -155,11 +153,11 @@ const PerformanceReview = () => {
       {remarksModalOpen && (
         <div className="remarks-modal-overlay">
           <div className="remarks-modal">
-            <h3>Add Remarks</h3>
+            <h3>Add KPI Remark</h3>
             <textarea
-              value={remarkInput}
-              onChange={(e) => setRemarkInput(e.target.value)}
-              placeholder="Enter your remarks here..."
+              value={employeeRemark}
+              onChange={(e) => setEmployeeRemark(e.target.value)}
+              placeholder="Enter your KPI remark here..."
               rows="5"
             />
             <div className="remarks-modal-actions">
@@ -227,15 +225,15 @@ const PerformanceReview = () => {
                           max={kpi.weightage}
                           value={kpi.selfScore || ""}
                           onChange={(e) => handleSelfScoreChange(kraIndex, kpiIndex, e.target.value)}
-                          disabled={selfCompleted} // <-- DISABLE ON SELF COMPLETED
+                          disabled={selfCompleted} // ✅ Disable if already submitted
                         />
                       </td>
                       <td>
- 
-                         <BsChatText className="remarks-btn"
-                          onClick={() => openRemarksModal(kraIndex, kpiIndex, kpi.remark || "")} />
-                        
-                        {kpi.remark && <span className="remarks-preview">✔</span>}
+                        <BsChatText
+                          className="remarks-btn"
+                          onClick={() => openRemarksModal(kraIndex, kpiIndex, kpi.employeeRemark || "")} // ✅ Open KPI remark
+                        />
+                        {kpi.employeeRemark && <span className="remarks-preview">✔</span>} {/* ✅ Show check */}
                       </td>
                     </tr>
                   ))}
@@ -248,7 +246,13 @@ const PerformanceReview = () => {
 
       <div className="employee-module-review-actions">
         <button className="employee-module-review-print-btn" onClick={printHandler}>Print</button>
-        <button className="employee-module-review-draft-btn" onClick={draftSave} disabled={selfCompleted}>Save as Draft</button>
+        <button
+          className="employee-module-review-draft-btn"
+          onClick={draftSave}
+          disabled={selfCompleted}
+        >
+          Save as Draft
+        </button>
         <button
           className="employee-module-review-submit-review-btn"
           onClick={reviewSubmit}

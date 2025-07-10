@@ -19,14 +19,14 @@ const PerformanceReview = () => {
   const [dueDate, setDueDate] = useState("");
   const [employeeReviewDate, setEmployeeReviewDate] = useState("");
   const [managerReviewDate, setManagerReviewDate] = useState("");
-  const [remarks, setRemarks] = useState("");
+  const [remarks, setRemarks] = useState(""); // ✅ Overall remarks
   const [pmsData, setPmsData] = useState({});
   const jwtToken = localStorage.getItem("token");
 
   const [remarksModalOpen, setRemarksModalOpen] = useState(false);
-    const [activeKraIndex, setActiveKraIndex] = useState(null);
-    const [activeKpiIndex, setActiveKpiIndex] = useState(null);
-    const [remarkInput, setRemarkInput] = useState("");
+  const [activeKraIndex, setActiveKraIndex] = useState(null);
+  const [activeKpiIndex, setActiveKpiIndex] = useState(null);
+  const [managerRemark, setManagerRemark] = useState(""); // ✅ KPI-level remark input
 
   const { id: employeeId, manager: reportingManager } = useParams();
 
@@ -50,9 +50,8 @@ const PerformanceReview = () => {
       const result = await axios.get(
         `${baseUrl}/api/v1/pms/manager/kra-kpi/${reportingManager}/${employeeId}`,
         {
-         headers: { Authorization: `Bearer ${jwtToken}` }
+          headers: { Authorization: `Bearer ${jwtToken}` }
         }
-
       );
       const data = result.data;
       setKraKpi(data.kra || []);
@@ -62,7 +61,7 @@ const PerformanceReview = () => {
       setDueDate(formatDate(data.dueDate || "2025-05-25"));
       setEmployeeReviewDate(formatDate(data.selfReviewDate || "2025-05-23"));
       setManagerReviewDate(formatDate(data.managerReviewDate || "2025-05-24"));
-      setRemarks(data.remark);
+      setRemarks(data.remark || ""); // ✅ Load overall remarks
       setPmsData(data);
     } catch (error) {
       console.error("Failed to load KRA/KPI:", error);
@@ -81,22 +80,14 @@ const PerformanceReview = () => {
     setKraKpi(updatedKraKpi);
   };
 
-  const calculateAverage = (kpi) => {
-    const { selfScore = 0, managerScore = 0, review2 = 0 } = kpi;
-    const hasReview2 = review2 && review2 !== 0;
-    const scores = hasReview2 ? [selfScore, managerScore, review2] : [selfScore, managerScore];
-    const total = scores.reduce((sum, score) => sum + score, 0);
-    return (total / scores.length).toFixed(2);
-  };
-
-  const handleRemarkSave = () => {
+  const handleKpiRemarkSave = () => {
     if (activeKraIndex !== null && activeKpiIndex !== null) {
       const updatedKra = [...krakpi];
-      updatedKra[activeKraIndex].kpi[activeKpiIndex].remark = remarkInput;
+      updatedKra[activeKraIndex].kpi[activeKpiIndex].managerRemark = managerRemark; // ✅ Save KPI remark
       setKraKpi(updatedKra);
     }
     setRemarksModalOpen(false);
-    setRemarkInput("");
+    setManagerRemark("");
     setActiveKraIndex(null);
     setActiveKpiIndex(null);
   };
@@ -104,10 +95,17 @@ const PerformanceReview = () => {
   const openRemarksModal = (kraIndex, kpiIndex, currentRemark = "") => {
     setActiveKraIndex(kraIndex);
     setActiveKpiIndex(kpiIndex);
-    setRemarkInput(currentRemark);
+    setManagerRemark(currentRemark); // ✅ Pre-fill with existing KPI remark
     setRemarksModalOpen(true);
   };
 
+  const calculateAverage = (kpi) => {
+    const { selfScore = 0, managerScore = 0, review2 = 0 } = kpi;
+    const hasReview2 = review2 && review2 !== 0;
+    const scores = hasReview2 ? [selfScore, managerScore, review2] : [selfScore, managerScore];
+    const total = scores.reduce((sum, score) => sum + score, 0);
+    return (total / scores.length).toFixed(2);
+  };
 
   const calculateOverallScores = () => {
     let totalWeightage = 0;
@@ -177,7 +175,7 @@ const PerformanceReview = () => {
   const submitReview = async (isSubmit) => {
     const payload = {
       employeeId,
-      remark: remarks,
+      remark: remarks, // ✅ Overall remarks
       selfCompleted: pmsData.selfCompleted || true,
       managerCompleted: isSubmit,
       dueDate,
@@ -197,6 +195,7 @@ const PerformanceReview = () => {
             weightage: kpi.weightage,
             selfScore: kpi.selfScore || 0,
             managerScore: kpi.managerScore || 0,
+            managerRemark: kpi.managerRemark || "", // ✅ Include KPI remarks
           };
           if (kpi.review2 && kpi.review2 !== 0) {
             kpiPayload.review2 = kpi.review2;
@@ -206,19 +205,17 @@ const PerformanceReview = () => {
       })),
     };
 
-   
+    const result = await axios.patch(
+      `${baseUrl}/api/v1/pms/manager/manager-review/${reportingManager}/${employeeId}`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      }
+    );
 
-const result = await axios.patch(
-  `${baseUrl}/api/v1/pms/manager/manager-review/${reportingManager}/${employeeId}`,
-  payload,
-  {
-    headers: {
-      Authorization: `Bearer ${jwtToken}`, 
-    },
-  }
-);
-
-console.log(result);
+    console.log(result);
   };
 
   const isSubmitButtonDisabled = () => {
@@ -239,15 +236,15 @@ console.log(result);
       {remarksModalOpen && (
         <div className="remarks-modal-overlay">
           <div className="remarks-modal">
-            <h3>Add Remarks</h3>
+            <h3>Add KPI Remark</h3>
             <textarea
-              value={remarkInput}
-              onChange={(e) => setRemarkInput(e.target.value)}
-              placeholder="Enter your remarks here..."
+              value={managerRemark}
+              onChange={(e) => setManagerRemark(e.target.value)} // ✅ KPI-level remark input
+              placeholder="Enter your KPI remark here..."
               rows="5"
             />
             <div className="remarks-modal-actions">
-              <button onClick={handleRemarkSave}>Save</button>
+              <button onClick={handleKpiRemarkSave}>Save</button>
               <button onClick={() => setRemarksModalOpen(false)}>Cancel</button>
             </div>
           </div>
@@ -287,9 +284,9 @@ console.log(result);
                     <th style={{ width: "5%" }}>KPI's</th>
                     <th style={{ width: "5%" }}>Weightage</th>
                     <th style={{ width: "5%" }}>Self Rating</th>
-                    <th><span style={{ color: "red", fontSize: "20px" ,width:"3%"}}>*</span> Review-1</th>
+                    <th><span style={{ color: "red", fontSize: "20px", width: "3%" }}>*</span> Review-1</th>
                     <th style={{ width: "5%" }}>Average</th>
-                     <th style={{ width: "5%" }}>Remarks</th>
+                    <th style={{ width: "5%" }}>Remarks</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -313,14 +310,13 @@ console.log(result);
                       <td>
                         <input type="text" readOnly value={calculateAverage(kpi)} />
                       </td>
-                       <td>
-                                            <BsChatText className="remarks-btn"
-                                                                     onClick={() => openRemarksModal(kraIndex, kpiIndex, kpi.remark || "")} />
-                                                                   
-                                                                   {kpi.remark && <span className="remarks-preview">✔</span>}
-                                                                   </td>
-                                          
-                      
+                      <td>
+                        <BsChatText
+                          className="remarks-btn"
+                          onClick={() => openRemarksModal(kraIndex, kpiIndex, kpi.managerRemark || "")} // ✅ Show KPI remark
+                        />
+                        {kpi.managerRemark && <span className="remarks-preview">✔</span>} {/* ✅ Show check */}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -357,10 +353,9 @@ console.log(result);
 
         <div className="prf-overall-remarks">
           <h3>Overall Remarks</h3>
-         
           <textarea
             placeholder="Enter your overall remarks..."
-            value={remarks}
+            value={remarks} // ✅ Overall remark
             onChange={(e) => setRemarks(e.target.value)}
           />
         </div>
@@ -375,7 +370,6 @@ console.log(result);
           >
             Submit Review
           </button>
-
         </div>
       </div>
     </div>
