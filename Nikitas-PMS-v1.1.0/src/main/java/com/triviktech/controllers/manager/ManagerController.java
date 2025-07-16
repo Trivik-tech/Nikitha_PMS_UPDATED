@@ -5,6 +5,7 @@ import com.triviktech.payloads.request.manager.ManagerRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
+import com.triviktech.payloads.response.employee.PmsStatuscountDto;
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
 
@@ -75,6 +76,8 @@ public interface ManagerController {
         ResponseEntity<Map<String, String>> notifyEmployee(@PathVariable String employeeId);
 
         @GetMapping("/get-team-size/{managerId}")
-        ResponseEntity<Map<String,Integer>> getTeamSize(@PathVariable String managerId);
-}
+        ResponseEntity<Map<String, Integer>> getTeamSize(@PathVariable String managerId);
 
+        @GetMapping("/pms/status-count/{managerId}")
+        ResponseEntity<PmsStatuscountDto> getPmsCountsForManager(@PathVariable String managerId);
+}

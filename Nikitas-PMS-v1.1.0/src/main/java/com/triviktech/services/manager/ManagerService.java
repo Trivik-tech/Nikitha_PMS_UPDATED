@@ -5,6 +5,7 @@ import com.triviktech.payloads.request.manager.ManagerRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
+import com.triviktech.payloads.response.employee.PmsStatuscountDto;
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
 
@@ -21,7 +22,7 @@ public interface ManagerService {
 
     List<EmployeeWithPmsStatus> listOfEmployeesForManager(String reportingManager);
 
-//    List<EmployeeInfo> findAllByReportingManager(String name);
+    // List<EmployeeInfo> findAllByReportingManager(String name);
 
     List<EmployeeWithPmsStatus> listOfPMSCompletedEmployees(String managerId);
 
@@ -39,5 +40,7 @@ public interface ManagerService {
 
     PmsPercentageDto getPmsPercentageForManager(String reportingManager);
 
-    Map<String,Integer> getTimeSize(String managerId);
+    Map<String, Integer> getTimeSize(String managerId);
+
+    PmsStatuscountDto getPmsCountsForManager(String managerId);
 }

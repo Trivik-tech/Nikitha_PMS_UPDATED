@@ -40,7 +40,9 @@ public class KraKpiServiceImpl implements KraKpiService {
     private final EntityDtoConversion entityDtoConversion;
     private final EmailService emailService;
 
-    public KraKpiServiceImpl(EmployeeInformationRepository employeeInformationRepository, KraKpiRepository kraKpiRepository, KRARepository kraRepository, KPIRepository kpiRepository, EntityDtoConversion entityDtoConversion, EmailService emailService) {
+    public KraKpiServiceImpl(EmployeeInformationRepository employeeInformationRepository,
+            KraKpiRepository kraKpiRepository, KRARepository kraRepository, KPIRepository kpiRepository,
+            EntityDtoConversion entityDtoConversion, EmailService emailService) {
         this.employeeInformationRepository = employeeInformationRepository;
         this.kraKpiRepository = kraKpiRepository;
         this.kraRepository = kraRepository;
@@ -109,19 +111,38 @@ public class KraKpiServiceImpl implements KraKpiService {
             kras.add(kra);
         }
 
+<<<<<<< HEAD
         // ✅ Set KRA for KraKpi
+=======
+>>>>>>> c3381adc3c5e01e2fb2a25216ef404b3abfcc4b7
         kraKpi.setKra(kras);
 
         kraKpi = kraKpiRepository.saveAndFlush(kraKpi); // Final update
 
+<<<<<<< HEAD
         try {
             EmployeeInformation emp = kraKpi.getEmployeeInformation();
+=======
+        // Unified git conflict resolution: Use robust manager/employee null-check and
+        // send email
+        try {
+            EmployeeInformation emp = kraKpi.getEmployeeInformation();
+            // For debug (can be removed in prod):
+            // System.out.println("✅ Employee Info: " + emp.getEmpId() + ", " +
+            // emp.getName());
+>>>>>>> c3381adc3c5e01e2fb2a25216ef404b3abfcc4b7
 
             if (emp.getManager() == null) {
                 throw new EmployeeNotFoundException("Manager not assigned to employee: " + emp.getEmpId());
             }
 
             Manager mgr = emp.getManager();
+<<<<<<< HEAD
+=======
+            // For debug (can be removed in prod):
+            // System.out.println("✅ Manager Info: " + mgr.getManagerId() + ", " +
+            // mgr.getName());
+>>>>>>> c3381adc3c5e01e2fb2a25216ef404b3abfcc4b7
 
             String sub = String.format(Message.KRA_KPI_SUBJECT_TO_MANAGER, emp.getName());
             String to = mgr.getEmailId();
@@ -129,8 +150,7 @@ public class KraKpiServiceImpl implements KraKpiService {
                     Message.KRA_KPI_MESSAGE_TO_MANAGER,
                     mgr.getName(),
                     emp.getName(),
-                    emp.getEmpId()
-            );
+                    emp.getEmpId());
             emailService.sendEmail(to, sub, message);
 
         } catch (Exception e) {
@@ -147,9 +167,11 @@ public class KraKpiServiceImpl implements KraKpiService {
 
     @Override
     public KraKpiResponseDto kraKpiForEmployee(String employeeId) {
-        EmployeeInformation employee = employeeInformationRepository.findById(employeeId).orElseThrow(() -> new EmployeeNotFoundException(employeeId));
+        EmployeeInformation employee = employeeInformationRepository.findById(employeeId)
+                .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
 
-        KraKpi krakpi = kraKpiRepository.findByEmployeeInformation(employee).orElseThrow(() -> new RuntimeException("Could not find"));
+        KraKpi krakpi = kraKpiRepository.findByEmployeeInformation(employee)
+                .orElseThrow(() -> new RuntimeException("Could not find"));
         KraKpiResponseDto response = entityDtoConversion.entityToDtoConversion(krakpi, KraKpiResponseDto.class);
         response.setEmployee(entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class));
         Set<KraResponseDto1> kraList = krakpi.getKra().stream().map(kra -> {
@@ -172,8 +194,7 @@ public class KraKpiServiceImpl implements KraKpiService {
         if (employeeById.isEmpty()) {
             return Map.of(
                     "status", "failure",
-                    "message", "Employee not found"
-            );
+                    "message", "Employee not found");
         }
 
         EmployeeInformation employee = employeeById.get();
@@ -181,8 +202,7 @@ public class KraKpiServiceImpl implements KraKpiService {
         if (kraKpiOptional.isEmpty()) {
             return Map.of(
                     "status", "failure",
-                    "message", "KRA/KPI not found for employee"
-            );
+                    "message", "KRA/KPI not found for employee");
         }
 
         KraKpi kraKpi = kraKpiOptional.get();
@@ -217,24 +237,20 @@ public class KraKpiServiceImpl implements KraKpiService {
                 kpi.setManagerScore(kpiDto.getManagerScore());
                 kpi.setAverage((float) (kpiDto.getSelfScore() + kpiDto.getManagerScore()) / 2);
                 kpi.setReview2(kpiDto.getReview2());
-
+                kpi.setEmployeeRemark(kpiDto.getEmployeeRemark());
                 updatedKpis.add(kpi);
             }
 
-            existingKpis.removeIf(existingKpi ->
-                    updatedKpis.stream().noneMatch(updatedKpi ->
-                            updatedKpi.getKpiId().equals(existingKpi.getKpiId()))
-            );
+            existingKpis.removeIf(existingKpi -> updatedKpis.stream()
+                    .noneMatch(updatedKpi -> updatedKpi.getKpiId().equals(existingKpi.getKpiId())));
 
             existingKpis.addAll(updatedKpis);
             kra.setKpi(existingKpis);
             updatedKras.add(kra);
         }
 
-        existingKras.removeIf(existingKra ->
-                updatedKras.stream().noneMatch(updatedKra ->
-                        updatedKra.getKraId().equals(existingKra.getKraId()))
-        );
+        existingKras.removeIf(existingKra -> updatedKras.stream()
+                .noneMatch(updatedKra -> updatedKra.getKraId().equals(existingKra.getKraId())));
 
         existingKras.addAll(updatedKras);
         kraKpi.setKra(existingKras);
@@ -252,8 +268,7 @@ public class KraKpiServiceImpl implements KraKpiService {
 
         return Map.of(
                 "status", "success",
-                "message", "Employee Review submitted successfully"
-        );
+                "message", "Employee Review submitted successfully");
     }
 
     @Override

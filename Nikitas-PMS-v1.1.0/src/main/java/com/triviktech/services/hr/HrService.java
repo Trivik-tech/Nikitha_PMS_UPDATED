@@ -6,6 +6,7 @@ import com.triviktech.payloads.response.employee.EmployeeInfo;
 
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
+import com.triviktech.payloads.response.employee.PmsStatuscountDto;
 import com.triviktech.payloads.response.employeeslist.EmployeesList;
 import com.triviktech.payloads.response.global.Response;
 
@@ -36,7 +37,7 @@ public interface HrService {
 
     Map<String, String> deleteEmployee(String employeeId);
 
-    Map<String , String> updateEmployee(String empId, Employee employee);
+    Map<String, String> updateEmployee(String empId, Employee employee);
 
     Map<String, Object> getdepartment();
 
@@ -60,5 +61,6 @@ public interface HrService {
 
     HrResponseDto profile(String hrId);
 
+    PmsStatuscountDto getPmsCountsForHR();
 
 }

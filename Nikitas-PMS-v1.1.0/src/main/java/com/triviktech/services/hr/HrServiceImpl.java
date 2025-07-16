@@ -18,6 +18,7 @@ import com.triviktech.payloads.response.department.DepartmentResponseDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
+import com.triviktech.payloads.response.employee.PmsStatuscountDto;
 import com.triviktech.payloads.response.hr.HrResponseDto;
 import com.triviktech.repositories.address.LocationRepository;
 import com.triviktech.repositories.address.StateRepository;
@@ -945,5 +946,30 @@ public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> p
         return Map.of("departments", departmentNames);
 
     }
+
+   @Override
+public PmsStatuscountDto getPmsCountsForHR() {
+    List<EmployeeInformation> employees = employeeInformationRepository.findAll();
+
+    long completedCount = 0;
+    long pendingCount = 0;
+
+    for (EmployeeInformation employee : employees) {
+        Optional<KraKpi> optionalKraKpi = kraKpiRepository.findByEmployeeInformation(employee);
+        if (optionalKraKpi.isEmpty()) continue;
+
+        KraKpi kraKpi = optionalKraKpi.get();
+
+        if (!Boolean.TRUE.equals(kraKpi.getPmsInitiated())) continue;
+
+        if (kraKpi.isSelfCompleted() && kraKpi.isManagerCompleted()) {
+            completedCount++;
+        } else {
+            pendingCount++;
+        }
+    }
+
+    return new PmsStatuscountDto(completedCount, pendingCount);
+}
 
 }

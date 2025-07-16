@@ -27,6 +27,7 @@ const ManagerDashboard = () => {
   const [managerData, setManagerData] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [teamSize, setTeamSize] = useState(0);
+  const [assessmentCount, setAssessmentCount] = useState({ completed: 0, pending: 0 });
   const [percentageData, setPercentageData] = useState({
     completedPercentage: 0,
     pendingPercentage: 0,
@@ -63,7 +64,10 @@ const ManagerDashboard = () => {
   }, [token, navigate]);
 
   useEffect(() => {
-    if (managerId) loadTeamSize(managerId);
+    if (managerId) {
+      loadTeamSize(managerId);
+      loadAssessmentCount(managerId);
+    }
   }, [managerId]);
 
   const getPercentage = async (id) => {
@@ -82,6 +86,20 @@ const ManagerDashboard = () => {
       });
       setTeamSize(result.data?.team || 0);
     } catch (error) {}
+  };
+
+  const loadAssessmentCount = async (id) => {
+    try {
+      const res = await axios.get(`${baseUrl}/api/v1/pms/manager/pms/status-count/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setAssessmentCount({
+        completed: res.data.completedCount || 0,
+        pending: res.data.pendingCount || 0,
+      });
+    } catch (err) {
+      console.error("Error loading assessment count:", err);
+    }
   };
 
   useEffect(() => {
@@ -271,20 +289,21 @@ const ManagerDashboard = () => {
               <p>{teamSize}</p>
             </div>
           </div>
-          <div className="stat-card">
-            <NotebookPen className="stat-icon pending-icon" />
-            <div className="stat-text">
-              <h2>Assessments Pending</h2>
-              <p>18/24 (75%)</p>
-            </div>
-          </div>
-          <div className="stat-card">
-            <CheckCircle className="stat-icon complete-icon" />
-            <div className="stat-text">
-              <h2>Assessments Complete</h2>
-              <p>20/24 (83%)</p>
-            </div>
-          </div>
+        <div className="stat-card">
+  <NotebookPen className="stat-icon pending-icon" />
+  <div className="stat-text">
+    <h2>Assessments Pending</h2>
+    <p>{`${assessmentCount.pending}/${teamSize} (${teamSize !== 0 ? Math.round((assessmentCount.pending / teamSize) * 100) : 0}%)`}</p>
+  </div>
+</div>
+<div className="stat-card">
+  <CheckCircle className="stat-icon complete-icon" />
+  <div className="stat-text">
+    <h2>Assessments Complete</h2>
+    <p>{`${assessmentCount.completed}/${teamSize} (${teamSize !== 0 ? Math.round((assessmentCount.completed / teamSize) * 100) : 0}%)`}</p>
+  </div>
+</div>
+
         </div>
 
         <div className="chart-container">

@@ -1,7 +1,5 @@
 package com.triviktech.payloads.request.kpi;
 
-
-
 public class KpiRequestDto {
     private long kpiId;
     private String description;
@@ -9,10 +7,33 @@ public class KpiRequestDto {
     private Integer selfScore;
     private Integer managerScore;
     private Integer review2;
+    private String employeeRemark;
+    private String managerRemark;
 
     public Integer getReview2() {
         return review2;
     }
+    
+
+    public String getEmployeeRemark() {
+        return employeeRemark;
+    }
+
+
+    public void setEmployeeRemark(String employeeRemark) {
+        this.employeeRemark = employeeRemark;
+    }
+
+
+    public String getManagerRemark() {
+        return managerRemark;
+    }
+
+
+    public void setManagerRemark(String managerRemark) {
+        this.managerRemark = managerRemark;
+    }
+
 
     public void setReview2(Integer review2) {
         this.review2 = review2;

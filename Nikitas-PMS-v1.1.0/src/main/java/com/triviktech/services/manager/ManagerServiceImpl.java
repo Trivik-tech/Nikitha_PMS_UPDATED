@@ -27,6 +27,7 @@ import com.triviktech.payloads.response.department.DepartmentResponseDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
+import com.triviktech.payloads.response.employee.PmsStatuscountDto;
 import com.triviktech.payloads.response.kpi.KpiResponseDto;
 import com.triviktech.payloads.response.kra.KraResponseDto1;
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
@@ -436,6 +437,7 @@ public class ManagerServiceImpl implements ManagerService {
                 kpi.setWeightage(kpiDto.getWeightage());
                 kpi.setSelfScore(kpiDto.getSelfScore());
                 kpi.setManagerScore(kpiDto.getManagerScore());
+                kpi.setManagerRemark(kpiDto.getManagerRemark()); 
                 kpi.setAverage((float) (kpiDto.getSelfScore() + kpiDto.getManagerScore()) / 2);
                 kpi.setReview2(kpiDto.getReview2());
 
@@ -556,6 +558,7 @@ public class ManagerServiceImpl implements ManagerService {
                 .filter(Objects::nonNull)
                 .toList();
     }
+    
 
     @Override
     public PmsPercentageDto getPmsPercentageForManager(String managerId) {
@@ -619,5 +622,36 @@ public class ManagerServiceImpl implements ManagerService {
     // Helper record to carry both Employee and KraKpi together in the stream
     private record EmployeeWithKraKpi(EmployeeInformation employee, KraKpi kraKpi) {
     }
+
+   @Override
+public PmsStatuscountDto getPmsCountsForManager(String managerId) {
+    Optional<Manager> optionalManager = managerRepository.findByManagerId(managerId);
+    if (optionalManager.isEmpty()) {
+        throw new ManagerNotFoundException(managerId);
+    }
+
+    Manager manager = optionalManager.get();
+    List<EmployeeInformation> employees = employeeInformationRepository.findAllByManager(manager);
+
+    long completedCount = 0;
+    long pendingCount = 0;
+
+    for (EmployeeInformation employee : employees) {
+        Optional<KraKpi> optionalKraKpi = kraKpiRepository.findByEmployeeInformation(employee);
+        if (optionalKraKpi.isEmpty()) continue;
+
+        KraKpi kraKpi = optionalKraKpi.get();
+
+        if (!Boolean.TRUE.equals(kraKpi.getPmsInitiated())) continue;
+
+        if (kraKpi.isSelfCompleted() && kraKpi.isManagerCompleted()) {
+            completedCount++;
+        } else {
+            pendingCount++;
+        }
+    }
+
+    return new PmsStatuscountDto(completedCount, pendingCount);
+}
 
 }
