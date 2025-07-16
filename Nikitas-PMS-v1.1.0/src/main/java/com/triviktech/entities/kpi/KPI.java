@@ -3,7 +3,6 @@ package com.triviktech.entities.kpi;
 import com.triviktech.entities.kra.KRA;
 import jakarta.persistence.*;
 
-
 @Entity
 @Table(name = "kpi")
 public class KPI {
@@ -33,6 +32,12 @@ public class KPI {
 
     @Column(name = "review_2")
     private Integer review2;
+
+    @Column(name = "employee_remark", length = 1000)
+    private String employeeRemark;
+
+    @Column(name = "manager_remark", length = 1000)
+    private String managerRemark;
 
     public Integer getReview2() {
         return review2;
@@ -97,4 +102,21 @@ public class KPI {
     public void setKra(KRA kra) {
         this.kra = kra;
     }
+
+    public String getEmployeeRemark() {
+        return employeeRemark;
+    }
+
+    public void setEmployeeRemark(String employeeRemark) {
+        this.employeeRemark = employeeRemark;
+    }
+
+    public String getManagerRemark() {
+        return managerRemark;
+    }
+
+    public void setManagerRemark(String managerRemark) {
+        this.managerRemark = managerRemark;
+    }
+    
 }

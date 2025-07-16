@@ -6,6 +6,7 @@ import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
+import com.triviktech.payloads.response.employee.PmsStatuscountDto;
 import com.triviktech.payloads.response.hr.HrResponseDto;
 import com.triviktech.repositories.employee.EmployeeInformationRepository;
 import com.triviktech.repositories.krakpi.KraKpiRepository;
@@ -156,76 +157,82 @@ public class HRControllerImpl implements HRController {
     public ResponseEntity<PmsPercentageDto> getPmsPercentageForHR() {
         return ResponseEntity.ok(hrService.getPmsPercentageForHR());
     }
-@Override
-public ResponseEntity<Map<String, String>> notifyEmployeeAndManager(String employeeId) {
-    try {
-        System.out.println("🔔 Notify called for employeeId: " + employeeId);
 
-        boolean selfCompleted = kraKpiRepository.findSelfCompletedStatusByEmployeeId(employeeId).orElse(false);
-        System.out.println("✅ Self completed: " + selfCompleted);
-
-        String managerId = employeeRepository.findReportingManagerIdByEmployeeId(employeeId);
-        System.out.println("👤 Manager ID: " + managerId);
-
-        String employeeName = employeeRepository.findNameByEmpId(employeeId).orElse("Unknown");
-
-        if (managerId == null || managerId.isBlank()) {
-            System.out.println("❌ Manager not found for " + employeeId);
-            return ResponseEntity.status(400).body(Map.of(
-                "status", "error",
-                "message", "Manager not found for this employee."
-            ));
-        }
-
-        String empDestination = "/queue/employee-notification";
-        String managerDestination = "/queue/manager-notification";
-
+    @Override
+    public ResponseEntity<Map<String, String>> notifyEmployeeAndManager(String employeeId) {
         try {
-            if (selfCompleted) {
-                // Only manager gets notified with a different message
-                String managerContent = "Reminder: " + employeeName + " has completed self-review. Please complete your Manager review.";
-                notificationService.sendMessageWithRecent("System", managerId, managerContent, managerDestination);
-            } else {
-                // Both get notified with appropriate messages
-                String empContent = "Reminder: Please complete your PMS self-review.";
-                String managerContent = "Reminder: " + employeeName + " has not yet completed self-review. Please follow up.";
+            System.out.println("🔔 Notify called for employeeId: " + employeeId);
 
-                notificationService.sendMessageWithRecent("System", employeeId, empContent, empDestination);
-                notificationService.sendMessageWithRecent("System", managerId, managerContent, managerDestination);
+            boolean selfCompleted = kraKpiRepository.findSelfCompletedStatusByEmployeeId(employeeId).orElse(false);
+            System.out.println("✅ Self completed: " + selfCompleted);
+
+            String managerId = employeeRepository.findReportingManagerIdByEmployeeId(employeeId);
+            System.out.println("👤 Manager ID: " + managerId);
+
+            String employeeName = employeeRepository.findNameByEmpId(employeeId).orElse("Unknown");
+
+            if (managerId == null || managerId.isBlank()) {
+                System.out.println("❌ Manager not found for " + employeeId);
+                return ResponseEntity.status(400).body(Map.of(
+                        "status", "error",
+                        "message", "Manager not found for this employee."));
             }
 
-        } catch (Exception ex) {
-            System.out.println("❌ ERROR inside sendMessageWithRecent: " + ex.getMessage());
-            ex.printStackTrace();
+            String empDestination = "/queue/employee-notification";
+            String managerDestination = "/queue/manager-notification";
+
+            try {
+                if (selfCompleted) {
+                    // Only manager gets notified with a different message
+                    String managerContent = "Reminder: " + employeeName
+                            + " has completed self-review. Please complete your Manager review.";
+                    notificationService.sendMessageWithRecent("System", managerId, managerContent, managerDestination);
+                } else {
+                    // Both get notified with appropriate messages
+                    String empContent = "Reminder: Please complete your PMS self-review.";
+                    String managerContent = "Reminder: " + employeeName
+                            + " has not yet completed self-review. Please follow up.";
+
+                    notificationService.sendMessageWithRecent("System", employeeId, empContent, empDestination);
+                    notificationService.sendMessageWithRecent("System", managerId, managerContent, managerDestination);
+                }
+
+            } catch (Exception ex) {
+                System.out.println("❌ ERROR inside sendMessageWithRecent: " + ex.getMessage());
+                ex.printStackTrace();
+                return ResponseEntity.status(500).body(Map.of(
+                        "status", "error",
+                        "message", "Notification failed: " + ex.getMessage()));
+            }
+
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "message", "Notification sent based on PMS status."));
+
+        } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(500).body(Map.of(
-                "status", "error",
-                "message", "Notification failed: " + ex.getMessage()
-            ));
+                    "status", "error",
+                    "message", "Notification failed: " + e.getMessage()));
         }
-
-        return ResponseEntity.ok(Map.of(
-            "status", "success",
-            "message", "Notification sent based on PMS status."
-        ));
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.status(500).body(Map.of(
-            "status", "error",
-            "message", "Notification failed: " + e.getMessage()
-        ));
     }
-}
 
     @Override
     public ResponseEntity<Map<String, HrResponseDto>> profile(UserDetails hr) {
-        Map<String,HrResponseDto> response=new HashMap<>();
+        Map<String, HrResponseDto> response = new HashMap<>();
         HrResponseDto profile = hrService.profile(hr.getUsername());
-        if(profile!=null){
-            response.put("profile",profile);
+        if (profile != null) {
+            response.put("profile", profile);
             return ResponseEntity.ok(response);
         }
-        response.put("message",null);
+        response.put("message", null);
         return ResponseEntity.ok(response);
     }
+
+    @Override
+    public ResponseEntity<PmsStatuscountDto> getPmsStatusCountForHR() {
+        PmsStatuscountDto dto = hrService.getPmsCountsForHR();
+        return ResponseEntity.ok(dto);
+    }
+
 }

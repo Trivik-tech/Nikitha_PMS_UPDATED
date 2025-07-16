@@ -5,6 +5,7 @@ import com.triviktech.payloads.request.manager.ManagerRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
+import com.triviktech.payloads.response.employee.PmsStatuscountDto;
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
 import com.triviktech.repositories.employee.EmployeeInformationRepository;
@@ -212,5 +213,11 @@ public class ManagerControllerImpl implements ManagerController {
     public ResponseEntity<Map<String, Integer>> getTeamSize(String managerId) {
         return ResponseEntity.ok(managerService.getTimeSize(managerId));
     }
+
+   @Override
+public ResponseEntity<PmsStatuscountDto> getPmsCountsForManager(String managerId) {
+    PmsStatuscountDto dto = managerService.getPmsCountsForManager(managerId);
+    return ResponseEntity.ok(dto);
+}
 
 }

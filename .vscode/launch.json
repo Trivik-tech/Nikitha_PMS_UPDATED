@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-Application<Nikitas-PMS-v1.1.0>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.triviktech.Application",
+            "projectName": "Nikitas-PMS-v1.1.0",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

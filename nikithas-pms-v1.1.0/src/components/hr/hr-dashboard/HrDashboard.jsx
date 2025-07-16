@@ -200,19 +200,23 @@ const HrDashboard = () => {
     return () => client.deactivate();
   }, []);
 
-  const getKeyMatrix = async () => {
-    try {
-      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/keyMatrix`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setCompleted(result.data.completed);
-      setPending(result.data.pending);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+const getKeyMatrix = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/api/v1/pms/hr/status-count`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("Status Count:", result.data); 
+
+    setCompleted(result.data.completedCount);  
+    setPending(result.data.pendingCount);      
+  } catch (error) {
+    console.error("Status Count Error:", error);
+  }
+};
+
 
   const getAllDepartment = async () => {
     try {
