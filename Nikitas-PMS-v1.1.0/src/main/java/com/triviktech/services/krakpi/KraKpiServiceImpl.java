@@ -109,24 +109,19 @@ public class KraKpiServiceImpl implements KraKpiService {
             kras.add(kra);
         }
 
-
+        // ✅ Set KRA for KraKpi
         kraKpi.setKra(kras);
 
         kraKpi = kraKpiRepository.saveAndFlush(kraKpi); // Final update
 
-        // Unified git conflict resolution: Use robust manager/employee null-check and send email
         try {
             EmployeeInformation emp = kraKpi.getEmployeeInformation();
-            // For debug (can be removed in prod):
-            // System.out.println("✅ Employee Info: " + emp.getEmpId() + ", " + emp.getName());
 
             if (emp.getManager() == null) {
                 throw new EmployeeNotFoundException("Manager not assigned to employee: " + emp.getEmpId());
             }
 
             Manager mgr = emp.getManager();
-            // For debug (can be removed in prod):
-            // System.out.println("✅ Manager Info: " + mgr.getManagerId() + ", " + mgr.getName());
 
             String sub = String.format(Message.KRA_KPI_SUBJECT_TO_MANAGER, emp.getName());
             String to = mgr.getEmailId();
@@ -264,11 +259,11 @@ public class KraKpiServiceImpl implements KraKpiService {
     @Override
     public Map<String, Boolean> existsByEmployee(String employeeId) {
         Optional<EmployeeInformation> byId = employeeInformationRepository.findById(employeeId);
-        if(byId.isEmpty()){
+        if (byId.isEmpty()) {
             throw new EmployeeNotFoundException(employeeId);
         }
         EmployeeInformation employee = byId.get();
         boolean status = kraKpiRepository.existsByEmployeeInformation(employee);
-        return Map.of("status",status);
+        return Map.of("status", status);
     }
 }

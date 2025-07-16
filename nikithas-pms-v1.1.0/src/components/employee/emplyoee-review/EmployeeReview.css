@@ -142,6 +142,7 @@ body::-webkit-scrollbar {
     font-size: 14px;
     vertical-align: middle;
     box-sizing: border-box;
+    background-color: #fff; /* ✅ Ensure no gray background */
 }
 
 /* Column Width Definitions */
@@ -165,13 +166,10 @@ body::-webkit-scrollbar {
 .employee-module-review-table td:nth-child(5) {
     width: 12%;
     text-align: center;
+    
 }
 
-.employee-module-review-table th:nth-child(6),
-.employee-module-review-table td:nth-child(6) {
-    width: 12%;
-    text-align: center;
-}
+
 
 /* Input Inside Table */
 .employee-module-review-table input {
@@ -181,6 +179,19 @@ body::-webkit-scrollbar {
     border-radius: 4px;
     text-align: center;
     box-sizing: border-box;
+}
+
+/* Remarks Button (fix background) */
+.employee-module-review-table .remarks-btn {
+    background: none !important; /* ✅ Remove background */
+    box-shadow: none !important;
+    border: none !important;
+    font-size: x-large;
+}
+
+.employee-module-review-table .remarks-btn:hover {
+    background: none !important; /* ✅ Transparent on hover */
+    box-shadow: none !important;
 }
 
 /* Overall Section */
@@ -278,7 +289,9 @@ body::-webkit-scrollbar {
     background-color: rgb(177, 216, 231);
     transform: translateY(-2px);
 }
-.employee-module-review-submit-review-btn:disabled,.employee-module-review-draft-btn:disabled {
+
+.employee-module-review-submit-review-btn:disabled,
+.employee-module-review-draft-btn:disabled {
   background-color: #cccccc !important;
   color: #888888 !important;
   cursor: not-allowed !important;
@@ -286,6 +299,70 @@ body::-webkit-scrollbar {
   border: 1px solid #bbbbbb !important;
   box-shadow: none !important;
 }
+
+/* Remarks Modal */
+.remarks-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.remarks-modal {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.remarks-modal textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  resize: none;
+}
+
+.remarks-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.remarks-btn{
+    font-size: x-large;
+}
+
+.remarks-modal-actions button {
+  margin-left: 10px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.remarks-modal-actions button:first-child {
+  background-color: #007bff;
+  color: white;
+}
+
+.remarks-modal-actions button:last-child {
+  background-color: #ccc;
+}
+
+.remarks-preview {
+  color: green;
+  margin-left: 5px;
+}
+
 
 /* Animation Keyframes */
 @keyframes fadeIn {

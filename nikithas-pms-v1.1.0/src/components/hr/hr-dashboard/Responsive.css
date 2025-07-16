@@ -10,30 +10,32 @@
     overflow-y: auto;
   }
 
+  /* MAIN PAGE HAMBURGER (only for header, to open sidebar) */
   .hamburger {
     display: block;
-    position: absolute;
-    top: 5px !important;
-    left: -30px;
+    position: fixed;
+    top: 10px !important;
+    left: -150px !important;
     font-size: 28px;
     background: none;
     border: none;
     color: #333;
     cursor: pointer;
-    z-index: 1200;
+    z-index: 1500;
   }
 
+  /* SIDEBAR CLOSE HAMBURGER - ONLY SHOW INSIDE SIDEBAR */
   .sidebar-hamburger {
-    right: 150px !important;
-    left: unset !important;
-    top: 5px !important;
+    display: block;
+    position: fixed;
+    top: 10px !important;
+    left: -90px !important;
     font-size: 28px;
     background: none;
     border: none;
     color: #333;
     cursor: pointer;
-    z-index: 1201;
-    position: absolute;
+    z-index: 2000;
   }
 
   .hr-dashboard-sidebar-overlay {
@@ -51,7 +53,7 @@
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     padding-top: 40px !important;
     background-color: #fff !important;
-    z-index: 999 !important;
+    z-index: 1000 !important;
     transition: transform 0.3s ease;
     overflow-y: auto;
     overflow-x: hidden;
@@ -147,9 +149,7 @@
     right: 5px;
     z-index: 1200;
     font-size: 24px;
-}
-
-
+  }
 
   .hr-dashboard-actions {
     position: absolute;
@@ -221,7 +221,7 @@
     width: 100% !important;
     margin-top: 16px;
     padding: 10px !important;
-    overflow: visible !important; 
+    overflow: visible !important;
   }
 
   .chart-scroll-container {
@@ -240,7 +240,7 @@
     width: 100% !important;
     min-height: 280px !important;
     height: auto !important;
-    overflow-x:scroll !important;
+    overflow-x: scroll !important;
   }
 
   .hr-dashboard-pie-chart {
@@ -255,9 +255,4 @@
     min-width: 180px !important;
     max-width: 90vw !important;
   }
-
-  /* .hr-dashboard-profileImg {
-    width: 80px !important;
-    height: 80px !important;
-  } */
 }

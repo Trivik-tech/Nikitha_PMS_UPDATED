@@ -7,6 +7,7 @@ import PmsInitiated from "../../modal/pms/PmsInitiated";
 import "./StartPms.css";
 import "./ResponsiveStartPMS.css";
 import { baseUrl } from "../../urls/CommenUrl";
+
 export default function StartPms() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -18,15 +19,18 @@ export default function StartPms() {
   const [hasServerError, setHasServerError] = useState(false);
 
   const navigate = useNavigate();
-  const token=localStorage.getItem('token')
+  const token = localStorage.getItem("token");
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/employee-with-pms-initiated`,{
-        headers:{
-          Authorization:`Bearer ${token}`
+      const response = await axios.get(
+        `${baseUrl}/api/v1/pms/hr/employee-with-pms-initiated`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
+      );
       const employees = response.data;
       setTeam(employees);
       setHasServerError(false);
@@ -38,12 +42,10 @@ export default function StartPms() {
 
   useEffect(() => {
     fetchEmployees();
-
     const intervalId = setInterval(() => {
       fetchEmployees();
     }, 2000);
-
-    return () => clearInterval(intervalId); // Clear interval on unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   const entriesPerPage = 10;
@@ -86,25 +88,27 @@ export default function StartPms() {
     }
   };
 
-  const pmsInitiated=async(id)=>{
-    try{
+  const pmsInitiated = async (id) => {
+    try {
+      const pms = {
+        pms_initiated: true,
+      };
 
-      const pms={
-        pms_initiated: true
-      }
-      // console.log(id)
-
-      const result=await axios.patch(`${baseUrl}/api/v1/pms/hr/pms-initiated/${id}`,pms,{
-        headers:{
-          Authorization:`Bearer ${token}`
+      const result = await axios.patch(
+        `${baseUrl}/api/v1/pms/hr/pms-initiated/${id}`,
+        pms,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-      });
-      console.log(result.data)
+      );
 
-    }catch(error){
-      console.error(error)
+      console.log(result.data);
+    } catch (error) {
+      console.error(error);
     }
-  }
+  };
 
   return (
     <div className="start-pms-container">
@@ -127,6 +131,7 @@ export default function StartPms() {
               />
             </div>
           </div>
+
           <img src={logo} alt="Company Logo" className="start-pms-company-logo" />
         </div>
 
@@ -146,7 +151,9 @@ export default function StartPms() {
               {currentEntries.map((member) => (
                 <tr
                   key={member.id}
-                  onClick={() => navigate(`/employee-info/${member.empId || member.managerId}`)}
+                  onClick={() =>
+                    navigate(`/employee-info/${member.empId || member.managerId}`)
+                  }
                   style={{ cursor: "pointer" }}
                 >
                   <td>{member.empId || "-"}</td>
@@ -162,7 +169,7 @@ export default function StartPms() {
                         setSelectedEmployee(member.name);
                         setSelectedEmployeeId(member.empId);
                         setShowModal(true);
-                        pmsInitiated(member.empId)
+                        pmsInitiated(member.empId);
                       }}
                     >
                       Initiate PMS
@@ -175,11 +182,19 @@ export default function StartPms() {
         </div>
 
         <div className="start-pms-pagination">
-          <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
             Prev
           </button>
-          <span> Page {currentPage} of {totalPages} </span>
-          <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
             Next
           </button>
         </div>
