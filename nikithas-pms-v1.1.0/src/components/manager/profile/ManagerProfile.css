@@ -8,17 +8,16 @@
 body, html {
     width: 100vw;
     height: 100vh;
-    overflow: hidden;
+    overflow: auto; /* ✅ allow scrolling */
     background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    margin: 0;
+    padding: 0;
 }
 
 /* Main container */
 .manager-container {
     width: 97vw;
-    height: 95vh;
+    max-height: 95vh; /* ✅ instead of fixed height */
     background: white;
     padding: 20px;
     display: flex;
@@ -26,9 +25,7 @@ body, html {
     align-items: center;
     justify-content: flex-start;
     border-radius: 10px;
-    opacity: 0;
-    /* box-shadow: -2px 2px px rgb(94, 94, 94); */
-    
+    overflow-y: auto; /* ✅ allow vertical scroll if needed */
     animation: fadeIn 0.8s ease-in-out forwards;
 }
 
@@ -53,7 +50,7 @@ body, html {
     color: #333;
     transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
-.icon.home-icon{
+.icon.home-icon {
     font-size: 30px;
     color: black;
 }
@@ -143,7 +140,6 @@ body, html {
     color: #333;
     border-bottom: 2px solid #ddd;
     background-color: #f9f9f9;
-    padding-bottom: 5px;
     padding: 10px;
 }
 
@@ -182,11 +178,12 @@ body, html {
     to { transform: translateX(0); opacity: 1; }
 }
 
-/* Mobile Responsiveness */
+/* Responsive Styles */
 @media (max-width: 768px) {
     .manager-container {
         width: 95%;
         padding: 15px;
+        max-height: 100vh;
     }
 
     .manager-header {
@@ -195,6 +192,8 @@ body, html {
 
     .manager-logo {
         height: 50px;
+        top: 10px;
+        right: 20px;
     }
 
     .icon {
