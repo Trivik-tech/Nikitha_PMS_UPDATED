@@ -85,8 +85,7 @@ export default function Complete() {
               <th>Name</th>
               <th>Department</th>
               <th>Position</th>
-              <th>Self</th>
-              <th>Manager</th>
+              
             </tr>
           </thead>
           <tbody>
@@ -95,13 +94,7 @@ export default function Complete() {
                 <td className="complete-team-member">{member.name}</td>
                 <td>{member.department?.name || "N/A"}</td>
                 <td>{member.currentDesignation}</td>
-                <td style={{ color: member.selfCompleted ? "green" : "red" }}>
-                  {member.selfCompleted ? "Completed" : "Pending"}
-                </td>
-                <td style={{ color: member.managerCompleted ? "green" : "red" }}>
-                  {member.managerCompleted ? "Completed" : "Pending"}
-                </td>
-              </tr>
+                </tr>
             ))}
           </tbody>
         </table>
