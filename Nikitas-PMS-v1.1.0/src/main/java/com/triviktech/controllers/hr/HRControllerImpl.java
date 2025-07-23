@@ -13,14 +13,19 @@ import com.triviktech.repositories.krakpi.KraKpiRepository;
 import com.triviktech.services.hr.HrService;
 import com.triviktech.services.notification.NotificationService;
 
+import com.triviktech.utilities.reports.EmployeeReport;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -38,8 +43,11 @@ public class HRControllerImpl implements HRController {
 
     private final HrService hrService;
 
-    public HRControllerImpl(HrService hrService) {
+    private final EmployeeReport employeeReport;
+
+    public HRControllerImpl(HrService hrService, EmployeeReport employeeReport) {
         this.hrService = hrService;
+        this.employeeReport = employeeReport;
     }
 
     @Override
@@ -233,6 +241,49 @@ public class HRControllerImpl implements HRController {
     public ResponseEntity<PmsStatuscountDto> getPmsStatusCountForHR() {
         PmsStatuscountDto dto = hrService.getPmsCountsForHR();
         return ResponseEntity.ok(dto);
+    }
+
+    @Override
+    public ResponseEntity<Map<String, String>> generateEmployeeInfoReport(String id) {
+        Map<String,String> response=new HashMap<>();
+        boolean status = employeeReport.generateEmployeeInfoReport(id);
+        if(status){
+            response.put("status","Report Generated");
+            return new ResponseEntity<>(response,HttpStatus.OK);
+        }
+        response.put("status","Report Generated");
+        return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<Map<String, String>> generateEmployeeList() {
+        Map<String,String> response=new HashMap<>();
+        boolean status = employeeReport.generateEmployeeListPdf();
+        if(status){
+            response.put("status","Report Generated");
+            return new ResponseEntity<>(response,HttpStatus.OK);
+        }
+        response.put("status","Report Generated");
+        return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @Override
+    public ResponseEntity<Map<String, Map<String, Integer>>> getCompletedPendingByDepartments() {
+        Map<String, Map<String, Integer>> response = hrService.getCompletedPendingByDepartment();
+        return ResponseEntity.ok(response) ;
+    }
+
+    @Override
+    public ResponseEntity<InputStreamResource> exportPmsPdf(String employeeId) {
+        ByteArrayInputStream pdfStream = hrService.generatePmsPdfReport(employeeId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=" + employeeId + "_pms_report.pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(pdfStream));
     }
 
 }

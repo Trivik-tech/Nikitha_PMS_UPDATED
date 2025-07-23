@@ -1,8 +1,11 @@
 package com.triviktech.config.security;
 
 public class Origins {
+    private Origins(){
+        
+    }
 
-    public static String serverUrl = "http://192.168.1.9:3000"; // <-- picked arpita's change
-    public static String localUrl = "http://localhost:3000";
+    public static final String serverUrl = "http://192.168.0.110:3000"; // <-- picked arpita's change
+    public static final String localUrl = "http://localhost:3000";
 
 }

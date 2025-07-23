@@ -7,12 +7,10 @@ import com.triviktech.entities.krakpi.KraKpi;
 import com.triviktech.entities.manager.Manager;
 import com.triviktech.exception.employee.EmployeeNotFoundException;
 import com.triviktech.exception.krakpi.KraKpiNotFoundException;
-import com.triviktech.exception.manager.ManagerNotFoundException;
 import com.triviktech.payloads.request.kpi.KpiRequestDto;
 import com.triviktech.payloads.request.kra.KraRequestDto;
 import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
-import com.triviktech.payloads.response.employee.EmployeeResponseDto;
 import com.triviktech.payloads.response.kpi.KpiResponseDto;
 import com.triviktech.payloads.response.kra.KraResponseDto1;
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
@@ -20,7 +18,6 @@ import com.triviktech.repositories.employee.EmployeeInformationRepository;
 import com.triviktech.repositories.kpi.KPIRepository;
 import com.triviktech.repositories.kra.KRARepository;
 import com.triviktech.repositories.krakpi.KraKpiRepository;
-import com.triviktech.repositories.manager.ManagerRepository;
 import com.triviktech.utilities.email.EmailService;
 import com.triviktech.utilities.email.Message;
 import com.triviktech.utilities.entitydtoconversion.EntityDtoConversion;
@@ -41,8 +38,11 @@ public class KraKpiServiceImpl implements KraKpiService {
     private final EmailService emailService;
 
     public KraKpiServiceImpl(EmployeeInformationRepository employeeInformationRepository,
-            KraKpiRepository kraKpiRepository, KRARepository kraRepository, KPIRepository kpiRepository,
-            EntityDtoConversion entityDtoConversion, EmailService emailService) {
+                             KraKpiRepository kraKpiRepository,
+                             KRARepository kraRepository,
+                             KPIRepository kpiRepository,
+                             EntityDtoConversion entityDtoConversion,
+                             EmailService emailService) {
         this.employeeInformationRepository = employeeInformationRepository;
         this.kraKpiRepository = kraKpiRepository;
         this.kraRepository = kraRepository;
@@ -56,7 +56,6 @@ public class KraKpiServiceImpl implements KraKpiService {
     public Map<String, String> registerKraKpi(KraKpiRequestDto kraKpiRequestDto) {
         Map<String, String> response = new HashMap<>();
 
-        // Convert DTO to Entity
         KraKpi kraKpi = new KraKpi();
 
         kraKpi.setEmployeeInformation(employeeInformationRepository.findById(kraKpiRequestDto.getEmployeeId())
@@ -72,17 +71,15 @@ public class KraKpiServiceImpl implements KraKpiService {
         kraKpi.setReview2(kraKpiRequestDto.isReview2());
         kraKpi.setManagerApproval(kraKpiRequestDto.getManagerApproval());
 
-        // Save KraKpi first to get a valid ID
         kraKpi = kraKpiRepository.saveAndFlush(kraKpi);
 
         Set<KRA> kras = new HashSet<>();
         for (KraRequestDto dto : kraKpiRequestDto.getKra()) {
             KRA kra = new KRA();
-            kra.setKraKpi(kraKpi); // Set foreign key relation
+            kra.setKraKpi(kraKpi);
             kra.setKraName(dto.getKraName());
             kra.setWeightage(dto.getWeightage());
 
-            // Save KRA first before adding KPIs
             kra = kraRepository.saveAndFlush(kra);
 
             Set<KPI> kpis = new HashSet<>();
@@ -93,6 +90,7 @@ public class KraKpiServiceImpl implements KraKpiService {
                 kpi.setSelfScore(kpiDto.getSelfScore());
                 kpi.setManagerScore(kpiDto.getManagerScore());
                 kpi.setDescription(kpiDto.getDescription());
+
                 float average;
                 if (kpiDto.getReview2() != 0) {
                     average = (float) (kpiDto.getManagerScore() + kpiDto.getSelfScore() + kpiDto.getReview2()) / 3;
@@ -102,7 +100,7 @@ public class KraKpiServiceImpl implements KraKpiService {
 
                 kpi.setAverage(average);
                 kpi.setReview2(kpiDto.getReview2());
-                // Save KPI separately to prevent ID issues
+
                 kpi = kpiRepository.saveAndFlush(kpi);
                 kpis.add(kpi);
             }
@@ -111,46 +109,23 @@ public class KraKpiServiceImpl implements KraKpiService {
             kras.add(kra);
         }
 
-<<<<<<< HEAD
-        // ✅ Set KRA for KraKpi
-=======
->>>>>>> c3381adc3c5e01e2fb2a25216ef404b3abfcc4b7
         kraKpi.setKra(kras);
 
-        kraKpi = kraKpiRepository.saveAndFlush(kraKpi); // Final update
+        kraKpi = kraKpiRepository.saveAndFlush(kraKpi);
 
-<<<<<<< HEAD
         try {
             EmployeeInformation emp = kraKpi.getEmployeeInformation();
-=======
-        // Unified git conflict resolution: Use robust manager/employee null-check and
-        // send email
-        try {
-            EmployeeInformation emp = kraKpi.getEmployeeInformation();
-            // For debug (can be removed in prod):
-            // System.out.println("✅ Employee Info: " + emp.getEmpId() + ", " +
-            // emp.getName());
->>>>>>> c3381adc3c5e01e2fb2a25216ef404b3abfcc4b7
 
             if (emp.getManager() == null) {
                 throw new EmployeeNotFoundException("Manager not assigned to employee: " + emp.getEmpId());
             }
 
             Manager mgr = emp.getManager();
-<<<<<<< HEAD
-=======
-            // For debug (can be removed in prod):
-            // System.out.println("✅ Manager Info: " + mgr.getManagerId() + ", " +
-            // mgr.getName());
->>>>>>> c3381adc3c5e01e2fb2a25216ef404b3abfcc4b7
 
             String sub = String.format(Message.KRA_KPI_SUBJECT_TO_MANAGER, emp.getName());
             String to = mgr.getEmailId();
-            String message = String.format(
-                    Message.KRA_KPI_MESSAGE_TO_MANAGER,
-                    mgr.getName(),
-                    emp.getName(),
-                    emp.getEmpId());
+            String message = String.format(Message.KRA_KPI_MESSAGE_TO_MANAGER,
+                    mgr.getName(), emp.getName(), emp.getEmpId());
             emailService.sendEmail(to, sub, message);
 
         } catch (Exception e) {
@@ -171,19 +146,20 @@ public class KraKpiServiceImpl implements KraKpiService {
                 .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
 
         KraKpi krakpi = kraKpiRepository.findByEmployeeInformation(employee)
-                .orElseThrow(() -> new RuntimeException("Could not find"));
+                .orElseThrow(() -> new KraKpiNotFoundException("KRA/KPI not found for employee: " + employeeId));
+
         KraKpiResponseDto response = entityDtoConversion.entityToDtoConversion(krakpi, KraKpiResponseDto.class);
         response.setEmployee(entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class));
+
         Set<KraResponseDto1> kraList = krakpi.getKra().stream().map(kra -> {
             KraResponseDto1 kraResponseDto1 = entityDtoConversion.entityToDtoConversion(kra, KraResponseDto1.class);
-
             Set<KpiResponseDto> kpis = kra.getKpi().stream()
                     .map(kpi -> entityDtoConversion.entityToDtoConversion(kpi, KpiResponseDto.class))
                     .collect(Collectors.toSet());
             kraResponseDto1.setKpi(kpis);
-
             return kraResponseDto1;
         }).collect(Collectors.toSet());
+
         response.setKra(kraList);
         return response;
     }
@@ -192,17 +168,13 @@ public class KraKpiServiceImpl implements KraKpiService {
     public Map<String, String> employeeReview(KraKpiRequestDto kraKpiRequestDto, String employeeId) {
         Optional<EmployeeInformation> employeeById = employeeInformationRepository.findById(employeeId);
         if (employeeById.isEmpty()) {
-            return Map.of(
-                    "status", "failure",
-                    "message", "Employee not found");
+            return Map.of("status", "failure", "message", "Employee not found");
         }
 
         EmployeeInformation employee = employeeById.get();
         Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
         if (kraKpiOptional.isEmpty()) {
-            return Map.of(
-                    "status", "failure",
-                    "message", "KRA/KPI not found for employee");
+            return Map.of("status", "failure", "message", "KRA/KPI not found for employee");
         }
 
         KraKpi kraKpi = kraKpiOptional.get();
@@ -238,6 +210,7 @@ public class KraKpiServiceImpl implements KraKpiService {
                 kpi.setAverage((float) (kpiDto.getSelfScore() + kpiDto.getManagerScore()) / 2);
                 kpi.setReview2(kpiDto.getReview2());
                 kpi.setEmployeeRemark(kpiDto.getEmployeeRemark());
+
                 updatedKpis.add(kpi);
             }
 
@@ -266,9 +239,7 @@ public class KraKpiServiceImpl implements KraKpiService {
             e.printStackTrace();
         }
 
-        return Map.of(
-                "status", "success",
-                "message", "Employee Review submitted successfully");
+        return Map.of("status", "success", "message", "Employee Review submitted successfully");
     }
 
     @Override

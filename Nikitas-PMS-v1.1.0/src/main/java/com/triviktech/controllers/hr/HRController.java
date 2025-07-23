@@ -9,6 +9,7 @@ import com.triviktech.payloads.response.employee.PmsPercentageDto;
 import com.triviktech.payloads.response.employee.PmsStatuscountDto;
 import com.triviktech.payloads.response.hr.HrResponseDto;
 import jakarta.validation.Valid;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -92,4 +93,16 @@ public interface HRController {
        
         @GetMapping("/status-count")
         ResponseEntity<PmsStatuscountDto> getPmsStatusCountForHR();
+
+        @GetMapping("/generate-report/{id}")
+        ResponseEntity<Map<String,String>> generateEmployeeInfoReport(@PathVariable String id);
+
+        @GetMapping("/generate-employee-list")
+        ResponseEntity<Map<String,String>> generateEmployeeList();
+
+        @GetMapping("/get-completed-pending-department")
+        ResponseEntity<Map<String, Map<String, Integer>>> getCompletedPendingByDepartments();
+
+        @GetMapping("/export-pdf/{employeeId}")
+        ResponseEntity<InputStreamResource> exportPmsPdf(@PathVariable String employeeId);
 }

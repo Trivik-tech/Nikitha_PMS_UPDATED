@@ -54,6 +54,9 @@ const HrDashboard = () => {
   const [pending, setPending] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [hrId, setHrId] = useState(null);
+  const [completedByDept, setCompletedByDept] = useState({});
+const [pendingByDept, setPendingByDept] = useState({});
+
 
   const token = localStorage.getItem("token");
 
@@ -114,6 +117,7 @@ const HrDashboard = () => {
     getDepartmentsEmployeeCount();
     getKeyMatrix();
     loadHr();
+    loadCompletedAndPendingByDepartment()
   };
 
   useEffect(() => {
@@ -258,34 +262,62 @@ const getKeyMatrix = async () => {
     }
   };
 
+  const loadCompletedAndPendingByDepartment = async () => {
+  try {
+    const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-completed-pending-department`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    const data = result.data; // Expecting: { "IT": { completed: 4, pending: 1 }, ... }
+
+    const completed = {};
+    const pending = {};
+
+    Object.keys(data).forEach(dept => {
+      completed[dept] = data[dept].completed || 0;
+      pending[dept] = data[dept].pending || 0;
+    });
+
+    setCompletedByDept(completed);
+    setPendingByDept(pending);
+
+  } catch (error) {
+    console.log("Error loading dept KRA/KPI stats:", error.message);
+  }
+};
+
+
   const barChartMinWidth = Math.max(480, departments.length * 120);
 
   const barData = {
-    labels: departments,
-    datasets: [
-      {
-        label: "Total Employees",
-        data: employeeCount,
-        backgroundColor: "#007bff",
-        borderColor: "#0056b3",
-        borderWidth: 1,
-      },
-      {
-        label: "Completed",
-        data: Array(departments.length).fill(Math.floor(Math.random() * 100)), // Placeholder
-        backgroundColor: "#28a745",
-        borderColor: "#1e7e34",
-        borderWidth: 1,
-      },
-      {
-        label: "Pending",
-        data: Array(departments.length).fill(Math.floor(Math.random() * 50)), // Placeholder
-        backgroundColor: "#ffc107",
-        borderColor: "#e0a800",
-        borderWidth: 1,
-      },
-    ],
-  };
+  labels: departments,
+  datasets: [
+    {
+      label: "Total Employees",
+      data: employeeCount,
+      backgroundColor: "#007bff",
+      borderColor: "#0056b3",
+      borderWidth: 1,
+    },
+    {
+      label: "Completed",
+      data: departments.map((dept) => completedByDept[dept] || 0),
+      backgroundColor: "#28a745",
+      borderColor: "#1e7e34",
+      borderWidth: 1,
+    },
+    {
+      label: "Pending",
+      data: departments.map((dept) => pendingByDept[dept] || 1),
+      backgroundColor: "#ffc107",
+      borderColor: "#e0a800",
+      borderWidth: 1,
+    },
+  ],
+};
+
 
   const barOptions = {
     responsive: true,

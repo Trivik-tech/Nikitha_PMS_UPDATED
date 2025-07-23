@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CompletedList.css";
 import "./CompletedListResponsive.css";
-import { FaSearch, FaHome } from "react-icons/fa";
+import { FaSearch, FaHome ,FaDownload} from "react-icons/fa";
 import logo from '../../../../assets/images/nikithas-logo.png';
 import axios from "axios";
 import {baseUrl} from '../../../urls/CommenUrl'
@@ -52,6 +52,43 @@ export default function CompletedList() {
     }
   };
 
+  const exportPdf = async (empId) => {
+  try {
+    const response = await axios.get(`${baseUrl}/api/v1/pms/hr/export-pdf/${empId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      responseType: 'blob' // Important for binary file like PDF
+    });
+
+    // Create a Blob from the PDF stream
+    const blob = new Blob([response.data], { type: 'application/pdf' });
+
+    // Create a temporary download link
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+
+    // Set a meaningful filename
+    const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    link.download = `Employee_Report_${empId}_${currentDate}.pdf`;
+
+    // Append, click and remove the link
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Clean up the URL object
+    window.URL.revokeObjectURL(url);
+    
+    console.log("PDF downloaded successfully");
+
+  } catch (error) {
+    console.error("Failed to download PDF:", error.message);
+  }
+};
+
+
   return (
     <div className="hr-complete-team-container">
       <div className="hr-complete-header">
@@ -79,8 +116,7 @@ export default function CompletedList() {
               <th>Name</th>
               <th>Department</th>
               <th>Position</th>
-              <th>Self</th>
-              <th>Manager</th>
+             <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -90,12 +126,10 @@ export default function CompletedList() {
                 <td className="hr-complete-team-member">{member.name}</td>
                 <td>{member.department?.name || "N/A"}</td>
                 <td>{member.currentDesignation}</td>
-                <td style={{ color: member.selfCompleted ? "green" : "red" }}>
-                  {member.selfCompleted ? "Completed" : "Pending"}
-                </td>
-                <td style={{ color: member.managerCompleted ? "green" : "red" }}>
-                  {member.managerCompleted ? "Completed" : "Pending"}
-                </td>
+               <td><FaDownload 
+               title="download"
+                className="employee-list-edit-icon"
+               onClick={()=>exportPdf(member.empId)}/></td>
               </tr>
             ))}
           </tbody>

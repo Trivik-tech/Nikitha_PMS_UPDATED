@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaSearch, FaHome, FaEdit, FaTrash } from "react-icons/fa";
+import { FaSearch, FaHome, FaEdit, FaTrash, FaDownload } from "react-icons/fa";
 import logo from "../../../assets/images/nikithas-logo.png";
 import "./EmpResponsive.css";
 import "./EmployeeList.css";
@@ -8,6 +8,7 @@ import axios from "axios";
 import DeleteConfirmation from "../../modal/delete-confirmation/DeleteConfirmation";
 import { baseUrl } from "../../urls/CommenUrl";
 import { encrypt } from "../../utils/encryptUtils";
+import Modal from "../../modal/Modal";
 
 export default function EmployeeList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,18 +19,22 @@ export default function EmployeeList() {
   const [modalOpen, setModalOpen] = useState(false);
   const [employeeToDelete, setEmployeeToDelete] = useState(null);
   const [employeeName, setEmployeeName] = useState(null);
+  const [successModal, setSuccessModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+
   const navigate = useNavigate();
-  const token=localStorage.getItem('token')
+  const token = localStorage.getItem("token");
+
+  const hasFetchedRef = useRef(false); // Fix for duplicate API call in StrictMode
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees`,{
-        headers:{
-          Authorization:`Bearer ${token}`
-        }
+      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-      const employees = response.data;
-      setTeam(employees);
+      setTeam(response.data);
       setHasServerError(false);
     } catch (error) {
       console.error("Error fetching employee data:", error.message);
@@ -37,9 +42,14 @@ export default function EmployeeList() {
     }
   };
 
-  useEffect(() => {
+ useEffect(() => {
+  if (!hasFetchedRef.current) {
     fetchEmployees();
-  }, []);
+    hasFetchedRef.current = true;
+  }
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
+
 
   const entriesPerPage = 10;
   const filteredTeam = team.filter((member) =>
@@ -52,11 +62,11 @@ export default function EmployeeList() {
   const currentEntries = filteredTeam.slice(startIndex, startIndex + entriesPerPage);
 
   const handleSort = () => {
-    const sorted = [...team].sort((a, b) => {
-      return sortOrder === "asc"
+    const sorted = [...team].sort((a, b) =>
+      sortOrder === "asc"
         ? (a.name || "").localeCompare(b.name || "")
-        : (b.name || "").localeCompare(a.name || "");
-    });
+        : (b.name || "").localeCompare(a.name || "")
+    );
 
     setTeam(sorted);
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -69,14 +79,14 @@ export default function EmployeeList() {
       fetchEmployees();
       return;
     }
+
     try {
-      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees/${search}`,{
-        headers:{
-          Authorization:`Bearer ${token}`
-        }
+      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees/${search}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-      const employees = response.data;
-      setTeam(employees);
+      setTeam(response.data);
       setHasServerError(false);
     } catch (error) {
       console.error("Search failed:", error.message);
@@ -94,10 +104,10 @@ export default function EmployeeList() {
     if (!employeeToDelete) return;
 
     try {
-      await axios.delete(`${baseUrl}/api/v1/pms/hr/delete-employee/${employeeToDelete}`,{
-        headers:{
-          Authorization:`Bearer ${token}`
-        }
+      await axios.delete(`${baseUrl}/api/v1/pms/hr/delete-employee/${employeeToDelete}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       setEmployeeToDelete(null);
       setModalOpen(false);
@@ -117,45 +127,71 @@ export default function EmployeeList() {
     return `${day}-${month}-${year}`;
   };
 
-  // Responsive: For mobile, render cards instead of table
-  const  isMobile = false; // Always show table view, even on mobile
+  const handleDownloadData = async (id) => {
+    try {
+      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/generate-report/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        setModalMessage("Employee PDF Report generated and downloaded successfully.");
+        setSuccessModal(true);
+      }
+    } catch (error) {
+      console.error("PDF download failed:", error.message);
+    }
+  };
+
+  const handleExportData= async()=>{
+    try {
+      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/generate-employee-list`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        setModalMessage("Employee List PDF  generated and downloaded successfully.");
+        setSuccessModal(true);
+      }
+    } catch (error) {
+      console.error("PDF download failed:", error.message);
+    }
+
+  }
+
+  const isMobile = false;
 
   return (
     <div className="employee-list-fullpage">
       <div className="employee-list-container">
         <div className="employee-list-content">
           <div className="employee-list-header-flex">
-  <div className="employee-list-left">
-    <FaHome
-      className="employee-list-home-icon"
-      onClick={() => navigate("/hr-dashboard")}
-    />
-    <h1 className="employee-list-title">Employee List</h1>
-    
-  </div>
-  
+            <div className="employee-list-left">
+              <FaHome
+                className="employee-list-home-icon"
+                onClick={() => navigate("/hr-dashboard")}
+              />
+              <h1 className="employee-list-title">Employee List</h1>
+            </div>
 
-  <div className="employee-list-center">
-    
-    <input
-      type="text"
-      placeholder="Search employees..."
-      value={searchTerm}
-      onChange={searchEmployees}
-    />
-    <div className="employee-list-right">
-    <Link to="/add-employee" className="employee-list-add-button">
-      Add Employee
-    </Link>
-    
-  </div>
-  
-  </div>
-  <img src={logo} alt="Company Logo" className="employee-list-company-logo" />
-
-  
-</div>
-
+            <div className="employee-list-center">
+              <input
+                type="text"
+                placeholder="Search employees..."
+                value={searchTerm}
+                onChange={searchEmployees}
+              />
+              <div className="employee-list-right">
+                <Link to="/add-employee" className="employee-list-add-button">
+                  Add Employee
+                </Link>
+              </div>
+            </div>
+            <img src={logo} alt="Company Logo" className="employee-list-company-logo" />
+          </div>
 
           {hasServerError && (
             <div className="employee-list-error-message">
@@ -184,7 +220,7 @@ export default function EmployeeList() {
                         key={member.id}
                         onClick={() => {
                           const encryptedId = encrypt(member.empId);
-                          navigate(`/employee-info/${encryptedId || member.managerId}`)
+                          navigate(`/employee-info/${encryptedId || member.managerId}`);
                         }}
                         style={{ cursor: "pointer" }}
                       >
@@ -195,14 +231,23 @@ export default function EmployeeList() {
                         <td>{formatDate(member.dateOfJoining)}</td>
                         <td>{member.role || "-"}</td>
                         <td onClick={(e) => e.stopPropagation()}>
-                          <FaEdit className="employee-list-edit-icon" title="Edit" onClick={() => {
-                            const encryptedId = encrypt(member.empId);
-                            navigate(`/update-employee/${encryptedId}`);
-                          }}/>
+                          <FaEdit
+                            className="employee-list-edit-icon"
+                            title="Edit"
+                            onClick={() => {
+                              const encryptedId = encrypt(member.empId);
+                              navigate(`/update-employee/${encryptedId}`);
+                            }}
+                          />
                           <FaTrash
                             className="employee-list-delete-icon"
                             title="Delete"
                             onClick={() => handleDeleteClick(member.empId, member.name)}
+                          />
+                          <FaDownload
+                            className="employee-list-edit-icon"
+                            title="Download"
+                            onClick={() => handleDownloadData(member.empId)}
                           />
                         </td>
                       </tr>
@@ -211,52 +256,7 @@ export default function EmployeeList() {
                 </table>
               ) : (
                 <div className="employee-list-mobile-cards">
-                  {currentEntries.map((member) => (
-                    <div
-                      key={member.id}
-                      className="employee-list-mobile-card"
-                      onClick={() => {
-                        const encryptedId = encrypt(member.empId);
-                        navigate(`/employee-info/${encryptedId || member.managerId}`)
-                      }}
-                    >
-                      <div className="employee-list-mobile-card-row">
-                        <span className="employee-list-mobile-label">ID:</span>
-                        <span>{member.empId || "-"}</span>
-                      </div>
-                      <div className="employee-list-mobile-card-row">
-                        <span className="employee-list-mobile-label">Name:</span>
-                        <span>{member.name || "-"}</span>
-                      </div>
-                      <div className="employee-list-mobile-card-row">
-                        <span className="employee-list-mobile-label">Dept:</span>
-                        <span>{member.department || "-"}</span>
-                      </div>
-                      <div className="employee-list-mobile-card-row">
-                        <span className="employee-list-mobile-label">Email:</span>
-                        <span>{member.officialEmailId || "-"}</span>
-                      </div>
-                      <div className="employee-list-mobile-card-row">
-                        <span className="employee-list-mobile-label">Joined:</span>
-                        <span>{formatDate(member.dateOfJoining)}</span>
-                      </div>
-                      <div className="employee-list-mobile-card-row">
-                        <span className="employee-list-mobile-label">Role:</span>
-                        <span>{member.role || "-"}</span>
-                      </div>
-                      <div className="employee-list-mobile-card-actions" onClick={e => e.stopPropagation()}>
-                        <FaEdit className="employee-list-edit-icon" title="Edit" onClick={() => {
-                          const encryptedId = encrypt(member.empId);
-                          navigate(`/update-employee/${encryptedId}`);
-                        }}/>
-                        <FaTrash
-                          className="employee-list-delete-icon"
-                          title="Delete"
-                          onClick={() => handleDeleteClick(member.empId, member.name)}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                  {/* Mobile Cards */}
                 </div>
               )}
             </div>
@@ -271,11 +271,11 @@ export default function EmployeeList() {
               <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
                 Next
               </button>
+              <button title="export" onClick={()=>handleExportData()}>Export <FaDownload /></button>
             </div>
           )}
         </div>
 
-        {/* Modal */}
         <DeleteConfirmation
           isOpen={modalOpen}
           onClose={() => {
@@ -286,6 +286,14 @@ export default function EmployeeList() {
           name={employeeName}
           id={employeeToDelete}
         />
+
+        {successModal && (
+          <Modal
+            title="Success"
+            message={modalMessage}
+            closeModal={() => setSuccessModal(false)}
+          />
+        )}
       </div>
     </div>
   );

@@ -15,6 +15,7 @@ import com.triviktech.payloads.response.hr.HrResponseDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -62,5 +63,8 @@ public interface HrService {
     HrResponseDto profile(String hrId);
 
     PmsStatuscountDto getPmsCountsForHR();
+
+    Map<String, Map<String, Integer>> getCompletedPendingByDepartment();
+    ByteArrayInputStream generatePmsPdfReport(String employeeId);
 
 }

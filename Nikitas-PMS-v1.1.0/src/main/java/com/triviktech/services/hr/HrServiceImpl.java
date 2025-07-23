@@ -3,6 +3,8 @@ package com.triviktech.services.hr;
 import com.triviktech.entities.department.Department;
 import com.triviktech.entities.employee.EmployeeInformation;
 import com.triviktech.entities.hr.HR;
+import com.triviktech.entities.kpi.KPI;
+import com.triviktech.entities.kra.KRA;
 import com.triviktech.entities.krakpi.KraKpi;
 import com.triviktech.entities.manager.Manager;
 import com.triviktech.exception.employee.EmployeeAlreadyExistsException;
@@ -15,11 +17,9 @@ import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.request.manager.ManagerDto;
 import com.triviktech.payloads.response.department.DepartmentResponseDto;
-import com.triviktech.payloads.response.employee.EmployeeInfo;
-import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
-import com.triviktech.payloads.response.employee.PmsPercentageDto;
-import com.triviktech.payloads.response.employee.PmsStatuscountDto;
+import com.triviktech.payloads.response.employee.*;
 import com.triviktech.payloads.response.hr.HrResponseDto;
+import com.triviktech.payloads.response.krakpi.KraKpiDto;
 import com.triviktech.repositories.address.LocationRepository;
 import com.triviktech.repositories.address.StateRepository;
 import com.triviktech.repositories.department.DepartmentRepository;
@@ -30,6 +30,7 @@ import com.triviktech.repositories.manager.ManagerRepository;
 import com.triviktech.utilities.email.EmailService;
 import com.triviktech.utilities.email.Message;
 import com.triviktech.utilities.entitydtoconversion.EntityDtoConversion;
+import com.triviktech.utilities.reports.PmsCycleReport;
 import com.triviktech.utilities.validation.Validation;
 import com.triviktech.utilities.xlsxsupport.XlsxSupport;
 
@@ -38,6 +39,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -971,5 +973,118 @@ public PmsStatuscountDto getPmsCountsForHR() {
 
     return new PmsStatuscountDto(completedCount, pendingCount);
 }
+
+    @Override
+    public Map<String, Map<String, Integer>> getCompletedPendingByDepartment() {
+        List<EmployeeInformation> employees = employeeInformationRepository.findAll();
+
+        // Group employees by department name
+        Map<String, List<EmployeeInformation>> groupedByDepartment =
+                employees.stream()
+                        .filter(e -> e.getDepartment() != null)
+                        .collect(Collectors.groupingBy(e -> e.getDepartment().getName()));
+
+        Map<String, Map<String, Integer>> result = new HashMap<>();
+
+        for (Map.Entry<String, List<EmployeeInformation>> entry : groupedByDepartment.entrySet()) {
+            String department = entry.getKey();
+            List<EmployeeInformation> deptEmployees = entry.getValue();
+
+            int completed = 0;
+            int pending = 0;
+
+            for (EmployeeInformation employee : deptEmployees) {
+                Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+                if (kraKpiOptional.isPresent()) {
+                    KraKpi kraKpi = kraKpiOptional.get();
+
+                    // Assuming boolean fields: isCompleted() and isPending()
+                    if (kraKpi.isManagerCompleted() && kraKpi.isSelfCompleted()&& kraKpi.getPmsInitiated()) {
+                        completed++;
+                    } else if(kraKpi.getPmsInitiated()) {
+                        pending++;
+                    }
+                }
+            }
+
+            Map<String, Integer> countMap = new HashMap<>();
+            countMap.put("completed", completed);
+            countMap.put("pending", pending);
+
+            result.put(department, countMap);
+        }
+
+        return result;
+    }
+
+    @Override
+    public ByteArrayInputStream generatePmsPdfReport(String employeeId) {
+        EmployeeInformation employee = employeeInformationRepository.findById(employeeId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        KraKpi kraKpi = kraKpiRepository.findByEmployeeInformation(employee)
+                .orElseThrow(() -> new RuntimeException("KRA/KPI data not found for employee: " + employeeId));
+
+        EmployeePmsDto dto = new EmployeePmsDto();
+        dto.setEmpId(employee.getEmpId());
+        dto.setName(employee.getName());
+        dto.setDepartment(employee.getDepartment().getName());
+        dto.setDesignation(employee.getCurrentDesignation());
+
+        // Photo path
+        String photoPath = "src/main/resources/photos/" + employeeId + ".jpg";
+        if (!new java.io.File(photoPath).exists()) {
+            photoPath = "src/main/resources/static/images/profile1.jpg";
+        }
+        dto.setPhotoPath(photoPath);
+
+        // Set review/due dates
+        dto.setDueDate(kraKpi.getDueDate() != null ? kraKpi.getDueDate().toString() : "");
+        dto.setEmployeeReviewDate(kraKpi.getSelfReviewDate() != null ? kraKpi.getSelfReviewDate().toString() : "");
+        dto.setManagerReviewDate(kraKpi.getManagerReviewDate() != null ? kraKpi.getManagerReviewDate().toString() : "");
+
+        List<KraKpiDto> dtoList = new ArrayList<>();
+        List<Double> selfScores = new ArrayList<>();
+        List<Double> managerScores = new ArrayList<>();
+
+        for (KRA kra : kraKpi.getKra()) {
+            for (KPI kpi : kra.getKpi()) {
+                double self = kpi.getSelfScore() != null ? kpi.getSelfScore().doubleValue() : 0;
+                double manager = kpi.getManagerScore() != null ? kpi.getManagerScore().doubleValue() : 0;
+                double avg = (self + manager) / 2.0;
+
+                KraKpiDto kraKpiDto = new KraKpiDto();
+                kraKpiDto.setKra(kra.getKraName());
+                kraKpiDto.setKpi(kpi.getDescription());
+                kraKpiDto.setWeightage(kpi.getWeightage() != null ? kpi.getWeightage() : 0);
+                kraKpiDto.setEmployeeRemark(kpi.getEmployeeRemark());
+                kraKpiDto.setManagerRemark(kpi.getManagerRemark());
+
+                kraKpiDto.setSelfScore(self);
+                kraKpiDto.setManagerScore(manager);
+                kraKpiDto.setAverageScore(avg);
+
+                dtoList.add(kraKpiDto);
+
+                if (kpi.getSelfScore() != null) selfScores.add(self);
+                if (kpi.getManagerScore() != null) managerScores.add(manager);
+            }
+        }
+
+        dto.setKraKpiDetails(dtoList);
+
+        // Calculate overall scores
+        double selfAvg = selfScores.stream().mapToDouble(Double::doubleValue).average().orElse(0);
+        double mgrAvg = managerScores.stream().mapToDouble(Double::doubleValue).average().orElse(0);
+        double finalScore = (selfAvg + mgrAvg) / 2.0;
+
+        dto.setSelfScore(selfAvg);
+        dto.setManagerScore(mgrAvg);
+        dto.setFinalScore(finalScore);
+        dto.setOverallRemark(kraKpi.getRemark());
+
+        return new PmsCycleReport().generatePdf(dto);
+    }
+
 
 }
