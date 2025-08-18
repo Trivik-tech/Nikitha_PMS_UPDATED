@@ -138,12 +138,14 @@ body {
 /* Logo (Centered) */
 .employee-dashboard-logo {
     position: absolute;
-    left: 55%;
-    transform: translateX(-50%);
+    right: 10px;   /* moved to right */
+    top: -25px;     /* optional: keep spacing from top */
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
+    transform: none; /* remove center transform */
 }
+
 
 .employee-dashboard-logo img {
     height: 95px;
@@ -152,18 +154,19 @@ body {
 }
 
 /* Right Section (Notification & Logout) */
-.employee-dashboard-actions {
+/* .employee-dashboard-actions {
     display: flex;
     align-items: center;
     gap: 12px;
     margin-left: auto;
-}
+} */
 
 /* Notification Button */
 .employee-dashboard-notificationButton {
     width: 24px;
     height: 24px;
     cursor: pointer;
+    margin-right: 100px;
     color: #333;
     transition: transform 0.3s ease;
 }

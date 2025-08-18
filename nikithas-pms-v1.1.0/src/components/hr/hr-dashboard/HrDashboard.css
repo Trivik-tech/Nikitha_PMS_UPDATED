@@ -125,7 +125,7 @@ body {
     width: 120px;
     height: auto;
     position: absolute;
-    left: 50%;
+    margin-left: 90%;
     transform: translateX(-50%);
     top: 5px; /* Pushes it up */
 }
@@ -138,6 +138,7 @@ body {
     background: none;
     border: none;
     cursor: pointer;
+    margin-right: 150px;
     font-size: 20px;
     color: #333;
     transition: color 0.3s ease;

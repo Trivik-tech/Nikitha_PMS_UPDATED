@@ -50,7 +50,7 @@ const ManagerProfile = () => {
     { label: "Date of Birth", value: managerData?.dob },
     { label: "Mobile Number", value: managerData?.mobileNumber },
     { label: "Personal Email", value: managerData?.emailId },
-    { label: "Branch", value: managerData?.branch },
+    { label: "Department", value: managerData?.branch },
     { label: "Manager ID", value: managerData?.managerId },
   ];
 

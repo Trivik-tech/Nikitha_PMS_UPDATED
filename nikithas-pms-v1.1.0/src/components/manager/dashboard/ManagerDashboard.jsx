@@ -211,7 +211,7 @@ const ManagerDashboard = () => {
         data: hasData
           ? [percentageData.completedPercentage, percentageData.pendingPercentage]
           : [1],
-        backgroundColor: hasData ? ["#4CAF50", "#FF9800"] : ["#d3d3d3"],
+        backgroundColor: hasData ? ["#4c4eafff", "#FF9800"] : ["#d3d3d3"],
         borderWidth: 1,
       },
     ],
@@ -243,12 +243,19 @@ const ManagerDashboard = () => {
           <li>
             <Link to={managerId ? `/my-team/${managerId}` : "#"} className={`sidebar-link-btn${!managerId ? " disabled" : ""}`}>My Team</Link>
           </li>
+          
           <li>
             <Link to="/manager-profile">My Profile</Link>
           </li>
-          <li className="mobile-only">
+          
+             <button className="logout-btn desktop-only" onClick={() => {
+              localStorage.clear();
+              navigate("/");
+            }}>Logout</button>
+          
+          {/* <li className="mobile-only">
             <button className="logout button" onClick={() => { localStorage.clear(); navigate("/"); }}>Logout</button>
-          </li>
+          </li> */}
         </ul>
       </div>
 
@@ -274,10 +281,10 @@ const ManagerDashboard = () => {
             {notificationOpen && (
               <Notification notifications={Array.isArray(notifications) ? notifications : []} onClose={() => setNotificationOpen(false)} />
             )}
-            <button className="logout-btn desktop-only" onClick={() => {
+            {/* <button className="logout-btn desktop-only" onClick={() => {
               localStorage.clear();
               navigate("/");
-            }}>Logout</button>
+            }}>Logout</button> */}
           </div>
         </div>
 
