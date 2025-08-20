@@ -112,7 +112,7 @@ const EmployeeInfo = () => {
                   {employeeData.dob || "-"}
                 </li>
                 <li>
-                  <strong>Category:</strong>{" "}
+                  <strong>Grade:</strong>{" "}
                   {employeeData.category || "Full-time"}
                 </li>
               </ul>

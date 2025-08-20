@@ -231,6 +231,7 @@ const ManagerDashboard = () => {
 
   return (
     <div className="dashboard-container">
+      {/* Sidebar */}
       <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="profile-container">
           <img src={profile} alt="Profile" className="profile-pic" />
@@ -238,35 +239,49 @@ const ManagerDashboard = () => {
         </div>
         <ul>
           <li>
-            <NavLink to="/manager-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>Dashboard</NavLink>
+            <NavLink to="/manager-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>
+              Dashboard
+            </NavLink>
           </li>
           <li>
-            <Link to={managerId ? `/my-team/${managerId}` : "#"} className={`sidebar-link-btn${!managerId ? " disabled" : ""}`}>My Team</Link>
+            <Link
+              to={managerId ? `/my-team/${managerId}` : "#"}
+              className={`sidebar-link-btn${!managerId ? " disabled" : ""}`}
+            >
+              My Team
+            </Link>
           </li>
-          
           <li>
             <Link to="/manager-profile">My Profile</Link>
           </li>
-          
-             <button className="logout-btn desktop-only" onClick={() => {
+          <button
+            className="logout-btn desktop-only"
+            onClick={() => {
               localStorage.clear();
               navigate("/");
-            }}>Logout</button>
-          
-          {/* <li className="mobile-only">
-            <button className="logout button" onClick={() => { localStorage.clear(); navigate("/"); }}>Logout</button>
-          </li> */}
+            }}
+          >
+            Logout
+          </button>
         </ul>
       </div>
 
+      {/* Main Content */}
       <div className="main-content">
+        {/* Header */}
         <div className="dashboard-header">
-          <button className="sidebar-toggle hum-btn" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
+          <button
+            className="sidebar-toggle hum-btn"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            ☰
+          </button>
           <h1>Manager PMS Dashboard</h1>
-          <img src={logo} alt="Logo" className="dashboard-logo" />
+
           <div className="header-icons" style={{ position: "relative" }}>
-            <div style={{ position: "relative" }}>
-              <Bell className="notification-icon" onClick={() => {
+            <Bell
+              className="notification-icon"
+              onClick={() => {
                 setNotificationOpen(!notificationOpen);
                 if (!notificationOpen) {
                   notifications.forEach((msg) => {
@@ -275,19 +290,24 @@ const ManagerDashboard = () => {
                   });
                   setNotificationCount(0);
                 }
-              }} />
-              {notificationCount > 0 && <span className="notification-badge">{notificationCount}</span>}
-            </div>
-            {notificationOpen && (
-              <Notification notifications={Array.isArray(notifications) ? notifications : []} onClose={() => setNotificationOpen(false)} />
+              }}
+            />
+            {notificationCount > 0 && (
+              <span className="notification-badge">{notificationCount}</span>
             )}
-            {/* <button className="logout-btn desktop-only" onClick={() => {
-              localStorage.clear();
-              navigate("/");
-            }}>Logout</button> */}
+
+            <img src={logo} alt="Logo" className="dashboard-logo" />
           </div>
         </div>
 
+        {notificationOpen && (
+          <Notification
+            notifications={Array.isArray(notifications) ? notifications : []}
+            onClose={() => setNotificationOpen(false)}
+          />
+        )}
+
+        {/* Stats */}
         <div className="stats-container">
           <div className="stat-card">
             <Users className="stat-icon team-icon" />
@@ -296,23 +316,37 @@ const ManagerDashboard = () => {
               <p>{teamSize}</p>
             </div>
           </div>
-        <div className="stat-card">
-  <NotebookPen className="stat-icon pending-icon" />
-  <div className="stat-text">
-    <h2>Assessments Pending</h2>
-    <p>{`${assessmentCount.pending}/${teamSize} (${teamSize !== 0 ? Math.round((assessmentCount.pending / teamSize) * 100) : 0}%)`}</p>
-  </div>
-</div>
-<div className="stat-card">
-  <CheckCircle className="stat-icon complete-icon" />
-  <div className="stat-text">
-    <h2>Assessments Complete</h2>
-    <p>{`${assessmentCount.completed}/${teamSize} (${teamSize !== 0 ? Math.round((assessmentCount.completed / teamSize) * 100) : 0}%)`}</p>
-  </div>
-</div>
 
+          <div className="stat-card">
+            <NotebookPen className="stat-icon pending-icon" />
+            <div className="stat-text">
+              <h2>Assessments Pending</h2>
+              <p>
+                {`${assessmentCount.pending}/${teamSize} (${
+                  teamSize !== 0
+                    ? Math.round((assessmentCount.pending / teamSize) * 100)
+                    : 0
+                }%)`}
+              </p>
+            </div>
+          </div>
+
+          <div className="stat-card">
+            <CheckCircle className="stat-icon complete-icon" />
+            <div className="stat-text">
+              <h2>Assessments Complete</h2>
+              <p>
+                {`${assessmentCount.completed}/${teamSize} (${
+                  teamSize !== 0
+                    ? Math.round((assessmentCount.completed / teamSize) * 100)
+                    : 0
+                }%)`}
+              </p>
+            </div>
+          </div>
         </div>
 
+        {/* Chart */}
         <div className="chart-container">
           <h3 className="chart-title">Assessment Status</h3>
           <div className="chart-wrapper">
