@@ -10,12 +10,10 @@ import com.triviktech.entities.manager.Manager;
 import com.triviktech.exception.employee.EmployeeAlreadyExistsException;
 import com.triviktech.exception.employee.EmployeeNotFoundException;
 import com.triviktech.exception.hr.HRNotFoundException;
-import com.triviktech.exception.krakpi.KraKpiNotFoundException;
 import com.triviktech.exception.manager.ManagerAlreadyExistsException;
 import com.triviktech.exception.validation.InvalidEmailIdException;
 import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
-import com.triviktech.payloads.request.manager.ManagerDto;
 import com.triviktech.payloads.response.department.DepartmentResponseDto;
 import com.triviktech.payloads.response.employee.*;
 import com.triviktech.payloads.response.hr.HrResponseDto;
@@ -46,6 +44,34 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
+
+/**
+ * Implementation of HR Service for managing Employee and Manager operations.
+ *
+ * This service provides core functionalities for HR management, including:
+ * <ul>
+ *     <li>Employee and Manager Registration, Update, and Deletion</li>
+ *     <li>Bulk employee upload via XLSX</li>
+ *     <li>Search and retrieval of employees and managers</li>
+ *     <li>PMS (Performance Management System) operations such as initiation, status, statistics, and reporting</li>
+ *     <li>Departmental statistics, completion, and pending counts</li>
+ *     <li>Email notifications for registration, updates, and PMS processes</li>
+ *     <li>PDF report generation for employee PMS cycles</li>
+ * </ul>
+ *
+ * Key integrations:
+ * <ul>
+ *     <li>Repositories for Employee, Manager, Department, HR, KRA/KPI data</li>
+ *     <li>Email service for notifications</li>
+ *     <li>Entity-DTO conversion utilities</li>
+ *     <li>Excel/XLSX processing utilities</li>
+ *     <li>Validation utilities for email and data consistency</li>
+ *     <li>Exception handling for entity not found, validation, and duplicate entries</li>
+ * </ul>
+ *
+ * This class is annotated as a Spring Service and is intended to be injected where HR functionality is required.
+ * All business logic related to HR, Employee, Manager, and PMS workflow is encapsulated here.
+ */
 
 @Service
 public class HrServiceImpl implements HrService {
@@ -950,7 +976,7 @@ public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> p
     }
 
    @Override
-public PmsStatuscountDto getPmsCountsForHR() {
+public PmsStatusCountDto getPmsCountsForHR() {
     List<EmployeeInformation> employees = employeeInformationRepository.findAll();
 
     long completedCount = 0;
@@ -971,7 +997,7 @@ public PmsStatuscountDto getPmsCountsForHR() {
         }
     }
 
-    return new PmsStatuscountDto(completedCount, pendingCount);
+    return new PmsStatusCountDto(completedCount, pendingCount);
 }
 
     @Override

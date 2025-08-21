@@ -1,5 +1,11 @@
 package com.triviktech.payloads.request.kpi;
 
+/**
+ * DTO (Data Transfer Object) class for capturing KPI (Key Performance Indicator) details
+ * from the request payload. This class is mainly used in performance review or appraisal modules
+ * where employees and managers provide KPI-related information.
+ */
+
 public class KpiRequestDto {
     private long kpiId;
     private String description;

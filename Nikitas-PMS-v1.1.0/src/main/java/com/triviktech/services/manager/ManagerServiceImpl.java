@@ -1,38 +1,29 @@
 package com.triviktech.services.manager;
 
-import com.triviktech.entities.address.Location;
-import com.triviktech.entities.address.State;
 import com.triviktech.entities.department.Department;
 import com.triviktech.entities.employee.EmployeeInformation;
 import com.triviktech.entities.kpi.KPI;
 import com.triviktech.entities.kra.KRA;
 import com.triviktech.entities.krakpi.KraKpi;
 import com.triviktech.entities.manager.Manager;
-import com.triviktech.entities.project.Project;
-import com.triviktech.exception.address.StateNotFoundException;
 import com.triviktech.exception.department.DepartmentNotFoundException;
 import com.triviktech.exception.employee.EmployeeNotFoundException;
 import com.triviktech.exception.krakpi.KraKpiNotFoundException;
 import com.triviktech.exception.manager.ManagerAlreadyExistsException;
 import com.triviktech.exception.manager.ManagerNotFoundException;
-import com.triviktech.exception.project.ProjectNotFoundException;
 import com.triviktech.payloads.request.kpi.KpiRequestDto;
 import com.triviktech.payloads.request.kra.KraRequestDto;
 import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
 import com.triviktech.payloads.request.manager.ManagerRequestDto;
-import com.triviktech.payloads.response.address.CountryResponseDto;
-import com.triviktech.payloads.response.address.LocationResponseDto;
-import com.triviktech.payloads.response.address.StateResponseDto;
 import com.triviktech.payloads.response.department.DepartmentResponseDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
-import com.triviktech.payloads.response.employee.PmsStatuscountDto;
+import com.triviktech.payloads.response.employee.PmsStatusCountDto;
 import com.triviktech.payloads.response.kpi.KpiResponseDto;
 import com.triviktech.payloads.response.kra.KraResponseDto1;
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
-import com.triviktech.payloads.response.project.ProjectResponseDto;
 import com.triviktech.repositories.address.LocationRepository;
 import com.triviktech.repositories.address.StateRepository;
 import com.triviktech.repositories.department.DepartmentRepository;
@@ -50,6 +41,43 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+/**
+ * Implementation of the {@link ManagerService} interface.
+ *
+ * <p>
+ * This service provides all business logic related to manager operations, including:
+ * </p>
+ * <ul>
+ *     <li>Registering new managers and validating duplicates</li>
+ *     <li>Retrieving manager details and lists of all managers</li>
+ *     <li>Fetching employees under a manager and their PMS (Performance Management System) status</li>
+ *     <li>Managing KRA/KPI for employees, including approvals, reviews, and updates</li>
+ *     <li>Computing PMS statistics like completion percentage and pending/completed counts</li>
+ *     <li>Sending notification emails to employees and HR after KRA/KPI actions</li>
+ * </ul>
+ *
+ * <p>
+ * This service interacts with repositories for managers, employees, departments, KRA/KPI,
+ * and uses {@link EntityDtoConversion} for entity-DTO mapping. It also uses {@link EmailService}
+ * to send notifications and {@link Logger} to log errors or operational info.
+ * </p>
+ *
+ * <p>
+ * All methods handle necessary exceptions such as {@link ManagerNotFoundException},
+ * {@link EmployeeNotFoundException}, {@link KraKpiNotFoundException}, and
+ * {@link DepartmentNotFoundException}.
+ * </p>
+ *
+ * <p>
+ * Typical usage:
+ * <pre>{@code
+ * ManagerRequestDto requestDto = new ManagerRequestDto(...);
+ * ManagerResponseDto response = managerService.registerManager(requestDto);
+ * List<EmployeeWithPmsStatus> employees = managerService.listOfEmployeesForManager(managerId);
+ * }</pre>
+ * </p>
+ */
 
 @Service
 public class ManagerServiceImpl implements ManagerService {
@@ -366,7 +394,7 @@ public class ManagerServiceImpl implements ManagerService {
         }
         try {
             // sending email to HR
-            String sub = String.format(Message.KRA_KPI_APPROVED_SUBJECT_TO_HR);
+//            String sub = String.format(Message.KRA_KPI_APPROVED_SUBJECT_TO_HR);
             String message = String.format(Message.KRA_KPI_APPROVED_MESSAGE_TO_HR, employee.getName(),
                     employee.getEmpId());
             // emailService.sendEmail(,sub,message);
@@ -624,7 +652,7 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
    @Override
-public PmsStatuscountDto getPmsCountsForManager(String managerId) {
+public PmsStatusCountDto getPmsCountsForManager(String managerId) {
     Optional<Manager> optionalManager = managerRepository.findByManagerId(managerId);
     if (optionalManager.isEmpty()) {
         throw new ManagerNotFoundException(managerId);
@@ -651,7 +679,7 @@ public PmsStatuscountDto getPmsCountsForManager(String managerId) {
         }
     }
 
-    return new PmsStatuscountDto(completedCount, pendingCount);
+    return new PmsStatusCountDto(completedCount, pendingCount);
 }
 
 }

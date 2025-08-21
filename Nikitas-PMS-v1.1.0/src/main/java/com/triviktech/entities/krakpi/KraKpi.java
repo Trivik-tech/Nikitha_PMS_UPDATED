@@ -3,11 +3,27 @@ package com.triviktech.entities.krakpi;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.triviktech.entities.employee.EmployeeInformation;
 import com.triviktech.entities.kra.KRA;
-import com.triviktech.entities.manager.Manager;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
+
+/**
+ * Entity representing the KRA–KPI record for an employee.
+ *
+ * <p>Mappings:</p>
+ * <ul>
+ *   <li>{@link com.triviktech.entities.employee.EmployeeInformation} - Many-to-One relationship
+ *       (each KRA–KPI belongs to one employee).</li>
+ *   <li>{@link com.triviktech.entities.kra.KRA} - One-to-Many relationship
+ *       (a KRA–KPI can have multiple KRAs).</li>
+ * </ul>
+ *
+ * <p>Also contains fields for remarks, review dates, completion flags,
+ * approval workflow, and audit details.</p>
+ */
 
 @Entity
 @Table(name = "kra_kpi")
@@ -17,8 +33,9 @@ public class KraKpi {
     @Column(name = "id", nullable = false)
     private Long kraKpiId;
 
-    @OneToOne(orphanRemoval = true)
-    @JoinColumn(name = "employee_id")
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id", referencedColumnName = "employee_id", nullable = false)
     private EmployeeInformation employeeInformation;
 
     @OneToMany(mappedBy = "kraKpi", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -57,6 +74,10 @@ public class KraKpi {
 
     @Column(name = "manager_approval")
     private Boolean managerApproval;
+
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
 
 
@@ -154,5 +175,13 @@ public class KraKpi {
 
     public void setManagerCompleted(boolean managerCompleted) {
         this.managerCompleted = managerCompleted;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

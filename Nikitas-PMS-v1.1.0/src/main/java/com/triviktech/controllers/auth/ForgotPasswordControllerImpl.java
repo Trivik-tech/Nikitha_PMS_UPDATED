@@ -10,6 +10,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.triviktech.services.auth.ForgotPasswordService;
 
+/**
+ * ForgotPasswordControllerImpl is a REST controller implementation of the
+ * ForgotPasswordController interface.
+ *
+ * Responsibilities:
+ * 1. Handle requests to generate a One-Time Password (OTP) for users who
+ *    have forgotten their password.
+ * 2. Validate the provided OTP and optionally reset the user's password
+ *    if a new password is supplied.
+ *
+ * This controller delegates the actual business logic to the ForgotPasswordService.
+ *
+ * Base URL mappings are inherited from the ForgotPasswordController interface.
+ */
+
 @RestController
 public class ForgotPasswordControllerImpl implements ForgotPasswordController {
     @Autowired
@@ -25,7 +40,7 @@ public class ForgotPasswordControllerImpl implements ForgotPasswordController {
             @RequestParam String otp,
             @RequestBody(required = false) Map<String, String> newPassword) {
 
-        boolean isValid = forgotPasswordService.validateotp(otp);
+        boolean isValid = forgotPasswordService.validateotp(otp.trim());
         if (!isValid) {
             return ResponseEntity.badRequest().body("Invalid or expired OTP.");
         }

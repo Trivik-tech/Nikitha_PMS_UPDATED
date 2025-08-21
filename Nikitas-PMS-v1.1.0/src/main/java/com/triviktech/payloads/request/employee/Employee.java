@@ -5,6 +5,15 @@ import jakarta.validation.constraints.Size;
 
 import java.util.Date;
 
+/**
+ * Represents an Employee request payload.
+ * <p>
+ * This DTO is mainly used for capturing employee details from client requests
+ * (for example: employee registration, updating employee profile).
+ * It also includes validation constraints to ensure data integrity.
+ * </p>
+ */
+
 public class Employee {
 
     @NotEmpty(message = "Employee Id Should not be empty")

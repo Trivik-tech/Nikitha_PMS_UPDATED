@@ -4,7 +4,7 @@ body {
   margin: 0;
   padding: 0;
   background-color: #f9f9f9;
-  animation: fadeIn 1s ease-out; /* Animation for page load */
+  animation: fadeIn 1s ease-out;
 }
 
 /* Employee Module Container */
@@ -20,7 +20,7 @@ body {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   padding: 20px;
   overflow-y: auto;
-  animation: slideIn 0.5s ease-out; /* Animation for container */
+  animation: slideIn 0.5s ease-out;
 }
 
 /* Header Section */
@@ -30,19 +30,21 @@ body {
   align-items: center;
   margin-bottom: 20px;
   position: relative;
-  animation: fadeInUp 0.5s ease-out; /* Fade-in animation for header */
+  animation: fadeInUp 0.5s ease-out;
 }
 
 .employee-module-header h1 {
-  font-size: 25px;
+  font-size: 2rem;
   color: #333;
   margin-left: 50px;
   opacity: 0;
-  animation: fadeInText 1s ease-out forwards; /* Text fade-in animation */
+  animation: fadeInText 1s ease-out forwards;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
 
 .employee-module-home-icon {
-  font-size: 30px;
+  font-size: 2rem;
   color: #333;
   margin-right: 10px;
   cursor: pointer;
@@ -58,106 +60,115 @@ body {
   position: absolute;
   right: 5px;
   top: 0px;
-  height: 100px;
-  animation: fadeInRight 1s ease-out forwards; /* Animation for logo */
+  height: 80px;
+  animation: fadeInRight 1s ease-out forwards;
 }
 
 /* Section Styling */
 .employee-module-section {
   margin-bottom: 30px;
   opacity: 0;
-  animation: fadeInSection 0.5s ease-out forwards; /* Animation for sections */
+  animation: fadeInSection 0.5s ease-out forwards;
+  border-bottom: 1px solid #ececec;
+  padding-bottom: 18px;
 }
 
 .employee-module-section h2 {
-  font-size: 18px;
-  color: #555;
-  margin-bottom: 10px;
+  font-size: 1.3rem;
+  color: #2196F3;
+  margin-bottom: 12px;
   border-bottom: 1px solid #ddd;
   padding-bottom: 5px;
+  font-weight: 600;
 }
 
+/* KRA Block */
 .employee-module-kra {
   margin-bottom: 20px;
 }
 
 .employee-module-kra-title {
+  font-size: 1.15rem;
   font-weight: bold;
   color: #333;
-  margin-bottom: 5px;
-  transition: all 0.3s ease;
+  margin-bottom: 8px;
+  margin-top: 10px;
+  transition: color 0.3s;
+  letter-spacing: 0.5px;
 }
 
 .employee-module-kra-title:hover {
-  color: #2196F3; /* Hover effect on KRA title */
+  color: #2196F3;
+}
+
+/* KPI Block */
+.employee-module-kpi-block {
+  background: #f7f8fa;
+  padding: 16px 14px 12px 14px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border-left: 4px solid #2196F3;
+  box-shadow: 0 1px 3px rgba(33,150,243,0.03);
 }
 
 .employee-module-kra-details {
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 10px;
+  font-size: 1rem;
+  color: #079f44;
+  margin-bottom: 8px;
+  font-weight: bold;
+
 }
 
+/* Ratings */
 .employee-module-rating {
   display: flex;
-  justify-content: space-between;
-  font-size: 14px;
+  gap: 18px;
+  font-size: 0.97rem;
   color: #333;
+  margin-bottom: 8px;
 }
 
-/* Progress Bar */
-.employee-module-progress-bar {
-  background-color: #e0e0e0;
-  border-radius: 8px;
-  overflow: hidden;
-  margin: 10px 0;
-  height: 10px;
-  animation: progressBarAnimation 1s ease-out; /* Progress bar animation */
+.employee-module-rating > div {
+  background: #e3f2fd;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-weight: 500;
+  min-width: 125px;
 }
 
-.employee-module-progress-bar span {
-  display: block;
-  height: 100%;
+/* Remarks */
+.employee-module-remarks {
+  font-size: 0.95rem;
+  color: #666;
+  margin-top: 7px;
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
 }
 
-.employee-module-self-rating {
-  background-color: #4CAF50;
-  width: 86%;
-}
-
-.employee-module-manager-rating {
-  background-color: #2196F3;
-  width: 82%;
+.employee-module-remarks div {
+  background: #f0f3f7;
+  border-radius: 4px;
+  padding: 5px 10px;
+  margin-bottom: 3px;
+  font-size: 0.95rem;
+  font-weight: 400;
+  min-width: 190px;
 }
 
 /* Overall Performance Section */
 .employee-module-overall-performance {
   display: flex;
-  justify-content: space-between;
+  gap: 45px;
   align-items: center;
   margin-top: 20px;
+  padding-left: 7px;
 }
 
 .employee-module-overall-performance span {
-  font-size: 14px;
-  color: #555;
-}
-
-.employee-module-blue-progress {
-  background-color: #2196F3;
-  border-radius: 8px;
-  margin: 15px 0;
-  height: 15px;
-  width: 100%;
-  position: relative;
-}
-
-.employee-module-blue-progress span {
-  background-color: #2196F3;
-  display: block;
-  height: 100%;
-  width: 80%;
-  border-radius: 8px;
+  font-size: 1rem;
+  color: #1976D2;
+  font-weight: 600;
 }
 
 /* Print Button */
@@ -167,12 +178,13 @@ body {
   color: white;
   border: none;
   border-radius: 5px;
-  font-size: 16px;
+  font-size: 1rem;
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
   margin-top: 20px;
-  width: 150px;
+  width: 160px;
+  font-weight: 600;
 }
 
 .employee-module-print-btn:hover {

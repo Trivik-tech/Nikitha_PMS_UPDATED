@@ -1,10 +1,9 @@
 package com.triviktech.controllers.employee;
 
-import com.triviktech.entities.notification.Notification;
-import com.triviktech.payloads.request.employee.EmployeeInformationRequestDto;
+
 import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
-import com.triviktech.payloads.response.employee.EmployeeInformationResponseDto;
+
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
 import com.triviktech.repositories.employee.EmployeeInformationRepository;
 import com.triviktech.repositories.notification.NotificationRepository;
@@ -18,14 +17,34 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+/**
+ * EmployeeControllerImpl is the REST controller implementation for handling
+ * employee-related operations in the PMS (Performance Management System).
+ *
+ * Responsibilities:
+ * 1. Retrieve KRA/KPI details for a specific employee.
+ * 2. Register KRA/KPI entries for employees and notify their reporting managers via WebSocket.
+ * 3. Allow employees to perform self-reviews and notify managers about submissions.
+ * 4. Provide employee profile information.
+ * 5. Check for existence of KRA/KPI entries and list all KRA/KPI data for an employee.
+ *
+ * This controller interacts with multiple services:
+ * - EmployeeService: for profile and employee-related operations.
+ * - KraKpiService: for handling KRA/KPI creation, self-review, and retrieval.
+ * - NotificationService: for sending real-time notifications to managers.
+ * - EmployeeInformationRepository: for fetching employee and reporting manager data.
+ *
+ * Notifications are sent over WebSocket to managers when an employee registers KRA/KPI
+ * or submits a self-review, ensuring managers are immediately informed about updates.
+ */
 
 @RestController
 public class EmployeeControllerImpl implements EmployeeController {
@@ -141,5 +160,11 @@ public class EmployeeControllerImpl implements EmployeeController {
     @Override
     public ResponseEntity<Map<String, Boolean>> checkKraKpiAlreadyExists(String employeeId) {
         return ResponseEntity.ok(kraKpiService.existsByEmployee(employeeId));
+    }
+
+    @Override
+    public ResponseEntity<Map<String, List<KraKpiResponseDto>>> listOfKraKpi(String employeeId) {
+        Map<String, List<KraKpiResponseDto>> response = kraKpiService.listOfKraKpi(employeeId);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 }

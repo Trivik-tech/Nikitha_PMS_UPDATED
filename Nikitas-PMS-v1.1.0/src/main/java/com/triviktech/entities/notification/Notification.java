@@ -6,6 +6,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+
+
+/**
+ * Entity representing a notification in the system.
+ * <p>
+ * Stores information about who sent the notification,
+ * the intended receiver, message content, delivery details,
+ * and the timestamp when it was created.
+ */
+
 @Entity
 public class Notification {
     @Id

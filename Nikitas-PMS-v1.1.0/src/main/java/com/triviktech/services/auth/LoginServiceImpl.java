@@ -13,6 +13,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Implementation of {@link LoginService} for verifying user login credentials
+ * (Manager, HR, Employee) and generating JWT tokens for authentication.
+ *
+ * <p>
+ * This service checks if the user exists in the system (based on role),
+ * verifies their password using {@link BCrypt}, and generates a JWT
+ * token using {@link JwtService}.
+ * </p>
+ */
+
 @Service
 public class LoginServiceImpl implements LoginService{
 

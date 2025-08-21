@@ -22,10 +22,43 @@ import com.triviktech.utilities.email.EmailService;
 import com.triviktech.utilities.email.Message;
 import com.triviktech.utilities.entitydtoconversion.EntityDtoConversion;
 import jakarta.transaction.Transactional;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+
+/**
+ * Implementation of {@link KraKpiService} for managing Key Result Areas (KRA) and
+ * Key Performance Indicators (KPI) for employees.
+ *
+ * <p>
+ * This service provides the following functionalities:
+ * <ul>
+ *     <li>Register new KRA/KPI for an employee along with associated KRAs and KPIs.</li>
+ *     <li>Retrieve KRA/KPI details for a specific employee.</li>
+ *     <li>Submit and update an employee's self-review.</li>
+ *     <li>Check if a KRA/KPI exists for an employee in the current quarter.</li>
+ *     <li>Retrieve a list of all KRA/KPI records for a given employee.</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * <strong>Workflow:</strong>
+ * <ol>
+ *     <li>HR or manager registers KRA/KPI for an employee using {@link #registerKraKpi(KraKpiRequestDto)}.</li>
+ *     <li>Employee can submit a self-review using {@link #employeeReview(KraKpiRequestDto, String)}.</li>
+ *     <li>Manager receives email notifications when KRAs/KPIs are registered or reviewed.</li>
+ *     <li>KRAs and KPIs are stored in a hierarchical structure: KraKpi → KRA → KPI.</li>
+ *     <li>System supports fetching individual or all KRA/KPI records and checking their existence for the current quarter.</li>
+ * </ol>
+ * </p>
+ *
+ * <p>
+ * <strong>Note:</strong> All database operations are transactional to ensure consistency.
+ * </p>
+ */
 
 @Service
 public class KraKpiServiceImpl implements KraKpiService {
@@ -36,19 +69,22 @@ public class KraKpiServiceImpl implements KraKpiService {
     private final KPIRepository kpiRepository;
     private final EntityDtoConversion entityDtoConversion;
     private final EmailService emailService;
+    private final ModelMapper modelMapper;
 
     public KraKpiServiceImpl(EmployeeInformationRepository employeeInformationRepository,
                              KraKpiRepository kraKpiRepository,
                              KRARepository kraRepository,
                              KPIRepository kpiRepository,
                              EntityDtoConversion entityDtoConversion,
-                             EmailService emailService) {
+                             EmailService emailService,
+                             ModelMapper modelMapper) {
         this.employeeInformationRepository = employeeInformationRepository;
         this.kraKpiRepository = kraKpiRepository;
         this.kraRepository = kraRepository;
         this.kpiRepository = kpiRepository;
         this.entityDtoConversion = entityDtoConversion;
         this.emailService = emailService;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -145,7 +181,7 @@ public class KraKpiServiceImpl implements KraKpiService {
         EmployeeInformation employee = employeeInformationRepository.findById(employeeId)
                 .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
 
-        KraKpi krakpi = kraKpiRepository.findByEmployeeInformation(employee)
+        KraKpi krakpi = kraKpiRepository.findFirstByEmployeeInformation(employee)
                 .orElseThrow(() -> new KraKpiNotFoundException("KRA/KPI not found for employee: " + employeeId));
 
         KraKpiResponseDto response = entityDtoConversion.entityToDtoConversion(krakpi, KraKpiResponseDto.class);
@@ -248,8 +284,66 @@ public class KraKpiServiceImpl implements KraKpiService {
         if (byId.isEmpty()) {
             throw new EmployeeNotFoundException(employeeId);
         }
+
         EmployeeInformation employee = byId.get();
-        boolean status = kraKpiRepository.existsByEmployeeInformation(employee);
-        return Map.of("status", status);
+
+        // Get current date
+        java.time.LocalDateTime now = java.time.LocalDateTime.now();
+
+        // Determine start & end of the quarter
+        int currentMonth = now.getMonthValue();
+        int startMonth;
+        int endMonth;
+
+        if (currentMonth >= 1 && currentMonth <= 3) {
+            startMonth = 1;  // Q1: Jan-Mar
+            endMonth = 3;
+        } else if (currentMonth >= 4 && currentMonth <= 6) {
+            startMonth = 4;  // Q2: Apr-Jun
+            endMonth = 6;
+        } else if (currentMonth >= 7 && currentMonth <= 9) {
+            startMonth = 7;  // Q3: Jul-Sep
+            endMonth = 9;
+        } else {
+            startMonth = 10; // Q4: Oct-Dec
+            endMonth = 12;
+        }
+
+        java.time.LocalDateTime startDate = java.time.LocalDateTime.of(
+                now.getYear(), startMonth, 1, 0, 0
+        );
+
+        java.time.LocalDateTime endDate = java.time.LocalDateTime.of(
+                now.getYear(), endMonth, java.time.Month.of(endMonth).length(java.time.Year.isLeap(now.getYear())), 23, 59, 59
+        );
+
+        boolean status = kraKpiRepository.existsByEmployeeAndCreatedAtBetween(employee, startDate, endDate);
+
+        return Map.of("status", false);
     }
+
+    @Override
+    public Map<String, List<KraKpiResponseDto>> listOfKraKpi(String employeeId) {
+
+        List<KraKpi> allByEmployee = kraKpiRepository.findAllByEmployeeId(employeeId);
+        List<KraKpiResponseDto> collect = allByEmployee.stream().map(kraKpi -> {
+            KraKpiResponseDto kraKpiResponseDto = entityDtoConversion.entityToDtoConversion(kraKpi, KraKpiResponseDto.class);
+
+            Set<KraResponseDto1> kras = kraKpi.getKra().stream().map(kra -> {
+                KraResponseDto1 kraResponseDto1 = entityDtoConversion.entityToDtoConversion(kra, KraResponseDto1.class);
+
+                Set<KpiResponseDto> kpis = kra.getKpi().stream().map(kpi -> {
+                    return entityDtoConversion.entityToDtoConversion(kpi, KpiResponseDto.class);
+                }).collect(Collectors.toSet());
+                kraResponseDto1.setKpi(kpis);
+                return kraResponseDto1;
+            }).collect(Collectors.toSet());
+
+            kraKpiResponseDto.setKra(kras);
+            return kraKpiResponseDto;
+        }).collect(Collectors.toList());
+
+        return Map.of("krakpis",collect);
+    }
+
 }

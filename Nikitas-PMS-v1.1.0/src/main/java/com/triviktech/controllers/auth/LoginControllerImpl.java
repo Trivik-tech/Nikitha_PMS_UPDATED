@@ -11,6 +11,18 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * LoginControllerImpl is a REST controller that implements the LoginController interface.
+ *
+ * Responsibilities:
+ * 1. Handle user login requests by verifying credentials through the LoginService.
+ * 2. Generate and return a JWT token upon successful login.
+ * 3. Provide an endpoint to retrieve the role of a user based on a provided JWT token.
+ *
+ * This controller delegates authentication logic to LoginService and token-related
+ * operations to JwtService.
+ */
+
 @RestController
 public class LoginControllerImpl implements LoginController{
 

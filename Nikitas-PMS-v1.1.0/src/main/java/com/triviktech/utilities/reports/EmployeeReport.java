@@ -10,12 +10,24 @@ import com.triviktech.repositories.manager.ManagerRepository;
 import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
+/**
+ * Service class responsible for generating employee and manager PDF reports.
+ * <p>
+ * Provides functionality to generate:
+ * 1. Individual employee/manager profile PDF
+ * 2. Consolidated employee and manager list PDF
+ * <p>
+ * Uses iText library for PDF generation.
+ */
 @Service
 public class EmployeeReport {
 
@@ -28,40 +40,46 @@ public class EmployeeReport {
     }
 
     /**
-     * Generates an employee profile PDF and saves it in the user's Downloads folder.
+     * Generates a PDF report for a single employee or manager based on ID.
+     * <p>
+     * The PDF is saved in the user's Downloads folder with a filename
+     * containing the name and ID of the employee/manager.
      *
-     * @param id Employee ID
-     * @return true if success
+     * @param id Employee or Manager ID
+     * @return true if PDF is successfully generated, false otherwise
      */
     public boolean generateEmployeeInfoReport(String id) {
+        // Try to fetch employee and manager from repositories
         Optional<EmployeeInformation> optionalEmp = employeeInformationRepository.findById(id);
         Optional<Manager> optionalManager = managerRepository.findByManagerId(id);
+
         if (optionalEmp.isPresent()) {
             EmployeeInformation emp = optionalEmp.get();
-            Manager manager = emp.getManager();
+            Manager manager = emp.getManager(); // fetch reporting manager
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
             try {
-                // Dynamic path to user's Downloads folder
+                // Path to save PDF dynamically in Downloads
                 String userHome = System.getProperty("user.home");
-                String finalPath = userHome + "/Downloads/"+emp.getName()+"_" + emp.getEmpId() + ".pdf";
+                String finalPath = userHome + "/Downloads/" + emp.getName() + "_" + emp.getEmpId() + ".pdf";
 
+                // Initialize PDF document
                 Document document = new Document(PageSize.A4, 40, 40, 50, 40);
                 PdfWriter.getInstance(document, new FileOutputStream(finalPath));
                 document.open();
 
-                // Fonts
+                // Define fonts for headings and content
                 Font headingFont = new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD, new BaseColor(0, 102, 204));
                 Font subHeadingFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
                 Font normalFont = new Font(Font.FontFamily.HELVETICA, 11);
                 Font grayItalic = new Font(Font.FontFamily.HELVETICA, 10, Font.ITALIC, BaseColor.GRAY);
 
-                // === Header (Top row: Name + Title + Logo) ===
+                // === Header section with profile image and logo ===
                 PdfPTable headerTable = new PdfPTable(2);
                 headerTable.setWidthPercentage(100);
                 headerTable.setWidths(new float[]{3f, 1.2f});
 
-                // Left part: Profile + Name
+                // Left: profile image + name + designation + branch
                 PdfPTable leftHeader = new PdfPTable(2);
                 leftHeader.setWidths(new float[]{1f, 3f});
                 leftHeader.setWidthPercentage(100);
@@ -77,14 +95,14 @@ public class EmployeeReport {
                 PdfPCell nameCell = new PdfPCell();
                 nameCell.setBorder(Rectangle.NO_BORDER);
                 nameCell.addElement(new Paragraph(emp.getName(), headingFont));
-                nameCell.addElement(new Paragraph(emp.getCurrentDesignation() + "  | "+emp.getBranch(), grayItalic));
+                nameCell.addElement(new Paragraph(emp.getCurrentDesignation() + "  | " + emp.getBranch(), grayItalic));
                 leftHeader.addCell(nameCell);
 
                 PdfPCell leftWrapper = new PdfPCell(leftHeader);
                 leftWrapper.setBorder(Rectangle.NO_BORDER);
                 headerTable.addCell(leftWrapper);
 
-                // Right part: Logo aligned right
+                // Right: Company logo
                 Image logo = Image.getInstance("src/main/resources/static/images/nikithas-logo.png");
                 logo.scaleAbsolute(90, 45);
                 PdfPCell logoCell = new PdfPCell(logo);
@@ -96,12 +114,13 @@ public class EmployeeReport {
                 document.add(headerTable);
                 document.add(Chunk.NEWLINE);
 
-                // === Personal & Professional Details Table ===
+                // === Personal & Professional Details ===
                 PdfPTable infoTable = new PdfPTable(2);
                 infoTable.setWidthPercentage(100);
                 infoTable.setWidths(new float[]{1, 1});
                 infoTable.setSpacingBefore(10);
 
+                // Personal Information section
                 PdfPCell personalCell = createSectionCell("Personal Information", new String[][]{
                         {"Employee ID", emp.getEmpId()},
                         {"Name", emp.getName()},
@@ -109,6 +128,7 @@ public class EmployeeReport {
                         {"Category", emp.getCategory()}
                 }, subHeadingFont, normalFont);
 
+                // Professional Information section
                 PdfPCell professionalCell = createSectionCell("Professional Details", new String[][]{
                         {"Department", emp.getDepartment().getName()},
                         {"Branch", emp.getBranch()},
@@ -123,7 +143,7 @@ public class EmployeeReport {
                 document.add(infoTable);
                 document.add(Chunk.NEWLINE);
 
-                // === Contact Details ===
+                // === Contact Information ===
                 PdfPTable contactTable = new PdfPTable(1);
                 contactTable.setWidthPercentage(100);
                 contactTable.setSpacingBefore(10);
@@ -138,39 +158,33 @@ public class EmployeeReport {
                 document.add(contactTable);
 
                 document.close();
-//                System.out.println("PDF successfully saved to Downloads folder: " + finalPath);
                 return true;
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else if (optionalManager.isPresent()) {
-
+            // Similar logic for manager PDF
             Manager manager = optionalManager.get();
-
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-
             try {
-                // Dynamic path to user's Downloads folder
                 String userHome = System.getProperty("user.home");
-                String finalPath = userHome + "/Downloads/"+manager.getName()+"_" + manager.getManagerId() + ".pdf";
+                String finalPath = userHome + "/Downloads/" + manager.getName() + "_" + manager.getManagerId() + ".pdf";
 
                 Document document = new Document(PageSize.A4, 40, 40, 50, 40);
                 PdfWriter.getInstance(document, new FileOutputStream(finalPath));
                 document.open();
 
-                // Fonts
                 Font headingFont = new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD, new BaseColor(0, 102, 204));
                 Font subHeadingFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
                 Font normalFont = new Font(Font.FontFamily.HELVETICA, 11);
                 Font grayItalic = new Font(Font.FontFamily.HELVETICA, 10, Font.ITALIC, BaseColor.GRAY);
 
-                // === Header (Top row: Name + Title + Logo) ===
+                // Header section
                 PdfPTable headerTable = new PdfPTable(2);
                 headerTable.setWidthPercentage(100);
                 headerTable.setWidths(new float[]{3f, 1.2f});
 
-                // Left part: Profile + Name
                 PdfPTable leftHeader = new PdfPTable(2);
                 leftHeader.setWidths(new float[]{1f, 3f});
                 leftHeader.setWidthPercentage(100);
@@ -186,14 +200,13 @@ public class EmployeeReport {
                 PdfPCell nameCell = new PdfPCell();
                 nameCell.setBorder(Rectangle.NO_BORDER);
                 nameCell.addElement(new Paragraph(manager.getName(), headingFont));
-                nameCell.addElement(new Paragraph(manager.getCurrentDesignation() + "  | "+manager.getBranch(), grayItalic));
+                nameCell.addElement(new Paragraph(manager.getCurrentDesignation() + "  | " + manager.getBranch(), grayItalic));
                 leftHeader.addCell(nameCell);
 
                 PdfPCell leftWrapper = new PdfPCell(leftHeader);
                 leftWrapper.setBorder(Rectangle.NO_BORDER);
                 headerTable.addCell(leftWrapper);
 
-                // Right part: Logo aligned right
                 Image logo = Image.getInstance("src/main/resources/static/images/nikithas-logo.png");
                 logo.scaleAbsolute(90, 45);
                 PdfPCell logoCell = new PdfPCell(logo);
@@ -205,7 +218,6 @@ public class EmployeeReport {
                 document.add(headerTable);
                 document.add(Chunk.NEWLINE);
 
-                // === Personal & Professional Details Table ===
                 PdfPTable infoTable = new PdfPTable(2);
                 infoTable.setWidthPercentage(100);
                 infoTable.setWidths(new float[]{1, 1});
@@ -232,7 +244,6 @@ public class EmployeeReport {
                 document.add(infoTable);
                 document.add(Chunk.NEWLINE);
 
-                // === Contact Details ===
                 PdfPTable contactTable = new PdfPTable(1);
                 contactTable.setWidthPercentage(100);
                 contactTable.setSpacingBefore(10);
@@ -247,21 +258,24 @@ public class EmployeeReport {
                 document.add(contactTable);
 
                 document.close();
-//                System.out.println("PDF successfully saved to Downloads folder: " + finalPath);
                 return true;
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
-
 
         return false;
     }
 
     /**
-     * Helper to create section cell with key-value layout
+     * Creates a section in the PDF with a title and key-value rows.
+     *
+     * @param title      Section title
+     * @param rows       Key-value pairs to display
+     * @param titleFont  Font for section title
+     * @param valueFont  Font for values
+     * @return PdfPCell representing the section
      */
     private PdfPCell createSectionCell(String title, String[][] rows, Font titleFont, Font valueFont) {
         PdfPCell cell = new PdfPCell();
@@ -281,7 +295,11 @@ public class EmployeeReport {
         return cell;
     }
 
-
+    /**
+     * Generates a consolidated PDF report of all employees and managers.
+     *
+     * @return true if PDF is generated successfully, false otherwise
+     */
     public boolean generateEmployeeListPdf() {
         List<EmployeeInformation> employees = employeeInformationRepository.findAll();
         List<Manager> managers = managerRepository.findAll();
@@ -297,7 +315,7 @@ public class EmployeeReport {
             PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream(pdfPath));
             document.open();
 
-            // Header Table
+            // Header section
             PdfPTable headerTable = new PdfPTable(2);
             headerTable.setWidthPercentage(100);
             headerTable.setWidths(new float[]{8f, 2f});
@@ -320,15 +338,14 @@ public class EmployeeReport {
 
             document.add(headerTable);
 
-            // Main Table
-            PdfPTable table = new PdfPTable(5); // reduced column count
+            // Table for employees/managers
+            PdfPTable table = new PdfPTable(5);
             table.setWidthPercentage(100);
-            table.setWidths(new float[]{2.5f, 3.5f, 3f, 5f, 3f}); // adjusted column widths
+            table.setWidths(new float[]{2.5f, 3.5f, 3f, 5f, 3f});
             table.setSpacingBefore(10f);
 
             Font headFont = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD, BaseColor.WHITE);
             BaseColor headerColor = new BaseColor(0, 102, 204);
-
             addTableHeader(table, "ID", headFont, headerColor);
             addTableHeader(table, "Name", headFont, headerColor);
             addTableHeader(table, "Department", headFont, headerColor);
@@ -338,30 +355,50 @@ public class EmployeeReport {
             Font cellFont = new Font(Font.FontFamily.HELVETICA, 10);
             BaseColor evenRowColor = new BaseColor(245, 245, 245);
             BaseColor oddRowColor = BaseColor.WHITE;
-            int rowIndex = 0;
 
-            for (EmployeeInformation emp : employees) {
-                BaseColor bgColor = rowIndex % 2 == 0 ? evenRowColor : oddRowColor;
-                addRow(table, new String[]{
-                        emp.getEmpId(),
-                        emp.getName(),
-                        emp.getDepartment().getName(),
-                        emp.getEmailId(),
-                        formatDate(emp.getDateOfJoining())
-                }, cellFont, bgColor);
-                rowIndex++;
-            }
+            // Generate table rows asynchronously for performance
+            List<CompletableFuture<List<PdfPCell>>> employeeFutures = employees.stream()
+                    .map(emp -> CompletableFuture.supplyAsync(() -> {
+                        int index = employees.indexOf(emp);
+                        BaseColor bgColor = index % 2 == 0 ? evenRowColor : oddRowColor;
+                        return prepareRow(new String[]{
+                                emp.getEmpId(),
+                                emp.getName(),
+                                emp.getDepartment().getName(),
+                                emp.getEmailId(),
+                                formatDate(emp.getDateOfJoining())
+                        }, cellFont, bgColor);
+                    }))
+                    .collect(Collectors.toList());
 
-            for (Manager mgr : managers) {
-                BaseColor bgColor = rowIndex % 2 == 0 ? evenRowColor : oddRowColor;
-                addRow(table, new String[]{
-                        mgr.getManagerId(),
-                        mgr.getName(),
-                        mgr.getDepartment().getName(),
-                        mgr.getOfficialEmailId(),
-                        formatDate(mgr.getDateOfJoining())
-                }, cellFont, bgColor);
-                rowIndex++;
+            List<CompletableFuture<List<PdfPCell>>> managerFutures = managers.stream()
+                    .map(mgr -> CompletableFuture.supplyAsync(() -> {
+                        int index = employees.size() + managers.indexOf(mgr);
+                        BaseColor bgColor = index % 2 == 0 ? evenRowColor : oddRowColor;
+                        return prepareRow(new String[]{
+                                mgr.getManagerId(),
+                                mgr.getName(),
+                                mgr.getDepartment().getName(),
+                                mgr.getOfficialEmailId(),
+                                formatDate(mgr.getDateOfJoining())
+                        }, cellFont, bgColor);
+                    }))
+                    .collect(Collectors.toList());
+
+            List<CompletableFuture<List<PdfPCell>>> allFutures = new ArrayList<>();
+            allFutures.addAll(employeeFutures);
+            allFutures.addAll(managerFutures);
+
+            // Wait for completion and collect all rows
+            List<List<PdfPCell>> rows = allFutures.stream()
+                    .map(CompletableFuture::join)
+                    .collect(Collectors.toList());
+
+            // Add rows to table
+            for (List<PdfPCell> row : rows) {
+                for (PdfPCell cell : row) {
+                    table.addCell(cell);
+                }
             }
 
             document.add(table);
@@ -376,6 +413,14 @@ public class EmployeeReport {
         }
     }
 
+    /**
+     * Adds a header cell to the PDF table
+     *
+     * @param table  Table to which the header is added
+     * @param headerTitle Text for header
+     * @param font   Font of the header text
+     * @param bgColor Background color of header
+     */
     private void addTableHeader(PdfPTable table, String headerTitle, Font font, BaseColor bgColor) {
         PdfPCell header = new PdfPCell(new Phrase(headerTitle, font));
         header.setBackgroundColor(bgColor);
@@ -384,11 +429,20 @@ public class EmployeeReport {
         header.setPaddingTop(8f);
         header.setPaddingBottom(8f);
         header.setBorderColor(BaseColor.GRAY);
-        header.setNoWrap(false);  // allow wrapping if needed
+        header.setNoWrap(false);
         table.addCell(header);
     }
 
-    private void addRow(PdfPTable table, String[] data, Font font, BaseColor bgColor) {
+    /**
+     * Prepares a list of cells for a row in the table
+     *
+     * @param data    Array of string values
+     * @param font    Font for cell content
+     * @param bgColor Background color for row
+     * @return List of PdfPCell
+     */
+    private List<PdfPCell> prepareRow(String[] data, Font font, BaseColor bgColor) {
+        List<PdfPCell> cells = new ArrayList<>();
         for (String cellText : data) {
             PdfPCell cell = new PdfPCell(new Phrase(cellText, font));
             cell.setPaddingTop(6f);
@@ -399,17 +453,21 @@ public class EmployeeReport {
             cell.setHorizontalAlignment(Element.ALIGN_LEFT);
             cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             cell.setBorderColor(BaseColor.LIGHT_GRAY);
-            cell.setNoWrap(false); // Allow long email/name to wrap
-            table.addCell(cell);
+            cell.setNoWrap(false);
+            cells.add(cell);
         }
+        return cells;
     }
 
+    /**
+     * Formats Date object to "dd-MM-yyyy" string format
+     *
+     * @param date Date object
+     * @return formatted string or "-" if date is null
+     */
     private String formatDate(java.util.Date date) {
         if (date == null) return "-";
         java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd-MM-yyyy");
         return sdf.format(date);
     }
-
-
-
 }

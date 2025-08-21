@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './EmployeeDashboard.css';
 import './EmployeeDashboardResponsive.css';
@@ -20,18 +20,28 @@ const EmployeeDashboard = () => {
   const [employeeData, setEmployeeData] = useState(null);
   const jwtToken = localStorage.getItem("token");
 
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
   const handleSidebarClose = () => {
     setSidebarOpen(false);
   };
 
   useEffect(() => {
+    const lastSeenKey = 'employee-dashboard-last-seen-timestamp';
+    let lastSeenTimestamp = sessionStorage.getItem(lastSeenKey);
+    if (!lastSeenTimestamp) {
+      lastSeenTimestamp = localStorage.getItem(lastSeenKey);
+      if (lastSeenTimestamp) {
+        sessionStorage.setItem(lastSeenKey, lastSeenTimestamp);
+      }
+    }
+
+    const mountTime = Date.now();
+
     const socket = new SockJS(`${baseUrl}/ws?token=${jwtToken}`);
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
-
       onConnect: async () => {
         client.subscribe('/user/queue/employee-notification', async (message) => {
           const newMsg = {
@@ -46,16 +56,13 @@ const EmployeeDashboard = () => {
             const res = await axios.get(`${baseUrl}/api/v1/pms/recent`, {
               headers: { Authorization: `Bearer ${jwtToken}` }
             });
-
             const recent = res.data;
             const formattedRecent = recent.map(msg => ({
               title: "Recent Notification",
               message: msg.message || msg.content || "No content",
               timestamp: msg.timestamp || new Date().toISOString()
             }));
-
             const allMessages = [newMsg, ...formattedRecent];
-
             const unique = Array.from(
               new Map(
                 allMessages.map(msg => [
@@ -64,26 +71,27 @@ const EmployeeDashboard = () => {
                 ])
               ).values()
             );
-
             setNotifications(unique.slice(0, 50));
+            if (unique.length > 0) {
+              const latest = unique.reduce((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? a : b);
+              sessionStorage.setItem(lastSeenKey, latest.timestamp);
+              localStorage.setItem(lastSeenKey, latest.timestamp);
+            }
           } catch (err) {
             console.error("❌ Error fetching recent:", err);
           }
         });
 
-        // Initial fetch
         try {
           const res = await axios.get(`${baseUrl}/api/v1/pms/recent`, {
             headers: { Authorization: `Bearer ${jwtToken}` }
           });
-
           const recent = res.data;
           const formatted = recent.map(msg => ({
             title: "Recent Notification",
             message: msg.message || msg.content || "No content",
             timestamp: msg.timestamp || new Date().toISOString()
           }));
-
           const unique = Array.from(
             new Map(
               formatted.map(msg => [
@@ -92,8 +100,38 @@ const EmployeeDashboard = () => {
               ])
             ).values()
           );
-
           setNotifications(unique.slice(0, 50));
+          let unseen = [];
+          if (lastSeenTimestamp) {
+            unseen = unique.filter(msg => new Date(msg.timestamp) > new Date(lastSeenTimestamp));
+            if (unseen.length > 0) {
+              setNewAndUndelivered(unseen);
+              setNotificationCount(unseen.length);
+              setNotificationOpen(true);
+              const latest = unseen.reduce((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? a : b);
+              sessionStorage.setItem(lastSeenKey, latest.timestamp);
+              localStorage.setItem(lastSeenKey, latest.timestamp);
+            } else if (unique.length > 0) {
+              const latest = unique.reduce((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? a : b);
+              sessionStorage.setItem(lastSeenKey, latest.timestamp);
+              localStorage.setItem(lastSeenKey, latest.timestamp);
+            }
+          } else if (unique.length > 0) {
+            const allOld = unique.every(msg => new Date(msg.timestamp).getTime() < mountTime - 1000);
+            if (allOld) {
+              const latest = unique.reduce((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? a : b);
+              sessionStorage.setItem(lastSeenKey, latest.timestamp);
+              localStorage.setItem(lastSeenKey, latest.timestamp);
+            } else {
+              const newOnes = unique.filter(msg => new Date(msg.timestamp).getTime() >= mountTime - 1000);
+              setNewAndUndelivered(newOnes);
+              setNotificationCount(newOnes.length);
+              setNotificationOpen(true);
+              const latest = unique.reduce((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? a : b);
+              sessionStorage.setItem(lastSeenKey, latest.timestamp);
+              localStorage.setItem(lastSeenKey, latest.timestamp);
+            }
+          }
         } catch (err) {
           console.error("❌ Initial fetch error:", err);
         }
@@ -102,8 +140,14 @@ const EmployeeDashboard = () => {
 
     loadProfile();
     client.activate();
-    return () => client.deactivate();
-
+    return () => {
+      if (notifications && notifications.length > 0) {
+        const latest = notifications.reduce((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? a : b);
+        sessionStorage.setItem(lastSeenKey, latest.timestamp);
+        localStorage.setItem(lastSeenKey, latest.timestamp);
+      }
+      client.deactivate();
+    };
   }, []);
 
   const handleNotificationToggle = () => {
@@ -124,7 +168,6 @@ const EmployeeDashboard = () => {
       setEmployeeData(result.data);
     } catch (error) {
       console.log("Profile fetch error:", error);
-      // Handle token expiration: redirect to login if unauthorized
       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
         localStorage.clear();
         navigate("/");
@@ -142,19 +185,16 @@ const EmployeeDashboard = () => {
 
   return (
     <div className="employee-dashboard-container">
-      {/* Sidebar Overlay */}
       <div
         className={`employee-dashboard-sidebar-overlay ${sidebarOpen ? 'visible' : 'hidden'}`}
         onClick={handleSidebarClose}
         style={{ display: sidebarOpen ? 'block' : 'none' }}
       />
 
-      {/* Hamburger */}
       <div className="employee-dashboard-hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>
         <span /><span /><span />
       </div>
 
-      {/* Notification Bell (Mobile) */}
       <div
         className="employee-dashboard-bell-topright"
         onClick={handleNotificationToggle}
@@ -170,7 +210,6 @@ const EmployeeDashboard = () => {
         </div>
       </div>
 
-      {/* Sidebar */}
       <aside className={`employee-dashboard-sidebar${sidebarOpen ? ' open' : ''}`}>
         <div className="employee-profile-container">
           <img
@@ -188,21 +227,21 @@ const EmployeeDashboard = () => {
             <Link to={`/self-review/${employeeData?.empId}`} onClick={handleSidebarClose}>Start PMS</Link>
           </li>
           <li>
-            <Link to="/employee-performance" onClick={handleSidebarClose}>My Performance</Link>
+            <Link to={`/employee-performance/${employeeData?.empId}`} onClick={handleSidebarClose}>My Performance</Link>
           </li>
           <li>
             <Link to={`/add-krakpi/${employeeData?.empId}`} onClick={handleSidebarClose}>Add KRA|KPI</Link>
           </li>
         </ul>
-        <button className="employee-sidebar-logout-btn" 
-         onClick={() => {
-                  localStorage.clear();
-                  navigate("/");
-                }}
+        <button
+          className="employee-sidebar-logout-btn"
+          onClick={() => {
+            localStorage.clear();
+            navigate("/");
+          }}
         >Logout</button>
       </aside>
 
-      {/* Main Content */}
       <main className="employee-main-content">
         <header className="employee-dashboard-header">
           <div className="employee-dashboard-title">Employee Dashboard</div>
@@ -217,16 +256,16 @@ const EmployeeDashboard = () => {
                 <span className="notif-count">{notificationCount}</span>
               )}
             </div>
-            <button className="employee-logout-btn" 
-             onClick={() => {
-                  localStorage.clear();
-                  navigate("/");
-                }}
+            <button
+              className="employee-logout-btn"
+              onClick={() => {
+                localStorage.clear();
+                navigate("/");
+              }}
             >Logout</button>
           </div>
         </header>
 
-        {/* Info Section */}
         <section className="employee-info-container">
           <div className="employee-info">
             <h3 className='employee-dashboard-info-h3'>Primary Details</h3>
@@ -260,7 +299,6 @@ const EmployeeDashboard = () => {
         </section>
       </main>
 
-      {/* Notification Modal */}
       {notificationOpen && (
         <Notification
           onClose={() => setNotificationOpen(false)}

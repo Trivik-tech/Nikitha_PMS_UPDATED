@@ -155,6 +155,49 @@ const PerformanceReview = () => {
 
   const draftSave = async () => {
     try {
+
+      const payload = {
+      employeeId,
+      remark: remarks, // ✅ Overall remarks
+      selfCompleted: pmsData.selfCompleted || true,
+      managerCompleted: false,
+      dueDate,
+      managerReviewDate,
+      selfReviewDate: employeeReviewDate,
+      pmsInitiated: pmsData.pmsInitiated || false,
+      review2: false,
+      managerApproval: pmsData.managerApproval || false,
+      kra: krakpi.map((kra) => ({
+        kraId: kra.kraId,
+        kraName: kra.kraName,
+        weightage: kra.weightage,
+        kpi: kra.kpi.map((kpi) => {
+          const kpiPayload = {
+            kpiId: kpi.id,
+            description: kpi.description,
+            weightage: kpi.weightage,
+            selfScore: kpi.selfScore || 0,
+            managerScore: kpi.managerScore || 0,
+            managerRemark: kpi.managerRemark || "", // ✅ Include KPI remarks
+          };
+          if (kpi.review2 && kpi.review2 !== 0) {
+            kpiPayload.review2 = kpi.review2;
+          }
+          return kpiPayload;
+        }),
+      })),
+    };
+    const result = await axios.patch(
+      `${baseUrl}/api/v1/pms/manager/manager-review/${reportingManager}/${employeeId}`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`,
+        },
+      }
+    );
+    console.log(result.data)
+      
       await submitReview(false);
       setErrorMessage("PMS Review has been saved as a draft.");
       setTitle(" ");

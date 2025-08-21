@@ -1,12 +1,34 @@
 package com.triviktech.payloads.response.krakpi;
 
 import com.triviktech.payloads.response.employee.EmployeeInfo;
-import com.triviktech.payloads.response.employee.EmployeeResponseDto;
+
 
 import com.triviktech.payloads.response.kra.KraResponseDto1;
 
 import java.util.Date;
 import java.util.Set;
+
+/**
+ * DTO representing the combined response of KRA (Key Result Areas) and KPI (Key Performance Indicators).
+ * This class captures the performance review details of an employee,
+ * including review dates, approval status, completion status, and associated remarks.
+ *
+ * Fields:
+ * <ul>
+ *   <li>{@code id} - Unique identifier for the KRA/KPI record</li>
+ *   <li>{@code remark} - Remarks or comments provided during the review</li>
+ *   <li>{@link EmployeeInfo employee} - Employee details associated with this KRA/KPI</li>
+ *   <li>{@link KraResponseDto1 kra} - Set of KRAs assigned to the employee</li>
+ *   <li>{@code review2} - Indicates if a second review is required</li>
+ *   <li>{@code dueDate} - Due date for completing the review process</li>
+ *   <li>{@code selfReviewDate} - Date when the employee completed the self-review</li>
+ *   <li>{@code managerReviewDate} - Date when the manager completed their review</li>
+ *   <li>{@code pmsInitiated} - Indicates whether the PMS (Performance Management System) process is initiated</li>
+ *   <li>{@code managerApproval} - Indicates if the manager has approved the review</li>
+ *   <li>{@code selfCompleted} - Indicates if the self-review process is completed</li>
+ *   <li>{@code managerCompleted} - Indicates if the manager review process is completed</li>
+ * </ul>
+ */
 
 public class KraKpiResponseDto {
 

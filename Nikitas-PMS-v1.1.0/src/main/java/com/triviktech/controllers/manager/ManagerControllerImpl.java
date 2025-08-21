@@ -2,10 +2,9 @@ package com.triviktech.controllers.manager;
 
 import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
 import com.triviktech.payloads.request.manager.ManagerRequestDto;
-import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
-import com.triviktech.payloads.response.employee.PmsStatuscountDto;
+import com.triviktech.payloads.response.employee.PmsStatusCountDto;
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
 import com.triviktech.payloads.response.manager.ManagerResponseDto;
 import com.triviktech.repositories.employee.EmployeeInformationRepository;
@@ -27,6 +26,48 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+
+
+/**
+ * Implementation of the {@link ManagerController} interface that handles
+ * all manager-related operations in the Performance Management System (PMS).
+ *
+ * <p>This controller provides endpoints for:</p>
+ * <ul>
+ *     <li>Registering managers</li>
+ *     <li>Fetching manager details and profiles</li>
+ *     <li>Managing employees under a specific manager</li>
+ *     <li>Handling PMS (Performance Management System) reviews - pending, completed, approvals</li>
+ *     <li>Notifying employees and HR about PMS status updates</li>
+ *     <li>Approving and reviewing KRA/KPI submissions</li>
+ *     <li>Tracking PMS completion percentages and counts</li>
+ *     <li>Calculating manager team size</li>
+ * </ul>
+ *
+ * <p>It integrates with:</p>
+ * <ul>
+ *     <li>{@link ManagerService} for manager-related business logic</li>
+ *     <li>{@link KraKpiService} for handling KRA/KPI operations</li>
+ *     <li>{@link EmployeeInformationRepository} for fetching employee details</li>
+ *     <li>{@link KraKpiRepository} for PMS/KRA/KPI status checks</li>
+ *     <li>{@link NotificationService} for sending real-time notifications to employees and HR</li>
+ * </ul>
+ *
+ * <p>All responses are wrapped inside {@link ResponseEntity} for proper HTTP status handling.</p>
+ *
+ * <p>Key features:</p>
+ * <ul>
+ *     <li>Validates manager registration requests and returns appropriate error messages.</li>
+ *     <li>Sends real-time notifications when PMS reviews or KRA/KPI approvals are completed.</li>
+ *     <li>Provides reporting endpoints for pending/completed PMS assessments and team metrics.</li>
+ * </ul>
+ *
+ * <p><strong>Annotations used:</strong></p>
+ * <ul>
+ *     <li>{@link RestController} - marks this class as a REST controller.</li>
+ *     <li>{@link Autowired} - used for dependency injection of repositories and services.</li>
+ * </ul>
+ */
 
 @RestController
 public class ManagerControllerImpl implements ManagerController {
@@ -215,8 +256,8 @@ public class ManagerControllerImpl implements ManagerController {
     }
 
    @Override
-public ResponseEntity<PmsStatuscountDto> getPmsCountsForManager(String managerId) {
-    PmsStatuscountDto dto = managerService.getPmsCountsForManager(managerId);
+public ResponseEntity<PmsStatusCountDto> getPmsCountsForManager(String managerId) {
+    PmsStatusCountDto dto = managerService.getPmsCountsForManager(managerId);
     return ResponseEntity.ok(dto);
 }
 

@@ -56,7 +56,7 @@ const HrDashboard = () => {
   const [hrId, setHrId] = useState(null);
   const [completedByDept, setCompletedByDept] = useState({});
 const [pendingByDept, setPendingByDept] = useState({});
-
+const [hrprofile,setProfile]=useState(null)
 
   const token = localStorage.getItem("token");
 
@@ -121,6 +121,19 @@ const [pendingByDept, setPendingByDept] = useState({});
   };
 
   useEffect(() => {
+// Use latest notification timestamp as 'last seen' reference, persist in both sessionStorage and localStorage
+    const lastSeenKey = 'hr-dashboard-last-seen-timestamp';
+    let lastSeenTimestamp = sessionStorage.getItem(lastSeenKey);
+    if (!lastSeenTimestamp) {
+      lastSeenTimestamp = localStorage.getItem(lastSeenKey);
+      if (lastSeenTimestamp) {
+        sessionStorage.setItem(lastSeenKey, lastSeenTimestamp);
+      }
+    }
+
+    // Capture mount time for first-load logic
+    const mountTime = Date.now();
+
     const jwtToken = localStorage.getItem("token");
 
     const socket = new SockJS(`${baseUrl}/ws?token=${jwtToken}`);
@@ -166,6 +179,13 @@ const [pendingByDept, setPendingByDept] = useState({});
             );
 
             setNotifications(unique.slice(0, 50));
+ // Update last seen timestamp to the latest notification
+            if (unique.length > 0) {
+              const latest = unique.reduce((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? a : b);
+              sessionStorage.setItem(lastSeenKey, latest.timestamp);
+              localStorage.setItem(lastSeenKey, latest.timestamp);
+            }
+
             setNotificationOpen(true);
           } catch (err) {
             console.error("Recent fetch error", err);
@@ -194,6 +214,41 @@ const [pendingByDept, setPendingByDept] = useState({});
           );
 
           setNotifications(unique.slice(0, 50));
+  // Find notifications after last seen timestamp
+          let unseen = [];
+          if (lastSeenTimestamp) {
+            unseen = unique.filter(msg => new Date(msg.timestamp) > new Date(lastSeenTimestamp));
+            if (unseen.length > 0) {
+              setNotificationCount(unseen.length);
+              setNotificationOpen(true);
+              // Set last seen to latest notification
+              const latest = unseen.reduce((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? a : b);
+              sessionStorage.setItem(lastSeenKey, latest.timestamp);
+              localStorage.setItem(lastSeenKey, latest.timestamp);
+            } else if (unique.length > 0) {
+              // If no new, set last seen to latest
+              const latest = unique.reduce((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? a : b);
+              sessionStorage.setItem(lastSeenKey, latest.timestamp);
+              localStorage.setItem(lastSeenKey, latest.timestamp);
+            }
+          } else if (unique.length > 0) {
+            // First page load: only set last seen if all notifications are old
+            const allOld = unique.every(msg => new Date(msg.timestamp).getTime() < mountTime - 1000); // 1s buffer
+            if (allOld) {
+              const latest = unique.reduce((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? a : b);
+              sessionStorage.setItem(lastSeenKey, latest.timestamp);
+              localStorage.setItem(lastSeenKey, latest.timestamp);
+            } else {
+              // If any are new, show them
+              const newOnes = unique.filter(msg => new Date(msg.timestamp).getTime() >= mountTime - 1000);
+              setNotificationCount(newOnes.length);
+              setNotificationOpen(true);
+              const latest = unique.reduce((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? a : b);
+              sessionStorage.setItem(lastSeenKey, latest.timestamp);
+              localStorage.setItem(lastSeenKey, latest.timestamp);
+            }
+          }
+
         } catch (err) {
           console.error("Initial recent error", err);
         }
@@ -220,7 +275,6 @@ const getKeyMatrix = async () => {
     console.error("Status Count Error:", error);
   }
 };
-
 
   const getAllDepartment = async () => {
     try {
@@ -257,6 +311,8 @@ const getKeyMatrix = async () => {
         },
       });
       setHrId(result.data.profile.hrId);
+      setProfile(result.data.profile)
+      // console.log(result.data.profile)
     } catch (error) {
       console.log(error.message);
     }
@@ -288,7 +344,6 @@ const getKeyMatrix = async () => {
   }
 };
 
-
   const barChartMinWidth = Math.max(480, departments.length * 120);
 
   const barData = {
@@ -317,7 +372,6 @@ const getKeyMatrix = async () => {
     },
   ],
 };
-
 
   const barOptions = {
     responsive: true,
@@ -434,13 +488,15 @@ const getKeyMatrix = async () => {
               className="sidebar-hamburger"
               aria-label="Close sidebar"
               onClick={() => setSidebarOpen(false)}
+ style={{ position: "absolute", top: 5, right: 150 }}
+
             >
               ☰
             </button>
           )}
           <div className="hr-dashboard-profile-container">
             <img src={profile} alt="Profile" className="hr-dashboard-profileImg" />
-            <h2 className="hr-dashboard-profile-name">Avinash S. H.</h2>
+            <h2 className="hr-dashboard-profile-name">{hrprofile?.name || "Avinash S.H"}</h2>
           </div>
           <ul>
             <li><Link to="/hr-dashboard" className="active">HR Dashboard</Link></li>
@@ -466,6 +522,8 @@ const getKeyMatrix = async () => {
                 className="hamburger"
                 aria-label="Open sidebar"
                 onClick={() => setSidebarOpen(true)}
+  style={{ top: -7, left: -30 }}
+
               >
                 ☰
               </button>
@@ -537,3 +595,4 @@ const getKeyMatrix = async () => {
 };
 
 export default HrDashboard;
+

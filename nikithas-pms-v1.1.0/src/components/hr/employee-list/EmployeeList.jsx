@@ -9,6 +9,7 @@ import DeleteConfirmation from "../../modal/delete-confirmation/DeleteConfirmati
 import { baseUrl } from "../../urls/CommenUrl";
 import { encrypt } from "../../utils/encryptUtils";
 import Modal from "../../modal/Modal";
+import Loader from "../../modal/loader/Loader";
 
 export default function EmployeeList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,18 +22,16 @@ export default function EmployeeList() {
   const [employeeName, setEmployeeName] = useState(null);
   const [successModal, setSuccessModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [isExporting, setIsExporting] = useState(false); // ✅ Export-specific loader only
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-
-  const hasFetchedRef = useRef(false); // Fix for duplicate API call in StrictMode
+  const hasFetchedRef = useRef(false);
 
   const fetchEmployees = async () => {
     try {
       const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setTeam(response.data);
       setHasServerError(false);
@@ -42,24 +41,34 @@ export default function EmployeeList() {
     }
   };
 
- useEffect(() => {
-  if (!hasFetchedRef.current) {
-    fetchEmployees();
-    hasFetchedRef.current = true;
-  }
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, []);
+  useEffect(() => {
+    if (!hasFetchedRef.current) {
+      fetchEmployees();
+      hasFetchedRef.current = true;
+    }
+  }, []);
 
+  // 🔍 Debounced search effect
+  useEffect(() => {
+    const delayDebounce = setTimeout(async () => {
+      if (!searchTerm.trim()) {
+        fetchEmployees();
+        return;
+      }
+      try {
+        const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees/${searchTerm}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setTeam(response.data);
+        setHasServerError(false);
+      } catch (error) {
+        console.error("Search failed:", error.message);
+        setHasServerError(true);
+      }
+    }, 300); // 300ms debounce
 
-  const entriesPerPage = 10;
-  const filteredTeam = team.filter((member) =>
-    (member.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-    (member.emailId?.toLowerCase() || "").includes(searchTerm.toLowerCase())
-  );
-
-  const totalPages = Math.ceil(filteredTeam.length / entriesPerPage);
-  const startIndex = (currentPage - 1) * entriesPerPage;
-  const currentEntries = filteredTeam.slice(startIndex, startIndex + entriesPerPage);
+    return () => clearTimeout(delayDebounce);
+  }, [searchTerm]);
 
   const handleSort = () => {
     const sorted = [...team].sort((a, b) =>
@@ -67,31 +76,8 @@ export default function EmployeeList() {
         ? (a.name || "").localeCompare(b.name || "")
         : (b.name || "").localeCompare(a.name || "")
     );
-
     setTeam(sorted);
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-  };
-
-  const searchEmployees = async (e) => {
-    const search = e.target.value;
-    setSearchTerm(search);
-    if (!search.trim()) {
-      fetchEmployees();
-      return;
-    }
-
-    try {
-      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees/${search}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setTeam(response.data);
-      setHasServerError(false);
-    } catch (error) {
-      console.error("Search failed:", error.message);
-      setHasServerError(true);
-    }
   };
 
   const handleDeleteClick = (id, employeeName) => {
@@ -102,12 +88,9 @@ export default function EmployeeList() {
 
   const deleteEmployee = async () => {
     if (!employeeToDelete) return;
-
     try {
       await axios.delete(`${baseUrl}/api/v1/pms/hr/delete-employee/${employeeToDelete}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setEmployeeToDelete(null);
       setModalOpen(false);
@@ -130,11 +113,8 @@ export default function EmployeeList() {
   const handleDownloadData = async (id) => {
     try {
       const response = await axios.get(`${baseUrl}/api/v1/pms/hr/generate-report/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-
       if (response.status === 200) {
         setModalMessage("Employee PDF Report generated and downloaded successfully.");
         setSuccessModal(true);
@@ -144,28 +124,33 @@ export default function EmployeeList() {
     }
   };
 
-  const handleExportData= async()=>{
+  const handleExportData = async () => {
+    setIsExporting(true);
     try {
       const response = await axios.get(`${baseUrl}/api/v1/pms/hr/generate-employee-list`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
-
       if (response.status === 200) {
-        setModalMessage("Employee List PDF  generated and downloaded successfully.");
+        setModalMessage("Employee List PDF generated and downloaded successfully.");
         setSuccessModal(true);
       }
     } catch (error) {
       console.error("PDF download failed:", error.message);
+    } finally {
+      setIsExporting(false);
     }
+  };
 
-  }
-
-  const isMobile = false;
+  const entriesPerPage = 10;
+  const filteredTeam = team;
+  const totalPages = Math.ceil(filteredTeam.length / entriesPerPage);
+  const startIndex = (currentPage - 1) * entriesPerPage;
+  const currentEntries = filteredTeam.slice(startIndex, startIndex + entriesPerPage);
 
   return (
     <div className="employee-list-fullpage">
+      {isExporting && <Loader />} {/* ✅ Loader shown only when exporting */}
+
       <div className="employee-list-container">
         <div className="employee-list-content">
           <div className="employee-list-header-flex">
@@ -182,7 +167,7 @@ export default function EmployeeList() {
                 type="text"
                 placeholder="Search employees..."
                 value={searchTerm}
-                onChange={searchEmployees}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
               <div className="employee-list-right">
                 <Link to="/add-employee" className="employee-list-add-button">
@@ -190,6 +175,7 @@ export default function EmployeeList() {
                 </Link>
               </div>
             </div>
+
             <img src={logo} alt="Company Logo" className="employee-list-company-logo" />
           </div>
 
@@ -201,64 +187,58 @@ export default function EmployeeList() {
 
           <div className="employee-list-table-container">
             <div className="employee-list-table-scroll">
-              {!isMobile ? (
-                <table className="employee-list-team-table">
-                  <thead>
-                    <tr>
-                      <th onClick={handleSort} style={{ cursor: "pointer" }}>Id</th>
-                      <th>Name</th>
-                      <th>Department</th>
-                      <th>Email</th>
-                      <th>Date of Joining</th>
-                      <th>Role</th>
-                      <th>Action</th>
+              <table className="employee-list-team-table">
+                <thead>
+                  <tr>
+                    <th onClick={handleSort} style={{ cursor: "pointer" }}>Id</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Email</th>
+                    <th>Date of Joining</th>
+                    <th>Role</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentEntries.map((member) => (
+                    <tr
+                      key={member.id}
+                      onClick={() => {
+                        const encryptedId = encrypt(member.empId);
+                        navigate(`/employee-info/${encryptedId}`);
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <td>{member.empId || "-"}</td>
+                      <td>{member.name || "-"}</td>
+                      <td>{member.department || "-"}</td>
+                      <td>{member.officialEmailId || "-"}</td>
+                      <td>{formatDate(member.dateOfJoining)}</td>
+                      <td>{member.role || "-"}</td>
+                      <td onClick={(e) => e.stopPropagation()}>
+                        <FaEdit
+                          className="employee-list-edit-icon"
+                          title="Edit"
+                          onClick={() => {
+                            const encryptedId = encrypt(member.empId);
+                            navigate(`/update-employee/${encryptedId}`);
+                          }}
+                        />
+                        <FaTrash
+                          className="employee-list-delete-icon"
+                          title="Delete"
+                          onClick={() => handleDeleteClick(member.empId, member.name)}
+                        />
+                        <FaDownload
+                          className="employee-list-edit-icon"
+                          title="Download"
+                          onClick={() => handleDownloadData(member.empId)}
+                        />
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {currentEntries.map((member) => (
-                      <tr
-                        key={member.id}
-                        onClick={() => {
-                          const encryptedId = encrypt(member.empId);
-                          navigate(`/employee-info/${encryptedId || member.managerId}`);
-                        }}
-                        style={{ cursor: "pointer" }}
-                      >
-                        <td>{member.empId || "-"}</td>
-                        <td>{member.name || "-"}</td>
-                        <td>{member.department || "-"}</td>
-                        <td>{member.officialEmailId || "-"}</td>
-                        <td>{formatDate(member.dateOfJoining)}</td>
-                        <td>{member.role || "-"}</td>
-                        <td onClick={(e) => e.stopPropagation()}>
-                          <FaEdit
-                            className="employee-list-edit-icon"
-                            title="Edit"
-                            onClick={() => {
-                              const encryptedId = encrypt(member.empId);
-                              navigate(`/update-employee/${encryptedId}`);
-                            }}
-                          />
-                          <FaTrash
-                            className="employee-list-delete-icon"
-                            title="Delete"
-                            onClick={() => handleDeleteClick(member.empId, member.name)}
-                          />
-                          <FaDownload
-                            className="employee-list-edit-icon"
-                            title="Download"
-                            onClick={() => handleDownloadData(member.empId)}
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <div className="employee-list-mobile-cards">
-                  {/* Mobile Cards */}
-                </div>
-              )}
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
 
@@ -271,7 +251,9 @@ export default function EmployeeList() {
               <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
                 Next
               </button>
-              <button title="export" onClick={()=>handleExportData()}>Export <FaDownload /></button>
+              <button title="export" onClick={handleExportData}>
+                Export <FaDownload />
+              </button>
             </div>
           )}
         </div>

@@ -1,13 +1,29 @@
 package com.triviktech.payloads.response.employee;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.triviktech.entities.department.Department;
-import com.triviktech.entities.manager.Manager;
-import com.triviktech.entities.project.Project;
-import jakarta.persistence.*;
 
 import java.util.Date;
-import java.util.Set;
+
+/**
+ * Represents detailed information about an Employee in the system.
+ * <p>
+ * Fields:
+ * <ul>
+ *     <li>{@link #empId} - Unique identifier of the employee.</li>
+ *     <li>{@link #name} - Full name of the employee.</li>
+ *     <li>{@link #mobileNumber} - Employee's contact number.</li>
+ *     <li>{@link #dateOfJoining} - Date when the employee joined the organization.</li>
+ *     <li>{@link #currentDesignation} - Current job designation of the employee.</li>
+ *     <li>{@link #department} - Department name to which the employee belongs.</li>
+ *     <li>{@link #reportingManager} - Name or ID of the reporting manager.</li>
+ *     <li>{@link #role} - System/application role assigned to the employee.</li>
+ *     <li>{@link #dob} - Employee's date of birth.</li>
+ *     <li>{@link #branch} - Branch/location where the employee is placed.</li>
+ *     <li>{@link #category} - Category or employment type (e.g., permanent, contractual).</li>
+ *     <li>{@link #lastWorkingDay} - Last working day if resigned/relieved.</li>
+ *     <li>{@link #officialEmailId} - Official company-provided email ID.</li>
+ *     <li>{@link #emailId} - Personal email ID of the employee.</li>
+ * </ul>
+ */
 
 public class EmployeeInfo {
 

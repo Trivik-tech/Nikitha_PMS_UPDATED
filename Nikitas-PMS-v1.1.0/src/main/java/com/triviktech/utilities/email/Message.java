@@ -1,5 +1,20 @@
 package com.triviktech.utilities.email;
 
+/**
+ * This class contains all the email subjects and message templates used
+ * for sending automated emails in the system.
+ *
+ * It includes messages for:
+ * - User registration
+ * - OTP verification
+ * - PMS notifications (KRA/KPI, self-appraisal, manager review)
+ * - Employee profile updates
+ * - Password reset
+ *
+ * All messages are defined as constants and can be used with String.format()
+ * to insert dynamic information like employee name, ID, or dates.
+ */
+
 public class Message {
 
     public static final String REGISTRATION_SUBJECT = "Welcome %s! Your Registration is Successful";

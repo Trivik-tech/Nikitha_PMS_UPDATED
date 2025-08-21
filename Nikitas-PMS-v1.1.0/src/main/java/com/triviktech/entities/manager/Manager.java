@@ -13,6 +13,23 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+/**
+ * Entity representing a Manager in the organization.
+ * <p>
+ * This entity stores manager details including personal information,
+ * job-related details, and relationships with other entities.
+ *
+ * <h3>Mappings:</h3>
+ * <ul>
+ *   <li>{@link EmployeeInformation} - A manager can manage multiple employees ({@code @OneToMany}).</li>
+ *   <li>{@link HR} - Many managers can be associated with one HR ({@code @ManyToOne}).</li>
+ * </ul>
+ *
+ * <p>
+ * The entity also includes fields such as date of birth, date of joining,
+ * designation, reporting manager, and login credentials.
+ */
+
 @Entity
 @Table(name = "manager")
 public class Manager {

@@ -165,8 +165,8 @@ function App() {
             <Route path="/auth/:token" element={<AuthHandler />} />
 
             {/* HR Routes */}
-            <Route path="/hr-dashboard" element={<HrDashboard />} />
-            {/* <Route path="/hr-dashboard" element={<RequireAuth allowedRoles={['HR']}><HrDashboard /></RequireAuth>} /> */}
+            {/* <Route path="/hr-dashboard" element={<HrDashboard />} /> */}
+            <Route path="/hr-dashboard" element={<RequireAuth allowedRoles={['HR']}><HrDashboard /></RequireAuth>} />
             <Route path="/add-employee" element={<RequireAuth allowedRoles={['HR']}><EmployeeDetails /></RequireAuth>} />
             <Route path="/hr-profile" element={<RequireAuth allowedRoles={['HR']}><HrProfile /></RequireAuth>} />
             <Route path="/hr-startpms" element={<RequireAuth allowedRoles={['HR']}><StartPms /></RequireAuth>} />
@@ -187,7 +187,7 @@ function App() {
 
             {/* Employee Routes */}
             <Route path="/employee-dashboard" element={<RequireAuth allowedRoles={['EMPLOYEE']}><EmployeeDashboard /></RequireAuth>} />
-            <Route path="/employee-performance" element={<RequireAuth allowedRoles={['EMPLOYEE']}><Performance /></RequireAuth>} />
+            <Route path="/employee-performance/:id" element={<RequireAuth allowedRoles={['EMPLOYEE']}><Performance /></RequireAuth>} />
             <Route path="/add-krakpi/:id" element={<RequireAuth allowedRoles={['EMPLOYEE']}><KrakpiRegistration /></RequireAuth>} />
             <Route path="/self-review/:id" element={<EmployeeReview />} />
 

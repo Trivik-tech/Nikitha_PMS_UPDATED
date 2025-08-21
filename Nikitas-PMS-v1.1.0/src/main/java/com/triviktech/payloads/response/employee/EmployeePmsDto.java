@@ -4,6 +4,35 @@ import com.triviktech.payloads.response.krakpi.KraKpiDto;
 
 import java.util.List;
 
+/**
+ * Data Transfer Object (DTO) representing Employee PMS (Performance Management System) details.
+ * <p>
+ * This DTO is used as a response object when fetching an employee's KRA/KPI details,
+ * review scores, and performance evaluation summary.
+ * </p>
+ *
+ * <h3>Mappings:</h3>
+ * <ul>
+ *   <li>{@link #empId} - Unique identifier of the employee.</li>
+ *   <li>{@link #name} - Full name of the employee.</li>
+ *   <li>{@link #department} - Department where the employee works.</li>
+ *   <li>{@link #designation} - Designation/job title of the employee.</li>
+ *   <li>{@link #photoPath} - Path/URL to the employee's profile photo.</li>
+ *
+ *   <li>{@link #dueDate} - Deadline for PMS completion.</li>
+ *   <li>{@link #employeeReviewDate} - Date when the employee submitted self-review.</li>
+ *   <li>{@link #managerReviewDate} - Date when the manager submitted review.</li>
+ *
+ *   <li>{@link #kraKpiDetails} - List of KRA/KPI details
+ *       (mapped from {@link com.triviktech.payloads.response.krakpi.KraKpiDto}).</li>
+ *
+ *   <li>{@link #selfScore} - Performance score given by the employee (self-review).</li>
+ *   <li>{@link #managerScore} - Performance score given by the manager.</li>
+ *   <li>{@link #finalScore} - Consolidated/final score based on review process.</li>
+ *   <li>{@link #overallRemark} - Overall remark/comment on performance.</li>
+ * </ul>
+ */
+
 public class EmployeePmsDto {
     private String empId;
     private String name;

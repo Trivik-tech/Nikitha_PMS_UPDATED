@@ -1,5 +1,11 @@
 package com.triviktech.payloads.login;
 
+/**
+ * Payload class used for login requests.
+ * <p>
+ * Carries the username and password provided by the user
+ * when attempting to authenticate.
+ */
 
 public class Login {
 

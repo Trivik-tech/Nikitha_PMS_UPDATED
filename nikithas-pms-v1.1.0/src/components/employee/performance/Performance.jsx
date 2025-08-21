@@ -1,152 +1,145 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Performance.css';
 import './ResponseEmployeePerformance.css';
 import logo from '../../../assets/images/nikithas-logo.png';
-import { FaHome } from 'react-icons/fa'; // Importing the home icon
-import { Link } from 'react-router-dom';
+import { FaHome } from 'react-icons/fa';
+import { Link, useParams } from 'react-router-dom';
+import { baseUrl } from '../../urls/CommenUrl';
+import axios from 'axios';
 
 const Performance = () => {
+  const [kraKpis, setKraKpis] = useState([]);
+  const token = localStorage.getItem('token');
+  const { id: employeeId } = useParams();
+
   const handlePrint = () => {
-    window.print(); // This will trigger the browser's print dialog
+    window.print();
+  };
+
+  useEffect(() => {
+    loadKraKpis();
+  }, []);
+
+  const loadKraKpis = async () => {
+    try {
+      const result = await axios.get(
+        `${baseUrl}/api/v1/pms/employee/krakpi-list/${employeeId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setKraKpis(result.data.krakpis || []);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // Group KPIs by year
+  const groupedByYear = kraKpis.reduce((acc, item) => {
+    const year = new Date(item.employee.dateOfJoining).getFullYear();
+    if (!acc[year]) acc[year] = [];
+    acc[year].push(item);
+    return acc;
+  }, {});
+
+  // Helper function to get average out of 100
+  const getAverageOutOf100 = (arr, key) => {
+    if (!arr.length) return '0/100';
+    const avg = arr.reduce((sum, kpi) => sum + kpi[key], 0) / arr.length;
+    return `${Math.round(avg * 10)}/100`;
   };
 
   return (
     <div className="employee-module-container">
+      {/* Header */}
       <div className="employee-module-header">
         <div className="employee-module-home-icon">
           <Link to="/employee-dashboard" className="icon-link">
             <FaHome className="per-icon home-icon" />
           </Link>
         </div>
-        <h1 className='employee-module-per-page-title'>Performance Summary</h1>
-        <img src={logo} alt="Logo" className='employee-module-company-logo' />
+        <h1 className="employee-module-per-page-title">Performance Summary</h1>
+        <img src={logo} alt="Logo" className="employee-module-company-logo" />
       </div>
 
-      {/* KRA Section for 2023 */}
-      <div className="employee-module-section">
-        <h2>Key Result Areas (KRA) - 2023</h2>
+      {/* Performance by Year */}
+      {Object.keys(groupedByYear)
+        .sort((a, b) => b - a) // latest year first
+        .map((year) => (
+          <div key={year} className="employee-module-section">
+            <h2>Year: {year}</h2>
 
-        <div className="employee-module-kra">
-          <div className="employee-module-kra-title">Project Delivery</div>
-          <div className="employee-module-kra-details">
-            Completed multiple critical projects with good quality and minimal delays.
-          </div>
-          <div className="employee-module-rating">
-            <span>Self Rating: 85/100</span>
-            <span>Manager Rating: 82/100</span>
-          </div>
-        </div>
+            {groupedByYear[year].map((item) =>
+              item.kra.map((kraItem) => (
+                <div className="employee-module-kra" key={kraItem.kraId}>
+                  {/* KRA Title */}
+                  <div
+                    className="employee-module-kra-title"
+                    style={{ marginTop: '10px', marginBottom: '8px' }}
+                  >
+                    KRA: {kraItem.kraName}
+                  </div>
 
-        <div className="employee-module-kra">
-          <div className="employee-module-kra-title">Technical Skills</div>
-          <div className="employee-module-kra-details">
-            Showed consistent growth in technical capabilities throughout the year.
-          </div>
-          <div className="employee-module-rating">
-            <span>Self Rating: 75/100</span>
-            <span>Manager Rating: 78/100</span>
-          </div>
-        </div>
+                  {/* KPI List */}
+                  {kraItem.kpi.map((kpi) => (
+                    <div
+                      key={kpi.id}
+                      className="employee-module-kpi-block"
+                    >
+                      <div className="employee-module-kra-details">
+                        KPI: {kpi.description}
+                      </div>
 
-        <div className="employee-module-kra">
-          <div className="employee-module-kra-title">Team Collaboration</div>
-          <div className="employee-module-kra-details">
-            Demonstrated strong teamwork and effective communication skills.
-          </div>
-          <div className="employee-module-rating">
-            <span>Self Rating: 81/100</span>
-            <span>Manager Rating: 75/100</span>
-          </div>
-        </div>
+                      {/* Ratings (changed here for out of 100 display) */}
+                      <div className="employee-module-rating">
+                        <div>
+                          Self Rating: {kpi.selfScore ? Math.round(kpi.selfScore * 10) : 0}/100
+                        </div>
+                        <div>
+                          Manager Rating: {kpi.managerScore ? Math.round(kpi.managerScore * 10) : 0}/100
+                        </div>
+                      </div>
 
-        <div className="employee-module-kra">
-          <div className="employee-module-kra-title">Innovation & Initiative</div>
-          <div className="employee-module-kra-details">
-            Demonstrated innovative solutions and led initiatives to improve processes.
+                      {/* Remarks */}
+                      <div className="employee-module-remarks">
+                        <div>
+                          Employee Remark: {kpi.employeeRemark || 'No remark provided'}
+                        </div>
+                        <div>
+                          Manager Remark: {kpi.managerRemark || 'No remark provided'}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))
+            )}
+
+            {/* Yearly Average */}
+            <div className="employee-module-overall-performance">
+              <span>
+                Average Self Rating:{' '}
+                {(() => {
+                  const allKpis = groupedByYear[year]
+                    .flatMap((item) => item.kra)
+                    .flatMap((kra) => kra.kpi);
+                  return getAverageOutOf100(allKpis, "selfScore");
+                })()}
+              </span>
+              <span>
+                Average Manager Rating:{' '}
+                {(() => {
+                  const allKpis = groupedByYear[year]
+                    .flatMap((item) => item.kra)
+                    .flatMap((kra) => kra.kpi);
+                  return getAverageOutOf100(allKpis, "managerScore");
+                })()}
+              </span>
+            </div>
           </div>
-          <div className="employee-module-rating">
-            <span>Self Rating: 89/100</span>
-            <span>Manager Rating: 92/100</span>
-          </div>
-        </div>
-
-        <div className="employee-module-progress-bar">
-          <span className="employee-module-self-rating"></span>
-          <span className="employee-module-manager-rating"></span>
-        </div>
-
-        <div className="employee-module-blue-progress">
-          <span></span>
-        </div>
-
-        <div className="employee-module-overall-performance">
-          <span>Average Self Rating: 86/100</span>
-          <span>Average Manager Rating: 82/100</span>
-        </div>
-      </div>
-
-      {/* KRA Section for 2024 */}
-      <div className="employee-module-section">
-        <h2>Key Result Areas (KRA) - 2024</h2>
-
-        <div className="employee-module-kra">
-          <div className="employee-module-kra-title">Project Delivery</div>
-          <div className="employee-module-kra-details">
-            Successfully delivered all assigned projects within deadline with high quality standards.
-          </div>
-          <div className="employee-module-rating">
-            <span>Self Rating: 90/100</span>
-            <span>Manager Rating: 94/100</span>
-          </div>
-        </div>
-
-        <div className="employee-module-kra">
-          <div className="employee-module-kra-title">Technical Skills</div>
-          <div className="employee-module-kra-details">
-            Demonstrated strong technical expertise and problem-solving abilities.
-          </div>
-          <div className="employee-module-rating">
-            <span>Self Rating: 81/100</span>
-            <span>Manager Rating: 80/100</span>
-          </div>
-        </div>
-
-        <div className="employee-module-kra">
-          <div className="employee-module-kra-title">Team Collaboration</div>
-          <div className="employee-module-kra-details">
-            Excelled in both strong communication and collaboration skills.
-          </div>
-          <div className="employee-module-rating">
-            <span>Self Rating: 96/100</span>
-            <span>Manager Rating: 95/100</span>
-          </div>
-        </div>
-
-        <div className="employee-module-kra">
-          <div className="employee-module-kra-title">Innovation & Initiative</div>
-          <div className="employee-module-kra-details">
-            Successfully introduced innovative solutions and led improvement initiatives.
-          </div>
-          <div className="employee-module-rating">
-            <span>Self Rating: 85/100</span>
-            <span>Manager Rating: 92/100</span>
-          </div>
-        </div>
-
-        <div className="employee-module-progress-bar">
-          <span className="employee-module-self-rating"></span>
-          <span className="employee-module-manager-rating"></span>
-        </div>
-
-        <div className="employee-module-blue-progress">
-          <span></span>
-        </div>
-
-        <div className="employee-module-overall-performance">
-          <span>Average Self Rating: 86/100</span>
-          <span>Average Manager Rating: 82/100</span>
-        </div>
-      </div>
+        ))}
 
       {/* Print Button */}
       <button className="employee-module-print-btn" onClick={handlePrint}>

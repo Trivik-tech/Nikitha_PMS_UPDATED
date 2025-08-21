@@ -1,11 +1,9 @@
 package com.triviktech.payloads.response.employee;
 
 import com.triviktech.payloads.response.department.DepartmentResponseDto;
-import com.triviktech.payloads.response.manager.ManagerResponseDto;
-import com.triviktech.payloads.response.project.ProjectResponseDto;
 
 import java.util.Date;
-import java.util.Set;
+
 
 
 public class EmployeeResponseDto {

@@ -4,6 +4,14 @@ import com.triviktech.payloads.request.kpi.KpiRequestDto;
 
 import java.util.Set;
 
+/**
+ * Data Transfer Object (DTO) representing a Key Result Area (KRA) request.
+ * <p>
+ * A KRA contains one or more KPIs, along with its own weightage and name.
+ * This DTO is typically used in API requests to create or update KRAs and their
+ * associated KPIs.
+ */
+
 public class KraRequestDto {
     private long kraId;
     private String kraName;

@@ -12,8 +12,26 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 
+/**
+ * Utility class to generate PDF reports for the Performance Management System (PMS) cycle.
+ *
+ * This class takes employee PMS data (EmployeePmsDto) and generates a structured PDF
+ * including employee details, KRA-KPI mappings, scores, and overall remarks.
+ */
 public class PmsCycleReport {
 
+    /**
+     * Generates a PDF for the given EmployeePmsDto.
+     *
+     * The PDF includes:
+     * - Employee photo, name, designation, department, and review dates
+     * - KRA and associated KPI details with scores and remarks
+     * - Overall score summary
+     * - Final remarks
+     *
+     * @param dto the EmployeePmsDto containing all PMS data
+     * @return a ByteArrayInputStream containing the PDF data
+     */
     public ByteArrayInputStream generatePdf(EmployeePmsDto dto) {
         try {
             Document document = new Document(PageSize.A4, 36, 36, 36, 36);
@@ -21,17 +39,19 @@ public class PmsCycleReport {
             PdfWriter.getInstance(document, out);
             document.open();
 
+            // Fonts used throughout the PDF
             Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.WHITE);
             Font sectionHeaderFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 13, BaseColor.BLACK);
             Font subTitleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, BaseColor.BLACK);
             Font textFont = FontFactory.getFont(FontFactory.HELVETICA, 10, BaseColor.DARK_GRAY);
             Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.WHITE);
 
-            // Header with employee photo, title, logo
+            // Header with employee photo, report title, and company logo
             PdfPTable headerTable = new PdfPTable(3);
             headerTable.setWidthPercentage(100);
             headerTable.setWidths(new float[]{1, 2, 1});
 
+            // Employee photo
             Image empImage = null;
             try {
                 if (dto.getPhotoPath() != null && !dto.getPhotoPath().isEmpty()) {
@@ -47,6 +67,7 @@ public class PmsCycleReport {
             empImgCell.setFixedHeight(60);
             headerTable.addCell(empImgCell);
 
+            // Title cell
             PdfPCell titleCell = new PdfPCell(new Phrase("Performance Review Form", titleFont));
             titleCell.setHorizontalAlignment(Element.ALIGN_CENTER);
             titleCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -55,9 +76,10 @@ public class PmsCycleReport {
             titleCell.setFixedHeight(25);
             headerTable.addCell(titleCell);
 
+            // Company logo
             Image logoImage = null;
             try {
-                String logoUrl = "https://uploads.onecompiler.io/4344tsra5/4346c832f/IMG_20241226_113757-removebg.png";
+                String logoUrl = "src/main/resources/static/images/nikithas-logo.png";
                 if (logoUrl != null && !logoUrl.isEmpty()) {
                     logoImage = Image.getInstance(logoUrl);
                     logoImage.scaleToFit(70, 60);
@@ -74,7 +96,7 @@ public class PmsCycleReport {
             document.add(headerTable);
             document.add(new Paragraph("\n"));
 
-            // Employee Section Header
+            // Employee Details Section Header
             PdfPCell empSectionHeader = new PdfPCell(new Phrase("Employee Details", sectionHeaderFont));
             empSectionHeader.setBackgroundColor(new BaseColor(236, 240, 241));
             empSectionHeader.setPadding(4);
@@ -84,7 +106,7 @@ public class PmsCycleReport {
             empSectionTable.addCell(empSectionHeader);
             document.add(empSectionTable);
 
-            // Employee Details in 2 columns of 3 rows each
+            // Employee details table (two columns: left and right)
             PdfPTable empDetailsTable = new PdfPTable(2);
             empDetailsTable.setWidthPercentage(100);
             empDetailsTable.setWidths(new float[]{1, 1});
@@ -117,13 +139,14 @@ public class PmsCycleReport {
             document.add(empDetailsTable);
             document.add(new Paragraph("\n"));
 
-            // KRA -> KPI Mapping
+            // KRA -> KPI Mapping Section
             Map<String, List<KraKpiDto>> kraMap = new LinkedHashMap<>();
             for (KraKpiDto k : dto.getKraKpiDetails()) {
                 kraMap.computeIfAbsent(k.getKra(), v -> new ArrayList<>()).add(k);
             }
 
             for (String kra : kraMap.keySet()) {
+                // KRA Header
                 PdfPCell kraHeader = new PdfPCell(new Phrase("KRA - " + kra, sectionHeaderFont));
                 kraHeader.setBackgroundColor(new BaseColor(236, 240, 241));
                 kraHeader.setPadding(4);
@@ -133,6 +156,7 @@ public class PmsCycleReport {
                 kraHeaderTable.addCell(kraHeader);
                 document.add(kraHeaderTable);
 
+                // KPI Table
                 PdfPTable kpiTable = new PdfPTable(new float[]{2.5f, 1.5f, 1.5f, 1.5f, 1.5f, 2f, 2f});
                 kpiTable.setWidthPercentage(100);
                 String[] headers = {"KPI's", "Weightage", "Self Rating", "Review-1", "Average", "Employee Remark", "Manager Remark"};
@@ -158,7 +182,7 @@ public class PmsCycleReport {
                 document.add(new Paragraph("\n"));
             }
 
-            // Score Section
+            // Overall Score Section
             PdfPCell scoreHeader = new PdfPCell(new Phrase("Overall Score", sectionHeaderFont));
             scoreHeader.setBackgroundColor(new BaseColor(236, 240, 241));
             scoreHeader.setPadding(4);
@@ -184,7 +208,7 @@ public class PmsCycleReport {
             document.add(scoreTable);
             document.add(new Paragraph("\n"));
 
-            // Overall Remarks
+            // Overall Remarks Section
             PdfPCell remarksHeader = new PdfPCell(new Phrase("Overall Remarks", sectionHeaderFont));
             remarksHeader.setBackgroundColor(new BaseColor(236, 240, 241));
             remarksHeader.setPadding(4);
@@ -211,6 +235,14 @@ public class PmsCycleReport {
         }
     }
 
+    /**
+     * Helper method to create a PDF table cell with consistent style.
+     *
+     * @param content the text content of the cell
+     * @param font the font to use
+     * @param isHeader whether the cell is a header
+     * @return a styled PdfPCell
+     */
     private PdfPCell createCell(String content, Font font, boolean isHeader) {
         PdfPCell cell = new PdfPCell(new Phrase(content != null ? content : "", font));
         cell.setPadding(3);
@@ -222,6 +254,12 @@ public class PmsCycleReport {
         return cell;
     }
 
+    /**
+     * Formats a date string from "yyyy-MM-dd'T'HH:mm:ss" or "yyyy-MM-dd HH:mm:ss" to "dd/MM/yyyy".
+     *
+     * @param inputDate the input date string
+     * @return formatted date string or original input if parsing fails
+     */
     private String formatDate(String inputDate) {
         if (inputDate == null || inputDate.isEmpty()) return "";
         try {
@@ -230,7 +268,7 @@ public class PmsCycleReport {
             Date date = parser.parse(inputDate);
             return formatter.format(date);
         } catch (ParseException e) {
-            // Try fallback without 'T'
+            // Fallback parser without 'T'
             try {
                 SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");

@@ -6,6 +6,29 @@ import com.triviktech.payloads.request.kra.KraRequestDto;
 import java.util.Date;
 import java.util.Set;
 
+/**
+ * Data Transfer Object (DTO) representing a KRA-KPI request for an employee.
+ * <p>
+ * This DTO is used to transfer KRA (Key Result Area) and KPI (Key Performance Indicator)
+ * details along with review workflow information between client and server.
+ * </p>
+ *
+ * <ul>
+ *   <li>{@link #kraKpiId} - Unique identifier for the KRA-KPI record.</li>
+ *   <li>{@link #employeeId} - Employee identifier to whom the KRA-KPI belongs.</li>
+ *   <li>{@link #remark} - Remarks or comments added by employee/manager.</li>
+ *   <li>{@link #kra} - Set of KRA details (mapped from {@link com.triviktech.payloads.request.kra.KraRequestDto}).</li>
+ *   <li>{@link #review2} - Flag to indicate if second review is applicable.</li>
+ *   <li>{@link #dueDate} - Final due date for KRA/KPI completion.</li>
+ *   <li>{@link #selfReviewDate} - Date when the employee submitted self-review.</li>
+ *   <li>{@link #managerReviewDate} - Date when the manager reviewed.</li>
+ *   <li>{@link #pmsInitiated} - Whether PMS process is initiated.</li>
+ *   <li>{@link #managerApproval} - Whether manager has approved the review.</li>
+ *   <li>{@link #selfCompleted} - Whether employee marked it as completed.</li>
+ *   <li>{@link #managerCompleted} - Whether manager marked it as completed.</li>
+ * </ul>
+ */
+
 public class KraKpiRequestDto {
     private long kraKpiId;
     private String employeeId;

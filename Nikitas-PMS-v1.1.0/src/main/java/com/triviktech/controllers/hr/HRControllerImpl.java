@@ -6,7 +6,7 @@ import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
-import com.triviktech.payloads.response.employee.PmsStatuscountDto;
+import com.triviktech.payloads.response.employee.PmsStatusCountDto;
 import com.triviktech.payloads.response.hr.HrResponseDto;
 import com.triviktech.repositories.employee.EmployeeInformationRepository;
 import com.triviktech.repositories.krakpi.KraKpiRepository;
@@ -30,6 +30,39 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+/**
+ * HRControllerImpl is the REST controller responsible for handling all HR-related endpoints
+ * in the PMS (Performance Management System) application.
+ *
+ * <p>
+ * Responsibilities include:
+ * <ul>
+ *   <li>Managing HR registration and profile retrieval.</li>
+ *   <li>Uploading and managing employee data.</li>
+ *   <li>Registering and updating employee information.</li>
+ *   <li>Tracking PMS initiation, completion, and pending status for employees.</li>
+ *   <li>Generating reports such as employee info reports, employee lists, and PMS PDFs.</li>
+ *   <li>Sending notifications to employees and managers based on PMS status.</li>
+ *   <li>Providing department-wise and overall PMS statistics for HR dashboards.</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * This controller interacts with the following components:
+ * <ul>
+ *   <li>{@link HrService} - Business logic for HR and employee management.</li>
+ *   <li>{@link NotificationService} - Sending notifications to employees and managers.</li>
+ *   <li>{@link EmployeeReport} - Generating PDF reports for employees and HR.</li>
+ *   <li>{@link KraKpiRepository} and {@link EmployeeInformationRepository} - Accessing PMS and employee data.</li>
+ * </ul>
+ * </p>
+ *
+ * <p>
+ * All endpoints are exposed under the base path: <code>/api/v1/pms/hr</code> and allow
+ * cross-origin requests from <code>http://localhost:3000</code>.
+ * </p>
+ */
 
 @RestController
 public class HRControllerImpl implements HRController {
@@ -238,8 +271,8 @@ public class HRControllerImpl implements HRController {
     }
 
     @Override
-    public ResponseEntity<PmsStatuscountDto> getPmsStatusCountForHR() {
-        PmsStatuscountDto dto = hrService.getPmsCountsForHR();
+    public ResponseEntity<PmsStatusCountDto> getPmsStatusCountForHR() {
+        PmsStatusCountDto dto = hrService.getPmsCountsForHR();
         return ResponseEntity.ok(dto);
     }
 

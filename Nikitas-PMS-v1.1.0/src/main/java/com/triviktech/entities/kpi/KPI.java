@@ -3,6 +3,15 @@ package com.triviktech.entities.kpi;
 import com.triviktech.entities.kra.KRA;
 import jakarta.persistence.*;
 
+/**
+ * Represents a Key Performance Indicator (KPI) entity.
+ * <p>
+ * A KPI is linked to a KRA (Key Result Area) and includes information
+ * like description, weightage, self score, manager score, remarks, and averages.
+ * <p>
+ * Mapped to the "kpi" table in the database.
+ */
+
 @Entity
 @Table(name = "kpi")
 public class KPI {

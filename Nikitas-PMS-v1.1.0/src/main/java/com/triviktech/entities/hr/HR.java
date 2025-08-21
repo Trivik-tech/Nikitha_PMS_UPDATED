@@ -10,6 +10,16 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+/**
+ * Represents an HR (Human Resources) entity in the system.
+ * <p>
+ * This entity stores details of HR employees including personal info,
+ * organizational details, login credentials, and relationships with
+ * employees and managers.
+ * <p>
+ * Mapped to the "hr" table in the database.
+ */
+
 @Entity
 @Table(name = "hr")
 public class HR {

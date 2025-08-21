@@ -4,6 +4,25 @@ import com.triviktech.payloads.response.department.DepartmentResponseDto;
 
 import java.util.List;
 
+/**
+ * Data Transfer Object (DTO) representing an Employee along with their
+ * assigned Key Result Areas (KRAs).
+ * <p>
+ * This DTO aggregates basic employee details, department information,
+ * and the list of KRAs (and their associated KPIs).
+ * </p>
+ *
+ * <ul>
+ *   <li>{@link #employeeId} - Unique identifier of the employee</li>
+ *   <li>{@link #firstName} - First name of the employee</li>
+ *   <li>{@link #lastName} - Last name of the employee</li>
+ *   <li>{@link #department} - Department to which the employee belongs</li>
+ *   <li>{@link #assessmentPeriod} - Period of performance assessment</li>
+ *   <li>{@link #summaryDate} - Date when the summary was created</li>
+ *   <li>{@link #kra} - List of KRAs with associated KPIs</li>
+ * </ul>
+ */
+
 public class EmployeeWithKRA {
 
     private String employeeId;

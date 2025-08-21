@@ -24,10 +24,14 @@ const ManagerDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
+  const [newAndUndelivered, setNewAndUndelivered] = useState([]);
   const [managerData, setManagerData] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [teamSize, setTeamSize] = useState(0);
-  const [assessmentCount, setAssessmentCount] = useState({ completed: 0, pending: 0 });
+  const [assessmentCount, setAssessmentCount] = useState({
+    completed: 0,
+    pending: 0,
+  });
   const [percentageData, setPercentageData] = useState({
     completedPercentage: 0,
     pendingPercentage: 0,
@@ -72,27 +76,36 @@ const ManagerDashboard = () => {
 
   const getPercentage = async (id) => {
     try {
-      const res = await axios.get(`${baseUrl}/api/v1/pms/manager/percentage/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        `${baseUrl}/api/v1/pms/manager/percentage/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setPercentageData(res.data);
     } catch (error) {}
   };
 
   const loadTeamSize = async (id) => {
     try {
-      const result = await axios.get(`${baseUrl}/api/v1/pms/manager/get-team-size/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const result = await axios.get(
+        `${baseUrl}/api/v1/pms/manager/get-team-size/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setTeamSize(result.data?.team || 0);
     } catch (error) {}
   };
 
   const loadAssessmentCount = async (id) => {
     try {
-      const res = await axios.get(`${baseUrl}/api/v1/pms/manager/pms/status-count/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        `${baseUrl}/api/v1/pms/manager/pms/status-count/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setAssessmentCount({
         completed: res.data.completedCount || 0,
         pending: res.data.pendingCount || 0,
@@ -105,111 +118,179 @@ const ManagerDashboard = () => {
   useEffect(() => {
     if (!token) return;
 
+    // Use latest notification timestamp as 'last seen' reference, persist in both sessionStorage and localStorage
+    const lastSeenKey = "manager-dashboard-last-seen-timestamp";
+    let lastSeenTimestamp = sessionStorage.getItem(lastSeenKey);
+    if (!lastSeenTimestamp) {
+      lastSeenTimestamp = localStorage.getItem(lastSeenKey);
+      if (lastSeenTimestamp) {
+        sessionStorage.setItem(lastSeenKey, lastSeenTimestamp);
+      }
+    }
+
+    // Capture mount time for first-load logic
+    const mountTime = Date.now();
+
     const socket = new SockJS(`${baseUrl}/ws?token=${token}`);
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
       onConnect: async () => {
-        client.subscribe("/user/queue/manager-notification", async (message) => {
-          const newMsg = {
-            title: "New Notification",
-            message: message.body,
-            timestamp: new Date().toISOString(),
-          };
+        client.subscribe(
+          "/user/queue/manager-notification",
+          async (message) => {
+            const newMsg = {
+              title: "New Notification",
+              message: message.body,
+              timestamp: new Date().toISOString(),
+            };
+            setNotificationOpen(true);
+            setNewAndUndelivered((prev) => [newMsg, ...prev]);
+            setNotificationCount((prev) => prev + 1);
+            try {
+              const res = await axios.get(`${baseUrl}/api/v1/pms/recent`, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              const recent = res.data;
+              const formattedRecent = recent.map((msg) => ({
+                title: "Recent Notification",
+                message: msg.message || msg.content || "No content",
+                timestamp: msg.timestamp || new Date().toISOString(),
+              }));
+              const allMessages = [newMsg, ...formattedRecent];
+              const unique = Array.from(
+                new Map(
+                  allMessages.map((msg) => [
+                    `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${
+                      msg.message
+                    }`,
+                    msg,
+                  ])
+                ).values()
+              );
+              setNotifications(unique.slice(0, 50));
 
-          const updated = [newMsg, ...notifications];
+              // Update last seen timestamp to the latest notification
+              if (unique.length > 0) {
+                const latest = unique.reduce((a, b) =>
+                  new Date(a.timestamp) > new Date(b.timestamp) ? a : b
+                );
+                sessionStorage.setItem(lastSeenKey, latest.timestamp);
+                localStorage.setItem(lastSeenKey, latest.timestamp);
+              }
+            } catch (err) {
+              console.error("❌ Error fetching recent:", err);
+            }
+          }
+        );
 
-          try {
-            const res = await fetch(`${baseUrl}/api/v1/pms/recent`, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            const recent = await res.json();
-            const formatted = recent.map((msg) => ({
-              title: "Recent Notification",
-              message: msg.message || msg.content || "No content",
-              timestamp: msg.timestamp || new Date().toISOString(),
-            }));
-
-            const filteredRecent = formatted.filter((msg) => {
-              const msgTime = Math.floor(new Date(msg.timestamp).getTime() / 1000);
-              const newMsgTime = Math.floor(new Date(newMsg.timestamp).getTime() / 1000);
-              return !(msgTime === newMsgTime && msg.message === newMsg.message);
-            });
-
-            const combined = [...updated, ...filteredRecent];
-            const unique = Array.from(
-              new Map(
-                combined.map((msg) => [
-                  `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.message}`,
-                  msg,
-                ])
-              ).values()
-            );
-
-            setNotifications(unique.slice(0, 50));
-
-            const unseenCount = unique.filter((msg) => {
-              const key = `viewed-${msg.timestamp}-${msg.message}`;
-              return !sessionStorage.getItem(key);
-            }).length;
-            setNotificationCount(unseenCount);
-          } catch (err) {}
-        });
-
+        // Initial fetch
         try {
-          const res = await fetch(`${baseUrl}/api/v1/pms/recent`, {
+          const res = await axios.get(`${baseUrl}/api/v1/pms/recent`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-
-          const messages = await res.json();
-          const formatted = messages.map((msg) => ({
+          const recent = res.data;
+          const formatted = recent.map((msg) => ({
             title: "Recent Notification",
             message: msg.message || msg.content || "No content",
             timestamp: msg.timestamp || new Date().toISOString(),
           }));
-
           const unique = Array.from(
             new Map(
               formatted.map((msg) => [
-                `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.message}`,
+                `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${
+                  msg.message
+                }`,
                 msg,
               ])
             ).values()
           );
-
           setNotifications(unique.slice(0, 50));
-          const unseenCount = unique.filter((msg) => {
-            const key = `viewed-${msg.timestamp}-${msg.message}`;
-            return !sessionStorage.getItem(key);
-          }).length;
-          setNotificationCount(unseenCount);
-        } catch (err) {}
+
+          // Find notifications after last seen timestamp
+          let unseen = [];
+          if (lastSeenTimestamp) {
+            unseen = unique.filter(
+              (msg) => new Date(msg.timestamp) > new Date(lastSeenTimestamp)
+            );
+            if (unseen.length > 0) {
+              setNewAndUndelivered(unseen);
+              setNotificationCount(unseen.length);
+              setNotificationOpen(true);
+              // Set last seen to latest notification
+              const latest = unseen.reduce((a, b) =>
+                new Date(a.timestamp) > new Date(b.timestamp) ? a : b
+              );
+              sessionStorage.setItem(lastSeenKey, latest.timestamp);
+              localStorage.setItem(lastSeenKey, latest.timestamp);
+            } else if (unique.length > 0) {
+              // If no new, set last seen to latest
+              const latest = unique.reduce((a, b) =>
+                new Date(a.timestamp) > new Date(b.timestamp) ? a : b
+              );
+              sessionStorage.setItem(lastSeenKey, latest.timestamp);
+              localStorage.setItem(lastSeenKey, latest.timestamp);
+            }
+          } else if (unique.length > 0) {
+            // First page load: only set last seen if all notifications are old
+            const allOld = unique.every(
+              (msg) => new Date(msg.timestamp).getTime() < mountTime - 1000
+            ); // 1s buffer
+            if (allOld) {
+              const latest = unique.reduce((a, b) =>
+                new Date(a.timestamp) > new Date(b.timestamp) ? a : b
+              );
+              sessionStorage.setItem(lastSeenKey, latest.timestamp);
+              localStorage.setItem(lastSeenKey, latest.timestamp);
+            } else {
+              // If any are new, show them
+              const newOnes = unique.filter(
+                (msg) => new Date(msg.timestamp).getTime() >= mountTime - 1000
+              );
+              setNewAndUndelivered(newOnes);
+              setNotificationCount(newOnes.length);
+              setNotificationOpen(true);
+              const latest = unique.reduce((a, b) =>
+                new Date(a.timestamp) > new Date(b.timestamp) ? a : b
+              );
+              sessionStorage.setItem(lastSeenKey, latest.timestamp);
+              localStorage.setItem(lastSeenKey, latest.timestamp);
+            }
+          }
+        } catch (err) {
+          console.error("❌ Initial fetch error:", err);
+        }
       },
     });
-
     client.activate();
-    return () => client.deactivate();
-  }, [token, notifications]);
-
-  useEffect(() => {
-    if (notificationCount > 0 && !notificationOpen && notifications.length > 0) {
-      const latest = notifications[0];
-      const key = `viewed-${latest.timestamp}-${latest.message}`;
-      if (!sessionStorage.getItem(key)) {
-        setNotificationOpen(true);
-        sessionStorage.setItem(key, "true");
+    return () => {
+      // On unmount, set last seen to latest notification if available
+      if (notifications && notifications.length > 0) {
+        const latest = notifications.reduce((a, b) =>
+          new Date(a.timestamp) > new Date(b.timestamp) ? a : b
+        );
+        sessionStorage.setItem(lastSeenKey, latest.timestamp);
+        localStorage.setItem(lastSeenKey, latest.timestamp);
       }
-    }
-  }, [notificationCount, notifications, notificationOpen]);
+      client.deactivate();
+    };
+  }, [token]);
 
-  const hasData = percentageData.completedPercentage !== 0 || percentageData.pendingPercentage !== 0;
+  // No auto-popup for old unseen notifications; only popup for new/undelivered
+
+  const hasData =
+    percentageData.completedPercentage !== 0 ||
+    percentageData.pendingPercentage !== 0;
 
   const data = {
     labels: hasData ? ["Completed", "Pending"] : ["No Data"],
     datasets: [
       {
         data: hasData
-          ? [percentageData.completedPercentage, percentageData.pendingPercentage]
+          ? [
+              percentageData.completedPercentage,
+              percentageData.pendingPercentage,
+            ]
           : [1],
         backgroundColor: hasData ? ["#4CAF50", "#FF9800"] : ["#d3d3d3"],
         borderWidth: 1,
@@ -225,7 +306,8 @@ const ManagerDashboard = () => {
     if (elements.length > 0) {
       const clickedIndex = elements[0].index;
       if (clickedIndex === 0) navigate(`/completed-assessments/${managerId}`);
-      else if (clickedIndex === 1) navigate(`/pending-assessments/${managerId}`);
+      else if (clickedIndex === 1)
+        navigate(`/pending-assessments/${managerId}`);
     }
   };
 
@@ -238,72 +320,130 @@ const ManagerDashboard = () => {
         </div>
         <ul>
           <li>
-            <NavLink to="/manager-dashboard" className={({ isActive }) => (isActive ? "active" : "")}>Dashboard</NavLink>
+            <NavLink
+              to="/manager-dashboard"
+              className={({ isActive }) => (isActive ? "active" : "")}
+            >
+              Dashboard
+            </NavLink>
           </li>
           <li>
-            <Link to={managerId ? `/my-team/${managerId}` : "#"} className={`sidebar-link-btn${!managerId ? " disabled" : ""}`}>My Team</Link>
+            <Link
+              to={managerId ? `/my-team/${managerId}` : "#"}
+              className={`sidebar-link-btn${!managerId ? " disabled" : ""}`}
+            >
+              My Team
+            </Link>
           </li>
           <li>
             <Link to="/manager-profile">My Profile</Link>
           </li>
           <li className="mobile-only">
-            <button className="logout button" onClick={() => { localStorage.clear(); navigate("/"); }}>Logout</button>
+            <button
+              className="logout button"
+              onClick={() => {
+                localStorage.clear();
+                navigate("/");
+              }}
+            >
+              Logout
+            </button>
           </li>
         </ul>
       </div>
 
       <div className="main-content">
         <div className="dashboard-header">
-          <button className="sidebar-toggle hum-btn" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
+          <button
+            className="sidebar-toggle hum-btn"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            ☰
+          </button>
           <h1>Manager PMS Dashboard</h1>
           <img src={logo} alt="Logo" className="dashboard-logo" />
           <div className="header-icons" style={{ position: "relative" }}>
             <div style={{ position: "relative" }}>
-              <Bell className="notification-icon" onClick={() => {
-                setNotificationOpen(!notificationOpen);
-                if (!notificationOpen) {
-                  notifications.forEach((msg) => {
-                    const key = `viewed-${msg.timestamp}-${msg.message}`;
-                    sessionStorage.setItem(key, "true");
-                  });
-                  setNotificationCount(0);
-                }
-              }} />
-              {notificationCount > 0 && <span className="notification-badge">{notificationCount}</span>}
+              <Bell
+                className="notification-icon"
+                onClick={() => {
+                  setNotificationOpen(!notificationOpen);
+                  if (!notificationOpen) {
+                    setNewAndUndelivered([]);
+                    setNotificationCount(0);
+                  }
+                }}
+              />
+              {notificationCount > 0 && (
+                <span className="notification-badge">{notificationCount}</span>
+              )}
             </div>
             {notificationOpen && (
-              <Notification notifications={Array.isArray(notifications) ? notifications : []} onClose={() => setNotificationOpen(false)} />
+              <Notification
+                notifications={
+                  Array.isArray(notifications) ? notifications : []
+                }
+                onClose={() => setNotificationOpen(false)}
+              />
             )}
-            <button className="logout-btn desktop-only" onClick={() => {
-              localStorage.clear();
-              navigate("/");
-            }}>Logout</button>
+            <button
+              className="logout-btn desktop-only"
+              onClick={() => {
+                localStorage.clear();
+                navigate("/");
+              }}
+            >
+              Logout
+            </button>
           </div>
         </div>
 
         <div className="stats-container">
           <div className="stat-card">
             <Users className="stat-icon team-icon" />
-            <div className="stat-text">
-              <h2>Total Team Members</h2>
-              <p>{teamSize}</p>
-            </div>
+            <Link
+              to={managerId ? `/my-team/${managerId}` : "#"}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              <div className="stat-text">
+                <h2>Total Team Members</h2>
+                <p>{teamSize}</p>
+              </div>
+            </Link>
           </div>
-        <div className="stat-card">
-  <NotebookPen className="stat-icon pending-icon" />
-  <div className="stat-text">
-    <h2>Assessments Pending</h2>
-    <p>{`${assessmentCount.pending}/${teamSize} (${teamSize !== 0 ? Math.round((assessmentCount.pending / teamSize) * 100) : 0}%)`}</p>
-  </div>
-</div>
-<div className="stat-card">
-  <CheckCircle className="stat-icon complete-icon" />
-  <div className="stat-text">
-    <h2>Assessments Complete</h2>
-    <p>{`${assessmentCount.completed}/${teamSize} (${teamSize !== 0 ? Math.round((assessmentCount.completed / teamSize) * 100) : 0}%)`}</p>
-  </div>
-</div>
 
+          <div className="stat-card">
+            <NotebookPen className="stat-icon pending-icon" />
+            <Link 
+             to={managerId ? `/pending-assessments/${managerId}` : "#"}
+              style={{ textDecoration: "none", color: "inherit" }}
+             >
+            <div className="stat-text">
+              <h2>Assessments Pending</h2>
+              <p>{`${assessmentCount.pending}/${teamSize} (${
+                teamSize !== 0
+                  ? Math.round((assessmentCount.pending / teamSize) * 100)
+                  : 0
+              }%)`}</p>
+            </div>
+            </Link>
+          </div>
+          <div className="stat-card">
+            <CheckCircle className="stat-icon complete-icon" />
+            <Link 
+            to={managerId ? `/completed-assessments/${managerId}` : "#"}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+            <div className="stat-text">
+              <h2>Assessments Complete</h2>
+              <p>{`${assessmentCount.completed}/${teamSize} (${
+                teamSize !== 0
+                  ? Math.round((assessmentCount.completed / teamSize) * 100)
+                  : 0
+              }%)`}</p>
+            </div>
+            </Link>
+          </div>
         </div>
 
         <div className="chart-container">

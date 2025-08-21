@@ -7,6 +7,14 @@ import jakarta.persistence.*;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+/**
+ * Represents a Key Result Area (KRA).
+ * <p>
+ * A KRA defines a strategic objective or responsibility area within the organization.
+ * It contains one or more Key Performance Indicators (KPIs) and can be associated with a
+ * {@link KraKpi} entity that manages combined KRA/KPI assignments.
+ */
+
 @Entity
 @Table(name = "kra")
 public class KRA {

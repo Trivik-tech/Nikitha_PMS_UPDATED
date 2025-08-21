@@ -9,18 +9,37 @@ import com.triviktech.repositories.hr.HRRepository;
 import com.triviktech.repositories.manager.ManagerRepository;
 import com.triviktech.utilities.email.EmailService;
 import com.triviktech.utilities.email.Message;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.triviktech.entities.employee.EmployeeInformation;
 import com.triviktech.repositories.employee.EmployeeInformationRepository;
 
 import jakarta.servlet.http.HttpSession;
+
+/**
+ * Implementation of the {@link ForgotPasswordService} interface.
+ * <p>
+ * This service handles the OTP generation, validation, and password reset
+ * functionality for Employees, HR, and Managers in the system.
+ * </p>
+ *
+ * Features:
+ * - Generates a secure OTP and sends it via email.
+ * - Validates OTPs stored in cache against user input.
+ * - Resets password securely using BCrypt hashing.
+ * - Supports Employee, HR, and Manager repositories.
+ *
+ * Dependencies:
+ * - {@link HttpSession} to store email temporarily during reset flow.
+ * - {@link CacheManager} to store OTPs temporarily.
+ * - {@link EmployeeInformationRepository}, {@link HRRepository}, {@link ManagerRepository}
+ *   for persistence updates.
+ * - {@link EmailService} for sending OTP and reset success emails.
+ */
 
 @Service
 public class ForgotPasswordServiceImpl implements ForgotPasswordService {

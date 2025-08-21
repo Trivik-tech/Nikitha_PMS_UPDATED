@@ -8,6 +8,14 @@ import jakarta.persistence.*;
 
 import java.util.Date;
 
+/**
+ * Represents an Employee entity in the system.
+ * This entity stores employee details like name, contact info, joining date,
+ * designation, role, department, manager, HR, etc.
+ *
+ * It is mapped to the "employee" table in the database.
+ */
+
 
 @Entity
 @Table(name = "employee")
