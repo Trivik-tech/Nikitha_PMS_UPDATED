@@ -27,16 +27,16 @@ const DeleteConfirmation = ({ isOpen, onClose, onConfirm , name,id}) => {
       <div className="delete-modal-content">
         {!isDeleted ? (
           <>
-            <h2>Confirm Delete</h2>
-            <p>Are you sure you want to delete <strong>{name} ({id})</strong></p>
+            <h2>Confirm Inactive</h2>
+            <p>Are you sure you want to Inactive <strong>{name} ({id})</strong></p>
             <div className="delete-modal-buttons">
               <button className="cancel-btn" onClick={onClose}>Cancel</button>
-              <button className="confirm-btn" onClick={handleConfirm}>Delete</button>
+              <button className="confirm-btn" onClick={handleConfirm}>Inactive</button>
             </div>
           </>
         ) : (
           <div className="delete-success-message">
-            <h3>Employee deleted successfully</h3>
+            <h3>Employee Inactive successfully</h3>
           </div>
         )}
       </div>

@@ -503,6 +503,15 @@ const getKeyMatrix = async () => {
             <li><Link to="/employee-list">Employee List</Link></li>
             <li><Link to="/hr-startpms">Employee Performance</Link></li>
             <li><Link to="/hr-profile">My Profile</Link></li>
+             <button
+                className="hr-dashboard-logoutButton desktop-only"
+                onClick={() => {
+                  localStorage.clear();
+                  navigate("/");
+                }}
+              >
+                Logout
+              </button>
             {isMobile() && (
               <li>
                 <button onClick={() => { localStorage.clear(); navigate("/"); }} className="logout-button">
@@ -545,7 +554,7 @@ const getKeyMatrix = async () => {
                   <span className="notification-badge">{notificationCount}</span>
                 )}
               </div>
-              <button
+              {/* <button
                 className="hr-dashboard-logoutButton desktop-only"
                 onClick={() => {
                   localStorage.clear();
@@ -553,7 +562,7 @@ const getKeyMatrix = async () => {
                 }}
               >
                 Logout
-              </button>
+              </button> */}
             </div>
           </header>
 

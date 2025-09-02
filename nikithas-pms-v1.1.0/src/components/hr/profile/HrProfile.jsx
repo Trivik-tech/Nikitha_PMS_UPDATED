@@ -76,7 +76,7 @@ const HrProfile = () => {
             <p><strong>HR ID:</strong> {hrData?.hrId || "N/A"}</p>
             <p><strong>Designation:</strong> {hrData?.currentDesignation || "N/A"}</p>
             <p><strong>Department:</strong> {hrData?.department || "N/A"}</p>
-            <p><strong>Category:</strong> {hrData?.category || "N/A"}</p>
+            <p><strong>Grade:</strong> {hrData?.category || "N/A"}</p>
             <p><strong>Reporting Manager:</strong> {hrData?.reportingManager || "N/A"}</p>
             <p><strong>Branch:</strong> {hrData?.branch || "N/A"}</p>
             <p><strong>Date of Joining:</strong> {hrData?.dateOfJoining || "N/A"}</p>

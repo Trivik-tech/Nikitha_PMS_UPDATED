@@ -86,7 +86,7 @@ body {
   padding: 8px 10px 8px 30px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  width: 300px;
+  width: 600px !important;
   transition: box-shadow 0.3s ease-in-out;
 }
 
