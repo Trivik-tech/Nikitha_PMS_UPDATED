@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaSearch, FaHome, FaEdit, FaTrash, FaDownload } from "react-icons/fa";
+import { FaSearch, FaHome, FaEdit, FaDownload } from "react-icons/fa";
 import logo from "../../../assets/images/nikithas-logo.png";
 import "./EmpResponsive.css";
 import "./EmployeeList.css";
@@ -17,7 +17,7 @@ export default function EmployeeList() {
   const [sortOrder, setSortOrder] = useState("asc");
   const [hasServerError, setHasServerError] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [employeeToDelete, setEmployeeToDelete] = useState(null);
+  const [employeeToUpdate, setEmployeeToUpdate] = useState(null);
   const [employeeName, setEmployeeName] = useState(null);
   const [successModal, setSuccessModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -25,7 +25,7 @@ export default function EmployeeList() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  const hasFetchedRef = useRef(false); // Fix for duplicate API call in StrictMode
+  const hasFetchedRef = useRef(false);
 
   const fetchEmployees = async () => {
     try {
@@ -42,14 +42,13 @@ export default function EmployeeList() {
     }
   };
 
- useEffect(() => {
-  if (!hasFetchedRef.current) {
-    fetchEmployees();
-    hasFetchedRef.current = true;
-  }
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, []);
-
+  useEffect(() => {
+    if (!hasFetchedRef.current) {
+      fetchEmployees();
+      hasFetchedRef.current = true;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const entriesPerPage = 10;
   const filteredTeam = team.filter((member) =>
@@ -67,7 +66,6 @@ export default function EmployeeList() {
         ? (a.name || "").localeCompare(b.name || "")
         : (b.name || "").localeCompare(a.name || "")
     );
-
     setTeam(sorted);
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
@@ -94,26 +92,32 @@ export default function EmployeeList() {
     }
   };
 
-  const handleDeleteClick = (id, employeeName) => {
-    setEmployeeToDelete(id);
+  const handleInactiveClick = (id, employeeName) => {
+    setEmployeeToUpdate(id);
     setEmployeeName(employeeName);
     setModalOpen(true);
   };
 
-  const deleteEmployee = async () => {
-    if (!employeeToDelete) return;
+  const inactivateEmployee = async () => {
+    if (!employeeToUpdate) return;
 
     try {
-      await axios.delete(`${baseUrl}/api/v1/pms/hr/delete-employee/${employeeToDelete}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setEmployeeToDelete(null);
+      await axios.put(
+        `${baseUrl}/api/v1/pms/hr/inactivate-employee/${employeeToUpdate}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setEmployeeToUpdate(null);
       setModalOpen(false);
       fetchEmployees();
+      setModalMessage("Employee marked as inactive successfully.");
+      setSuccessModal(true);
     } catch (error) {
-      console.error("Error deleting employee:", error.message);
+      console.error("Error inactivating employee:", error.message);
     }
   };
 
@@ -144,7 +148,7 @@ export default function EmployeeList() {
     }
   };
 
-  const handleExportData= async()=>{
+  const handleExportData = async () => {
     try {
       const response = await axios.get(`${baseUrl}/api/v1/pms/hr/generate-employee-list`, {
         headers: {
@@ -153,14 +157,13 @@ export default function EmployeeList() {
       });
 
       if (response.status === 200) {
-        setModalMessage("Employee List PDF  generated and downloaded successfully.");
+        setModalMessage("Employee List PDF generated and downloaded successfully.");
         setSuccessModal(true);
       }
     } catch (error) {
       console.error("PDF download failed:", error.message);
     }
-
-  }
+  };
 
   const isMobile = false;
 
@@ -239,11 +242,12 @@ export default function EmployeeList() {
                               navigate(`/update-employee/${encryptedId}`);
                             }}
                           />
-                          <FaTrash
-                            className="employee-list-delete-icon"
-                            title="Delete"
-                            onClick={() => handleDeleteClick(member.empId, member.name)}
-                          />
+                          <button
+                            className="employee-list-inactive-button"
+                            onClick={() => handleInactiveClick(member.empId, member.name)}
+                          >
+                            Inactive
+                          </button>
                           <FaDownload
                             className="employee-list-edit-icon"
                             title="Download"
@@ -271,7 +275,7 @@ export default function EmployeeList() {
               <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
                 Next
               </button>
-              <button title="export" onClick={()=>handleExportData()}>Export <FaDownload /></button>
+              <button title="export" onClick={() => handleExportData()}>Export <FaDownload /></button>
             </div>
           )}
         </div>
@@ -280,11 +284,11 @@ export default function EmployeeList() {
           isOpen={modalOpen}
           onClose={() => {
             setModalOpen(false);
-            setEmployeeToDelete(null);
+            setEmployeeToUpdate(null);
           }}
-          onConfirm={deleteEmployee}
+          onConfirm={inactivateEmployee}
           name={employeeName}
-          id={employeeToDelete}
+          id={employeeToUpdate}
         />
 
         {successModal && (
