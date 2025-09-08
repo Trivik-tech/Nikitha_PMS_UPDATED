@@ -60,6 +60,7 @@ export default function EmployeeList() {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTeam(response.data);
+        console.log(response.data)
         setHasServerError(false);
       } catch (error) {
         console.error("Search failed:", error.message);
@@ -212,7 +213,7 @@ export default function EmployeeList() {
                       <td>{member.empId || "-"}</td>
                       <td>{member.name || "-"}</td>
                       <td>{member.department || "-"}</td>
-                      <td>{member.officialEmailId || "-"}</td>
+                      <td>{member.emailId || "-"}</td>
                       <td>{formatDate(member.dateOfJoining)}</td>
                       <td>{member.role || "-"}</td>
                       <td onClick={(e) => e.stopPropagation()}>

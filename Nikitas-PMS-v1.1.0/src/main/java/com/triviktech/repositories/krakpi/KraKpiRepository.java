@@ -87,4 +87,47 @@ public interface KraKpiRepository extends JpaRepository<KraKpi, Long> {
      */
     @Query("SELECT k from KraKpi k where k.employeeInformation.empId=:employeeId")
     List<KraKpi> findAllByEmployeeId(@Param("employeeId") String employeeId);
+
+
+    /**
+     * Fetches all KRA/KPI records for a specific employee in a given year.
+     *
+     * <p>This query uses the database YEAR() function on the {@code createdAt} field
+     * to filter records by the provided year. It also filters by the employee's ID.</p>
+     *
+     * @param empId the unique employee ID
+     * @param year  the year to filter KRA/KPI records (e.g., 2025)
+     * @return a list of {@link KraKpi} entities belonging to the employee for that year
+     */
+    @Query("SELECT k FROM KraKpi k " +
+            "WHERE FUNCTION('YEAR', k.createdAt) = :year " +
+            "AND k.employeeInformation.empId = :empId")
+    List<KraKpi> findByEmployeeAndYear(String empId, int year);
+
+
+    @Query("SELECT k FROM KraKpi k " +
+            "WHERE FUNCTION('YEAR', k.createdAt) = :year " +
+            "AND FUNCTION('MONTH', k.createdAt) BETWEEN :startMonth AND :endMonth " +
+            "AND k.employeeInformation.empId = :empId")
+    List<KraKpi> findByEmployeeAndQuarter(@Param("empId") String empId,
+                                          @Param("year") int year,
+                                          @Param("startMonth") int startMonth,
+                                          @Param("endMonth") int endMonth);
+
+    @Query("SELECT k FROM KraKpi k " +
+            "WHERE FUNCTION('YEAR', k.createdAt) = :year " +
+            "AND FUNCTION('MONTH', k.createdAt) BETWEEN :startMonth AND :endMonth " +
+            "AND (:month IS NULL OR FUNCTION('MONTH', k.createdAt) = :month)"+
+            "AND k.employeeInformation.empId = :empId")
+    List<KraKpi> findByEmployeeAndQuarterAndMonth(@Param("empId") String empId,
+                                          @Param("year") int year,
+                                          @Param("startMonth") int startMonth,
+                                          @Param("endMonth") int endMonth,
+                                          @Param("month") int month);
+
+
+
+
+
+
 }

@@ -45,6 +45,7 @@ public class EmployeeServiceImpl implements EmployeeService{
             EmployeeInformation employeeInformation = byId.get();
               EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employeeInformation, EmployeeInfo.class);
               employeeInfo.setDepartment(employeeInformation.getDepartment().getName());
+              employeeInfo.setReportingManager(employeeInformation.getManager().getName());
               return  employeeInfo;
         }else{
             throw new EmployeeNotFoundException(employeeId);

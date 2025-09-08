@@ -21,10 +21,13 @@ import com.triviktech.repositories.krakpi.KraKpiRepository;
 import com.triviktech.utilities.email.EmailService;
 import com.triviktech.utilities.email.Message;
 import com.triviktech.utilities.entitydtoconversion.EntityDtoConversion;
+import com.triviktech.utilities.xlsxsupport.XlsxSupport;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -162,7 +165,7 @@ public class KraKpiServiceImpl implements KraKpiService {
             String to = mgr.getEmailId();
             String message = String.format(Message.KRA_KPI_MESSAGE_TO_MANAGER,
                     mgr.getName(), emp.getName(), emp.getEmpId());
-            emailService.sendEmail(to, sub, message);
+//            emailService.sendEmail(to, sub, message);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -346,4 +349,105 @@ public class KraKpiServiceImpl implements KraKpiService {
         return Map.of("krakpis",collect);
     }
 
+    @Override
+    public Map<String,  List<XlsxSupport.KRA>> uploadKraKpi(MultipartFile file) {
+
+        try {
+            List<XlsxSupport.KRA> kras = XlsxSupport.convertExcelToKraKpiList(file.getInputStream());
+            return Map.of("kra_kpi",kras);
+        }catch (Exception e){
+            throw new RuntimeException("Upload failed");
+        }
+
+    }
+
+    @Override
+    public Map<String, List<KraKpiResponseDto>> listOfKraKpiByYearWise(String empId,String year) {
+        int yr = Integer.parseInt(year);
+
+        // Fetch from DB
+        List<KraKpi> kraKpiList = kraKpiRepository.findByEmployeeAndYear(empId,yr);
+
+        List<KraKpiResponseDto> kraKpiResponseDtos = kraKpiResponseUtils(kraKpiList);
+        // Wrap into Map<String, List<>>
+        Map<String, List<KraKpiResponseDto>> response = new HashMap<>();
+        response.put(year, kraKpiResponseDtos);
+
+        return response;
+    }
+
+    @Override
+    public Map<String, List<KraKpiResponseDto>> listOfKraKpiByQuarterWise(String empId, String year, int quarter) {
+        int yr = Integer.parseInt(year);
+
+        // Map quarter to start & end month (Indian Financial Year)
+        int startMonth, endMonth;
+        switch (quarter) {
+            case 1: // Q1 = Apr - Jun
+                startMonth = 4; endMonth = 6; break;
+            case 2: // Q2 = Jul - Sep
+                startMonth = 7; endMonth = 9; break;
+            case 3: // Q3 = Oct - Dec
+                startMonth = 10; endMonth = 12; break;
+            case 4: // Q4 = Jan - Mar (belongs to next calendar year)
+                startMonth = 1; endMonth = 3;
+                yr = yr + 1; // shift to next calendar year
+                break;
+            default:
+                throw new IllegalArgumentException("Quarter must be between 1 and 4");
+        }
+
+        // Fetch from DB
+        List<KraKpi> krakpiList = kraKpiRepository.findByEmployeeAndQuarter(empId, yr, startMonth, endMonth);
+        List<KraKpiResponseDto> kraKpiData = kraKpiResponseUtils(krakpiList);
+
+        return Map.of("krakpi",kraKpiData);
+    }
+
+    @Override
+    public Map<String, List<KraKpiResponseDto>> listOfKraKpisByMonthsWise(String empId, String year, int quarter, int month) {
+        int yr = Integer.parseInt(year);
+
+        // Map quarter to start & end month (Indian Financial Year)
+        int startMonth, endMonth;
+        switch (quarter) {
+            case 1: // Q1 = Apr - Jun
+                startMonth = 4; endMonth = 6; break;
+            case 2: // Q2 = Jul - Sep
+                startMonth = 7; endMonth = 9; break;
+            case 3: // Q3 = Oct - Dec
+                startMonth = 10; endMonth = 12; break;
+            case 4: // Q4 = Jan - Mar (belongs to next calendar year)
+                startMonth = 1; endMonth = 3;
+                yr = yr + 1; // shift to next calendar year
+                break;
+            default:
+                throw new IllegalArgumentException("Quarter must be between 1 and 4");
+        }
+
+        // Fetch from DB
+        List<KraKpi> krakpiList = kraKpiRepository.findByEmployeeAndQuarterAndMonth(empId, yr, startMonth, endMonth,month);
+        List<KraKpiResponseDto> kraKpiData = kraKpiResponseUtils(krakpiList);
+
+        return Map.of("krakpi",kraKpiData);
+    }
+
+
+    private List<KraKpiResponseDto> kraKpiResponseUtils(List<KraKpi> krakpiList){
+       return krakpiList.stream().map(kraKpi -> {
+            KraKpiResponseDto kraKpiResponse = entityDtoConversion.entityToDtoConversion(kraKpi, KraKpiResponseDto.class);
+            Set<KraResponseDto1> kraList = kraKpi.getKra().stream().map(kra -> {
+                KraResponseDto1 kraResponse = entityDtoConversion.entityToDtoConversion(kra, KraResponseDto1.class);
+                Set<KpiResponseDto> kpiResponse = kra.getKpi().stream().map(kpi -> entityDtoConversion.entityToDtoConversion(kpi, KpiResponseDto.class)).collect(Collectors.toSet());
+                kraResponse.setKpi(kpiResponse);
+                return kraResponse;
+            }).collect(Collectors.toSet());
+            kraKpiResponse.setKra(kraList);
+            EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(kraKpi.getEmployeeInformation(), EmployeeInfo.class);
+            employeeInfo.setDepartment(kraKpi.getEmployeeInformation().getDepartment().getName());
+            kraKpiResponse.setEmployee(employeeInfo);
+            return kraKpiResponse;
+        }).collect(Collectors.toList());
+
+    }
 }

@@ -30,15 +30,16 @@ const Performance = () => {
           },
         }
       );
+      console.log(result.data.krakpis);
       setKraKpis(result.data.krakpis || []);
     } catch (error) {
       console.log(error);
     }
   };
 
-  // Group KPIs by year
+  // ✅ Group KPIs by createdAt year instead of dateOfJoining
   const groupedByYear = kraKpis.reduce((acc, item) => {
-    const year = new Date(item.employee.dateOfJoining).getFullYear();
+    const year = new Date(item.createdAt).getFullYear();
     if (!acc[year]) acc[year] = [];
     acc[year].push(item);
     return acc;
@@ -47,7 +48,7 @@ const Performance = () => {
   // Helper function to get average out of 100
   const getAverageOutOf100 = (arr, key) => {
     if (!arr.length) return '0/100';
-    const avg = arr.reduce((sum, kpi) => sum + kpi[key], 0) / arr.length;
+    const avg = arr.reduce((sum, kpi) => sum + (kpi[key] || 0), 0) / arr.length;
     return `${Math.round(avg * 10)}/100`;
   };
 
@@ -84,31 +85,38 @@ const Performance = () => {
 
                   {/* KPI List */}
                   {kraItem.kpi.map((kpi) => (
-                    <div
-                      key={kpi.id}
-                      className="employee-module-kpi-block"
-                    >
+                    <div key={kpi.id} className="employee-module-kpi-block">
                       <div className="employee-module-kra-details">
                         KPI: {kpi.description}
                       </div>
 
-                      {/* Ratings (changed here for out of 100 display) */}
+                      {/* Ratings */}
                       <div className="employee-module-rating">
                         <div>
-                          Self Rating: {kpi.selfScore ? Math.round(kpi.selfScore * 10) : 0}/100
+                          Self Rating:{' '}
+                          {kpi.selfScore
+                            ? Math.round(kpi.selfScore * 10)
+                            : 0}
+                          /100
                         </div>
                         <div>
-                          Manager Rating: {kpi.managerScore ? Math.round(kpi.managerScore * 10) : 0}/100
+                          Manager Rating:{' '}
+                          {kpi.managerScore
+                            ? Math.round(kpi.managerScore * 10)
+                            : 0}
+                          /100
                         </div>
                       </div>
 
                       {/* Remarks */}
                       <div className="employee-module-remarks">
                         <div>
-                          Employee Remark: {kpi.employeeRemark || 'No remark provided'}
+                          Employee Remark:{' '}
+                          {kpi.employeeRemark || 'No remark provided'}
                         </div>
                         <div>
-                          Manager Remark: {kpi.managerRemark || 'No remark provided'}
+                          Manager Remark:{' '}
+                          {kpi.managerRemark || 'No remark provided'}
                         </div>
                       </div>
                     </div>
@@ -125,7 +133,7 @@ const Performance = () => {
                   const allKpis = groupedByYear[year]
                     .flatMap((item) => item.kra)
                     .flatMap((kra) => kra.kpi);
-                  return getAverageOutOf100(allKpis, "selfScore");
+                  return getAverageOutOf100(allKpis, 'selfScore');
                 })()}
               </span>
               <span>
@@ -134,7 +142,7 @@ const Performance = () => {
                   const allKpis = groupedByYear[year]
                     .flatMap((item) => item.kra)
                     .flatMap((kra) => kra.kpi);
-                  return getAverageOutOf100(allKpis, "managerScore");
+                  return getAverageOutOf100(allKpis, 'managerScore');
                 })()}
               </span>
             </div>

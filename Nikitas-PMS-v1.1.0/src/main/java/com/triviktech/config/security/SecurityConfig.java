@@ -60,7 +60,7 @@ public class SecurityConfig {
                                 "/ws/**"               // WebSocket endpoints
                         ).permitAll()
                         .requestMatchers("/api/v1/pms/manager/**").hasRole("MANAGER")
-                        .requestMatchers("/api/v1/pms/hr/**").hasRole("HR")
+                        .requestMatchers("/api/v1/pms/hr/**","/api/v1/pms/krakpi/**").hasRole("HR")
                         .requestMatchers("/api/v1/pms/employee/**").hasRole("EMPLOYEE")
                         .anyRequest().authenticated()
                 )

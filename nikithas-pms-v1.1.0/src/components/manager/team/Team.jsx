@@ -13,7 +13,7 @@ export default function TeamPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
-  const entriesPerPage = 6;
+  const entriesPerPage = 10;
   const intervalRef = useRef(null);
   const { id: managerId } = useParams();
 
