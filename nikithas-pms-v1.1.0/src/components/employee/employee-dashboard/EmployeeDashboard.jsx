@@ -233,6 +233,14 @@ const EmployeeDashboard = () => {
           <li>
             <Link to={`/add-krakpi/${employeeData?.empId}`} onClick={handleSidebarClose}>Add KRA|KPI</Link>
           </li>
+           <li>
+            <button className="employee-logout-btn" 
+             onClick={() => {
+                  localStorage.clear();
+                  navigate("/");
+                }}
+            >Logout</button>
+          </li>
         </ul>
         <button
           className="employee-sidebar-logout-btn"
@@ -246,7 +254,7 @@ const EmployeeDashboard = () => {
       <main className="employee-main-content">
         <header className="employee-dashboard-header">
           <div className="employee-dashboard-title">Employee Dashboard</div>
-          <div className="employee-dashboard-logo"><img src={logo} alt="Nikitha PMS" /></div>
+          
           <div className="employee-dashboard-actions">
             <div style={{ position: 'relative' }}>
               <Bell
@@ -257,6 +265,7 @@ const EmployeeDashboard = () => {
                 <span className="notif-count">{notificationCount}</span>
               )}
             </div>
+            
             <button
               className="employee-logout-btn"
               onClick={() => {
@@ -265,6 +274,7 @@ const EmployeeDashboard = () => {
               }}
             >Logout</button>
           </div>
+          <div className="employee-dashboard-logo"><img src={logo} alt="Nikitha PMS" /></div>
         </header>
 
         <section className="employee-info-container">

@@ -45,7 +45,6 @@ body {
   animation: slideDown 0.5s ease-in-out;
 }
 
-
 .employee-list-left {
   display: flex;
   align-items: center;
@@ -118,7 +117,6 @@ body {
   text-align: center;
 }
 
-
 .employee-list-add-button:hover {
   background-color: #333533;
   transform: scale(1.05);
@@ -176,6 +174,30 @@ body {
 
 .employee-list-delete-icon:hover {
   color: #a71d2a;
+}
+
+/* Inactive Button */
+.employee-list-inactive-button {
+  background-color: #ffc107;
+  color: #333;
+  border: none;
+  padding: 6px 12px;
+  margin: 0 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.employee-list-inactive-button:hover {
+  background-color: #2de000;
+  transform: scale(1.05);
+}
+
+.employee-list-inactive-button:active {
+  background-color: #07c600;
+  transform: scale(0.97);
 }
 
 /* Pagination */

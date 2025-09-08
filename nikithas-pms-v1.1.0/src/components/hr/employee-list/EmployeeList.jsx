@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaSearch, FaHome, FaEdit, FaTrash, FaDownload } from "react-icons/fa";
+import { FaSearch, FaHome, FaEdit, FaDownload, FaTrash } from "react-icons/fa";
 import logo from "../../../assets/images/nikithas-logo.png";
 import "./EmpResponsive.css";
 import "./EmployeeList.css";
@@ -18,7 +18,7 @@ export default function EmployeeList() {
   const [sortOrder, setSortOrder] = useState("asc");
   const [hasServerError, setHasServerError] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [employeeToDelete, setEmployeeToDelete] = useState(null);
+  const [employeeToUpdate, setEmployeeToUpdate] = useState(null);
   const [employeeName, setEmployeeName] = useState(null);
   const [successModal, setSuccessModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -60,13 +60,13 @@ export default function EmployeeList() {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTeam(response.data);
-        console.log(response.data)
+        console.log(response.data);
         setHasServerError(false);
       } catch (error) {
         console.error("Search failed:", error.message);
         setHasServerError(true);
       }
-    }, 300); // 300ms debounce
+    }, 300);
 
     return () => clearTimeout(delayDebounce);
   }, [searchTerm]);
@@ -81,23 +81,29 @@ export default function EmployeeList() {
     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
   };
 
-  const handleDeleteClick = (id, employeeName) => {
-    setEmployeeToDelete(id);
+  const handleInactiveClick = (id, employeeName) => {
+    setEmployeeToUpdate(id);
     setEmployeeName(employeeName);
     setModalOpen(true);
   };
 
-  const deleteEmployee = async () => {
-    if (!employeeToDelete) return;
+  const inactivateEmployee = async () => {
+    if (!employeeToUpdate) return;
     try {
-      await axios.delete(`${baseUrl}/api/v1/pms/hr/delete-employee/${employeeToDelete}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setEmployeeToDelete(null);
+      await axios.put(
+        `${baseUrl}/api/v1/pms/hr/inactivate-employee/${employeeToUpdate}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setEmployeeToUpdate(null);
       setModalOpen(false);
       fetchEmployees();
+      setModalMessage("Employee marked as inactive successfully.");
+      setSuccessModal(true);
     } catch (error) {
-      console.error("Error deleting employee:", error.message);
+      console.error("Error inactivating employee:", error.message);
     }
   };
 
@@ -142,11 +148,14 @@ export default function EmployeeList() {
     }
   };
 
+  // Pagination
   const entriesPerPage = 10;
   const filteredTeam = team;
   const totalPages = Math.ceil(filteredTeam.length / entriesPerPage);
   const startIndex = (currentPage - 1) * entriesPerPage;
   const currentEntries = filteredTeam.slice(startIndex, startIndex + entriesPerPage);
+
+  const isMobile = false; // can enhance later with window size
 
   return (
     <div className="employee-list-fullpage">
@@ -188,58 +197,65 @@ export default function EmployeeList() {
 
           <div className="employee-list-table-container">
             <div className="employee-list-table-scroll">
-              <table className="employee-list-team-table">
-                <thead>
-                  <tr>
-                    <th onClick={handleSort} style={{ cursor: "pointer" }}>Id</th>
-                    <th>Name</th>
-                    <th>Department</th>
-                    <th>Email</th>
-                    <th>Date of Joining</th>
-                    <th>Role</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentEntries.map((member) => (
-                    <tr
-                      key={member.id}
-                      onClick={() => {
-                        const encryptedId = encrypt(member.empId);
-                        navigate(`/employee-info/${encryptedId}`);
-                      }}
-                      style={{ cursor: "pointer" }}
-                    >
-                      <td>{member.empId || "-"}</td>
-                      <td>{member.name || "-"}</td>
-                      <td>{member.department || "-"}</td>
-                      <td>{member.emailId || "-"}</td>
-                      <td>{formatDate(member.dateOfJoining)}</td>
-                      <td>{member.role || "-"}</td>
-                      <td onClick={(e) => e.stopPropagation()}>
-                        <FaEdit
-                          className="employee-list-edit-icon"
-                          title="Edit"
-                          onClick={() => {
-                            const encryptedId = encrypt(member.empId);
-                            navigate(`/update-employee/${encryptedId}`);
-                          }}
-                        />
-                        <FaTrash
-                          className="employee-list-delete-icon"
-                          title="Delete"
-                          onClick={() => handleDeleteClick(member.empId, member.name)}
-                        />
-                        <FaDownload
-                          className="employee-list-edit-icon"
-                          title="Download"
-                          onClick={() => handleDownloadData(member.empId)}
-                        />
-                      </td>
+              {!isMobile ? (
+                <table className="employee-list-team-table">
+                  <thead>
+                    <tr>
+                      <th onClick={handleSort} style={{ cursor: "pointer" }}>ID</th>
+                      <th>Name</th>
+                      <th>Department</th>
+                      <th>Email</th>
+                      <th>Date of Joining</th>
+                      <th>Role</th>
+                      <th>Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {currentEntries.map((member) => (
+                      <tr
+                        key={member.id}
+                        onClick={() => {
+                          const encryptedId = encrypt(member.empId);
+                          navigate(`/employee-info/${encryptedId}`);
+                        }}
+                        style={{ cursor: "pointer" }}
+                      >
+                        <td>{member.empId || "-"}</td>
+                        <td>{member.name || "-"}</td>
+                        <td>{member.department || "-"}</td>
+                        <td>{member.officialEmailId || "-"}</td>
+                        <td>{formatDate(member.dateOfJoining)}</td>
+                        <td>{member.role || "-"}</td>
+                        <td onClick={(e) => e.stopPropagation()}>
+                          <FaEdit
+                            className="employee-list-edit-icon"
+                            title="Edit"
+                            onClick={() => {
+                              const encryptedId = encrypt(member.empId);
+                              navigate(`/update-employee/${encryptedId}`);
+                            }}
+                          />
+                          <button
+                            className="employee-list-inactive-button"
+                            onClick={() => handleInactiveClick(member.empId, member.name)}
+                          >
+                            Inactive
+                          </button>
+                          <FaDownload
+                            className="employee-list-edit-icon"
+                            title="Download"
+                            onClick={() => handleDownloadData(member.empId)}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="employee-list-mobile-cards">
+                  {/* TODO: Add mobile card layout */}
+                </div>
+              )}
             </div>
           </div>
 
@@ -263,11 +279,11 @@ export default function EmployeeList() {
           isOpen={modalOpen}
           onClose={() => {
             setModalOpen(false);
-            setEmployeeToDelete(null);
+            setEmployeeToUpdate(null);
           }}
-          onConfirm={deleteEmployee}
+          onConfirm={inactivateEmployee}
           name={employeeName}
-          id={employeeToDelete}
+          id={employeeToUpdate}
         />
 
         {successModal && (

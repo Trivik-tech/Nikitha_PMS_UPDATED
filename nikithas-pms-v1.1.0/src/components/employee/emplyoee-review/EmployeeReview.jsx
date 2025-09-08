@@ -60,12 +60,30 @@ const PerformanceReview = () => {
     setRemarksModalOpen(true);
   };
 
+  // 🔹 CHANGED: Added validation before submission
   const reviewSubmit = async () => {
+    // ✅ Check if all KPIs have remarks of minimum 15 characters
+    const invalidRemarks = krakpi.some(kra =>
+      kra.kpi.some(
+        kpi =>
+          !kpi.employeeRemark ||
+          kpi.employeeRemark.trim().length < 15
+      )
+    );
+
+    if (invalidRemarks) {
+      setErrorMessage("Each KPI remark must be at least 15 characters long.");
+      setTitle("Validation Error");
+      setShowModal(true);
+      return; // ❌ Stop submission if any remark is invalid
+    }
+
     setErrorMessage("PMS Review is successfully completed.");
     setTitle(" ");
     setShowModal(true);
     await selfReview();
   };
+  // 🔹 END CHANGE
 
   const draftSave = () => {
     setErrorMessage("PMS Review has been saved as a draft.");
@@ -157,13 +175,21 @@ const PerformanceReview = () => {
             <textarea
               value={employeeRemark}
               onChange={(e) => setEmployeeRemark(e.target.value)}
-              placeholder="Enter your KPI remark here..."
+              placeholder="Enter your KPI remark here... (min 15 characters)"
               rows="5"
             />
             <div className="remarks-modal-actions">
-              <button onClick={handleRemarkSave}>Save</button>
+              <button
+                onClick={handleRemarkSave}
+                disabled={employeeRemark.trim().length < 15} // ✅ Disable save if less than 15 chars
+              >
+                Save
+              </button>
               <button onClick={() => setRemarksModalOpen(false)}>Cancel</button>
             </div>
+            {employeeRemark.trim().length > 0 && employeeRemark.trim().length < 15 && (
+              <p className="remark-validation-msg">⚠ Remark must be at least 15 characters long.</p>
+            )}
           </div>
         </div>
       )}
@@ -233,7 +259,9 @@ const PerformanceReview = () => {
                           className="remarks-btn"
                           onClick={() => openRemarksModal(kraIndex, kpiIndex, kpi.employeeRemark || "")} // ✅ Open KPI remark
                         />
-                        {kpi.employeeRemark && <span className="remarks-preview">✔</span>} {/* ✅ Show check */}
+                        {kpi.employeeRemark && kpi.employeeRemark.trim().length >= 15 && (
+                          <span className="remarks-preview">✔</span>
+                        )} {/* ✅ Show check only if remark is valid */}
                       </td>
                     </tr>
                   ))}

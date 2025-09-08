@@ -1,9 +1,4 @@
 /* Global Styles */
-@media screen and (min-width: 769px) {
-  .sidebar ul li .logout {
-    display: none !important;
-  }
-}
 body, html {
   margin: 0;
   padding: 0;
@@ -25,17 +20,6 @@ body, html {
   display: flex;
   height: 100vh;
   width: 100vw;
-}
-.notification-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: red;
-  color: white;
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 50%;
-  z-index: 10;
 }
 
 /* Sidebar */
@@ -83,7 +67,6 @@ body, html {
   margin: 0;
 }
 
-
 @keyframes fadeInProfile {
   to {
       opacity: 1;
@@ -91,10 +74,7 @@ body, html {
   }
 }
 
-
-
-
-
+/* Sidebar Links */
 .sidebar ul {
   list-style: none;
   padding: 0;
@@ -134,7 +114,7 @@ body, html {
 .active {
   font-weight: bold;
   color: white;
-  background-color:#4CAF50; ;
+  background-color:#4CAF50;
 }
 
 /* Sidebar Toggle */
@@ -170,34 +150,35 @@ body, html {
   justify-content: space-between;
   align-items: center;
   background-color: #fff;
-  padding: 15px;
+  padding: -5px !important;
   border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   margin-bottom: 15px;
   width: 100%;
   position: relative;
   padding-top: 25px;
+  height: 80px !important;
 }
 
 .dashboard-header h1 {
   font-size: 20px;
   font-weight: bold;
   color: #333;
-  margin: 0;
+  margin-left: 25px;
+  margin-bottom: 40px;
 }
 
-.dashboard-logo {
-  width: 120px;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-/* Header Icons */
+/* Header Icons (bell + logo) */
 .header-icons {
   display: flex;
   align-items: center;
   gap: 15px;
+  margin-left: auto; /* Push to right */
+}
+
+.dashboard-logo {
+  width: 120px;
+  height: auto;
 }
 
 .notification-icon {
@@ -206,6 +187,7 @@ body, html {
   cursor: pointer;
   color: #333;
   transition: transform 0.3s ease;
+  position: relative;
 }
 
 .notification-icon:hover {
@@ -213,7 +195,18 @@ body, html {
   transform: scale(1.2);
 }
 
-
+/* Notification Badge */
+.notification-badge {
+  position: absolute;
+  top: 17px;
+  right: 125px;
+  background-color: red;
+  color: white;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 50%;
+  z-index: 10;
+}
 
 /* Stats Section */
 .stats-container {
@@ -258,18 +251,11 @@ body, html {
   margin: 0;
 }
 
-.team-icon{
-  color: #007bff;
-}
+.team-icon { color: #007bff; }
+.pending-icon { color: orange; }
+.complete-icon { color: #4CAF50; }
 
-.pending-icon{
-  color: orange;
-}
-
-.complete-icon{
-  color: #4CAF50;
-}
-
+/* Logout Button */
 .logout-btn {
   background-color: #000;
   color: #fff;
@@ -319,7 +305,6 @@ body, html {
   to { opacity: 1; transform: translateY(0); }
 }
 
-
 /* Responsive */
 @media screen and (max-width: 768px) {
   .sidebar {
@@ -343,25 +328,19 @@ body, html {
   .dashboard-logo {
       width: 90px;
   }
-  /* 👁️ Show logout next to bell icon on desktop only */
-.desktop-only {
-  display: inline-block;
-}
-
-@media screen and (max-width: 768px) {
+  /* Hide desktop-only elements on mobile */
   .desktop-only {
     display: none;
   }
-
 }
 
-}
 /* Hide sidebar logout button on desktop */
 @media screen and (min-width: 769px) {
   .sidebar ul li .logout-btn {
     display: none;
   }
-  
+  /* Show desktop-only elements */
+  .desktop-only {
+    display: inline-block;
+  }
 }
-
-

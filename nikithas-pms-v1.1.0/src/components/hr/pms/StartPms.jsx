@@ -139,7 +139,8 @@ export default function StartPms() {
           <table className="start-pms-team-table">
             <thead>
               <tr>
-                <th onClick={handleSort} style={{ cursor: "pointer" }}>Id</th>
+                <th onClick={handleSort} style={{ cursor: "pointer" }}>ID</th>
+
                 <th>Name</th>
                 <th>Department</th>
                 <th>Email</th>

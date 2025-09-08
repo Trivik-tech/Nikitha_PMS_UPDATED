@@ -118,7 +118,6 @@ const ManagerDashboard = () => {
   useEffect(() => {
     if (!token) return;
 
-    // Use latest notification timestamp as 'last seen' reference, persist in both sessionStorage and localStorage
     const lastSeenKey = "manager-dashboard-last-seen-timestamp";
     let lastSeenTimestamp = sessionStorage.getItem(lastSeenKey);
     if (!lastSeenTimestamp) {
@@ -128,7 +127,6 @@ const ManagerDashboard = () => {
       }
     }
 
-    // Capture mount time for first-load logic
     const mountTime = Date.now();
 
     const socket = new SockJS(`${baseUrl}/ws?token=${token}`);
@@ -170,7 +168,6 @@ const ManagerDashboard = () => {
               );
               setNotifications(unique.slice(0, 50));
 
-              // Update last seen timestamp to the latest notification
               if (unique.length > 0) {
                 const latest = unique.reduce((a, b) =>
                   new Date(a.timestamp) > new Date(b.timestamp) ? a : b
@@ -184,7 +181,6 @@ const ManagerDashboard = () => {
           }
         );
 
-        // Initial fetch
         try {
           const res = await axios.get(`${baseUrl}/api/v1/pms/recent`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -207,7 +203,6 @@ const ManagerDashboard = () => {
           );
           setNotifications(unique.slice(0, 50));
 
-          // Find notifications after last seen timestamp
           let unseen = [];
           if (lastSeenTimestamp) {
             unseen = unique.filter(
@@ -217,14 +212,12 @@ const ManagerDashboard = () => {
               setNewAndUndelivered(unseen);
               setNotificationCount(unseen.length);
               setNotificationOpen(true);
-              // Set last seen to latest notification
               const latest = unseen.reduce((a, b) =>
                 new Date(a.timestamp) > new Date(b.timestamp) ? a : b
               );
               sessionStorage.setItem(lastSeenKey, latest.timestamp);
               localStorage.setItem(lastSeenKey, latest.timestamp);
             } else if (unique.length > 0) {
-              // If no new, set last seen to latest
               const latest = unique.reduce((a, b) =>
                 new Date(a.timestamp) > new Date(b.timestamp) ? a : b
               );
@@ -232,10 +225,9 @@ const ManagerDashboard = () => {
               localStorage.setItem(lastSeenKey, latest.timestamp);
             }
           } else if (unique.length > 0) {
-            // First page load: only set last seen if all notifications are old
             const allOld = unique.every(
               (msg) => new Date(msg.timestamp).getTime() < mountTime - 1000
-            ); // 1s buffer
+            );
             if (allOld) {
               const latest = unique.reduce((a, b) =>
                 new Date(a.timestamp) > new Date(b.timestamp) ? a : b
@@ -243,7 +235,6 @@ const ManagerDashboard = () => {
               sessionStorage.setItem(lastSeenKey, latest.timestamp);
               localStorage.setItem(lastSeenKey, latest.timestamp);
             } else {
-              // If any are new, show them
               const newOnes = unique.filter(
                 (msg) => new Date(msg.timestamp).getTime() >= mountTime - 1000
               );
@@ -264,7 +255,6 @@ const ManagerDashboard = () => {
     });
     client.activate();
     return () => {
-      // On unmount, set last seen to latest notification if available
       if (notifications && notifications.length > 0) {
         const latest = notifications.reduce((a, b) =>
           new Date(a.timestamp) > new Date(b.timestamp) ? a : b
@@ -275,8 +265,6 @@ const ManagerDashboard = () => {
       client.deactivate();
     };
   }, [token]);
-
-  // No auto-popup for old unseen notifications; only popup for new/undelivered
 
   const hasData =
     percentageData.completedPercentage !== 0 ||
@@ -292,7 +280,7 @@ const ManagerDashboard = () => {
               percentageData.pendingPercentage,
             ]
           : [1],
-        backgroundColor: hasData ? ["#4CAF50", "#FF9800"] : ["#d3d3d3"],
+        backgroundColor: hasData ? ["#4c4eafff", "#FF9800"] : ["#d3d3d3"],
         borderWidth: 1,
       },
     ],
@@ -313,6 +301,7 @@ const ManagerDashboard = () => {
 
   return (
     <div className="dashboard-container">
+      {/* Sidebar */}
       <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="profile-container">
           <img src={profile} alt="Profile" className="profile-pic" />
@@ -352,7 +341,9 @@ const ManagerDashboard = () => {
         </ul>
       </div>
 
+      {/* Main Content */}
       <div className="main-content">
+        {/* Header */}
         <div className="dashboard-header">
           <button
             className="sidebar-toggle hum-btn"
@@ -361,7 +352,7 @@ const ManagerDashboard = () => {
             ☰
           </button>
           <h1>Manager PMS Dashboard</h1>
-          <img src={logo} alt="Logo" className="dashboard-logo" />
+
           <div className="header-icons" style={{ position: "relative" }}>
             <div style={{ position: "relative" }}>
               <Bell
@@ -398,6 +389,14 @@ const ManagerDashboard = () => {
           </div>
         </div>
 
+        {notificationOpen && (
+          <Notification
+            notifications={Array.isArray(notifications) ? notifications : []}
+            onClose={() => setNotificationOpen(false)}
+          />
+        )}
+
+        {/* Stats */}
         <div className="stats-container">
           <div className="stat-card">
             <Users className="stat-icon team-icon" />
@@ -414,38 +413,39 @@ const ManagerDashboard = () => {
 
           <div className="stat-card">
             <NotebookPen className="stat-icon pending-icon" />
-            <Link 
-             to={managerId ? `/pending-assessments/${managerId}` : "#"}
+            <Link
+              to={managerId ? `/pending-assessments/${managerId}` : "#"}
               style={{ textDecoration: "none", color: "inherit" }}
-             >
-            <div className="stat-text">
-              <h2>Assessments Pending</h2>
-              <p>{`${assessmentCount.pending}/${teamSize} (${
-                teamSize !== 0
-                  ? Math.round((assessmentCount.pending / teamSize) * 100)
-                  : 0
-              }%)`}</p>
-            </div>
+            >
+              <div className="stat-text">
+                <h2>Assessments Pending</h2>
+                <p>{`${assessmentCount.pending}/${teamSize} (${
+                  teamSize !== 0
+                    ? Math.round((assessmentCount.pending / teamSize) * 100)
+                    : 0
+                }%)`}</p>
+              </div>
             </Link>
           </div>
           <div className="stat-card">
             <CheckCircle className="stat-icon complete-icon" />
-            <Link 
-            to={managerId ? `/completed-assessments/${managerId}` : "#"}
+            <Link
+              to={managerId ? `/completed-assessments/${managerId}` : "#"}
               style={{ textDecoration: "none", color: "inherit" }}
             >
-            <div className="stat-text">
-              <h2>Assessments Complete</h2>
-              <p>{`${assessmentCount.completed}/${teamSize} (${
-                teamSize !== 0
-                  ? Math.round((assessmentCount.completed / teamSize) * 100)
-                  : 0
-              }%)`}</p>
-            </div>
+              <div className="stat-text">
+                <h2>Assessments Complete</h2>
+                <p>{`${assessmentCount.completed}/${teamSize} (${
+                  teamSize !== 0
+                    ? Math.round((assessmentCount.completed / teamSize) * 100)
+                    : 0
+                }%)`}</p>
+              </div>
             </Link>
           </div>
         </div>
 
+        {/* Chart */}
         <div className="chart-container">
           <h3 className="chart-title">Assessment Status</h3>
           <div className="chart-wrapper">
