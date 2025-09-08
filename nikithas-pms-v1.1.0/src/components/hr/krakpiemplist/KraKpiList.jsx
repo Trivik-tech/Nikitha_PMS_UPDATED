@@ -2,15 +2,15 @@ import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaSearch, FaHome, FaEdit, FaTrash, FaDownload } from "react-icons/fa";
 import logo from "../../../assets/images/nikithas-logo.png";
-import "./EmpResponsive.css";
-import "./EmployeeList.css";
+
+import "./KraKpiList.css";
 import axios from "axios";
 import DeleteConfirmation from "../../modal/delete-confirmation/DeleteConfirmation";
 import { baseUrl } from "../../urls/CommenUrl";
 import { encrypt } from "../../utils/encryptUtils";
 import Modal from "../../modal/Modal";
 
-export default function EmployeeList() {
+export default function EmployeeList() { 
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [team, setTeam] = useState([]); 
@@ -27,28 +27,49 @@ export default function EmployeeList() {
 
   const hasFetchedRef = useRef(false); // Fix for duplicate API call in StrictMode
 
+  // 🔹 Dummy Data Added
+  const dummyEmployees = [
+    { id: 1, empId: "E001", name: "John Doe", department: "IT", officialEmailId: "john.doe@company.com", dateOfJoining: "2021-06-15", role: "Developer" },
+    { id: 2, empId: "E002", name: "Jane Smith", department: "HR", officialEmailId: "jane.smith@company.com", dateOfJoining: "2020-04-12", role: "HR Manager" },
+    { id: 3, empId: "E003", name: "Michael Johnson", department: "Finance", officialEmailId: "michael.johnson@company.com", dateOfJoining: "2019-08-23", role: "Accountant" },
+    { id: 4, empId: "E004", name: "Emily Davis", department: "Marketing", officialEmailId: "emily.davis@company.com", dateOfJoining: "2022-01-10", role: "Marketing Executive" },
+    { id: 5, empId: "E005", name: "David Wilson", department: "Operations", officialEmailId: "david.wilson@company.com", dateOfJoining: "2021-11-05", role: "Operations Manager" },
+    { id: 6, empId: "E006", name: "Sophia Brown", department: "Sales", officialEmailId: "sophia.brown@company.com", dateOfJoining: "2020-09-19", role: "Sales Executive" },
+    { id: 7, empId: "E007", name: "James Miller", department: "Support", officialEmailId: "james.miller@company.com", dateOfJoining: "2021-03-08", role: "Support Engineer" },
+    { id: 8, empId: "E008", name: "Olivia Taylor", department: "IT", officialEmailId: "olivia.taylor@company.com", dateOfJoining: "2018-07-25", role: "Senior Developer" },
+    { id: 9, empId: "E009", name: "Daniel Anderson", department: "Legal", officialEmailId: "daniel.anderson@company.com", dateOfJoining: "2022-02-14", role: "Legal Advisor" },
+    { id: 10, empId: "E010", name: "Ava Martinez", department: "Admin", officialEmailId: "ava.martinez@company.com", dateOfJoining: "2019-12-01", role: "Admin Executive" }
+  ];
+
   const fetchEmployees = async () => {
     try {
+      // 🔹 Show dummy data directly for now
+      setTeam(dummyEmployees);
+
+      // Uncomment below when you want API
+      /*
       const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
       setTeam(response.data);
+      */ 
       setHasServerError(false);
     } catch (error) {
       console.error("Error fetching employee data:", error.message);
       setHasServerError(true);
+      setTeam(dummyEmployees); // fallback to dummy
     }
   };
 
- useEffect(() => {
-  if (!hasFetchedRef.current) {
-    fetchEmployees();
-    hasFetchedRef.current = true;
-  }
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, []);
+  useEffect(() => {
+    if (!hasFetchedRef.current) {
+      fetchEmployees();
+      hasFetchedRef.current = true;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
 
   const entriesPerPage = 10;
@@ -94,29 +115,6 @@ export default function EmployeeList() {
     }
   };
 
-  const handleDeleteClick = (id, employeeName) => {
-    setEmployeeToDelete(id);
-    setEmployeeName(employeeName);
-    setModalOpen(true);
-  };
-
-  const 
-  deleteEmployee = async () => {
-    if (!employeeToDelete) return;
-
-    try {
-      await axios.delete(`${baseUrl}/api/v1/pms/hr/delete-employee/${employeeToDelete}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setEmployeeToDelete(null);
-      setModalOpen(false);
-      fetchEmployees();
-    } catch (error) {
-      console.error("Error deleting employee:", error.message);
-    }
-  };
 
   const formatDate = (dateString) => {
     if (!dateString) return "-";
@@ -127,7 +125,6 @@ export default function EmployeeList() {
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
   };
-
 
   const handleDownloadData = async (id) => {
     try {
@@ -146,7 +143,7 @@ export default function EmployeeList() {
     }
   };
 
-  const handleExportData= async()=>{
+  const handleExportData= async()=> {
     try {
       const response = await axios.get(`${baseUrl}/api/v1/pms/hr/generate-employee-list`, {
         headers: {
@@ -161,7 +158,6 @@ export default function EmployeeList() {
     } catch (error) {
       console.error("PDF download failed:", error.message);
     }
-
   }
 
   const isMobile = false;
@@ -186,11 +182,7 @@ export default function EmployeeList() {
                 value={searchTerm}
                 onChange={searchEmployees}
               />
-              <div className="employee-list-right">
-                <Link to="/add-employee" className="employee-list-add-button">
-                  Add Employee
-                </Link>
-              </div> 
+
             </div>
             <img src={logo} alt="Company Logo" className="employee-list-company-logo" />
           </div>
@@ -207,7 +199,7 @@ export default function EmployeeList() {
                 <table className="employee-list-team-table">
                   <thead>
                     <tr>
-                      <th onClick={handleSort} style={{ cursor: "pointer" }}>Id{sortOrder==="asc"? "|":"||"}</th>
+                      <th onClick={handleSort} style={{ cursor: "pointer" }}>Id{sortOrder==="asc"? "-":"||"}</th>
                       <th>Name</th>
                       <th>Department</th>
                       <th>Email</th>
@@ -237,20 +229,11 @@ export default function EmployeeList() {
                             className="employee-list-edit-icon"
                             title="Edit"
                             onClick={() => {
-                              const encryptedId = encrypt(member.empId);
-                              navigate(`/update-employee/${encryptedId}`);
+                           
+                              navigate(`/kra-kpi-report `);
                             }}
                           />
-                          <FaTrash
-                            className="employee-list-delete-icon"
-                            title="Delete"
-                            onClick={() => handleDeleteClick(member.empId, member.name)}
-                          />
-                          <FaDownload
-                            className="employee-list-edit-icon"
-                            title="Download"
-                            onClick={() => handleDownloadData(member.empId)}
-                          />
+
                         </td>
                       </tr>
                     ))}
@@ -258,9 +241,9 @@ export default function EmployeeList() {
                 </table>
               ) : (
                 <div className="employee-list-mobile-cards">
-                  {/* Mobile Cards */}
+                  {/* Mobile Cards */} 
                 </div>
-              )}
+               )}
             </div>
           </div>
 
@@ -278,18 +261,7 @@ export default function EmployeeList() {
           )}
         </div>
 
-        <DeleteConfirmation
-          isOpen={modalOpen}
-          onClose={() => {
-            setModalOpen(false);
-            setEmployeeToDelete(null);
-          }}
-          onConfirm={deleteEmployee}
-          name={employeeName}
-          id={employeeToDelete}
-        />
-
-        {successModal && (
+      {successModal && (
           <Modal
             title="Success"
             message={modalMessage}

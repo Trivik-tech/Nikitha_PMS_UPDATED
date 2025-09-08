@@ -1,0 +1,395 @@
+/* Global Styles */
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  animation: fadeIn 1s ease-out;
+}
+
+/* Employee Module Container */
+.employee-module-container {
+  width: 95vw;
+  height: 95vh;
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  margin: 0 auto;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  overflow-y: auto;
+  animation: slideIn 0.5s ease-out;
+}
+
+/* Header Section */
+.employee-module-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.employee-module-header h1 {
+  font-size: 2rem;
+  color: #333;
+  margin-left: 50px;
+  opacity: 0;
+  animation: fadeInText 1s ease-out forwards;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.employee-module-home-icon {
+  font-size: 2rem;
+  color: #333;
+  margin-right: 10px;
+  cursor: pointer;
+  opacity: 0;
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.employee-module-home-icon:hover {
+  color: #4CAF50;
+}
+
+.employee-module-header img {
+  position: absolute;
+  right: 5px;
+  top: 0px;
+  height: 80px;
+  animation: fadeInRight 1s ease-out forwards;
+}
+
+/* Filters */
+.employee-module-filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.employee-module-filters label {
+  color: #333;
+}
+
+.employee-module-filters select {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.employee-module-filters select:hover {
+  border-color: #2196F3;
+  box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+}
+
+/* Section Styling */
+.employee-module-section {
+  margin-bottom: 30px;
+  opacity: 0;
+  animation: fadeInSection 0.5s ease-out forwards;
+  border-bottom: 1px solid #ececec;
+  padding-bottom: 18px;
+}
+
+.employee-module-section h2 {
+  font-size: 1.3rem;
+  color: #2196F3;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+  font-weight: 600;
+}
+
+/* KRA Block */
+.employee-module-kra {
+  margin-bottom: 20px;
+}
+
+.employee-module-kra-title {
+  font-size: 1.15rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8px;
+  margin-top: 10px;
+  transition: color 0.3s;
+  letter-spacing: 0.5px;
+}
+
+.employee-module-kra-title:hover {
+  color: #2196F3;
+}
+
+/* KPI Block */
+.employee-module-kpi-block {
+  background: #f7f8fa;
+  padding: 16px 14px 12px 14px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border-left: 4px solid #2196F3;
+  box-shadow: 0 1px 3px rgba(33,150,243,0.03);
+}
+
+.employee-module-kra-details {
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+/* Ratings */
+.employee-module-rating {
+  display: flex;
+  gap: 18px;
+  font-size: 0.97rem;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.employee-module-rating > div {
+  background: #e3f2fd;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-weight: 500;
+  min-width: 125px;
+}
+
+/* Remarks */
+.employee-module-remarks {
+  font-size: 0.95rem;
+  color: #666;
+  margin-top: 7px;
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+
+.employee-module-remarks div {
+  background: #f0f3f7;
+  border-radius: 4px;
+  padding: 5px 10px;
+  margin-bottom: 3px;
+  font-size: 0.95rem;
+  font-weight: 400;
+  min-width: 190px;
+}
+
+/* Overall Performance Section */
+.employee-module-overall-performance {
+  display: flex;
+  gap: 45px;
+  align-items: center;
+  margin-top: 20px;
+  padding-left: 7px;
+}
+
+.employee-module-overall-performance span {
+  font-size: 1rem;
+  color: #1976D2;
+  font-weight: 600;
+}
+
+/* Print Button */
+.employee-module-print-btn {
+  padding: 10px 20px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s;
+  margin-top: 20px;
+  width: 160px;
+  font-weight: 600;
+}
+
+.employee-module-print-btn:hover {
+  background-color: #1976D2;
+}
+
+.employee-module-print-btn:focus {
+  outline: none;
+}
+
+/* Filters */
+.employee-module-filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.employee-module-filters label {
+  color: #333;
+}
+
+.employee-module-filter-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.filter-btn {
+  padding: 6px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+}
+
+.filter-btn:hover {
+  border-color: #2196F3;
+  background: #f0f8ff;
+}
+
+.filter-btn.active {
+  background: #2196F3;
+  color: white;
+  border-color: #2196F3;
+  font-weight: 600;
+}
+
+/* ====== Hover Dropdown for Year > Quarters > Months ====== */
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.quarter-menu {
+  display: none; /* Hidden by default */
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #ccc;
+  min-width: 120px;
+  z-index: 10;
+}
+
+.dropdown:hover .quarter-menu {
+  display: block; /* Show quarters when hovering on year dropdown */
+}
+
+.quarter-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  position: relative;
+}
+
+.quarter-item:hover {
+  background-color: #f5f5f5;
+    border-color: #2196F3;
+  background: #f0f8ff;
+  
+}
+
+/* Months inside Quarter */
+.month-menu {
+  display: none; /* Hidden by default */
+  position: absolute;
+  top: 0;
+  left: 100%; /* Show to the right of quarter */
+  background: white;
+  border: 1px solid #ccc;
+  min-width: 120px;
+  z-index: 20;
+    border-color: #2196F3;
+  background: #f0f8ff;
+}
+
+.quarter-item:hover .month-menu {
+  display: block; /* Show months when hovering on quarter */
+    border-color: #2196F3;
+  background: #f0f8ff;
+}
+
+.month-item {
+  padding: 8px 12px;
+  cursor: pointer;
+    border-color: #2196F3;
+  background: #f0f8ff;
+}
+
+.month-item:hover {
+  background-color: #eaeaea;
+    border-color: #2196F3;
+  background: #f0f8ff;
+}
+
+
+
+/* Animations */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInText {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInSection {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes progressBarAnimation {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}

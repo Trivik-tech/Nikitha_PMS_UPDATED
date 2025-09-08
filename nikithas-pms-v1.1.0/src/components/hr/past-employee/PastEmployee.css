@@ -1,0 +1,228 @@
+body {
+  min-height: 100vh;
+  background-color: var(--base-clr);
+  color: var(--text-clr);
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.past-employee-container {
+  display: flex;
+  flex-direction: column;
+  width: 97vw !important;
+  height: 95vh;
+  background: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.past-employee-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow-y: auto;
+  animation: slideUp 0.6s ease-in-out;
+}
+
+/* Unified Header */
+.past-employee-header-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Keep logo and title at ends */
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 10px 20px;
+  border-bottom: 1px solid #ddd;
+  background: white;
+  z-index: 100;
+  animation: slideDown 0.5s ease-in-out;
+}
+
+.past-employee-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.past-employee-title {
+  font-size: 25px;
+  font-weight: 600;
+  color: #525252;
+}
+
+.past-employee-home-icon {
+  font-size: 30px;
+  color: #525252;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+.past-employee-home-icon:hover {
+  transform: scale(1.1);
+  color: #0056b3;
+  align-self: start;
+}
+
+.past-employee-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  max-width: 400px;
+}
+
+.past-employee-center input {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+}
+
+.past-employee-search-icon {
+  color: gray;
+}
+
+.past-employee-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.past-employee-company-logo {
+  height: 80px;
+  width: 100px;
+  object-fit: contain;
+  animation: zoomIn 0.6s ease-in-out;
+}
+
+.past-employee-add-button {
+  background-color: #565756;
+  align-items: center;
+  color: white;
+  padding: 5px 40px; /* Increased horizontal padding */
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+  text-decoration: none;
+  transition: background 0.3s, transform 0.3s ease-in-out;
+  width: 100%;
+  text-align: center;
+}
+
+.past-employee-add-button:hover {
+  background-color: #333533;
+  transform: scale(1.05);
+}
+
+/* Table */
+.past-employee-table-container {
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(95vh - 240px);
+  margin-bottom: 20px;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.past-employee-team-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.past-employee-team-table th,
+.past-employee-team-table td {
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.past-employee-team-table th {
+  background: #f1f1f1;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Action icons */
+.past-employee-edit-icon,
+.past-employee-delete-icon {
+  cursor: pointer;
+  margin: 0 8px;
+  font-size: 20px;
+  transition: color 0.3s ease-in-out;
+}
+
+.past-employee-edit-icon {
+  color: #007bff;
+}
+
+.past-employee-edit-icon:hover {
+  color: #0056b3;
+}
+
+.past-employee-delete-icon {
+  color: #dc3545;
+}
+
+.past-employee-delete-icon:hover {
+  color: #a71d2a;
+}
+
+/* Pagination */
+.past-employee-pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  background: white;
+  border-top: 1px solid #ddd;
+  position: sticky;
+  bottom: 0;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.past-employee-pagination button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.past-employee-pagination button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.past-employee-pagination span {
+  font-weight: bold;
+}
+
+/* Media Query for Mobile */
+/* @media (max-width: 768px) {
+  .past-employee-header-flex {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .past-employee-center,
+  .past-employee-right {
+    width: 100%;
+  }
+
+  .past-employee-company-logo {
+    height: 35px;
+    width: 50px;
+  }
+} */
