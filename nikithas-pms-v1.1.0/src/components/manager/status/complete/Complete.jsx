@@ -88,7 +88,10 @@ export default function Complete() {
               <th>Name</th>
               <th>Department</th>
               <th>Position</th>
+<<<<<<< HEAD
               {/* <th></th> */}
+=======
+>>>>>>> 4d6575335e0fe1d15a8df17336b86178e3eb5e57
               
             </tr>
           </thead>
@@ -99,9 +102,13 @@ export default function Complete() {
                 <td >{member?.name}</td>
                 <td>{member.department?.name || "N/A"}</td>
                 <td>{member.currentDesignation}</td>
+<<<<<<< HEAD
                 
                 
               </tr>
+=======
+                </tr>
+>>>>>>> 4d6575335e0fe1d15a8df17336b86178e3eb5e57
             ))}
           </tbody>
         </table>

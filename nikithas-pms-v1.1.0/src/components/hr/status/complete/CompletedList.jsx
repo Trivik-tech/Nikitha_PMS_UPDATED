@@ -116,7 +116,10 @@ export default function CompletedList() {
               <th>Name</th>
               <th>Department</th>
               <th>Position</th>
+<<<<<<< HEAD
              <th>Action</th>
+=======
+>>>>>>> 4d6575335e0fe1d15a8df17336b86178e3eb5e57
             </tr>
           </thead>
           <tbody>
@@ -126,10 +129,13 @@ export default function CompletedList() {
                 <td className="hr-complete-team-member">{member.name}</td>
                 <td>{member.department?.name || "N/A"}</td>
                 <td>{member.currentDesignation}</td>
+<<<<<<< HEAD
                <td><FaDownload 
                title="download"
                 className="employee-list-edit-icon"
                onClick={()=>exportPdf(member.empId)}/></td>
+=======
+>>>>>>> 4d6575335e0fe1d15a8df17336b86178e3eb5e57
               </tr>
             ))}
           </tbody>
