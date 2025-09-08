@@ -1,0 +1,386 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    scrollbar-width: none;
+}
+
+body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+}
+
+.employee-module-review-container {
+    width: 97vw;
+    height: 95vh;
+    overflow-y: auto;
+    background-color: #fff;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    border-radius: 10px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.employee-module-review-title-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+    padding: 10px 0;
+    animation: slideUp 0.3s ease-out;
+}
+
+.employee-module-review-title {
+    flex-grow: 1;
+    text-align: left;
+    font-size: 30px;
+    font-weight: bold;
+    margin-left: 10px;
+    opacity: 0;
+    animation: fadeIn 0.3s ease-in-out 0s forwards;
+}
+
+.employee-module-review-company-logo {
+    height: 100px;
+    opacity: 0;
+    animation: fadeIn 0.3s ease-in-out 0s forwards;
+}
+
+/* Filter section */
+.employee-module-review-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin: 10px 0;
+    opacity: 0;
+    animation: fadeIn 0.3s ease-in-out 0s forwards;
+}
+
+.employee-module-review-filters label {
+    font-size: 15px;
+    font-weight: bold;
+    animation: fadeIn 0.3s ease-in-out 0s forwards;
+    text-align: center;
+}
+
+.employee-module-review-filters input {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 180px;
+    margin-top: 5px;
+    transition: border-color 0.3s ease;
+    text-align: center;
+}
+
+.employee-module-review-filters input:focus {
+    border-color: #4f46e5;
+}
+
+/* Sections Container */
+.employee-module-review-sections {
+    margin-top: 20px;
+}
+
+.employee-module-review-section {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeIn 0.3s ease-in-out 0s forwards;
+    transition: transform 0.2s ease;
+}
+
+.employee-module-review-section:hover {
+    transform: translateY(-5px);
+}
+.employee-module-review-icon.home-icon{
+    font-size: 30px;
+    color: black;
+}
+.employee-module-review-icon.home-icon:hover{
+    color: #0056b3;
+    transform: scale(1.1);
+}
+
+.employee-module-review-section-header {
+    background-color: #f7f7f7;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.employee-module-review-section-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.employee-module-review-section-header span {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Table Styles */
+.employee-module-review-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    background-color: #fff;
+    transition: all 0.2s ease;
+}
+
+.employee-module-review-table th, 
+.employee-module-review-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    font-size: 14px;
+    vertical-align: middle;
+    box-sizing: border-box;
+    background-color: #fff; /* ✅ Ensure no gray background */
+}
+
+/* Column Width Definitions */
+.employee-module-review-table th:nth-child(1),
+.employee-module-review-table td:nth-child(1) {
+    width: 25%;
+    text-align: left;
+}
+
+.employee-module-review-table th:nth-child(2),
+.employee-module-review-table td:nth-child(2) {
+    width: 10%;
+    text-align: center;
+}
+
+.employee-module-review-table th:nth-child(3),
+.employee-module-review-table td:nth-child(3),
+.employee-module-review-table th:nth-child(4),
+.employee-module-review-table td:nth-child(4),
+.employee-module-review-table th:nth-child(5),
+.employee-module-review-table td:nth-child(5) {
+    width: 12%;
+    text-align: center;
+    
+}
+
+
+
+/* Input Inside Table */
+.employee-module-review-table input {
+    width: 90%;
+    padding: 4px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* Remarks Button (fix background) */
+.employee-module-review-table .remarks-btn {
+    background: none !important; /* ✅ Remove background */
+    box-shadow: none !important;
+    border: none !important;
+    font-size: x-large;
+}
+
+.employee-module-review-table .remarks-btn:hover {
+    background: none !important; /* ✅ Transparent on hover */
+    box-shadow: none !important;
+}
+
+/* Overall Section */
+.employee-module-review-overall-section {
+    margin-top: 30px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    animation: fadeIn 0.3s ease-in-out 0s forwards;
+}
+
+/* Overall Score Table */
+.employee-module-review-overall-table {
+    width: 100%;
+    margin-top: 10px;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.employee-module-review-overall-table th, 
+.employee-module-review-overall-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+    background-color: #fff;
+}
+
+/* Overall Remarks */
+.employee-module-review-overall-remarks {
+    margin-top: 20px;
+}
+
+.employee-module-review-overall-remarks textarea {
+    width: 100%;
+    height: 100px;
+    margin-top: 5px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: none;
+    transition: all 0.2s ease;
+}
+
+.employee-module-review-overall-remarks textarea:focus {
+    border-color: #4f46e5;
+}
+
+/* Actions Section */
+.employee-module-review-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+    animation: fadeIn 0.3s ease-in-out 0s forwards;
+}
+
+.employee-module-review-draft-btn, 
+.employee-module-review-print-btn,
+.employee-module-review-submit-review-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    width: 150px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.employee-module-review-submit-review-btn {
+    background-color: #4f46e5;
+    color: white;
+}
+
+.employee-module-review-submit-review-btn:hover {
+    background-color: #3730a3;
+    transform: translateY(-2px);
+}
+
+.employee-module-review-draft-btn {
+    background-color: #e0e0e0;
+    color: black;
+}
+
+.employee-module-review-draft-btn:hover {
+    background-color: #bdbdbd;
+    transform: translateY(-2px);
+}
+
+.employee-module-review-print-btn {
+    background-color: skyblue;
+    color: black;
+}
+
+.employee-module-review-print-btn:hover {
+    background-color: rgb(177, 216, 231);
+    transform: translateY(-2px);
+}
+
+.employee-module-review-submit-review-btn:disabled,
+.employee-module-review-draft-btn:disabled {
+  background-color: #cccccc !important;
+  color: #888888 !important;
+  cursor: not-allowed !important;
+  opacity: 0.7;
+  border: 1px solid #bbbbbb !important;
+  box-shadow: none !important;
+}
+
+/* Remarks Modal */
+.remarks-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.remarks-modal {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.remarks-modal textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  resize: none;
+}
+
+.remarks-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.remarks-btn{
+    font-size: x-large;
+}
+
+.remarks-modal-actions button {
+  margin-left: 10px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.remarks-modal-actions button:first-child {
+  background-color: #007bff;
+  color: white;
+}
+
+.remarks-modal-actions button:last-child {
+  background-color: #ccc;
+}
+
+.remarks-preview {
+  color: green;
+  margin-left: 5px;
+}
+
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    0% {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

@@ -34,6 +34,10 @@ import Reset from './components/reset-password/Reset';
 
 import { baseUrl } from './components/urls/CommenUrl';
 import Loader from './components/modal/loader/Loader';
+import KraKpiReport from './components/hr/kra-kpi-report/KraKpiReport';
+import KraKpiList from './components/hr/krakpiemplist/KraKpiList';
+import KraKpiUpload from './components/hr/krakpiupload/KraKpiUpload';
+import PastEmployee from './components/hr/past-employee/PastEmployee';
 
 const AuthContext = createContext();
 
@@ -175,6 +179,11 @@ function App() {
             <Route path="/hr/completed-assessments" element={<RequireAuth allowedRoles={['HR']}><CompletedList/></RequireAuth>} />
             <Route path="/employee-info/:id" element={<RequireAuth allowedRoles={['HR']}><EmployeeInfo /></RequireAuth>} />
             <Route path="/update-employee/:id" element={<RequireAuth allowedRoles={['HR']}><UpdateEmployee /></RequireAuth>} />
+            <Route path="/kra-kpi-report" element={<KraKpiReport/>}/>
+            <Route path="/kra-kpi-emp-list" element={<KraKpiList/>}/>
+            <Route path="/kra-kpi-upload" element={<KraKpiUpload/>}/>
+            <Route  path="/past-employees" element={<PastEmployee/>}/>
+            
 
             {/* Manager Routes */}
             <Route path="/manager-dashboard" element={<RequireAuth allowedRoles={['MANAGER']}><ManagerDashboard /></RequireAuth>} />
@@ -187,6 +196,7 @@ function App() {
 
             {/* Employee Routes */}
             <Route path="/employee-dashboard" element={<RequireAuth allowedRoles={['EMPLOYEE']}><EmployeeDashboard /></RequireAuth>} />
+
             <Route path="/employee-performance/:id" element={<RequireAuth allowedRoles={['EMPLOYEE']}><Performance /></RequireAuth>} />
             <Route path="/add-krakpi/:id" element={<RequireAuth allowedRoles={['EMPLOYEE']}><KrakpiRegistration /></RequireAuth>} />
             <Route path="/self-review/:id" element={<EmployeeReview />} />

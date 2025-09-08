@@ -202,8 +202,9 @@ public class HrServiceImpl implements HrService {
             manager.setMobileNumber(emp.getMobileNumber());
             manager.setPassword(hashedPassword);
             manager.setRole("MANAGER");
-            manager.setCategory(emp.getCategory());
             manager.setDepartment(departmentCache.get(emp.getDepartment()));
+
+            // ✅ For MANAGER keep reportingManager as String only
             manager.setReportingManager(emp.getReportingManager() != null ? emp.getReportingManager().trim() : null);
 
             managerByEmpId.put(emp.getEmpId(), manager);
@@ -228,7 +229,10 @@ public class HrServiceImpl implements HrService {
 
             Manager reportingManagerObj = null;
             if (emp.getReportingManager() != null && !emp.getReportingManager().trim().isEmpty()) {
-                reportingManagerObj = managerByName.get(emp.getReportingManager().trim().toLowerCase());
+
+                // ✅ For EMPLOYEE: check name match with manager, then assign Manager object
+                reportingManagerObj = allManagersByName.get(emp.getReportingManager().trim().toLowerCase());
+
             }
 
             EmployeeInformation info = existingEmpMap.getOrDefault(emp.getEmpId(), new EmployeeInformation());
@@ -243,7 +247,6 @@ public class HrServiceImpl implements HrService {
             info.setMobileNumber(emp.getMobileNumber());
             info.setPassword(hashedPassword);
             info.setRole("EMPLOYEE");
-            info.setCategory(emp.getCategory());
             info.setDepartment(departmentCache.get(emp.getDepartment()));
             if (reportingManagerObj != null) {
                 info.setManager(reportingManagerObj);
@@ -261,7 +264,6 @@ public class HrServiceImpl implements HrService {
                 "Employees Processed: " + toSaveEmployees.size()
         );
     }
-
     @Override
     public List<EmployeeInfo> getAllEmployees() {
         List<EmployeeInformation> employees = employeeInformationRepository.findAll();
