@@ -186,6 +186,7 @@ public class HrServiceImpl implements HrService {
 
         // Step 4: Save only managers in manager table
         Map<String, Manager> managerByEmpId = new HashMap<>(existingManagerMap);
+        Map<String, Manager> managerByName = new HashMap<>(allManagersByName); // ensure fresh updates
         List<Manager> toSaveManagers = new ArrayList<>();
 
         for (Employee emp : managerRecords) {
@@ -206,13 +207,14 @@ public class HrServiceImpl implements HrService {
             manager.setReportingManager(emp.getReportingManager() != null ? emp.getReportingManager().trim() : null);
 
             managerByEmpId.put(emp.getEmpId(), manager);
+            managerByName.put(emp.getName().trim().toLowerCase(), manager);
             toSaveManagers.add(manager);
         }
 
         if (!toSaveManagers.isEmpty()) {
             List<Manager> savedManagers = managerRepository.saveAll(toSaveManagers);
             for (Manager m : savedManagers) {
-                allManagersByName.put(m.getName().trim().toLowerCase(), m);
+                managerByName.put(m.getName().trim().toLowerCase(), m);
                 managerByEmpId.put(m.getManagerId(), m);
             }
         }
@@ -226,7 +228,7 @@ public class HrServiceImpl implements HrService {
 
             Manager reportingManagerObj = null;
             if (emp.getReportingManager() != null && !emp.getReportingManager().trim().isEmpty()) {
-                reportingManagerObj = allManagersByName.get(emp.getReportingManager().trim().toLowerCase());
+                reportingManagerObj = managerByName.get(emp.getReportingManager().trim().toLowerCase());
             }
 
             EmployeeInformation info = existingEmpMap.getOrDefault(emp.getEmpId(), new EmployeeInformation());

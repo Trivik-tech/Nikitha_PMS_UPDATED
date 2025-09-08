@@ -79,8 +79,6 @@ public class KraKpi {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-
-
     public Boolean getManagerApproval() {
         return managerApproval;
     }

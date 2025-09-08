@@ -185,4 +185,112 @@ public class XlsxSupport {
             return null;
         }
     }
+
+
+
+
+
+    public static class KPI {
+        private String description;
+        private int weightage;
+
+        public KPI(String description, int weightage) {
+            this.description = description;
+            this.weightage = weightage;
+        }
+
+        public String getDescription() { return description; }
+        public void setDescription(String description) { this.description = description; }
+
+        public int getWeightage() { return weightage; }
+        public void setWeightage(int weightage) { this.weightage = weightage; }
+
+        @Override
+        public String toString() {
+            return "KPI{description='" + description + "', weightage=" + weightage + "}";
+        }
+    }
+
+    // ---------- KRA Class ----------
+    public static class KRA {
+        private String kraName;
+        private int weightage;
+        private List<KPI> kpis = new ArrayList<>();
+
+        public KRA(String kraName, int weightage) {
+            this.kraName = kraName;
+            this.weightage = weightage;
+        }
+
+        public void addKpi(KPI kpi) {
+            this.kpis.add(kpi);
+        }
+
+        public String getKraName() { return kraName; }
+        public void setKraName(String kraName) { this.kraName = kraName; }
+
+        public int getWeightage() { return weightage; }
+        public void setWeightage(int weightage) { this.weightage = weightage; }
+
+        public List<KPI> getKpis() { return kpis; }
+        public void setKpis(List<KPI> kpis) { this.kpis = kpis; }
+
+        @Override
+        public String toString() {
+            return "KRA{kraName='" + kraName + "', weightage=" + weightage + ", kpis=" + kpis + "}";
+        }
+    }
+
+    // ---------- Parser ----------
+    public static List<KRA> convertExcelToKraKpiList(InputStream inputStream) throws Exception {
+        List<KRA> kraList = new ArrayList<>();
+        Workbook workbook = new XSSFWorkbook(inputStream);
+        Sheet sheet = workbook.getSheetAt(0);
+
+        DataFormatter formatter = new DataFormatter();
+        Iterator<Row> rowIterator = sheet.iterator();
+        KRA currentKra = null;
+
+        int rowIndex = 0;
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next();
+            rowIndex++;
+            if (row == null) continue;
+
+            // --- SKIP FIRST TWO ROWS ---
+            if (rowIndex <= 2) continue;
+
+            String type = formatter.formatCellValue(row.getCell(0)).trim();
+            if (type.isEmpty()) continue; // skip empty rows
+
+            if (type.startsWith("KRA")) {
+                // --- New KRA row ---
+                String kraName = formatter.formatCellValue(row.getCell(1)).trim();
+                int weightage = parseIntSafe(formatter.formatCellValue(row.getCell(2)).trim());
+
+                currentKra = new KRA(kraName, weightage);
+                kraList.add(currentKra);
+
+            } else if (type.startsWith("KPI") && currentKra != null) {
+                // --- KPI row belongs to last KRA ---
+                String kpiDesc = formatter.formatCellValue(row.getCell(1)).trim();
+                int weightage = parseIntSafe(formatter.formatCellValue(row.getCell(2)).trim());
+
+                KPI kpi = new KPI(kpiDesc, weightage);
+                currentKra.addKpi(kpi);
+            }
+        }
+
+        workbook.close();
+        return kraList;
+    }
+
+    // ---------- Helpers ----------
+    private static int parseIntSafe(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (Exception e) {
+            return 0;
+        }
+    }
 }

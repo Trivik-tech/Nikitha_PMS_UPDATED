@@ -2,12 +2,14 @@ package com.triviktech.controllers.hr;
 
 import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
+import com.triviktech.payloads.request.kra.KraRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
 import com.triviktech.payloads.response.employee.PmsStatusCountDto;
 import com.triviktech.payloads.response.hr.HrResponseDto;
+import com.triviktech.utilities.xlsxsupport.XlsxSupport;
 import jakarta.validation.Valid;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
@@ -268,4 +270,8 @@ public interface HRController {
          */
         @GetMapping("/export-pdf/{employeeId}")
         ResponseEntity<InputStreamResource> exportPmsPdf(@PathVariable String employeeId);
+
+
+        @PostMapping("/upload-kra-kpi")
+        ResponseEntity<Map<String,List<XlsxSupport.KRA>>> uploadKraKpi(@RequestParam("file") MultipartFile file) throws Exception;
 }

@@ -166,6 +166,7 @@ const EmployeeDashboard = () => {
         }
       });
       setEmployeeData(result.data);
+      console.log(result.data)
     } catch (error) {
       console.log("Profile fetch error:", error);
       if (error.response && (error.response.status === 401 || error.response.status === 403)) {

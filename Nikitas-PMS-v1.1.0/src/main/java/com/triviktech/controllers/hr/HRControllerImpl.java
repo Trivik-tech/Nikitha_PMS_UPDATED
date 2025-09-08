@@ -3,6 +3,7 @@ package com.triviktech.controllers.hr;
 import com.triviktech.exception.validation.ValidationException;
 import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
+import com.triviktech.payloads.request.kra.KraRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
@@ -11,9 +12,11 @@ import com.triviktech.payloads.response.hr.HrResponseDto;
 import com.triviktech.repositories.employee.EmployeeInformationRepository;
 import com.triviktech.repositories.krakpi.KraKpiRepository;
 import com.triviktech.services.hr.HrService;
+import com.triviktech.services.krakpi.KraKpiService;
 import com.triviktech.services.notification.NotificationService;
 
 import com.triviktech.utilities.reports.EmployeeReport;
+import com.triviktech.utilities.xlsxsupport.XlsxSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -77,10 +80,12 @@ public class HRControllerImpl implements HRController {
     private final HrService hrService;
 
     private final EmployeeReport employeeReport;
+    private final KraKpiService kraKpiService;
 
-    public HRControllerImpl(HrService hrService, EmployeeReport employeeReport) {
+    public HRControllerImpl(HrService hrService, EmployeeReport employeeReport, KraKpiService kraKpiService) {
         this.hrService = hrService;
         this.employeeReport = employeeReport;
+        this.kraKpiService = kraKpiService;
     }
 
     @Override
@@ -317,6 +322,11 @@ public class HRControllerImpl implements HRController {
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(pdfStream));
+    }
+
+    @Override
+    public ResponseEntity<Map<String, List<XlsxSupport.KRA>>> uploadKraKpi(MultipartFile file)  {
+        return new ResponseEntity<>(kraKpiService.uploadKraKpi(file),HttpStatus.CREATED);
     }
 
 }

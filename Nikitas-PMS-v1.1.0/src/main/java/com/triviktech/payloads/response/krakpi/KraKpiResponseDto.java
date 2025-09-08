@@ -5,6 +5,7 @@ import com.triviktech.payloads.response.employee.EmployeeInfo;
 
 import com.triviktech.payloads.response.kra.KraResponseDto1;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
 
@@ -48,6 +49,10 @@ public class KraKpiResponseDto {
     private boolean selfCompleted;
 
     private boolean managerCompleted;
+
+    private LocalDateTime createdAt;
+
+
 
     public boolean isSelfCompleted() {
         return selfCompleted;
@@ -143,5 +148,13 @@ public class KraKpiResponseDto {
 
     public void setKra(Set<KraResponseDto1> kra) {
         this.kra = kra;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }

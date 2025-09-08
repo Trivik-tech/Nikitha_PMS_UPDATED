@@ -2,7 +2,8 @@ package com.triviktech.services.krakpi;
 
 import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
-
+import com.triviktech.utilities.xlsxsupport.XlsxSupport;
+import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Map;
 
@@ -55,6 +56,37 @@ public interface KraKpiService {
      * @return a {@link Map} where the key is a category (like KRA) and
      *         the value is a {@link List} of {@link KraKpiResponseDto}
      */
+    /**
+     * Get the list of KRA/KPI details for a given employee.
+     *
+     * @param employeeId the unique ID of the employee
+     * @return a map containing KRA/KPI data grouped by category (e.g., "KRA", "KPI")
+     */
     Map<String, List<KraKpiResponseDto>> listOfKraKpi(String employeeId);
+
+    /**
+     * Upload KRA/KPI details from an Excel file.
+     *
+     * @param file the Excel file containing KRA/KPI data
+     * @return a map with parsed KRA data grouped by category
+     */
+    Map<String, List<XlsxSupport.KRA>> uploadKraKpi(MultipartFile file);
+
+    /**
+     * Get the list of KRA/KPI details for an employee filtered by a specific year.
+     *
+     * @param empId the unique ID of the employee
+     * @param year  the year for which KRA/KPI data should be fetched
+     * @return a map containing year-wise KRA/KPI details grouped by category
+     */
+    Map<String, List<KraKpiResponseDto>> listOfKraKpiByYearWise(String empId, String year);
+
+
+
+    Map<String, List<KraKpiResponseDto>> listOfKraKpiByQuarterWise(String empId, String year,int quarter);
+
+    Map<String,List<KraKpiResponseDto>> listOfKraKpisByMonthsWise(String empId,String year,int quarter,int month);
+
+
 
 }
