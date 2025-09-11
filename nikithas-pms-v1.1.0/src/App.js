@@ -167,10 +167,10 @@ function App() {
             {/* HR Routes */}
             <Route path="/hr-dashboard" element={<HrDashboard />} />
             {/* <Route path="/hr-dashboard" element={<RequireAuth allowedRoles={['HR']}><HrDashboard /></RequireAuth>} /> */}
-            <Route path="/add-employee" element={<RequireAuth allowedRoles={['HR']}><EmployeeDetails /></RequireAuth>} />
+            <Route path="/add-employee/:id" element={<RequireAuth allowedRoles={['HR']}><EmployeeDetails /></RequireAuth>} />
             <Route path="/hr-profile" element={<RequireAuth allowedRoles={['HR']}><HrProfile /></RequireAuth>} />
             <Route path="/hr-startpms" element={<RequireAuth allowedRoles={['HR']}><StartPms /></RequireAuth>} />
-            <Route path="/employee-list" element={<RequireAuth allowedRoles={['HR']}><EmployeeList /></RequireAuth>} />
+            <Route path="/employee-list/:id" element={<RequireAuth allowedRoles={['HR']}><EmployeeList /></RequireAuth>} />
             <Route path="/hr/pending-assessments" element={<RequireAuth allowedRoles={['HR']}><PendingList /></RequireAuth>} />
             <Route path="/hr/completed-assessments" element={<RequireAuth allowedRoles={['HR']}><CompletedList/></RequireAuth>} />
             <Route path="/employee-info/:id" element={<RequireAuth allowedRoles={['HR']}><EmployeeInfo /></RequireAuth>} />

@@ -5,6 +5,7 @@ import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
+import com.triviktech.payloads.response.employee.ExitEmployeeResponseDto;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
 import com.triviktech.payloads.response.employee.PmsStatuscountDto;
 import com.triviktech.payloads.response.hr.HrResponseDto;
@@ -16,17 +17,23 @@ import com.triviktech.services.notification.NotificationService;
 import com.triviktech.utilities.reports.EmployeeReport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -245,32 +252,32 @@ public class HRControllerImpl implements HRController {
 
     @Override
     public ResponseEntity<Map<String, String>> generateEmployeeInfoReport(String id) {
-        Map<String,String> response=new HashMap<>();
+        Map<String, String> response = new HashMap<>();
         boolean status = employeeReport.generateEmployeeInfoReport(id);
-        if(status){
-            response.put("status","Report Generated");
-            return new ResponseEntity<>(response,HttpStatus.OK);
+        if (status) {
+            response.put("status", "Report Generated");
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        response.put("status","Report Generated");
-        return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+        response.put("status", "Report Generated");
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
     public ResponseEntity<Map<String, String>> generateEmployeeList() {
-        Map<String,String> response=new HashMap<>();
+        Map<String, String> response = new HashMap<>();
         boolean status = employeeReport.generateEmployeeListPdf();
-        if(status){
-            response.put("status","Report Generated");
-            return new ResponseEntity<>(response,HttpStatus.OK);
+        if (status) {
+            response.put("status", "Report Generated");
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        response.put("status","Report Generated");
-        return new ResponseEntity<>(response,HttpStatus.INTERNAL_SERVER_ERROR);
+        response.put("status", "Report Generated");
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
     public ResponseEntity<Map<String, Map<String, Integer>>> getCompletedPendingByDepartments() {
         Map<String, Map<String, Integer>> response = hrService.getCompletedPendingByDepartment();
-        return ResponseEntity.ok(response) ;
+        return ResponseEntity.ok(response);
     }
 
     @Override
@@ -285,5 +292,85 @@ public class HRControllerImpl implements HRController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(pdfStream));
     }
+
+    @Override
+    public ResponseEntity<String> processEmployeeExit(
+            @PathVariable String empId,
+            @PathVariable("lastWorkingDay") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate lastWorkingDay) {
+
+        String responseMessage = hrService.processEmployeeExit(empId, lastWorkingDay);
+        return ResponseEntity.ok(responseMessage);
+    }
+
+ @Override
+public void notifyAllEmployeesAndManagers() {
+    // Get all employees
+    List<String> allEmployeeIds = employeeRepository.findAllEmployeeIds();
+
+    for (String employeeId : allEmployeeIds) {
+        try {
+            System.out.println("Auto Notify called for employeeId: " + employeeId);
+
+            //First check PMS initiated
+            Boolean pmsInitiated = kraKpiRepository
+                    .findPmsInitiatedByEmployeeId(employeeId)
+                    .orElse(false);
+
+            if (!pmsInitiated) {
+                System.out.println("PMS not initiated for employeeId: " + employeeId + " → Skipping...");
+                continue;
+            }
+
+            boolean selfCompleted = kraKpiRepository
+                    .findSelfCompletedStatusByEmployeeId(employeeId)
+                    .orElse(false);
+            System.out.println("Self completed: " + selfCompleted);
+
+            boolean managerCompleted = kraKpiRepository
+                    .findManagerCompletedStatusByEmployeeId(employeeId)
+                    .orElse(false);
+            System.out.println("Manager completed: " + managerCompleted);
+
+            String managerId = employeeRepository.findReportingManagerIdByEmployeeId(employeeId);
+            System.out.println("Manager ID: " + managerId);
+
+            String employeeName = employeeRepository.findNameByEmpId(employeeId).orElse("Unknown");
+
+            if (managerId == null || managerId.isBlank()) {
+                System.out.println("Manager not found for " + employeeId);
+                continue; // skip this employee
+            }
+
+            String empDestination = "/queue/employee-notification";
+            String managerDestination = "/queue/manager-notification";
+
+            if (!selfCompleted) {
+                // Case 1: Self not done → notify both employee & manager
+                String empContent = "Reminder: Please complete your PMS self-review.";
+                String managerContent = "Reminder: " + employeeName
+                        + " has not yet completed self-review. Please follow up.";
+
+                notificationService.sendMessageWithRecent("System", employeeId, empContent, empDestination);
+                notificationService.sendMessageWithRecent("System", managerId, managerContent, managerDestination);
+
+            } else if (selfCompleted && !managerCompleted) {
+                // Case 2: Self done but Manager not done → notify only manager
+                String managerContent = "Reminder: " + employeeName
+                        + " has completed self-review. Please complete your Manager review.";
+                notificationService.sendMessageWithRecent("System", managerId, managerContent, managerDestination);
+
+            } else {
+                // Case 3: Both completed → no notification
+                System.out.println(" Both reviews completed for " + employeeId + ", skipping notifications.");
+            }
+
+        } catch (Exception ex) {
+            System.out.println("ERROR while sending for employee " + employeeId + ": " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+}
+
+   
 
 }

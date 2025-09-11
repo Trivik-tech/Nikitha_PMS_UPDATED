@@ -15,10 +15,17 @@ public interface KraKpiRepository extends JpaRepository<KraKpi, Long> {
 
     @Query("SELECT k FROM KraKpi k WHERE k.employeeInformation = :employee AND k.kraKpiId = :kraKpiId")
     Optional<KraKpi> findByEmployeeInformationAndKraKpiId(@Param("employee") EmployeeInformation employee,
-                                                          @Param("kraKpiId") long kraKpiId);
+            @Param("kraKpiId") long kraKpiId);
 
     @Query("SELECT k.selfCompleted FROM KraKpi k WHERE k.employeeInformation.empId = :employeeId")
     Optional<Boolean> findSelfCompletedStatusByEmployeeId(@Param("employeeId") String employeeId);
 
     boolean existsByEmployeeInformation(EmployeeInformation employeeId);
+
+    @Query("SELECT k.managerCompleted FROM KraKpi k WHERE k.employeeInformation.empId = :employeeId")
+    Optional<Boolean> findManagerCompletedStatusByEmployeeId(@Param("employeeId") String employeeId);
+
+     @Query("SELECT k.pmsInitiated FROM KraKpi k WHERE k.employeeInformation.empId = :employeeId")
+    Optional<Boolean> findPmsInitiatedByEmployeeId(@Param("employeeId") String employeeId);
+
 }

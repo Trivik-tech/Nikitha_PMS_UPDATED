@@ -5,11 +5,15 @@ import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
+import com.triviktech.payloads.response.employee.ExitEmployeeResponseDto;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
 import com.triviktech.payloads.response.employee.PmsStatuscountDto;
 import com.triviktech.payloads.response.hr.HrResponseDto;
 import jakarta.validation.Valid;
+
+import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -90,19 +96,26 @@ public interface HRController {
         @GetMapping("/profile")
         ResponseEntity<Map<String, HrResponseDto>> profile(@AuthenticationPrincipal UserDetails hr);
 
-       
         @GetMapping("/status-count")
         ResponseEntity<PmsStatuscountDto> getPmsStatusCountForHR();
 
         @GetMapping("/generate-report/{id}")
-        ResponseEntity<Map<String,String>> generateEmployeeInfoReport(@PathVariable String id);
+        ResponseEntity<Map<String, String>> generateEmployeeInfoReport(@PathVariable String id);
 
         @GetMapping("/generate-employee-list")
-        ResponseEntity<Map<String,String>> generateEmployeeList();
+        ResponseEntity<Map<String, String>> generateEmployeeList();
 
         @GetMapping("/get-completed-pending-department")
         ResponseEntity<Map<String, Map<String, Integer>>> getCompletedPendingByDepartments();
 
         @GetMapping("/export-pdf/{employeeId}")
         ResponseEntity<InputStreamResource> exportPmsPdf(@PathVariable String employeeId);
+
+        @PostMapping("/exit-employee/{empId}/{lastWorkingDay}")
+        ResponseEntity<String> processEmployeeExit(
+                        @PathVariable String empId,
+                        @PathVariable("lastWorkingDay") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate lastWorkingDay);
+
+       public void notifyAllEmployeesAndManagers();
+
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { FaSearch, FaHome, FaEdit, FaTrash, FaDownload } from "react-icons/fa";
 import logo from "../../../assets/images/nikithas-logo.png";
 import "./EmpResponsive.css";
@@ -24,6 +24,8 @@ export default function EmployeeList() {
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const {id:hrid}=useParams()
+ 
 
   const hasFetchedRef = useRef(false); // Fix for duplicate API call in StrictMode
 
@@ -46,7 +48,9 @@ export default function EmployeeList() {
   if (!hasFetchedRef.current) {
     fetchEmployees();
     hasFetchedRef.current = true;
+
   }
+  console.log(hrid);
 // eslint-disable-next-line react-hooks/exhaustive-deps
 }, []);
 
@@ -185,7 +189,7 @@ export default function EmployeeList() {
                 onChange={searchEmployees}
               />
               <div className="employee-list-right">
-                <Link to="/add-employee" className="employee-list-add-button">
+                <Link to={`/add-employee/${hrid}`} className="employee-list-add-button">
                   Add Employee
                 </Link>
               </div>

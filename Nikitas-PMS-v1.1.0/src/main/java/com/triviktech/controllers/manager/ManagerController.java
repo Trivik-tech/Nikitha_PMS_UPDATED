@@ -80,4 +80,6 @@ public interface ManagerController {
 
         @GetMapping("/pms/status-count/{managerId}")
         ResponseEntity<PmsStatuscountDto> getPmsCountsForManager(@PathVariable String managerId);
+
+        // public void autoNotifyEmployees();
 }

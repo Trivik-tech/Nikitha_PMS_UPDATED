@@ -30,7 +30,6 @@ public class NotificationControllerImpl implements NotificationController {
 
     @Override
     public ResponseEntity<List<Notification>> getRecentMessages(@AuthenticationPrincipal UserDetails manager) {
-        // In real implementation, fetch authenticated username from SecurityContext
          String username = manager.getUsername();
 //        System.out.println("✅ Authenticated username: " + username);
 

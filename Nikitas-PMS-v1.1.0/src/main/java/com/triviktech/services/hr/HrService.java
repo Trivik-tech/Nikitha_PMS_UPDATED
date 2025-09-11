@@ -5,6 +5,7 @@ import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
 
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
+import com.triviktech.payloads.response.employee.ExitEmployeeResponseDto;
 import com.triviktech.payloads.response.employee.PmsPercentageDto;
 import com.triviktech.payloads.response.employee.PmsStatuscountDto;
 import com.triviktech.payloads.response.employeeslist.EmployeesList;
@@ -17,6 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -65,6 +68,8 @@ public interface HrService {
     PmsStatuscountDto getPmsCountsForHR();
 
     Map<String, Map<String, Integer>> getCompletedPendingByDepartment();
+
     ByteArrayInputStream generatePmsPdfReport(String employeeId);
 
+    String processEmployeeExit(String empId, LocalDate lastWorkingDay);
 }

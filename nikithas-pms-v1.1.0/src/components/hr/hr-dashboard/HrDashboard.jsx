@@ -56,6 +56,7 @@ const HrDashboard = () => {
   const [hrId, setHrId] = useState(null);
   const [completedByDept, setCompletedByDept] = useState({});
 const [pendingByDept, setPendingByDept] = useState({});
+const [hrName, setHrName] = useState("");
 
 
   const token = localStorage.getItem("token");
@@ -255,8 +256,11 @@ const getKeyMatrix = async () => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        
       });
+      
       setHrId(result.data.profile.hrId);
+      setHrName(result.data.profile.name);
     } catch (error) {
       console.log(error.message);
     }
@@ -440,11 +444,11 @@ const getKeyMatrix = async () => {
           )}
           <div className="hr-dashboard-profile-container">
             <img src={profile} alt="Profile" className="hr-dashboard-profileImg" />
-            <h2 className="hr-dashboard-profile-name">Avinash S. H.</h2>
+            <h2 className="hr-dashboard-profile-name">{hrName || "HR User"}</h2>
           </div>
           <ul>
             <li><Link to="/hr-dashboard" className="active">HR Dashboard</Link></li>
-            <li><Link to="/employee-list">Employee List</Link></li>
+            <li><Link to={`/employee-list/${hrId}`}>Employee List</Link></li>
             <li><Link to="/hr-startpms">Employee Performance</Link></li>
             <li><Link to="/hr-profile">My Profile</Link></li>
             {isMobile() && (
