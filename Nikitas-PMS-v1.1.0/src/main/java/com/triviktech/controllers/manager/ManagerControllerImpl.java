@@ -261,4 +261,47 @@ public ResponseEntity<PmsStatusCountDto> getPmsCountsForManager(String managerId
     return ResponseEntity.ok(dto);
 }
 
+// @Override
+// public void autoNotifyEmployees() {
+//     // Get all employees
+//     List<String> allEmployeeIds = employeeRepository.findAllEmployeeIds();
+
+//     for (String employeeId : allEmployeeIds) {
+//         try {
+//             System.out.println("Auto Notify check for employeeId: " + employeeId);
+
+//             // 1. Check if PMS initiated for this employee
+//             Boolean pmsInitiated = kraKpiRepository
+//                     .findPmsInitiatedByEmployeeId(employeeId)
+//                     .orElse(false);
+
+//             if (!pmsInitiated) {
+//                 System.out.println("PMS not initiated for " + employeeId + ", skipping...");
+//                 continue;
+//             }
+
+//             // 2. Check if self-review is completed
+//             boolean selfCompleted = kraKpiRepository
+//                     .findSelfCompletedStatusByEmployeeId(employeeId)
+//                     .orElse(false);
+
+//             if (!selfCompleted) {
+//                 // 3. Send reminder to employee
+//                 String destination = "/queue/employee-notification";
+//                 String content = "Reminder: Please complete your PMS self-assessment.";
+
+//                 notificationService.sendMessageWithRecent("System", employeeId, content, destination);
+
+//                 System.out.println("Notification sent to employee " + employeeId);
+//             } else {
+//                 System.out.println("Self-assessment already completed for " + employeeId + ", skipping...");
+//             }
+
+//         } catch (Exception ex) {
+//             System.out.println("ERROR while notifying " + employeeId + ": " + ex.getMessage());
+//             ex.printStackTrace();
+//         }
+//     }
+
+// }
 }

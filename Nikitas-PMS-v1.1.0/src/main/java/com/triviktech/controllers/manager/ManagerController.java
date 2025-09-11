@@ -43,158 +43,57 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:3000")
 public interface ManagerController {
 
-        /**
-         * Registers a new manager in the PMS system.
-         *
-         * @param managerRequestDto Manager details from the request.
-         * @param bindingResult Validation errors if present.
-         * @return ResponseEntity with success or error message.
-         */
-        @PostMapping("/register-manager")
-        ResponseEntity<?> registerManager(@Valid @RequestBody ManagerRequestDto managerRequestDto,
-                                          BindingResult bindingResult);
+    @PostMapping("/register-manager")
+    ResponseEntity<?> registerManager(@Valid @RequestBody ManagerRequestDto managerRequestDto,
+                                      BindingResult bindingResult);
 
-        /**
-         * Retrieves the list of all registered managers.
-         *
-         * @return ResponseEntity containing a list of {@link ManagerResponseDto}.
-         */
-        @GetMapping("/manager-list")
-        ResponseEntity<List<ManagerResponseDto>> listOfManagers();
+    @GetMapping("/manager-list")
+    ResponseEntity<List<ManagerResponseDto>> listOfManagers();
 
-        /**
-         * Fetches details of a specific manager by their ID.
-         *
-         * @param managerId Manager ID.
-         * @return ResponseEntity containing {@link ManagerResponseDto}.
-         */
-        @GetMapping("/{managerId}")
-        ResponseEntity<ManagerResponseDto> getManager(@PathVariable String managerId);
+    @GetMapping("/{managerId}")
+    ResponseEntity<ManagerResponseDto> getManager(@PathVariable String managerId);
 
-        /**
-         * Retrieves the profile of the currently authenticated manager.
-         *
-         * @param manager Authenticated manager user details.
-         * @return ResponseEntity containing {@link ManagerResponseDto}.
-         */
-        @GetMapping("/profile")
-        ResponseEntity<ManagerResponseDto> profile(@AuthenticationPrincipal UserDetails manager);
+    @GetMapping("/profile")
+    ResponseEntity<ManagerResponseDto> profile(@AuthenticationPrincipal UserDetails manager);
 
-        /**
-         * Retrieves the list of employees under a given manager with their PMS status.
-         *
-         * @param managerId Manager ID.
-         * @return ResponseEntity containing a list of {@link EmployeeWithPmsStatus}.
-         */
-        @GetMapping("/employee-list/{managerId}")
-        ResponseEntity<List<EmployeeWithPmsStatus>> listOfEmployeesForManager(@PathVariable String managerId);
+    @GetMapping("/employee-list/{managerId}")
+    ResponseEntity<List<EmployeeWithPmsStatus>> listOfEmployeesForManager(@PathVariable String managerId);
 
-        /**
-         * Retrieves the list of employees who have pending PMS reviews under a manager.
-         *
-         * @param managerId Manager ID.
-         * @return ResponseEntity containing a list of {@link EmployeeWithPmsStatus}.
-         */
-        @GetMapping("/pending-pms-list/{managerId}")
-        ResponseEntity<List<EmployeeWithPmsStatus>> listOfPMSPendingEmployees(@PathVariable String managerId);
+    @GetMapping("/pending-pms-list/{managerId}")
+    ResponseEntity<List<EmployeeWithPmsStatus>> listOfPMSPendingEmployees(@PathVariable String managerId);
 
-        /**
-         * Retrieves the list of employees who have completed PMS under a manager.
-         *
-         * @param managerId Manager ID.
-         * @return ResponseEntity containing a list of {@link EmployeeWithPmsStatus}.
-         */
-        @GetMapping("/completed-pms-list/{managerId}")
-        ResponseEntity<List<EmployeeWithPmsStatus>> listOfPMSCompletedEmployees(@PathVariable String managerId);
+    @GetMapping("/completed-pms-list/{managerId}")
+    ResponseEntity<List<EmployeeWithPmsStatus>> listOfPMSCompletedEmployees(@PathVariable String managerId);
 
-        /**
-         * Allows a manager to provide PMS review for a specific employee.
-         *
-         * @param managerId Manager ID.
-         * @param employeeId Employee ID.
-         * @param data KRA/KPI review data.
-         * @return ResponseEntity containing success message in a Map.
-         */
-        @PatchMapping("/manager-review/{managerId}/{employeeId}")
-        ResponseEntity<Map<String, String>> managerReview(@PathVariable String managerId,
-                                                          @PathVariable String employeeId,
-                                                          @RequestBody KraKpiRequestDto data);
+    @PatchMapping("/manager-review/{managerId}/{employeeId}")
+    ResponseEntity<Map<String, String>> managerReview(@PathVariable String managerId,
+                                                      @PathVariable String employeeId,
+                                                      @RequestBody KraKpiRequestDto data);
 
-        /**
-         * Retrieves the KRA/KPI details of a specific employee under a manager.
-         *
-         * @param managerId Manager ID.
-         * @param employeeId Employee ID.
-         * @return ResponseEntity containing {@link KraKpiResponseDto}.
-         */
-        @GetMapping("/kra-kpi/{managerId}/{employeeId}")
-        ResponseEntity<KraKpiResponseDto> getKraKpis(@PathVariable String managerId,
-                                                     @PathVariable String employeeId);
+    @GetMapping("/kra-kpi/{managerId}/{employeeId}")
+    ResponseEntity<KraKpiResponseDto> getKraKpis(@PathVariable String managerId,
+                                                 @PathVariable String employeeId);
 
-        /**
-         * Allows a manager to approve an employee’s KRA/KPI.
-         *
-         * @param employeeId Employee ID.
-         * @param managerId Manager ID.
-         * @param kraKpiRequestDto Approval details.
-         * @return ResponseEntity containing success message in a Map.
-         */
-        @PatchMapping("/approve-krakpi/{employeeId}/{managerId}")
-        ResponseEntity<Map<String, String>> approveKraKpi(@PathVariable String employeeId,
-                                                          @PathVariable String managerId,
-                                                          @RequestBody KraKpiRequestDto kraKpiRequestDto);
+    @PatchMapping("/approve-krakpi/{employeeId}/{managerId}")
+    ResponseEntity<Map<String, String>> approveKraKpi(@PathVariable String employeeId,
+                                                      @PathVariable String managerId,
+                                                      @RequestBody KraKpiRequestDto kraKpiRequestDto);
 
-        /**
-         * Retrieves the list of employees who have completed PMS for a reporting manager.
-         *
-         * @param reportingManager Reporting manager ID.
-         * @return ResponseEntity containing a list of {@link EmployeeWithPmsStatus}.
-         */
-        @GetMapping("/completed/{reportingManager}")
-        ResponseEntity<List<EmployeeWithPmsStatus>> getCompletedPmsForManager(@PathVariable String reportingManager);
+    @GetMapping("/completed/{reportingManager}")
+    ResponseEntity<List<EmployeeWithPmsStatus>> getCompletedPmsForManager(@PathVariable String reportingManager);
 
-        /**
-         * Retrieves the list of employees who have pending PMS for a reporting manager.
-         *
-         * @param reportingManager Reporting manager ID.
-         * @return ResponseEntity containing a list of {@link EmployeeWithPmsStatus}.
-         */
-        @GetMapping("/pending/{reportingManager}")
-        ResponseEntity<List<EmployeeWithPmsStatus>> getPendingPmsForManager(@PathVariable String reportingManager);
+    @GetMapping("/pending/{reportingManager}")
+    ResponseEntity<List<EmployeeWithPmsStatus>> getPendingPmsForManager(@PathVariable String reportingManager);
 
-        /**
-         * Retrieves the PMS completion percentage for a manager’s team.
-         *
-         * @param reportingManager Reporting manager ID.
-         * @return ResponseEntity containing {@link PmsPercentageDto}.
-         */
-        @GetMapping("/percentage/{reportingManager}")
-        ResponseEntity<PmsPercentageDto> getPmsPercentageForManager(@PathVariable String reportingManager);
+    @GetMapping("/percentage/{reportingManager}")
+    ResponseEntity<PmsPercentageDto> getPmsPercentageForManager(@PathVariable String reportingManager);
 
-        /**
-         * Sends a notification to a specific employee regarding PMS updates.
-         *
-         * @param employeeId Employee ID.
-         * @return ResponseEntity containing success message in a Map.
-         */
-        @PostMapping("/notify/employee/{employeeId}")
-        ResponseEntity<Map<String, String>> notifyEmployee(@PathVariable String employeeId);
+    @PostMapping("/notify/employee/{employeeId}")
+    ResponseEntity<Map<String, String>> notifyEmployee(@PathVariable String employeeId);
 
-        /**
-         * Retrieves the team size for a specific manager.
-         *
-         * @param managerId Manager ID.
-         * @return ResponseEntity containing team size in a Map.
-         */
-        @GetMapping("/get-team-size/{managerId}")
-        ResponseEntity<Map<String, Integer>> getTeamSize(@PathVariable String managerId);
+    @GetMapping("/get-team-size/{managerId}")
+    ResponseEntity<Map<String, Integer>> getTeamSize(@PathVariable String managerId);
 
-        /**
-         * Retrieves PMS status counts (completed, pending, etc.) for a manager’s team.
-         *
-         * @param managerId Manager ID.
-         * @return ResponseEntity containing {@link PmsStatusCountDto}.
-         */
-        @GetMapping("/pms/status-count/{managerId}")
-        ResponseEntity<PmsStatusCountDto> getPmsCountsForManager(@PathVariable String managerId);
+    @GetMapping("/pms/status-count/{managerId}")
+    ResponseEntity<PmsStatusCountDto> getPmsCountsForManager(@PathVariable String managerId);
 }

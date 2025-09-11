@@ -2,6 +2,7 @@ package com.triviktech.entities.kpi;
 
 import com.triviktech.entities.kra.KRA;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 /**
  * Represents a Key Performance Indicator (KPI) entity.
@@ -42,9 +43,11 @@ public class KPI {
     @Column(name = "review_2")
     private Integer review2;
 
+    @NotBlank(message = "Employee remark is mandatory")
     @Column(name = "employee_remark", length = 1000)
     private String employeeRemark;
-
+    
+    @NotBlank(message = "Manager remark is mandatory")
     @Column(name = "manager_remark", length = 1000)
     private String managerRemark;
 
@@ -127,5 +130,5 @@ public class KPI {
     public void setManagerRemark(String managerRemark) {
         this.managerRemark = managerRemark;
     }
-    
+
 }

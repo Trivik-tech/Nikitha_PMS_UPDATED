@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { FaSearch, FaHome, FaEdit, FaDownload, FaTrash } from "react-icons/fa";
 import logo from "../../../assets/images/nikithas-logo.png";
 import "./EmpResponsive.css";
@@ -14,7 +14,7 @@ import Loader from "../../modal/loader/Loader";
 export default function EmployeeList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [team, setTeam] = useState([]); 
+  const [team, setTeam] = useState([]);
   const [sortOrder, setSortOrder] = useState("asc");
   const [hasServerError, setHasServerError] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -25,8 +25,9 @@ export default function EmployeeList() {
   const [isExporting, setIsExporting] = useState(false); // ✅ Export-specific loader only
 
   const navigate = useNavigate();
+  const { id: hrid } = useParams();
   const token = localStorage.getItem("token");
-  const hasFetchedRef = useRef(false);
+  const hasFetchedRef = useRef(false); // Prevent duplicate API call in StrictMode
 
   const fetchEmployees = async () => {
     try {
@@ -46,6 +47,8 @@ export default function EmployeeList() {
       fetchEmployees();
       hasFetchedRef.current = true;
     }
+    console.log(hrid);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 🔍 Debounced search effect
@@ -87,11 +90,9 @@ export default function EmployeeList() {
     setModalOpen(true);
   };
 
-
   const inactivateEmployee = async () => {
     if (!employeeToUpdate) return;
 
-  
     try {
       await axios.put(
         `${baseUrl}/api/v1/pms/hr/inactivate-employee/${employeeToUpdate}`,
@@ -119,7 +120,6 @@ export default function EmployeeList() {
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
   };
-
 
   const handleDownloadData = async (id) => {
     try {
@@ -184,10 +184,10 @@ export default function EmployeeList() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <div className="employee-list-right">
-                <Link to="/add-employee" className="employee-list-add-button">
+                <Link to={`/add-employee/${hrid}`} className="employee-list-add-button">
                   Add Employee
                 </Link>
-              </div> 
+              </div>
             </div>
 
             <img src={logo} alt="Company Logo" className="employee-list-company-logo" />
@@ -205,9 +205,9 @@ export default function EmployeeList() {
                 <table className="employee-list-team-table">
                   <thead>
                     <tr>
-
-                      <th onClick={handleSort} style={{ cursor: "pointer" }}>ID{sortOrder==="asc"? "|":"||"}</th>
-
+                      <th onClick={handleSort} style={{ cursor: "pointer" }}>
+                        ID {sortOrder === "asc" ? "|" : "||"}
+                      </th>
                       <th>Name</th>
                       <th>Department</th>
                       <th>Email</th>
@@ -270,8 +270,13 @@ export default function EmployeeList() {
               <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>
                 Prev
               </button>
-              <span>Page {currentPage} of {totalPages}</span>
-              <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => setCurrentPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
                 Next
               </button>
               <button title="export" onClick={handleExportData}>

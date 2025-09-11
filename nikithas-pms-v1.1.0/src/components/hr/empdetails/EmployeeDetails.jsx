@@ -4,7 +4,7 @@ import "./EmployeeDetails.css";
 import "./ResponsiveEmpDetails.css";
 import logo from "../../../assets/images/nikithas-logo.png";
 import FileConfirmation from "../../modal/file-confirmation/FileConfirmation";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import Loader from "../../modal/loader/Loader";
 import Modal from "../../modal/Modal";
@@ -39,9 +39,11 @@ const EmployeeDetails = () => {
 
   const navigate = useNavigate();
   const token=localStorage.getItem('token')
+  const {id:hrid}=useParams()
 
   useEffect(() => {
     loadDepartments();
+    console.log(hrid)
   }, []);
 
   const handleChange = (e) => {
@@ -133,7 +135,7 @@ const EmployeeDetails = () => {
       ...payload,
       role: payload.role?.toUpperCase() || "",
       department: payload.department?.toString() || "",
-      hrId: "Guru Jadhav"
+      hrId:`${hrid}`
     };
 
     result = await axios.post(`${baseUrl}/api/v1/pms/hr/register-employee`, updatedEmployee,{

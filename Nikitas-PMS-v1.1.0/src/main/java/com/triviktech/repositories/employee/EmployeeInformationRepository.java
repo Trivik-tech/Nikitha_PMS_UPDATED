@@ -123,4 +123,9 @@ public interface EmployeeInformationRepository extends JpaRepository<EmployeeInf
      */
     @Query("SELECT e.name FROM EmployeeInformation e WHERE e.empId = :employeeId")
     Optional<String> findNameByEmpId(@Param("employeeId") String employeeId);
+
+    Optional<EmployeeInformation> findByEmpId(String empId);
+
+    @Query("SELECT e.empId FROM EmployeeInformation e")
+    List<String> findAllEmployeeIds();
 }

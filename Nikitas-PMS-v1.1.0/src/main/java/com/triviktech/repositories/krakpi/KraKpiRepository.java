@@ -16,40 +16,14 @@ import java.util.Optional;
  */
 public interface KraKpiRepository extends JpaRepository<KraKpi, Long> {
 
-    /**
-     * Find the {@link KraKpi} record for a specific {@link EmployeeInformation}.
-     *
-     * @param employee the {@link EmployeeInformation} entity
-     * @return an {@link Optional} containing the {@link KraKpi} if found
-     */
     Optional<KraKpi> findByEmployeeInformation(EmployeeInformation employee);
 
-    /**
-     * Find the first {@link KraKpi} record for a specific {@link EmployeeInformation}.
-     * Useful if an employee has multiple KRA/KPI entries and only the first is required.
-     *
-     * @param employee the {@link EmployeeInformation} entity
-     * @return an {@link Optional} containing the first {@link KraKpi} if found
-     */
     Optional<KraKpi> findFirstByEmployeeInformation(EmployeeInformation employee);
 
-    /**
-     * Find a {@link KraKpi} by {@link EmployeeInformation} and KRA/KPI ID.
-     *
-     * @param employee   the {@link EmployeeInformation} entity
-     * @param kraKpiId   the unique KRA/KPI ID
-     * @return an {@link Optional} containing the matching {@link KraKpi} if found
-     */
     @Query("SELECT k FROM KraKpi k WHERE k.employeeInformation = :employee AND k.kraKpiId = :kraKpiId")
     Optional<KraKpi> findByEmployeeInformationAndKraKpiId(@Param("employee") EmployeeInformation employee,
                                                           @Param("kraKpiId") long kraKpiId);
 
-    /**
-     * Get the self-completed status of a KRA/KPI for a specific employee.
-     *
-     * @param employeeId the employee ID
-     * @return an {@link Optional} containing {@code true} if completed, {@code false} otherwise
-     */
     @Query("SELECT k.selfCompleted FROM KraKpi k WHERE k.employeeInformation.empId = :employeeId")
     Optional<Boolean> findSelfCompletedStatusByEmployeeId(@Param("employeeId") String employeeId);
 
@@ -61,15 +35,6 @@ public interface KraKpiRepository extends JpaRepository<KraKpi, Long> {
      */
     boolean existsByEmployeeInformation(EmployeeInformation employee);
 
-    /**
-     * Check if a {@link KraKpi} exists for an {@link EmployeeInformation}
-     * within a given date range.
-     *
-     * @param employee  the {@link EmployeeInformation} entity
-     * @param startDate the start date of the range
-     * @param endDate   the end date of the range
-     * @return {@code true} if a record exists, {@code false} otherwise
-     */
     @Query("SELECT COUNT(k) > 0 FROM KraKpi k " +
             "WHERE k.employeeInformation = :employee " +
             "AND k.createdAt BETWEEN :startDate AND :endDate")
@@ -79,31 +44,14 @@ public interface KraKpiRepository extends JpaRepository<KraKpi, Long> {
             @Param("endDate") java.time.LocalDateTime endDate
     );
 
-    /**
-     * Find all {@link KraKpi} records by employee ID.
-     *
-     * @param employeeId the employee ID
-     * @return a list of {@link KraKpi} objects
-     */
     @Query("SELECT k from KraKpi k where k.employeeInformation.empId=:employeeId")
     List<KraKpi> findAllByEmployeeId(@Param("employeeId") String employeeId);
 
-
-    /**
-     * Fetches all KRA/KPI records for a specific employee in a given year.
-     *
-     * <p>This query uses the database YEAR() function on the {@code createdAt} field
-     * to filter records by the provided year. It also filters by the employee's ID.</p>
-     *
-     * @param empId the unique employee ID
-     * @param year  the year to filter KRA/KPI records (e.g., 2025)
-     * @return a list of {@link KraKpi} entities belonging to the employee for that year
-     */
     @Query("SELECT k FROM KraKpi k " +
             "WHERE FUNCTION('YEAR', k.createdAt) = :year " +
             "AND k.employeeInformation.empId = :empId")
-    List<KraKpi> findByEmployeeAndYear(String empId, int year);
-
+    List<KraKpi> findByEmployeeAndYear(@Param("empId") String empId,
+                                       @Param("year") int year);
 
     @Query("SELECT k FROM KraKpi k " +
             "WHERE FUNCTION('YEAR', k.createdAt) = :year " +
@@ -117,17 +65,17 @@ public interface KraKpiRepository extends JpaRepository<KraKpi, Long> {
     @Query("SELECT k FROM KraKpi k " +
             "WHERE FUNCTION('YEAR', k.createdAt) = :year " +
             "AND FUNCTION('MONTH', k.createdAt) BETWEEN :startMonth AND :endMonth " +
-            "AND (:month IS NULL OR FUNCTION('MONTH', k.createdAt) = :month)"+
+            "AND (:month IS NULL OR FUNCTION('MONTH', k.createdAt) = :month) " +
             "AND k.employeeInformation.empId = :empId")
     List<KraKpi> findByEmployeeAndQuarterAndMonth(@Param("empId") String empId,
-                                          @Param("year") int year,
-                                          @Param("startMonth") int startMonth,
-                                          @Param("endMonth") int endMonth,
-                                          @Param("month") int month);
+                                                  @Param("year") int year,
+                                                  @Param("startMonth") int startMonth,
+                                                  @Param("endMonth") int endMonth,
+                                                  @Param("month") Integer month);
 
+    @Query("SELECT k.managerCompleted FROM KraKpi k WHERE k.employeeInformation.empId = :employeeId")
+    Optional<Boolean> findManagerCompletedStatusByEmployeeId(@Param("employeeId") String employeeId);
 
-
-
-
-
+    @Query("SELECT k.pmsInitiated FROM KraKpi k WHERE k.employeeInformation.empId = :employeeId")
+    Optional<Boolean> findPmsInitiatedByEmployeeId(@Param("employeeId") String employeeId);
 }

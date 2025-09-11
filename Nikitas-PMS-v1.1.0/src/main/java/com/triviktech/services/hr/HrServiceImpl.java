@@ -2,6 +2,7 @@ package com.triviktech.services.hr;
 
 import com.triviktech.entities.department.Department;
 import com.triviktech.entities.employee.EmployeeInformation;
+import com.triviktech.entities.employee.ExitEmployee;
 import com.triviktech.entities.hr.HR;
 import com.triviktech.entities.kpi.KPI;
 import com.triviktech.entities.kra.KRA;
@@ -22,6 +23,7 @@ import com.triviktech.repositories.address.LocationRepository;
 import com.triviktech.repositories.address.StateRepository;
 import com.triviktech.repositories.department.DepartmentRepository;
 import com.triviktech.repositories.employee.EmployeeInformationRepository;
+import com.triviktech.repositories.employee.ExitEmployeeRepository;
 import com.triviktech.repositories.hr.HRRepository;
 import com.triviktech.repositories.krakpi.KraKpiRepository;
 import com.triviktech.repositories.manager.ManagerRepository;
@@ -33,9 +35,13 @@ import com.triviktech.utilities.validation.Validation;
 import com.triviktech.utilities.xlsxsupport.XlsxSupport;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -86,10 +92,14 @@ public class HrServiceImpl implements HrService {
     private final EmailService emailService;
     private final ManagerRepository managerRepository;
 
+    private final ExitEmployeeRepository exitEmployeeRepository;
+
     public HrServiceImpl(HRRepository hrRepository, StateRepository stateRepository,
-                         LocationRepository locationRepository, DepartmentRepository departmentRepository,
-                         KraKpiRepository kraKpiRepository,
-                         EntityDtoConversion entityDtoConversion, EmployeeInformationRepository employeeInformationRepository, EmailService emailService, ManagerRepository managerRepository) {
+            LocationRepository locationRepository, DepartmentRepository departmentRepository,
+            KraKpiRepository kraKpiRepository,
+            EntityDtoConversion entityDtoConversion, EmployeeInformationRepository employeeInformationRepository,
+            EmailService emailService, ManagerRepository managerRepository,
+            ExitEmployeeRepository exitEmployeeRepository) {
 
         this.hrRepository = hrRepository;
         this.stateRepository = stateRepository;
@@ -100,6 +110,7 @@ public class HrServiceImpl implements HrService {
         this.employeeInformationRepository = employeeInformationRepository;
         this.kraKpiRepository = kraKpiRepository;
         this.managerRepository = managerRepository;
+        this.exitEmployeeRepository = exitEmployeeRepository;
     }
 
     @Override
@@ -164,8 +175,7 @@ public class HrServiceImpl implements HrService {
                 .collect(Collectors.toMap(
                         m -> m.getName().trim().toLowerCase(),
                         m -> m,
-                        (m1, m2) -> m1
-                ));
+                        (m1, m2) -> m1));
 
         // Step 3: Identify managers
         Set<String> reportingManagerNames = employees.stream()
@@ -261,8 +271,7 @@ public class HrServiceImpl implements HrService {
 
         return List.of(
                 "Managers Processed: " + toSaveManagers.size(),
-                "Employees Processed: " + toSaveEmployees.size()
-        );
+                "Employees Processed: " + toSaveEmployees.size());
     }
     @Override
     public List<EmployeeInfo> getAllEmployees() {
@@ -273,12 +282,10 @@ public class HrServiceImpl implements HrService {
             EmployeeInfo dto = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
 
             dto.setDepartment(
-                    employee.getDepartment() != null ? employee.getDepartment().getName() : "N/A"
-            );
+                    employee.getDepartment() != null ? employee.getDepartment().getName() : "N/A");
 
             dto.setReportingManager(
-                    employee.getManager() != null ? employee.getManager().getName() : "N/A"
-            );
+                    employee.getManager() != null ? employee.getManager().getName() : "N/A");
 
             return dto;
         }).collect(Collectors.toList());
@@ -288,12 +295,10 @@ public class HrServiceImpl implements HrService {
             dto.setEmpId(manager.getManagerId());
 
             dto.setDepartment(
-                    manager.getDepartment() != null ? manager.getDepartment().getName() : "N/A"
-            );
+                    manager.getDepartment() != null ? manager.getDepartment().getName() : "N/A");
 
             dto.setReportingManager(
-                    manager.getReportingManager() != null ? manager.getReportingManager() : "N/A"
-            );
+                    manager.getReportingManager() != null ? manager.getReportingManager() : "N/A");
 
             return dto;
         }).collect(Collectors.toList());
@@ -360,7 +365,7 @@ public class HrServiceImpl implements HrService {
 
     @Override
     public Integer totalEmployees() {
-        return employeeInformationRepository.findAll().size()+managerRepository.findAll().size();
+        return employeeInformationRepository.findAll().size() + managerRepository.findAll().size();
     }
 
     @Override
@@ -391,7 +396,8 @@ public class HrServiceImpl implements HrService {
                     dto.setEmpId(manager.getManagerId());
                     dto.setName(manager.getName());
                     dto.setDepartment(manager.getDepartment() != null ? manager.getDepartment().getName() : "N/A");
-                    dto.setReportingManager(manager.getReportingManager() != null ? manager.getReportingManager() : "N/A");
+                    dto.setReportingManager(
+                            manager.getReportingManager() != null ? manager.getReportingManager() : "N/A");
                     dto.setCategory(manager.getCategory());
                     dto.setRole("MANAGER");
 
@@ -465,7 +471,7 @@ public class HrServiceImpl implements HrService {
 
     @Override
     public Map<String, String> updateEmployee(String empId, Employee employee) {
-        Map<String,String> response=new HashMap<>();
+        Map<String, String> response = new HashMap<>();
 
         Optional<EmployeeInformation> savedEmployee = employeeInformationRepository.findById(empId);
         Optional<Manager> optionalManager = managerRepository.findByManagerId(empId);
@@ -511,23 +517,24 @@ public class HrServiceImpl implements HrService {
             // Save and convert to DTO
             EmployeeInformation save = employeeInformationRepository.save(employee1);
 
-            try{
-                String sub=String.format(Message.EMPLOYEE_DETAILS_UPDATED_SUBJECT);
-                String message=String.format(Message.EMPLOYEE_DETAILS_UPDATED_MESSAGE,save.getName());
-                emailService.sendEmail(save.getEmailId(),sub,message);
-            }catch (Exception e){
+            try {
+                String sub = String.format(Message.EMPLOYEE_DETAILS_UPDATED_SUBJECT);
+                String message = String.format(Message.EMPLOYEE_DETAILS_UPDATED_MESSAGE, save.getName());
+                emailService.sendEmail(save.getEmailId(), sub, message);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            response.put("Status","Employee Information Updated Successfully");
+            response.put("Status", "Employee Information Updated Successfully");
 
             return response;
         }
-        if(optionalManager.isPresent()){
+        if (optionalManager.isPresent()) {
             Manager manager = optionalManager.get();
             SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
             // Convert date fields to String
-//            String lwdStr = employee.getLastWorkingDate() != null ? formatter.format(employee.getLastWorkingDate()) : null;
+            // String lwdStr = employee.getLastWorkingDate() != null ?
+            // formatter.format(employee.getLastWorkingDate()) : null;
 
             // Set values
             manager.setBranch(employee.getBranch());
@@ -537,7 +544,7 @@ public class HrServiceImpl implements HrService {
             manager.setCurrentDesignation(employee.getCurrentDesignation());
             manager.setDateOfJoining(employee.getDateOfJoining());
             manager.setEmailId(employee.getEmailId());
-//            manager.setLastWorkingDate(lwdStr);
+            // manager.setLastWorkingDate(lwdStr);
             manager.setMobileNumber(employee.getMobileNumber());
             manager.setOfficialEmailId(employee.getOfficialEmailId());
             manager.setRole(employee.getRole());
@@ -556,15 +563,15 @@ public class HrServiceImpl implements HrService {
             // Save and convert to DTO
             Manager saved = managerRepository.save(manager);
 
-            try{
-                String sub=String.format(Message.EMPLOYEE_DETAILS_UPDATED_SUBJECT);
-                String message=String.format(Message.EMPLOYEE_DETAILS_UPDATED_MESSAGE,saved.getName());
-                emailService.sendEmail(saved.getEmailId(),sub,message);
-            }catch (Exception e){
+            try {
+                String sub = String.format(Message.EMPLOYEE_DETAILS_UPDATED_SUBJECT);
+                String message = String.format(Message.EMPLOYEE_DETAILS_UPDATED_MESSAGE, saved.getName());
+                emailService.sendEmail(saved.getEmailId(), sub, message);
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            response.put("Status","Employee Information Updated Successfully");
+            response.put("Status", "Employee Information Updated Successfully");
 
             return response;
 
@@ -667,7 +674,7 @@ public class HrServiceImpl implements HrService {
             }
         }
 
-       // If no PMS was started or no valid KraKpi found
+        // If no PMS was started or no valid KraKpi found
         if (totalInitiated == 0) {
             return new PmsPercentageDto(0.0, 0.0);
         }
@@ -684,7 +691,7 @@ public class HrServiceImpl implements HrService {
     @Override
     public HrResponseDto profile(String hrId) {
         Optional<HR> byId = hrRepository.findById(hrId);
-        if(byId.isEmpty()){
+        if (byId.isEmpty()) {
             throw new HRNotFoundException(hrId);
         }
         HR hr = byId.get();
@@ -723,54 +730,55 @@ public class HrServiceImpl implements HrService {
                 .collect(Collectors.toList());
     }
 
-   @Override
-public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> pms) {
-    Map<String, String> response = new HashMap<>();
+    @Override
+    public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> pms) {
+        Map<String, String> response = new HashMap<>();
 
-    Optional<EmployeeInformation> employeeById = employeeInformationRepository.findById(employeeId);
-    if (employeeById.isEmpty()) {
-        response.put("status", "failure");
-        response.put("message", "Employee not found");
+        Optional<EmployeeInformation> employeeById = employeeInformationRepository.findById(employeeId);
+        if (employeeById.isEmpty()) {
+            response.put("status", "failure");
+            response.put("message", "Employee not found");
+            return response;
+        }
+
+        EmployeeInformation employee = employeeById.get();
+
+        Optional<KraKpi> krakpi = kraKpiRepository.findByEmployeeInformation(employee);
+        if (krakpi.isEmpty()) {
+            response.put("status", "failure");
+            response.put("message", "KRA/KPI not found for this employee");
+            return response;
+        }
+
+        KraKpi kraKpi = krakpi.get();
+        kraKpi.setPmsInitiated(pms.getOrDefault("pms_initiated", false));
+        kraKpiRepository.save(kraKpi);
+
+        try {
+            LocalDate futureDate = LocalDate.now().plusDays(5);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            String formattedDate = futureDate.format(formatter);
+
+            LocalDate startDate = LocalDate.now();
+            LocalDate endDate = startDate.plusDays(30);
+
+            String duration = startDate.format(formatter) + " to " + endDate.format(formatter);
+            String submissionDeadline = formattedDate;
+
+            String sub = String.format(Message.PMS_SUBJECT, formattedDate);
+            String message = String.format(Message.PMS_MESSAGE, employee.getName(), duration, submissionDeadline);
+            emailService.sendEmail(employee.getEmailId(), sub, message);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Optional: don't fail whole process due to email failure
+        }
+
+        response.put("status", "success");
+        response.put("message", "PMS initiated successfully");
         return response;
     }
 
-    EmployeeInformation employee = employeeById.get();
-
-    Optional<KraKpi> krakpi = kraKpiRepository.findByEmployeeInformation(employee);
-    if (krakpi.isEmpty()) {
-        response.put("status", "failure");
-        response.put("message", "KRA/KPI not found for this employee");
-        return response;
-    }
-
-    KraKpi kraKpi = krakpi.get();
-    kraKpi.setPmsInitiated(pms.getOrDefault("pms_initiated", false));
-    kraKpiRepository.save(kraKpi);
-
-    try {
-        LocalDate futureDate = LocalDate.now().plusDays(5);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        String formattedDate = futureDate.format(formatter);
-
-        LocalDate startDate = LocalDate.now();
-        LocalDate endDate = startDate.plusDays(30);
-
-        String duration = startDate.format(formatter) + " to " + endDate.format(formatter);
-        String submissionDeadline = formattedDate;
-
-        String sub = String.format(Message.PMS_SUBJECT, formattedDate);
-        String message = String.format(Message.PMS_MESSAGE, employee.getName(), duration, submissionDeadline);
-        emailService.sendEmail(employee.getEmailId(), sub, message);
-
-    } catch (Exception e) {
-        e.printStackTrace();
-        // Optional: don't fail whole process due to email failure
-    }
-
-    response.put("status", "success");
-    response.put("message", "PMS initiated successfully");
-    return response;
-}
     @Override
     public List<Long> getEmployeeCountByDepartment() {
         // Get employee counts by department
@@ -808,13 +816,14 @@ public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> p
 
         // Managers (for those who also have KraKpi)
 
-
-//        long completed = empResult.getOrDefault(true, 0L) + mgrResult.getOrDefault(true, 0L);
-//        long pending = empResult.getOrDefault(false, 0L) + mgrResult.getOrDefault(false, 0L);
+        // long completed = empResult.getOrDefault(true, 0L) +
+        // mgrResult.getOrDefault(true, 0L);
+        // long pending = empResult.getOrDefault(false, 0L) +
+        // mgrResult.getOrDefault(false, 0L);
 
         return Map.of(
-//                "completed", (int) completed,
-//                "pending", (int) pending
+        // "completed", (int) completed,
+        // "pending", (int) pending
 
         );
     }
@@ -856,34 +865,37 @@ public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> p
         Map<String, String> response = new HashMap<>();
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
-        Optional<EmployeeInformation> employeeByEmail = employeeInformationRepository.findByEmailId(employee.getEmailId());
+        Optional<EmployeeInformation> employeeByEmail = employeeInformationRepository
+                .findByEmailId(employee.getEmailId());
 
-        if(employeeByEmail.isPresent()){
+        if (employeeByEmail.isPresent()) {
             throw new EmployeeAlreadyExistsException(employee.getEmailId());
         }
 
         Optional<EmployeeInformation> employeeBYId = employeeInformationRepository.findById(employee.getEmpId());
-        if(employeeBYId.isPresent()){
+        if (employeeBYId.isPresent()) {
             throw new EmployeeAlreadyExistsException(employee.getEmpId());
         }
 
         Optional<Manager> byEmailId = managerRepository.findByEmailId(employee.getEmailId());
-        if(byEmailId.isPresent()){
+        if (byEmailId.isPresent()) {
             throw new ManagerAlreadyExistsException(employee.getEmailId());
         }
 
         Optional<Manager> managerById = managerRepository.findByManagerId(employee.getEmpId());
-        if(managerById.isPresent()){
+        if (managerById.isPresent()) {
             throw new ManagerAlreadyExistsException(employee.getEmpId());
         }
 
         if (employee.getRole().equalsIgnoreCase("EMPLOYEE")) {
-            EmployeeInformation employeeInformation = entityDtoConversion.dtoToEntityConversion(employee, EmployeeInformation.class);
+            EmployeeInformation employeeInformation = entityDtoConversion.dtoToEntityConversion(employee,
+                    EmployeeInformation.class);
 
             Department department = departmentRepository.findByName(employee.getDepartment());
             employeeInformation.setDepartment(department);
 
-            String lwdStr = employee.getLastWorkingDate() != null ? formatter.format(employee.getLastWorkingDate()) : null;
+            String lwdStr = employee.getLastWorkingDate() != null ? formatter.format(employee.getLastWorkingDate())
+                    : null;
             employeeInformation.setLastWorkingDay(lwdStr);
 
             // Set Manager
@@ -901,10 +913,10 @@ public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> p
             String hashedPassword = BCrypt.hashpw("trivik", BCrypt.gensalt(10));
             employeeInformation.setPassword(hashedPassword);
 
-            if(!Validation.emailValidation(employee.getEmailId())){
+            if (!Validation.emailValidation(employee.getEmailId())) {
                 throw new InvalidEmailIdException("Invalid email id");
             }
-            if(!Validation.emailValidation(employee.getOfficialEmailId())){
+            if (!Validation.emailValidation(employee.getOfficialEmailId())) {
                 throw new InvalidEmailIdException("Invalid email id");
             }
 
@@ -912,7 +924,8 @@ public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> p
 
             try {
                 String subject = String.format(Message.REGISTRATION_SUBJECT, saved.getName());
-                String message = String.format(Message.REGISTRATION_MESSAGE, saved.getName(), new Date(), saved.getEmpId());
+                String message = String.format(Message.REGISTRATION_MESSAGE, saved.getName(), new Date(),
+                        saved.getEmpId());
                 emailService.sendEmail(saved.getEmailId(), subject, message);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -928,7 +941,8 @@ public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> p
             Department department = departmentRepository.findByName(employee.getDepartment());
             manager.setDepartment(department);
 
-            String lwdStr = employee.getLastWorkingDate() != null ? formatter.format(employee.getLastWorkingDate()) : null;
+            String lwdStr = employee.getLastWorkingDate() != null ? formatter.format(employee.getLastWorkingDate())
+                    : null;
 
             // Set Reporting Manager
             if (employee.getReportingManager() != null && !employee.getReportingManager().trim().isEmpty()) {
@@ -942,10 +956,10 @@ public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> p
                 hrOpt.ifPresent(manager::setHR);
             }
 
-            if(!Validation.emailValidation(employee.getEmailId())){
+            if (!Validation.emailValidation(employee.getEmailId())) {
                 throw new InvalidEmailIdException("Invalid email id");
             }
-            if(!Validation.emailValidation(employee.getOfficialEmailId())){
+            if (!Validation.emailValidation(employee.getOfficialEmailId())) {
                 throw new InvalidEmailIdException("Invalid email id");
             }
 
@@ -953,7 +967,8 @@ public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> p
 
             try {
                 String sub = String.format(Message.REGISTRATION_SUBJECT, saved.getName());
-                String message = String.format(Message.REGISTRATION_MESSAGE, saved.getName(), new Date(), saved.getManagerId());
+                String message = String.format(Message.REGISTRATION_MESSAGE, saved.getName(), new Date(),
+                        saved.getManagerId());
                 emailService.sendEmail(manager.getEmailId(), sub, message);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -967,7 +982,6 @@ public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> p
         return response;
     }
 
-
     @Override
     public Map<String, Object> getdepartment() {
         List<Department> allDpt = departmentRepository.findAll();
@@ -979,40 +993,42 @@ public Map<String, String> initiatePms(String employeeId, Map<String, Boolean> p
 
     }
 
-   @Override
-public PmsStatusCountDto getPmsCountsForHR() {
-    List<EmployeeInformation> employees = employeeInformationRepository.findAll();
 
-    long completedCount = 0;
-    long pendingCount = 0;
+    @Override
+    public PmsStatusCountDto getPmsCountsForHR() {
+        List<EmployeeInformation> employees = employeeInformationRepository.findAll();
 
-    for (EmployeeInformation employee : employees) {
-        Optional<KraKpi> optionalKraKpi = kraKpiRepository.findByEmployeeInformation(employee);
-        if (optionalKraKpi.isEmpty()) continue;
+        long completedCount = 0;
+        long pendingCount = 0;
 
-        KraKpi kraKpi = optionalKraKpi.get();
+        for (EmployeeInformation employee : employees) {
+            Optional<KraKpi> optionalKraKpi = kraKpiRepository.findByEmployeeInformation(employee);
+            if (optionalKraKpi.isEmpty())
+                continue;
 
-        if (!Boolean.TRUE.equals(kraKpi.getPmsInitiated())) continue;
+            KraKpi kraKpi = optionalKraKpi.get();
 
-        if (kraKpi.isSelfCompleted() && kraKpi.isManagerCompleted()) {
-            completedCount++;
-        } else {
-            pendingCount++;
+            if (!Boolean.TRUE.equals(kraKpi.getPmsInitiated()))
+                continue;
+
+            if (kraKpi.isSelfCompleted() && kraKpi.isManagerCompleted()) {
+                completedCount++;
+            } else {
+                pendingCount++;
+            }
         }
-    }
 
-    return new PmsStatusCountDto(completedCount, pendingCount);
-}
+        return new PmsStatusCountDto(completedCount, pendingCount);
+    }
 
     @Override
     public Map<String, Map<String, Integer>> getCompletedPendingByDepartment() {
         List<EmployeeInformation> employees = employeeInformationRepository.findAll();
 
         // Group employees by department name
-        Map<String, List<EmployeeInformation>> groupedByDepartment =
-                employees.stream()
-                        .filter(e -> e.getDepartment() != null)
-                        .collect(Collectors.groupingBy(e -> e.getDepartment().getName()));
+        Map<String, List<EmployeeInformation>> groupedByDepartment = employees.stream()
+                .filter(e -> e.getDepartment() != null)
+                .collect(Collectors.groupingBy(e -> e.getDepartment().getName()));
 
         Map<String, Map<String, Integer>> result = new HashMap<>();
 
@@ -1029,9 +1045,9 @@ public PmsStatusCountDto getPmsCountsForHR() {
                     KraKpi kraKpi = kraKpiOptional.get();
 
                     // Assuming boolean fields: isCompleted() and isPending()
-                    if (kraKpi.isManagerCompleted() && kraKpi.isSelfCompleted()&& kraKpi.getPmsInitiated()) {
+                    if (kraKpi.isManagerCompleted() && kraKpi.isSelfCompleted() && kraKpi.getPmsInitiated()) {
                         completed++;
-                    } else if(kraKpi.getPmsInitiated()) {
+                    } else if (kraKpi.getPmsInitiated()) {
                         pending++;
                     }
                 }
@@ -1096,8 +1112,10 @@ public PmsStatusCountDto getPmsCountsForHR() {
 
                 dtoList.add(kraKpiDto);
 
-                if (kpi.getSelfScore() != null) selfScores.add(self);
-                if (kpi.getManagerScore() != null) managerScores.add(manager);
+                if (kpi.getSelfScore() != null)
+                    selfScores.add(self);
+                if (kpi.getManagerScore() != null)
+                    managerScores.add(manager);
             }
         }
 
@@ -1116,5 +1134,53 @@ public PmsStatusCountDto getPmsCountsForHR() {
         return new PmsCycleReport().generatePdf(dto);
     }
 
+    @Override
+    @Transactional
+    public String processEmployeeExit(String empId, LocalDate lastWorkingDay) {
 
+        // 1. Find active employee
+        EmployeeInformation employee = employeeInformationRepository.findByEmpId(empId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Employee not found with ID: " + empId));
+        // 2. Create ExitEmployee entity
+        ExitEmployee exitEmployee = new ExitEmployee();
+        exitEmployee.setEmpId(employee.getEmpId());
+        exitEmployee.setName(employee.getName());
+        exitEmployee.setCurrentDesignation(employee.getCurrentDesignation());
+        exitEmployee.setDateOfJoining(employee.getDateOfJoining());
+        exitEmployee.setDob(employee.getDob());
+        exitEmployee.setBranch(employee.getBranch());
+        exitEmployee.setCategory(employee.getCategory());
+        exitEmployee.setOfficialEmailId(employee.getOfficialEmailId());
+        exitEmployee.setEmailId(employee.getEmailId());
+        exitEmployee.setDepartmentName(employee.getDepartment().getName());
+        exitEmployee.setManagerName(employee.getManager().getName());
+        exitEmployee.setHrName(employee.gethR() != null ? employee.gethR().getName() : null);
+        exitEmployee.setLastWorkingDay(lastWorkingDay);
+
+        // 3. Save to exit table
+        exitEmployeeRepository.save(exitEmployee);
+
+        // 4. Delete from active employee table
+        employeeInformationRepository.delete(employee);
+
+        // 5. Map to DTO
+        ExitEmployeeResponseDto dto = new ExitEmployeeResponseDto();
+        dto.setEmpId(exitEmployee.getEmpId());
+        dto.setName(exitEmployee.getName());
+        dto.setCurrentDesignation(exitEmployee.getCurrentDesignation());
+        dto.setDateOfJoining(exitEmployee.getDateOfJoining());
+        dto.setDob(exitEmployee.getDob());
+        dto.setBranch(exitEmployee.getBranch());
+        dto.setCategory(exitEmployee.getCategory());
+        dto.setOfficialEmailId(exitEmployee.getOfficialEmailId());
+        dto.setEmailId(exitEmployee.getEmailId());
+        dto.setDepartmentName(exitEmployee.getDepartmentName());
+        dto.setManagerName(exitEmployee.getManagerName());
+        dto.setHrName(exitEmployee.getHrName());
+        dto.setLastWorkingDay(exitEmployee.getLastWorkingDay());
+
+        return "Employee with ID " + empId + " (" + exitEmployee.getName() + ") exited successfully on " 
+           + lastWorkingDay;
+    }
 }
