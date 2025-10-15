@@ -371,7 +371,7 @@ public class KraKpiServiceImpl implements KraKpiService {
         List<KraKpiResponseDto> kraKpiResponseDtos = kraKpiResponseUtils(kraKpiList);
         // Wrap into Map<String, List<>>
         Map<String, List<KraKpiResponseDto>> response = new HashMap<>();
-        response.put(year, kraKpiResponseDtos);
+        response.put("krakpi", kraKpiResponseDtos);
 
         return response;
     }

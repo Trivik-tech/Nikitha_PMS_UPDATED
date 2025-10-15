@@ -503,6 +503,7 @@ const getKeyMatrix = async () => {
             <li><Link to="/employee-list">Employee List</Link></li>
             <li><Link to="/hr-startpms">Employee Performance</Link></li>
             <li><Link to="/hr-profile">My Profile</Link></li>
+            <li><Link to="/past-employees">Past Employee List</Link></li>
              <button
                 className="hr-dashboard-logoutButton desktop-only"
                 onClick={() => {

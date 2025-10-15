@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { baseUrl } from "../../urls/CommenUrl";
 import { encrypt } from "../../utils/encryptUtils";
 // import Modal from "../../modal/Modal";
-// import { Pointer } from "lucide-react";
+// import { Pointer } from "lucide-react"; Settings > Privacy & Security > Developer Mode. 
 
 const PastEmployee = () => {
     const[searchTerm,setSearchTerm]=useState("");

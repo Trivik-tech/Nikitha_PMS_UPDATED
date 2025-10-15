@@ -1,79 +1,23 @@
-import React, { useState } from 'react';
-import './KraKpiReport.css';
-
-import logo from '../../../assets/images/nikithas-logo.png';
-import { FaHome } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import "./KraKpiReport.css";
+import logo from "../../../assets/images/nikithas-logo.png";
+import { FaHome } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import { baseUrl } from "../../urls/CommenUrl";
 
 const Performance = () => {
-  const [selectedYear, setSelectedYear] = useState("2025"); 
-  const [selectedQuarter, setSelectedQuarter] = useState(null); 
-  const [selectedMonth, setSelectedMonth] = useState(null); 
+  const [selectedYear, setSelectedYear] = useState(""); // ⬅ start empty
+  const [kraKpi, setKraKpi] = useState([]);
+  const [selectedQuarter, setSelectedQuarter] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState(null);
+  const [showQuarters, setShowQuarters] = useState(false);
+  const [hoveredQuarter, setHoveredQuarter] = useState(null);
+  const [showMonthsFor, setShowMonthsFor] = useState(null); // ⬅ track quarter hover
 
-  const [showQuarters, setShowQuarters] = useState(false); 
-  const [hoveredQuarter, setHoveredQuarter] = useState(null); 
-  const [hoverEnabled, setHoverEnabled] = useState(true); // ✅ new state
+  const token = localStorage.getItem("token");
 
-  // Dummy KPI Data
-  const dummyData = {
-    2025: [
-      {
-        kraId: 1,
-        kraName: "Technical Skills",
-        kpi: [
-          {
-            id: 101, 
-            description: "Code Quality",
-            selfScore: 8,
-            managerScore: 7,
-            employeeRemark: "Improved compared to last year",
-            managerRemark: "Good work, but consistency required",
-          },
-          {
-            id: 102,
-            description: "Problem Solving",
-            selfScore: 9,
-            managerScore: 8,
-            employeeRemark: "Enjoy solving new problems",
-            managerRemark: "Excellent analytical ability",
-          },
-        ],
-      },
-      {
-        kraId: 2,
-        kraName: "Team Collaboration",
-        kpi: [
-          {
-            id: 201,
-            description: "Communication",
-            selfScore: 7,
-            managerScore: 8,
-            employeeRemark: "Improving with practice",
-            managerRemark: "Clear communication, keep it up",
-          },
-        ],
-      },
-    ],
-    2024: [
-      {
-        kraId: 3,
-        kraName: "Leadership",
-        kpi: [
-          {
-            id: 301,
-            description: "Guiding Juniors",
-            selfScore: 8,
-            managerScore: 7,
-            employeeRemark: "Mentored 3 juniors",
-            managerRemark: "Good guidance, scope to improve",
-          },
-        ],
-      },
-    ],
-  };
-
-  
-  const quarters = ["Q1", "Q2", "Q3", "Q4"]; 
+  const quarters = ["Q1", "Q2", "Q3", "Q4"];
   const months = {
     Q1: ["April", "May", "June"],
     Q2: ["July", "August", "September"],
@@ -81,20 +25,104 @@ const Performance = () => {
     Q4: ["January", "February", "March"],
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const handlePrint = () => window.print();
 
   const getAverageOutOf100 = (arr, key) => {
-    if (!arr.length) return '0/100';
-    const avg = arr.reduce((sum, kpi) => sum + kpi[key], 0) / arr.length;
+    if (!arr.length) return "0/100";
+    const avg = arr.reduce((sum, kpi) => sum + (kpi[key] || 0), 0) / arr.length;
     return `${Math.round(avg * 10)}/100`;
   };
 
+  const loadKraKpiYearly = async (year) => {
+    if (!year) return; // nothing until a year is selected
+    try {
+      const result = await axios.get(
+        `${baseUrl}/api/v1/pms/krakpi/kra-kpi-year-wise?empId=EMP1235&year=${year}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setKraKpi(result.data.krakpi || []);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const loadKraKpiQuarterly = async (year, quarter) => {
+    if (!quarter || !year) return; // nothing until a year is selected
+    try {
+      const result = await axios.get(
+        `${baseUrl}/api/v1/pms/krakpi/kra-kpi-quarter-wise?empId=EMP1235&year=${year}&quarter=${quarter}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setKraKpi(result.data.krakpi || []);
+      // console.log(result.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const loadKraKpiMonthly = async (year, quarter, month) => {
+    if (!quarter || !year || !month) return; // nothing until a year is selected
+    try {
+      let m = 0;
+      switch (month) {
+        case "January":
+          m = 1;
+          break;
+        case "February":
+          m = 2;
+          break;
+        case "March":
+          m = 3;
+          break;
+        case "April":
+          m = 4;
+          break;
+        case "May":
+          m = 5;
+          break;
+        case "June":
+          m = 6;
+          break;
+        case "July":
+          m = 7;
+          break;
+        case "August":
+          m = 8;
+          break;
+        case "September":
+          m = 9;
+          break;
+        case "October":
+          m = 10;
+          break;
+        case "November":
+          m = 11;
+          break;
+        case "December":
+          m = 12;
+          break;
+        default:
+          m = 0; // or handle invalid input
+      }
+
+      const result = await axios.get(
+        `${baseUrl}/api/v1/pms/krakpi/kra-kpi-month-wise?empId=EMP1235&year=${year}&quarter=${quarter}&month=${m}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setKraKpi(result.data.krakpi || []);
+      // console.log(result.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    loadKraKpiYearly(2025);
+  }, []);
+
   return (
     <div className="employee-module-container">
-      {/* Header */}
-      <div className="employee-module-header">
+           <div className="employee-module-header">
         <div className="employee-module-home-icon">
           <Link to="/employee-dashboard" className="icon-link">
             <FaHome className="per-icon home-icon" />
@@ -107,63 +135,71 @@ const Performance = () => {
       {/* Year / Quarter / Month Menu */}
       <div className="employee-module-filters">
         <label>Select Year: </label>
-        
+
+        {/* === Year selector === */}
         <div
           className="dropdown"
-          onMouseEnter={() => hoverEnabled && setShowQuarters(true)} 
+          style={{ display: "inline-block", position: "relative" }}
+          // Hover menu only works if a year is selected
+          onMouseEnter={() => {
+            if (selectedYear) 
+              setShowQuarters(true);
+          }}
           onMouseLeave={() => {
-            if (hoverEnabled) {
-              setShowQuarters(false);
-              setHoveredQuarter(null); 
-            }
+            setShowQuarters(false);
+            setHoveredQuarter(null);
+            setShowMonthsFor(null);
           }}
         >
           <select
             value={selectedYear}
-            onFocus={() => setHoverEnabled(false)}   // ✅ disable hover while selecting year
-            onBlur={() => setHoverEnabled(true)}    // ✅ re-enable after done
             onChange={(e) => {
-              setSelectedYear(e.target.value);
+              const year = e.target.value;
+              setSelectedYear(year);
               setSelectedQuarter(null);
               setSelectedMonth(null);
               setHoveredQuarter(null);
-              setHoverEnabled(true); // ✅ ensure hover works after year is picked
+              setShowQuarters(false); // reset on year change
             }}
           >
-            {Object.keys(dummyData)
-              .sort((a, b) => b - a)
-              .map((year) => (
-                <option key={year} value={year}>
-                  {year}
-                </option>
-              ))}
+            {/* <option value="">--Select--</option> */}
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
           </select>
 
-          {/* ✅ Show quarters only when hover is enabled */}
-          {hoverEnabled && showQuarters && (
+          {/* === Quarter hover menu (enabled only after year chosen) === */}
+          {showQuarters && (
             <div className="quarter-menu">
               {quarters.map((qtr) => (
                 <div
                   key={qtr}
                   className="quarter-item"
-                  onMouseEnter={() => setHoveredQuarter(qtr)}
-                  onMouseLeave={() => setHoveredQuarter(null)}
-                  onClick={() => {
+                  onMouseEnter={() => {
+                    // allow month hover only if quarter already clicked/selected
+                    setHoveredQuarter(qtr);
+                    if (selectedQuarter === qtr) setShowMonthsFor(qtr);
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setSelectedQuarter(qtr);
                     setSelectedMonth(null);
+                    setShowMonthsFor(qtr); // enable months after selecting quarter
+                    loadKraKpiQuarterly(selectedYear, qtr);
                   }}
                 >
                   {qtr}
-
-                  {hoveredQuarter === qtr && (
+                  {/* === Month hover menu (enabled only after quarter clicked) === */}
+                  {showMonthsFor === qtr && (
                     <div className="month-menu">
                       {months[qtr].map((m) => (
                         <div
                           key={m}
                           className="month-item"
                           onClick={(e) => {
-                            e.stopPropagation(); 
+                            e.stopPropagation();
                             setSelectedMonth(m);
+                            loadKraKpiMonthly(selectedYear,selectedQuarter,m);
                           }}
                         >
                           {m}
@@ -186,37 +222,38 @@ const Performance = () => {
           {selectedMonth ? ` - ${selectedMonth}` : ""}
         </h2>
 
-        {dummyData[selectedYear]?.map((kraItem) => (
-          <div className="employee-module-kra" key={kraItem.kraId}>
-            <div className="employee-module-kra-title">
-              KRA: {kraItem.kraName}
-            </div>
-
-            {kraItem.kpi.map((kpi) => (
-              <div key={kpi.id} className="employee-module-kpi-block">
-                <div className="employee-module-kra-details">
-                  KPI: {kpi.description}
+        {kraKpi.map((record) => (
+          <div key={record.id}>
+            {record.kra.map((kraItem) => (
+              <div className="employee-module-kra" key={kraItem.kraId}>
+                <div className="employee-module-kra-title">
+                  KRA: {kraItem.kraName}
                 </div>
-
-                <div className="employee-module-rating">
-                  <div>
-                    Self Rating:{" "}
-                    {kpi.selfScore ? Math.round(kpi.selfScore * 10) : 0}/100
+                {kraItem.kpi.map((kpi) => (
+                  <div key={kpi.id} className="employee-module-kpi-block">
+                    <div className="employee-module-kra-details">
+                      KPI: {kpi.description}
+                    </div>
+                    <div className="employee-module-rating">
+                      <div>
+                        Self Rating: {Math.round(kpi.selfScore * 10)}/100
+                      </div>
+                      <div>
+                        Manager Rating: {Math.round(kpi.managerScore * 10)}/100
+                      </div>
+                    </div>
+                    <div className="employee-module-remarks">
+                      <div>
+                        Employee Remark:{" "}
+                        {kpi.employeeRemark || "No remark provided"}
+                      </div>
+                      <div>
+                        Manager Remark:{" "}
+                        {kpi.managerRemark || "No remark provided"}
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    Manager Rating:{" "}
-                    {kpi.managerScore ? Math.round(kpi.managerScore * 10) : 0}/100
-                  </div>
-                </div>
-
-                <div className="employee-module-remarks">
-                  <div>
-                    Employee Remark: {kpi.employeeRemark || "No remark provided"}
-                  </div>
-                  <div>
-                    Manager Remark: {kpi.managerRemark || "No remark provided"}
-                  </div>
-                </div>
+                ))}
               </div>
             ))}
           </div>
@@ -225,24 +262,21 @@ const Performance = () => {
         <div className="employee-module-overall-performance">
           <span>
             Average Self Rating:{" "}
-            {(() => {
-              const allKpis =
-                dummyData[selectedYear]?.flatMap((kra) => kra.kpi) || [];
-              return getAverageOutOf100(allKpis, "selfScore");
-            })()}
+            {getAverageOutOf100(
+              kraKpi.flatMap((rec) => rec.kra.flatMap((k) => k.kpi)),
+              "selfScore"
+            )}
           </span>
           <span>
             Average Manager Rating:{" "}
-            {(() => {
-              const allKpis =
-                dummyData[selectedYear]?.flatMap((kra) => kra.kpi) || [];
-              return getAverageOutOf100(allKpis, "managerScore");
-            })()}
+            {getAverageOutOf100(
+              kraKpi.flatMap((rec) => rec.kra.flatMap((k) => k.kpi)),
+              "managerScore"
+            )}
           </span>
         </div>
       </div>
 
-      {/* Print Button */}
       <button className="employee-module-print-btn" onClick={handlePrint}>
         Print
       </button>
