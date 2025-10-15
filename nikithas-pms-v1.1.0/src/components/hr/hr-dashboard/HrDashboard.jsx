@@ -323,7 +323,7 @@ const getKeyMatrix = async () => {
       // console.log(result.data.profile)
 
       setHrName(result.data.profile.name);
- avinash
+ 
     } catch (error) {
       console.log(error.message);
     }
@@ -518,6 +518,7 @@ const getKeyMatrix = async () => {
             <li><Link to={`/employee-list/${hrId}`}>Employee List</Link></li>
             <li><Link to="/hr-startpms">Employee Performance</Link></li>
             <li><Link to="/hr-profile">My Profile</Link></li>
+            <li><Link to="/past-employees">Past Employee List</Link></li>
              <button
                 className="hr-dashboard-logoutButton desktop-only"
                 onClick={() => {

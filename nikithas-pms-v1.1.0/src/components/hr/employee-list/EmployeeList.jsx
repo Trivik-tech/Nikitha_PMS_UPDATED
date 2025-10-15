@@ -90,7 +90,11 @@ export default function EmployeeList() {
     setModalOpen(true);
   };
 
+
   const inactivateEmployee = async () => {
+
+  const inactivateEmployee = async (inactivateDate) => {
+
     if (!employeeToUpdate) return;
 
     try {
@@ -195,10 +199,9 @@ export default function EmployeeList() {
 
           {hasServerError && (
             <div className="employee-list-error-message">
-              Failed to fetch data from server. Please try again later.
+              Failed to fetch data from server. Pl ease try again later.
             </div>
           )}
-
           <div className="employee-list-table-container">
             <div className="employee-list-table-scroll">
               {!isMobile ? (
@@ -292,7 +295,7 @@ export default function EmployeeList() {
             setModalOpen(false);
             setEmployeeToUpdate(null);
           }}
-          onConfirm={inactivateEmployee}
+          onConfirm={(date) => inactivateEmployee(date)}
           name={employeeName}
           id={employeeToUpdate}
         />
@@ -307,4 +310,5 @@ export default function EmployeeList() {
       </div>
     </div>
   );
+}
 }

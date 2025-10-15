@@ -3,6 +3,7 @@ import "./DeleteConfirmation.css";
 
 const DeleteConfirmation = ({ isOpen, onClose, onConfirm , name,id}) => {
   const [isDeleted, setIsDeleted] = useState(false);
+  const [inactiveDate, setInactiveDate] = useState("");
 
   useEffect(() => {
     let timer;
@@ -27,8 +28,20 @@ const DeleteConfirmation = ({ isOpen, onClose, onConfirm , name,id}) => {
       <div className="delete-modal-content">
         {!isDeleted ? (
           <>
-            <h2>Confirm Inactive</h2>
+            
             <p>Are you sure you want to Inactive <strong>{name} ({id})</strong></p>
+
+             <div className="date-input-container">
+              <label htmlFor="inactiveDate">Select inactivation date</label>
+              <input 
+               type="date"
+                id="inactiveDate"
+                value={inactiveDate}
+                onChange={(e) => setInactiveDate(e.target.value)}
+             />
+             </div>
+
+
             <div className="delete-modal-buttons">
               <button className="cancel-btn" onClick={onClose}>Cancel</button>
               <button className="confirm-btn" onClick={handleConfirm}>Inactive</button>
@@ -36,7 +49,7 @@ const DeleteConfirmation = ({ isOpen, onClose, onConfirm , name,id}) => {
           </>
         ) : (
           <div className="delete-success-message">
-            <h3>Employee Inactive successfully</h3>
+            <h3>`Employee Inactive successfully on {inactiveDate}`</h3>
           </div>
         )}
       </div>

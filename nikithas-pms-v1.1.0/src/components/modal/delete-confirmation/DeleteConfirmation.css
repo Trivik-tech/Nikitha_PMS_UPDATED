@@ -28,7 +28,14 @@
     display: flex;
     justify-content: space-around;
   }
-  
+  .date-input-container input{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 140px !important;
+    padding: 5px;
+    height: 30px;
+  }
   .cancel-btn,
   .confirm-btn {
     padding: 0.6rem 1.2rem;
