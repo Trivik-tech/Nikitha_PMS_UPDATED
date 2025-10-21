@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./DeleteConfirmation.css";
 
-const DeleteConfirmation = ({ isOpen, onClose, onConfirm , name,id}) => {
+const DeleteConfirmation = ({ isOpen, onClose, onConfirm, name, id }) => {
   const [isDeleted, setIsDeleted] = useState(false);
   const [inactiveDate, setInactiveDate] = useState("");
 
@@ -17,8 +17,12 @@ const DeleteConfirmation = ({ isOpen, onClose, onConfirm , name,id}) => {
   }, [isDeleted, onClose]);
 
   const handleConfirm = async () => {
-    await onConfirm(); // Calls parent deleteEmployee()
-    setIsDeleted(true); // Triggers message and auto-close
+    if (!inactiveDate) {
+      alert("Please select the last working day.");
+      return;
+    }
+    await onConfirm(inactiveDate); // ✅ Pass selected date
+    setIsDeleted(true);
   };
 
   if (!isOpen) return null;
@@ -28,28 +32,33 @@ const DeleteConfirmation = ({ isOpen, onClose, onConfirm , name,id}) => {
       <div className="delete-modal-content">
         {!isDeleted ? (
           <>
-            
-            <p>Are you sure you want to Inactive <strong>{name} ({id})</strong></p>
+            <p>
+              Are you sure you want to exit <strong>{name} ({id})</strong> from
+              the company?
+            </p>
 
-             <div className="date-input-container">
-              <label htmlFor="inactiveDate">Select inactivation date</label>
-              <input 
-               type="date"
+            <div className="date-input-container">
+              <label htmlFor="inactiveDate">Select last working day</label>
+              <input
+                type="date"
                 id="inactiveDate"
                 value={inactiveDate}
                 onChange={(e) => setInactiveDate(e.target.value)}
-             />
-             </div>
-
+              />
+            </div>
 
             <div className="delete-modal-buttons">
-              <button className="cancel-btn" onClick={onClose}>Cancel</button>
-              <button className="confirm-btn" onClick={handleConfirm}>Inactive</button>
+              <button className="cancel-btn" onClick={onClose}>
+                Cancel
+              </button>
+              <button className="confirm-btn" onClick={handleConfirm}>
+                Confirm Exit
+              </button>
             </div>
           </>
         ) : (
           <div className="delete-success-message">
-            <h3>`Employee Inactive successfully on {inactiveDate}`</h3>
+            <h3>Employee exited successfully on {inactiveDate}</h3>
           </div>
         )}
       </div>
