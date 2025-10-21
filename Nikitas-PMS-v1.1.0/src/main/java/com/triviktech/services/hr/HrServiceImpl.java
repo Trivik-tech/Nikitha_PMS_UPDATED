@@ -24,8 +24,10 @@ import com.triviktech.repositories.address.StateRepository;
 import com.triviktech.repositories.department.DepartmentRepository;
 import com.triviktech.repositories.employee.EmployeeInformationRepository;
 import com.triviktech.repositories.employee.ExitEmployeeRepository;
+import com.triviktech.repositories.employeereviewrepository.EmployeeReviewRepository;
 import com.triviktech.repositories.hr.HRRepository;
 import com.triviktech.repositories.krakpi.KraKpiRepository;
+import com.triviktech.repositories.krakpibridgerepository.KraKpiBridgeRepository;
 import com.triviktech.repositories.manager.ManagerRepository;
 import com.triviktech.utilities.email.EmailService;
 import com.triviktech.utilities.email.Message;
@@ -44,9 +46,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -91,7 +95,8 @@ public class HrServiceImpl implements HrService {
     private final KraKpiRepository kraKpiRepository;
     private final EmailService emailService;
     private final ManagerRepository managerRepository;
-
+    private final EmployeeReviewRepository employeeReviewRepository;
+private final KraKpiBridgeRepository kraKpiBridgeRepository;
     private final ExitEmployeeRepository exitEmployeeRepository;
 
     public HrServiceImpl(HRRepository hrRepository, StateRepository stateRepository,
@@ -99,7 +104,7 @@ public class HrServiceImpl implements HrService {
             KraKpiRepository kraKpiRepository,
             EntityDtoConversion entityDtoConversion, EmployeeInformationRepository employeeInformationRepository,
             EmailService emailService, ManagerRepository managerRepository,
-            ExitEmployeeRepository exitEmployeeRepository) {
+            ExitEmployeeRepository exitEmployeeRepository,EmployeeReviewRepository employeeReviewRepository,KraKpiBridgeRepository kraKpiBridgeRepository) {
 
         this.hrRepository = hrRepository;
         this.stateRepository = stateRepository;
@@ -111,6 +116,8 @@ public class HrServiceImpl implements HrService {
         this.kraKpiRepository = kraKpiRepository;
         this.managerRepository = managerRepository;
         this.exitEmployeeRepository = exitEmployeeRepository;
+        this.employeeReviewRepository=employeeReviewRepository;
+        this.kraKpiBridgeRepository=kraKpiBridgeRepository;
     }
 
     @Override
@@ -828,37 +835,92 @@ public class HrServiceImpl implements HrService {
         );
     }
 
-    @Override
-    public List<EmployeeInfo> pmsInitiatedEmployees() {
-        List<EmployeeInfo> result = new ArrayList<>();
+    // @Override
+    // public List<EmployeeInfo> pmsInitiatedEmployees() {
+    //     List<EmployeeInfo> result = new ArrayList<>();
 
-        // Employees
-        employeeInformationRepository.findAll().forEach(employee -> {
-            Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
-            if (kraKpiOptional.isPresent()) {
-                KraKpi kraKpi = kraKpiOptional.get();
-                boolean managerApproval = Boolean.TRUE.equals(kraKpi.getManagerApproval());
-                boolean selfCompleted = kraKpi.isSelfCompleted();
-                boolean managerCompleted = kraKpi.isManagerCompleted();
-                if (managerApproval && !(selfCompleted && managerCompleted)) {
-                    EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
-                    if (employee.getDepartment() != null) {
-                        employeeInfo.setDepartment(employee.getDepartment().getName());
-                    } else {
-                        employeeInfo.setDepartment("N/A");
-                    }
-                    if (employee.getManager() != null) {
-                        employeeInfo.setReportingManager(employee.getManager().getName());
-                    } else {
-                        employeeInfo.setReportingManager("N/A");
-                    }
-                    result.add(employeeInfo);
+    //     // Employees
+    //     employeeInformationRepository.findAll().forEach(employee -> {
+    //         Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+    //         if (kraKpiOptional.isPresent()) {
+    //             KraKpi kraKpi = kraKpiOptional.get();
+    //             boolean managerApproval = Boolean.TRUE.equals(kraKpi.getManagerApproval());
+    //             boolean selfCompleted = kraKpi.isSelfCompleted();
+    //             boolean managerCompleted = kraKpi.isManagerCompleted();
+    //             if (managerApproval && !(selfCompleted && managerCompleted)) {
+    //                 EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+    //                 if (employee.getDepartment() != null) {
+    //                     employeeInfo.setDepartment(employee.getDepartment().getName());
+    //                 } else {
+    //                     employeeInfo.setDepartment("N/A");
+    //                 }
+    //                 if (employee.getManager() != null) {
+    //                     employeeInfo.setReportingManager(employee.getManager().getName());
+    //                 } else {
+    //                     employeeInfo.setReportingManager("N/A");
+    //                 }
+    //                 result.add(employeeInfo);
+    //             }
+    //         }
+    //     });
+
+    //     return result;
+    // }
+    
+@Override
+public List<EmployeeInfo> pmsInitiatedEmployees() {
+    List<EmployeeInfo> result = new ArrayList<>();
+
+    LocalDateTime now = LocalDateTime.now();
+
+    employeeInformationRepository.findAll().forEach(employee -> {
+        // 🔹 Fetch all KraKpi for this employee
+        List<KraKpi> kraKpiList = kraKpiRepository.findAllByEmployeeInformation(employee);
+
+        // 🔹 Find KraKpi that is still within its 3-month active period
+        Optional<KraKpi> activeKraKpiOptional = kraKpiList.stream()
+                .filter(kraKpi -> {
+                    LocalDateTime createdAt = kraKpi.getCreatedAt();
+                    if (createdAt == null) return false;
+
+                    LocalDateTime kraQuarterEnd = createdAt.plusMonths(3);
+                    // true if "now" is still within that 3-month quarter period
+                    return !now.isBefore(createdAt) && now.isBefore(kraQuarterEnd);
+                })
+                .findFirst();
+
+        if (activeKraKpiOptional.isPresent()) {
+            KraKpi kraKpi = activeKraKpiOptional.get();
+
+            // ✅ Manager approval is true because KraKpi is active in this quarter
+            boolean managerApproval = true;
+
+            boolean selfCompleted = kraKpi.isSelfCompleted();
+            boolean managerCompleted = kraKpi.isManagerCompleted();
+
+            // ✅ Only include if not both completed
+            if (managerApproval && !(selfCompleted && managerCompleted)) {
+                EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee, EmployeeInfo.class);
+
+                if (employee.getDepartment() != null) {
+                    employeeInfo.setDepartment(employee.getDepartment().getName());
+                } else {
+                    employeeInfo.setDepartment("N/A");
                 }
-            }
-        });
 
-        return result;
-    }
+                if (employee.getManager() != null) {
+                    employeeInfo.setReportingManager(employee.getManager().getName());
+                } else {
+                    employeeInfo.setReportingManager("N/A");
+                }
+
+                result.add(employeeInfo);
+            }
+        }
+    });
+
+    return result;
+}
 
     @Override
     public Map<String, String> employeeRegistration(Employee employee) {
@@ -1022,46 +1084,45 @@ public class HrServiceImpl implements HrService {
     }
 
     @Override
-    public Map<String, Map<String, Integer>> getCompletedPendingByDepartment() {
-        List<EmployeeInformation> employees = employeeInformationRepository.findAll();
+public Map<String, Map<String, Integer>> getCompletedPendingByDepartment() {
+    List<EmployeeInformation> employees = employeeInformationRepository.findAll();
 
-        // Group employees by department name
-        Map<String, List<EmployeeInformation>> groupedByDepartment = employees.stream()
-                .filter(e -> e.getDepartment() != null)
-                .collect(Collectors.groupingBy(e -> e.getDepartment().getName()));
+    Map<String, List<EmployeeInformation>> groupedByDepartment = employees.stream()
+            .filter(e -> e.getDepartment() != null)
+            .collect(Collectors.groupingBy(e -> e.getDepartment().getName()));
 
-        Map<String, Map<String, Integer>> result = new HashMap<>();
+    Map<String, Map<String, Integer>> result = new HashMap<>();
 
-        for (Map.Entry<String, List<EmployeeInformation>> entry : groupedByDepartment.entrySet()) {
-            String department = entry.getKey();
-            List<EmployeeInformation> deptEmployees = entry.getValue();
+    for (Map.Entry<String, List<EmployeeInformation>> entry : groupedByDepartment.entrySet()) {
+        String department = entry.getKey();
+        List<EmployeeInformation> deptEmployees = entry.getValue();
 
-            int completed = 0;
-            int pending = 0;
+        int completed = 0;
+        int pending = 0;
 
-            for (EmployeeInformation employee : deptEmployees) {
-                Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
-                if (kraKpiOptional.isPresent()) {
-                    KraKpi kraKpi = kraKpiOptional.get();
+        for (EmployeeInformation employee : deptEmployees) {
+            Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+            if (kraKpiOptional.isPresent()) {
+                KraKpi kraKpi = kraKpiOptional.get();
+                boolean pmsInitiated = Boolean.TRUE.equals(kraKpi.getPmsInitiated());
 
-                    // Assuming boolean fields: isCompleted() and isPending()
-                    if (kraKpi.isManagerCompleted() && kraKpi.isSelfCompleted() && kraKpi.getPmsInitiated()) {
-                        completed++;
-                    } else if (kraKpi.getPmsInitiated()) {
-                        pending++;
-                    }
+                if (kraKpi.isManagerCompleted() && kraKpi.isSelfCompleted() && pmsInitiated) {
+                    completed++;
+                } else if (pmsInitiated) {
+                    pending++;
                 }
             }
-
-            Map<String, Integer> countMap = new HashMap<>();
-            countMap.put("completed", completed);
-            countMap.put("pending", pending);
-
-            result.put(department, countMap);
         }
 
-        return result;
+        Map<String, Integer> countMap = new HashMap<>();
+        countMap.put("completed", completed);
+        countMap.put("pending", pending);
+        result.put(department, countMap);
     }
+
+    return result;
+}
+
 
     @Override
     public ByteArrayInputStream generatePmsPdfReport(String employeeId) {
@@ -1133,54 +1194,171 @@ public class HrServiceImpl implements HrService {
 
         return new PmsCycleReport().generatePdf(dto);
     }
-
     @Override
-    @Transactional
-    public String processEmployeeExit(String empId, LocalDate lastWorkingDay) {
+public ByteArrayInputStream generateAllEmployeesPmsPdfReport() {
+    List<EmployeeInformation> employees = employeeInformationRepository.findAll();
 
-        // 1. Find active employee
-        EmployeeInformation employee = employeeInformationRepository.findByEmpId(empId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Employee not found with ID: " + empId));
-        // 2. Create ExitEmployee entity
-        ExitEmployee exitEmployee = new ExitEmployee();
-        exitEmployee.setEmpId(employee.getEmpId());
-        exitEmployee.setName(employee.getName());
-        exitEmployee.setCurrentDesignation(employee.getCurrentDesignation());
-        exitEmployee.setDateOfJoining(employee.getDateOfJoining());
-        exitEmployee.setDob(employee.getDob());
-        exitEmployee.setBranch(employee.getBranch());
-        exitEmployee.setCategory(employee.getCategory());
-        exitEmployee.setOfficialEmailId(employee.getOfficialEmailId());
-        exitEmployee.setEmailId(employee.getEmailId());
-        exitEmployee.setDepartmentName(employee.getDepartment().getName());
-        exitEmployee.setManagerName(employee.getManager().getName());
-        exitEmployee.setHrName(employee.gethR() != null ? employee.gethR().getName() : null);
-        exitEmployee.setLastWorkingDay(lastWorkingDay);
-
-        // 3. Save to exit table
-        exitEmployeeRepository.save(exitEmployee);
-
-        // 4. Delete from active employee table
-        employeeInformationRepository.delete(employee);
-
-        // 5. Map to DTO
-        ExitEmployeeResponseDto dto = new ExitEmployeeResponseDto();
-        dto.setEmpId(exitEmployee.getEmpId());
-        dto.setName(exitEmployee.getName());
-        dto.setCurrentDesignation(exitEmployee.getCurrentDesignation());
-        dto.setDateOfJoining(exitEmployee.getDateOfJoining());
-        dto.setDob(exitEmployee.getDob());
-        dto.setBranch(exitEmployee.getBranch());
-        dto.setCategory(exitEmployee.getCategory());
-        dto.setOfficialEmailId(exitEmployee.getOfficialEmailId());
-        dto.setEmailId(exitEmployee.getEmailId());
-        dto.setDepartmentName(exitEmployee.getDepartmentName());
-        dto.setManagerName(exitEmployee.getManagerName());
-        dto.setHrName(exitEmployee.getHrName());
-        dto.setLastWorkingDay(exitEmployee.getLastWorkingDay());
-
-        return "Employee with ID " + empId + " (" + exitEmployee.getName() + ") exited successfully on " 
-           + lastWorkingDay;
+    if (employees.isEmpty()) {
+        throw new RuntimeException("No employees found.");
     }
+
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+
+    try {
+        com.itextpdf.text.pdf.PdfWriter.getInstance(document, out);
+        document.open();
+
+        for (EmployeeInformation employee : employees) {
+            KraKpi kraKpi = kraKpiRepository.findByEmployeeInformation(employee)
+                    .orElse(null);
+            if (kraKpi == null) continue;
+
+            // =============== EMPLOYEE DETAILS ==================
+            String photoPath = "src/main/resources/photos/" + employee.getEmpId() + ".jpg";
+            if (!new java.io.File(photoPath).exists()) {
+                photoPath = "src/main/resources/static/images/profile1.jpg";
+            }
+
+            com.itextpdf.text.Image profileImage = com.itextpdf.text.Image.getInstance(photoPath);
+            profileImage.scaleAbsolute(80, 80);
+            document.add(profileImage);
+
+            document.add(new com.itextpdf.text.Paragraph("Employee ID : " + employee.getEmpId()));
+            document.add(new com.itextpdf.text.Paragraph("Name        : " + employee.getName()));
+            document.add(new com.itextpdf.text.Paragraph("Department  : " + employee.getDepartment().getName()));
+            document.add(new com.itextpdf.text.Paragraph("Designation : " + employee.getCurrentDesignation()));
+            document.add(new com.itextpdf.text.Paragraph("Due Date    : " + 
+                (kraKpi.getDueDate() != null ? kraKpi.getDueDate().toString() : "")));
+            document.add(new com.itextpdf.text.Paragraph("Employee Review Date : " + 
+                (kraKpi.getSelfReviewDate() != null ? kraKpi.getSelfReviewDate().toString() : "")));
+            document.add(new com.itextpdf.text.Paragraph("Manager Review Date  : " + 
+                (kraKpi.getManagerReviewDate() != null ? kraKpi.getManagerReviewDate().toString() : "")));
+
+            document.add(new com.itextpdf.text.Paragraph(" ")); // spacing
+
+            // =============== TABLE HEADER ==================
+            com.itextpdf.text.pdf.PdfPTable table = new com.itextpdf.text.pdf.PdfPTable(8);
+            table.setWidthPercentage(100);
+            table.setSpacingBefore(10f);
+            table.setSpacingAfter(10f);
+
+            table.addCell("S.No");
+            table.addCell("KRA");
+            table.addCell("KPI");
+            table.addCell("Weightage");
+            table.addCell("Self Score");
+            table.addCell("Manager Score");
+            table.addCell("Average");
+            table.addCell("Remarks");
+
+            // =============== FILL TABLE ROWS ==================
+            int count = 1;
+            double totalSelf = 0, totalMgr = 0;
+            int selfCount = 0, mgrCount = 0;
+
+            for (KRA kra : kraKpi.getKra()) {
+                for (KPI kpi : kra.getKpi()) {
+                    double self = kpi.getSelfScore() != null ? kpi.getSelfScore().doubleValue() : 0;
+                    double manager = kpi.getManagerScore() != null ? kpi.getManagerScore().doubleValue() : 0;
+                    double avg = (self + manager) / 2.0;
+
+                    table.addCell(String.valueOf(count++));
+                    table.addCell(kra.getKraName());
+                    table.addCell(kpi.getDescription());
+                    table.addCell(String.valueOf(kpi.getWeightage() != null ? kpi.getWeightage() : 0));
+                    table.addCell(String.valueOf(self));
+                    table.addCell(String.valueOf(manager));
+                    table.addCell(String.format("%.2f", avg));
+                    table.addCell(
+                            "Emp: " + (kpi.getEmployeeRemark() != null ? kpi.getEmployeeRemark() : "") +
+                            " | Mgr: " + (kpi.getManagerRemark() != null ? kpi.getManagerRemark() : "")
+                    );
+
+                    if (kpi.getSelfScore() != null) {
+                        totalSelf += self;
+                        selfCount++;
+                    }
+                    if (kpi.getManagerScore() != null) {
+                        totalMgr += manager;
+                        mgrCount++;
+                    }
+                }
+            }
+
+            document.add(table);
+
+            // =============== TOTAL SCORES ==================
+            double selfAvg = selfCount > 0 ? totalSelf / selfCount : 0;
+            double mgrAvg = mgrCount > 0 ? totalMgr / mgrCount : 0;
+            double finalScore = (selfAvg + mgrAvg) / 2.0;
+
+            document.add(new com.itextpdf.text.Paragraph("Self Avg Score    : " + String.format("%.2f", selfAvg)));
+            document.add(new com.itextpdf.text.Paragraph("Manager Avg Score : " + String.format("%.2f", mgrAvg)));
+            document.add(new com.itextpdf.text.Paragraph("Final Score       : " + String.format("%.2f", finalScore)));
+            document.add(new com.itextpdf.text.Paragraph("Overall Remark    : " + kraKpi.getRemark()));
+
+            // =============== PAGE BREAK ==================
+            document.newPage();
+        }
+
+        document.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+        throw new RuntimeException("Error generating consolidated PMS report", e);
+    }
+
+    return new ByteArrayInputStream(out.toByteArray());
+}
+
+
+   @Override
+@Transactional
+public String processEmployeeExit(String empId, LocalDate lastWorkingDay) {
+
+    // 1. Find active employee
+    EmployeeInformation employee = employeeInformationRepository.findByEmpId(empId)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    "Employee not found with ID: " + empId));
+
+    // 2. Get all KraKpi records for this employee
+    List<KraKpi> kraKpis = kraKpiRepository.findAllByEmployee(employee);
+
+    // 3. Delete all dependent records in correct order
+    for (KraKpi kraKpi : kraKpis) {
+        // a. Delete EmployeeReview records linked to this KraKpi
+        employeeReviewRepository.deleteByKraKpi(kraKpi);
+
+        // b. Delete KraKpiBridge records linked to this KraKpi
+        kraKpiBridgeRepository.deleteByKraKpi(kraKpi);
+    }
+
+    // c. Delete KraKpi records for the employee
+    kraKpiRepository.deleteAll(kraKpis);
+
+    // 4. Save to exit table
+    ExitEmployee exitEmployee = new ExitEmployee();
+    exitEmployee.setEmpId(employee.getEmpId());
+    exitEmployee.setName(employee.getName());
+    exitEmployee.setCurrentDesignation(employee.getCurrentDesignation());
+    exitEmployee.setDateOfJoining(employee.getDateOfJoining());
+    exitEmployee.setDob(employee.getDob());
+    exitEmployee.setBranch(employee.getBranch());
+    exitEmployee.setCategory(employee.getCategory());
+    exitEmployee.setOfficialEmailId(employee.getOfficialEmailId());
+    exitEmployee.setEmailId(employee.getEmailId());
+    exitEmployee.setDepartmentName(employee.getDepartment().getName());
+    exitEmployee.setManagerName(employee.getManager().getName());
+    exitEmployee.setHrName(employee.gethR() != null ? employee.gethR().getName() : null);
+    exitEmployee.setLastWorkingDay(lastWorkingDay);
+
+    exitEmployeeRepository.save(exitEmployee);
+
+    // 5. Finally delete the employee
+    employeeInformationRepository.delete(employee);
+
+    return "Employee with ID " + empId + " (" + exitEmployee.getName() + 
+           ") exited successfully on " + lastWorkingDay;
+}
+
 }

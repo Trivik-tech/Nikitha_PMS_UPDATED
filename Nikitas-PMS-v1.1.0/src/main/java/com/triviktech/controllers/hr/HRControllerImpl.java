@@ -24,6 +24,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -246,28 +248,72 @@ public class HRControllerImpl implements HRController {
         for (String employeeId : allEmployeeIds) {
             try {
                 Boolean pmsInitiated = kraKpiRepository.findPmsInitiatedByEmployeeId(employeeId).orElse(false);
-                if (!pmsInitiated) continue;
+                if (!pmsInitiated)
+                    continue;
 
                 boolean selfCompleted = kraKpiRepository.findSelfCompletedStatusByEmployeeId(employeeId).orElse(false);
-                boolean managerCompleted = kraKpiRepository.findManagerCompletedStatusByEmployeeId(employeeId).orElse(false);
+                boolean managerCompleted = kraKpiRepository.findManagerCompletedStatusByEmployeeId(employeeId)
+                        .orElse(false);
 
                 String managerId = employeeRepository.findReportingManagerIdByEmployeeId(employeeId);
                 String employeeName = employeeRepository.findNameByEmpId(employeeId).orElse("Unknown");
 
-                if (managerId == null || managerId.isBlank()) continue;
+                if (managerId == null || managerId.isBlank())
+                    continue;
 
                 String empDestination = "/queue/employee-notification";
                 String managerDestination = "/queue/manager-notification";
 
                 if (!selfCompleted) {
-                    notificationService.sendMessageWithRecent("System", employeeId, "Reminder: Please complete your PMS self-review.", empDestination);
-                    notificationService.sendMessageWithRecent("System", managerId, "Reminder: " + employeeName + " has not yet completed self-review. Please follow up.", managerDestination);
+                    notificationService.sendMessageWithRecent("System", employeeId,
+                            "Reminder: Please complete your PMS self-review.", empDestination);
+                    notificationService.sendMessageWithRecent("System", managerId,
+                            "Reminder: " + employeeName + " has not yet completed self-review. Please follow up.",
+                            managerDestination);
                 } else if (!managerCompleted) {
-                    notificationService.sendMessageWithRecent("System", managerId, "Reminder: " + employeeName + " has completed self-review. Please complete your Manager review.", managerDestination);
+                    notificationService.sendMessageWithRecent("System", managerId,
+                            "Reminder: " + employeeName
+                                    + " has completed self-review. Please complete your Manager review.",
+                            managerDestination);
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
     }
+
+    @Override
+    public Map<String, Map<String, Integer>> getMonthlyDepartmentReport(
+            @RequestParam int year,
+            @RequestParam int quarter,
+            @RequestParam int month) {
+        return kraKpiService.getCompletedPendingByDepartmentMonthly(year, quarter, month);
+    }
+
+    @Override
+    public Map<String, Map<String, Integer>> getQuarterlyDepartmentReport(
+            @RequestParam int year,
+            @RequestParam int quarter) {
+        return kraKpiService.getCompletedPendingByDepartmentQuarterWise(year, quarter);
+    }
+
+    @Override
+    public Map<String, Map<String, Integer>> getYearlyDepartmentReport(
+            @RequestParam int year) {
+        return kraKpiService.getCompletedPendingByDepartmentYearWise(year);
+    }
+
+    @Override
+    public ResponseEntity<InputStreamResource> downloadAllEmployeesReport() {
+        ByteArrayInputStream bis = hrService.generateAllEmployeesPmsPdfReport();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=All_Employees_PMS_Report.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
+    }
+
 }

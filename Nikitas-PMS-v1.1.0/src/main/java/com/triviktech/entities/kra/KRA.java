@@ -1,5 +1,6 @@
 package com.triviktech.entities.kra;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.triviktech.entities.kpi.KPI;
 import com.triviktech.entities.krakpi.KraKpi;
 import jakarta.persistence.*;
@@ -28,6 +29,7 @@ public class KRA {
 
 
     @OneToMany(mappedBy = "kra", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference 
     private Set<KPI> kpi;
 
 

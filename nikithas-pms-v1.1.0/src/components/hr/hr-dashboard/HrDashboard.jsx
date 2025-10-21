@@ -323,7 +323,7 @@ const getKeyMatrix = async () => {
       // console.log(result.data.profile)
 
       setHrName(result.data.profile.name);
- avinash
+ 
     } catch (error) {
       console.log(error.message);
     }
@@ -510,7 +510,7 @@ const getKeyMatrix = async () => {
 
             <h2 className="hr-dashboard-profile-name">{hrprofile?.name || "Avinash S.H"}</h2>
 
-            <h2 className="hr-dashboard-profile-name">{hrName || "HR User"}</h2>
+           
 
           </div>
           <ul>

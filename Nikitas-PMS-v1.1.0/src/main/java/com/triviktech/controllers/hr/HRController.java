@@ -27,17 +27,22 @@ import java.util.Map;
  * HRController is the REST API interface for handling all HR-related operations
  * in the PMS (Performance Management System) application.
  *
- * <p>Responsibilities include:</p>
+ * <p>
+ * Responsibilities include:
+ * </p>
  * <ul>
- *   <li>Registering HR users and employees.</li>
- *   <li>Fetching and updating employee data, including search and department-wise statistics.</li>
- *   <li>Handling KRA/KPI and PMS (Performance Management System) workflows.</li>
- *   <li>Generating reports and exporting employee data in PDF format.</li>
- *   <li>Sending notifications to employees and managers.</li>
- *   <li>Retrieving HR profile information and PMS status summaries.</li>
+ * <li>Registering HR users and employees.</li>
+ * <li>Fetching and updating employee data, including search and department-wise
+ * statistics.</li>
+ * <li>Handling KRA/KPI and PMS (Performance Management System) workflows.</li>
+ * <li>Generating reports and exporting employee data in PDF format.</li>
+ * <li>Sending notifications to employees and managers.</li>
+ * <li>Retrieving HR profile information and PMS status summaries.</li>
  * </ul>
  *
- * <p>All endpoints are CORS-enabled for "http://localhost:3000".</p>
+ * <p>
+ * All endpoints are CORS-enabled for "http://localhost:3000".
+ * </p>
  */
 @RequestMapping("/api/v1/pms/hr")
 @CrossOrigin(origins = "http://localhost:3000")
@@ -84,7 +89,7 @@ public interface HRController {
 
     @PatchMapping("/pms-initiated/{employeeId}")
     ResponseEntity<Map<String, String>> pmsInitiated(@PathVariable String employeeId,
-                                                     @RequestBody Map<String, Boolean> pms);
+            @RequestBody Map<String, Boolean> pms);
 
     @GetMapping("/employee-with-pms-initiated")
     ResponseEntity<List<EmployeeInfo>> pmsInitiatedEmployees();
@@ -94,7 +99,7 @@ public interface HRController {
 
     @PostMapping("/register-employee")
     ResponseEntity<Map<String, String>> registerEmployee(@Valid @RequestBody Employee employee,
-                                                         BindingResult bindingResult);
+            BindingResult bindingResult);
 
     @GetMapping("/pending")
     ResponseEntity<List<EmployeeWithPmsStatus>> getPendingPmsForHR();
@@ -127,7 +132,8 @@ public interface HRController {
     ResponseEntity<InputStreamResource> exportPmsPdf(@PathVariable String employeeId);
 
     @PostMapping("/upload-kra-kpi")
-    ResponseEntity<Map<String, List<XlsxSupport.KRA>>> uploadKraKpi(@RequestParam("file") MultipartFile file) throws Exception;
+    ResponseEntity<Map<String, List<XlsxSupport.KRA>>> uploadKraKpi(@RequestParam("file") MultipartFile file)
+            throws Exception;
 
     @PostMapping("/exit-employee/{empId}/{lastWorkingDay}")
     ResponseEntity<String> processEmployeeExit(
@@ -135,4 +141,22 @@ public interface HRController {
             @PathVariable("lastWorkingDay") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate lastWorkingDay);
 
     void notifyAllEmployeesAndManagers();
+
+    @GetMapping("/monthly")
+    public Map<String, Map<String, Integer>> getMonthlyDepartmentReport(
+            @RequestParam int year,
+            @RequestParam int quarter,
+            @RequestParam int month);
+
+    @GetMapping("/quarterly")
+    public Map<String, Map<String, Integer>> getQuarterlyDepartmentReport(
+            @RequestParam int year,
+            @RequestParam int quarter);
+
+    @GetMapping("/yearly")
+    public Map<String, Map<String, Integer>> getYearlyDepartmentReport(
+            @RequestParam int year);
+
+    @GetMapping("consolidated-report")
+    public ResponseEntity<InputStreamResource> downloadAllEmployeesReport();
 }

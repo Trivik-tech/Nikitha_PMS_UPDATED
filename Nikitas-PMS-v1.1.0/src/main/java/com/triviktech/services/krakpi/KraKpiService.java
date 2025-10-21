@@ -1,17 +1,23 @@
 package com.triviktech.services.krakpi;
 
+import com.triviktech.entities.kra.KRA;
+import com.triviktech.entities.krakpi.KraKpi;
 import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
 import com.triviktech.payloads.response.krakpi.KraKpiResponseDto;
 import com.triviktech.utilities.xlsxsupport.XlsxSupport;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * Service interface for managing Key Result Areas (KRA) and Key Performance Indicators (KPI).
+ * Service interface for managing Key Result Areas (KRA) and Key Performance
+ * Indicators (KPI).
  * <p>
- * This service provides methods for registering, retrieving, and managing KRA/KPI details
- * for employees. It supports employee reviews, status checks, and fetching all KRA/KPI records.
+ * This service provides methods for registering, retrieving, and managing
+ * KRA/KPI details
+ * for employees. It supports employee reviews, status checks, and fetching all
+ * KRA/KPI records.
  * </p>
  */
 public interface KraKpiService {
@@ -19,7 +25,8 @@ public interface KraKpiService {
     /**
      * Registers a new KRA/KPI for an employee.
      *
-     * @param kraKpiRequestDto the {@link KraKpiRequestDto} containing details of the KRA/KPI to be registered
+     * @param kraKpiRequestDto the {@link KraKpiRequestDto} containing details of
+     *                         the KRA/KPI to be registered
      * @return a {@link Map} containing a status message or confirmation
      */
     Map<String, String> registerKraKpi(KraKpiRequestDto kraKpiRequestDto);
@@ -35,7 +42,8 @@ public interface KraKpiService {
     /**
      * Submits an employee's self-review for their KRA/KPI.
      *
-     * @param kraKpiRequestDto the {@link KraKpiRequestDto} containing review details
+     * @param kraKpiRequestDto the {@link KraKpiRequestDto} containing review
+     *                         details
      * @param employeeId       the unique identifier of the employee
      * @return a {@link Map} containing a status message of the review submission
      */
@@ -60,7 +68,8 @@ public interface KraKpiService {
      * Get the list of KRA/KPI details for a given employee.
      *
      * @param employeeId the unique ID of the employee
-     * @return a map containing KRA/KPI data grouped by category (e.g., "KRA", "KPI")
+     * @return a map containing KRA/KPI data grouped by category (e.g., "KRA",
+     *         "KPI")
      */
     Map<String, List<KraKpiResponseDto>> listOfKraKpi(String employeeId);
 
@@ -81,12 +90,17 @@ public interface KraKpiService {
      */
     Map<String, List<KraKpiResponseDto>> listOfKraKpiByYearWise(String empId, String year);
 
+    Map<String, List<KraKpiResponseDto>> listOfKraKpiByQuarterWise(String empId, String year, int quarter);
 
+    Map<String, List<KraKpiResponseDto>> listOfKraKpisByMonthsWise(String empId, String year, int quarter, int month);
 
-    Map<String, List<KraKpiResponseDto>> listOfKraKpiByQuarterWise(String empId, String year,int quarter);
+    public Map<String, String> assignKrasToEmployees(String employeeId, Set<Long> kraIds);
 
-    Map<String,List<KraKpiResponseDto>> listOfKraKpisByMonthsWise(String empId,String year,int quarter,int month);
+    public List<KRA> getAllKraWithKpi();
 
+    public Map<String, Map<String, Integer>> getCompletedPendingByDepartmentYearWise(int year);
 
+    public Map<String, Map<String, Integer>> getCompletedPendingByDepartmentQuarterWise(int year, int quarter);
 
+    public Map<String, Map<String, Integer>> getCompletedPendingByDepartmentMonthly(int year, int quarter, int month);
 }

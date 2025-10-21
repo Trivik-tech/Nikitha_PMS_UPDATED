@@ -79,4 +79,6 @@ public interface HrService {
     ByteArrayInputStream generatePmsPdfReport(String employeeId);
 
     String processEmployeeExit(String empId, LocalDate lastWorkingDay);
+    public ByteArrayInputStream generateAllEmployeesPmsPdfReport();
+    
 }
