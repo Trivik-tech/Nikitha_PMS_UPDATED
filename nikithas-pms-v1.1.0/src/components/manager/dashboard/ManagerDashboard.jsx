@@ -78,9 +78,7 @@ const ManagerDashboard = () => {
     try {
       const res = await axios.get(
         `${baseUrl}/api/v1/pms/manager/percentage/${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setPercentageData(res.data);
     } catch (error) {}
@@ -90,9 +88,7 @@ const ManagerDashboard = () => {
     try {
       const result = await axios.get(
         `${baseUrl}/api/v1/pms/manager/get-team-size/${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setTeamSize(result.data?.team || 0);
     } catch (error) {}
@@ -102,9 +98,7 @@ const ManagerDashboard = () => {
     try {
       const res = await axios.get(
         `${baseUrl}/api/v1/pms/manager/pms/status-count/${id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setAssessmentCount({
         completed: res.data.completedCount || 0,
@@ -117,153 +111,25 @@ const ManagerDashboard = () => {
 
   useEffect(() => {
     if (!token) return;
-
-    const lastSeenKey = "manager-dashboard-last-seen-timestamp";
-    let lastSeenTimestamp = sessionStorage.getItem(lastSeenKey);
-    if (!lastSeenTimestamp) {
-      lastSeenTimestamp = localStorage.getItem(lastSeenKey);
-      if (lastSeenTimestamp) {
-        sessionStorage.setItem(lastSeenKey, lastSeenTimestamp);
-      }
-    }
-
-    const mountTime = Date.now();
-
     const socket = new SockJS(`${baseUrl}/ws?token=${token}`);
     const client = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
       onConnect: async () => {
-        client.subscribe(
-          "/user/queue/manager-notification",
-          async (message) => {
-            const newMsg = {
-              title: "New Notification",
-              message: message.body,
-              timestamp: new Date().toISOString(),
-            };
-            setNotificationOpen(true);
-            setNewAndUndelivered((prev) => [newMsg, ...prev]);
-            setNotificationCount((prev) => prev + 1);
-            try {
-              const res = await axios.get(`${baseUrl}/api/v1/pms/recent`, {
-                headers: { Authorization: `Bearer ${token}` },
-              });
-              const recent = res.data;
-              const formattedRecent = recent.map((msg) => ({
-                title: "Recent Notification",
-                message: msg.message || msg.content || "No content",
-                timestamp: msg.timestamp || new Date().toISOString(),
-              }));
-              const allMessages = [newMsg, ...formattedRecent];
-              const unique = Array.from(
-                new Map(
-                  allMessages.map((msg) => [
-                    `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${
-                      msg.message
-                    }`,
-                    msg,
-                  ])
-                ).values()
-              );
-              setNotifications(unique.slice(0, 50));
-
-              if (unique.length > 0) {
-                const latest = unique.reduce((a, b) =>
-                  new Date(a.timestamp) > new Date(b.timestamp) ? a : b
-                );
-                sessionStorage.setItem(lastSeenKey, latest.timestamp);
-                localStorage.setItem(lastSeenKey, latest.timestamp);
-              }
-            } catch (err) {
-              console.error("❌ Error fetching recent:", err);
-            }
-          }
-        );
-
-        try {
-          const res = await axios.get(`${baseUrl}/api/v1/pms/recent`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          const recent = res.data;
-          const formatted = recent.map((msg) => ({
-            title: "Recent Notification",
-            message: msg.message || msg.content || "No content",
-            timestamp: msg.timestamp || new Date().toISOString(),
-          }));
-          const unique = Array.from(
-            new Map(
-              formatted.map((msg) => [
-                `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${
-                  msg.message
-                }`,
-                msg,
-              ])
-            ).values()
-          );
-          setNotifications(unique.slice(0, 50));
-
-          let unseen = [];
-          if (lastSeenTimestamp) {
-            unseen = unique.filter(
-              (msg) => new Date(msg.timestamp) > new Date(lastSeenTimestamp)
-            );
-            if (unseen.length > 0) {
-              setNewAndUndelivered(unseen);
-              setNotificationCount(unseen.length);
-              setNotificationOpen(true);
-              const latest = unseen.reduce((a, b) =>
-                new Date(a.timestamp) > new Date(b.timestamp) ? a : b
-              );
-              sessionStorage.setItem(lastSeenKey, latest.timestamp);
-              localStorage.setItem(lastSeenKey, latest.timestamp);
-            } else if (unique.length > 0) {
-              const latest = unique.reduce((a, b) =>
-                new Date(a.timestamp) > new Date(b.timestamp) ? a : b
-              );
-              sessionStorage.setItem(lastSeenKey, latest.timestamp);
-              localStorage.setItem(lastSeenKey, latest.timestamp);
-            }
-          } else if (unique.length > 0) {
-            const allOld = unique.every(
-              (msg) => new Date(msg.timestamp).getTime() < mountTime - 1000
-            );
-            if (allOld) {
-              const latest = unique.reduce((a, b) =>
-                new Date(a.timestamp) > new Date(b.timestamp) ? a : b
-              );
-              sessionStorage.setItem(lastSeenKey, latest.timestamp);
-              localStorage.setItem(lastSeenKey, latest.timestamp);
-            } else {
-              const newOnes = unique.filter(
-                (msg) => new Date(msg.timestamp).getTime() >= mountTime - 1000
-              );
-              setNewAndUndelivered(newOnes);
-              setNotificationCount(newOnes.length);
-              setNotificationOpen(true);
-              const latest = unique.reduce((a, b) =>
-                new Date(a.timestamp) > new Date(b.timestamp) ? a : b
-              );
-              sessionStorage.setItem(lastSeenKey, latest.timestamp);
-              localStorage.setItem(lastSeenKey, latest.timestamp);
-            }
-          }
-        } catch (err) {
-          console.error("❌ Initial fetch error:", err);
-        }
+        client.subscribe("/user/queue/manager-notification", async (message) => {
+          const newMsg = {
+            title: "New Notification",
+            message: message.body,
+            timestamp: new Date().toISOString(),
+          };
+          setNotificationOpen(true);
+          setNewAndUndelivered((prev) => [newMsg, ...prev]);
+          setNotificationCount((prev) => prev + 1);
+        });
       },
     });
     client.activate();
-    return () => {
-      if (notifications && notifications.length > 0) {
-        const latest = notifications.reduce((a, b) =>
-          new Date(a.timestamp) > new Date(b.timestamp) ? a : b
-        );
-        sessionStorage.setItem(lastSeenKey, latest.timestamp);
-        localStorage.setItem(lastSeenKey, latest.timestamp);
-      }
-      client.deactivate();
-    };
+    return () => client.deactivate();
   }, [token]);
 
   const hasData =
@@ -377,15 +243,8 @@ const ManagerDashboard = () => {
                 onClose={() => setNotificationOpen(false)}
               />
             )}
-            <button
-              className="logout-btn desktop-only"
-              onClick={() => {
-                localStorage.clear();
-                navigate("/");
-              }}
-            >
-              Logout
-            </button>
+            {/* Replaced Logout with Logo */}
+            <img src={logo} alt="Company Logo" className="dashboard-logo" />
           </div>
         </div>
 
@@ -427,6 +286,7 @@ const ManagerDashboard = () => {
               </div>
             </Link>
           </div>
+
           <div className="stat-card">
             <CheckCircle className="stat-icon complete-icon" />
             <Link

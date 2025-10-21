@@ -344,3 +344,26 @@ body, html {
     display: inline-block;
   }
 }
+/* Keep all your existing CSS as is */
+/* The only difference: dashboard-logo class already exists */
+.dashboard-logo {
+  width: 110px;
+  height: auto;
+  border-radius: 4px;
+}
+.sidebar .logout {
+  background-color: #000; /* black */
+  color: #fff; /* white text */
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  width: 100%; /* full width of sidebar */
+  transition: background-color 0.3s ease;
+}
+
+.sidebar .logout:hover {
+  background-color: #333; /* dark grey on hover */
+  color: #fff;
+}

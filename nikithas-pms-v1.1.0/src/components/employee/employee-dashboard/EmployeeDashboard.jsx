@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './EmployeeDashboard.css';
 import './EmployeeDashboardResponsive.css';
@@ -19,12 +19,9 @@ const EmployeeDashboard = () => {
   const [newAndUndelivered, setNewAndUndelivered] = useState([]);
   const [employeeData, setEmployeeData] = useState(null);
   const jwtToken = localStorage.getItem("token");
-
   const navigate = useNavigate();
 
-  const handleSidebarClose = () => {
-    setSidebarOpen(false);
-  };
+  const handleSidebarClose = () => setSidebarOpen(false);
 
   useEffect(() => {
     const lastSeenKey = 'employee-dashboard-last-seen-timestamp';
@@ -37,7 +34,6 @@ const EmployeeDashboard = () => {
     }
 
     const mountTime = Date.now();
-
     const socket = new SockJS(`${baseUrl}/ws?token=${jwtToken}`);
     const client = new Client({
       webSocketFactory: () => socket,
@@ -72,13 +68,8 @@ const EmployeeDashboard = () => {
               ).values()
             );
             setNotifications(unique.slice(0, 50));
-            if (unique.length > 0) {
-              const latest = unique.reduce((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? a : b);
-              sessionStorage.setItem(lastSeenKey, latest.timestamp);
-              localStorage.setItem(lastSeenKey, latest.timestamp);
-            }
           } catch (err) {
-            console.error("❌ Error fetching recent:", err);
+            console.error("Error fetching recent:", err);
           }
         });
 
@@ -92,62 +83,16 @@ const EmployeeDashboard = () => {
             message: msg.message || msg.content || "No content",
             timestamp: msg.timestamp || new Date().toISOString()
           }));
-          const unique = Array.from(
-            new Map(
-              formatted.map(msg => [
-                `${Math.floor(new Date(msg.timestamp).getTime() / 1000)}-${msg.message}`,
-                msg
-              ])
-            ).values()
-          );
-          setNotifications(unique.slice(0, 50));
-          let unseen = [];
-          if (lastSeenTimestamp) {
-            unseen = unique.filter(msg => new Date(msg.timestamp) > new Date(lastSeenTimestamp));
-            if (unseen.length > 0) {
-              setNewAndUndelivered(unseen);
-              setNotificationCount(unseen.length);
-              setNotificationOpen(true);
-              const latest = unseen.reduce((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? a : b);
-              sessionStorage.setItem(lastSeenKey, latest.timestamp);
-              localStorage.setItem(lastSeenKey, latest.timestamp);
-            } else if (unique.length > 0) {
-              const latest = unique.reduce((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? a : b);
-              sessionStorage.setItem(lastSeenKey, latest.timestamp);
-              localStorage.setItem(lastSeenKey, latest.timestamp);
-            }
-          } else if (unique.length > 0) {
-            const allOld = unique.every(msg => new Date(msg.timestamp).getTime() < mountTime - 1000);
-            if (allOld) {
-              const latest = unique.reduce((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? a : b);
-              sessionStorage.setItem(lastSeenKey, latest.timestamp);
-              localStorage.setItem(lastSeenKey, latest.timestamp);
-            } else {
-              const newOnes = unique.filter(msg => new Date(msg.timestamp).getTime() >= mountTime - 1000);
-              setNewAndUndelivered(newOnes);
-              setNotificationCount(newOnes.length);
-              setNotificationOpen(true);
-              const latest = unique.reduce((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? a : b);
-              sessionStorage.setItem(lastSeenKey, latest.timestamp);
-              localStorage.setItem(lastSeenKey, latest.timestamp);
-            }
-          }
+          setNotifications(formatted.slice(0, 50));
         } catch (err) {
-          console.error("❌ Initial fetch error:", err);
+          console.error("Initial fetch error:", err);
         }
       }
     });
 
     loadProfile();
     client.activate();
-    return () => {
-      if (notifications && notifications.length > 0) {
-        const latest = notifications.reduce((a, b) => new Date(a.timestamp) > new Date(b.timestamp) ? a : b);
-        sessionStorage.setItem(lastSeenKey, latest.timestamp);
-        localStorage.setItem(lastSeenKey, latest.timestamp);
-      }
-      client.deactivate();
-    };
+    return () => client.deactivate();
   }, []);
 
   const handleNotificationToggle = () => {
@@ -161,27 +106,16 @@ const EmployeeDashboard = () => {
   const loadProfile = async () => {
     try {
       const result = await axios.get(`${baseUrl}/api/v1/pms/employee/profile`, {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`
-        }
+        headers: { Authorization: `Bearer ${jwtToken}` }
       });
       setEmployeeData(result.data);
       console.log(result.data)
     } catch (error) {
-      console.log("Profile fetch error:", error);
       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
         localStorage.clear();
         navigate("/");
       }
     }
-  };
-
-  const formatDate = (dateStr) => {
-    if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-IN', {
-      year: 'numeric', month: 'long', day: 'numeric'
-    });
   };
 
   return (
@@ -205,9 +139,7 @@ const EmployeeDashboard = () => {
       >
         <div style={{ position: 'relative' }}>
           <Bell className="employee-dashboard-notificationButton" />
-          {notificationCount > 0 && (
-            <span className="notif-count">{notificationCount}</span>
-          )}
+          {notificationCount > 0 && <span className="notif-count">{notificationCount}</span>}
         </div>
       </div>
 
@@ -221,58 +153,36 @@ const EmployeeDashboard = () => {
           <h2 className="employee-name">{employeeData?.name}</h2>
         </div>
         <ul>
+          <li><Link to="/employee-dashboard" className="active" onClick={handleSidebarClose}>My Dashboard</Link></li>
+          <li><Link to={`/self-review/${employeeData?.empId}`} onClick={handleSidebarClose}>Start PMS</Link></li>
+          <li><Link to={`/employee-performance/${employeeData?.empId}`} onClick={handleSidebarClose}>My Performance</Link></li>
+          <li><Link to={`/add-krakpi/${employeeData?.empId}`} onClick={handleSidebarClose}>Add KRA|KPI</Link></li>
           <li>
-            <Link to="/employee-dashboard" className="active" onClick={handleSidebarClose}>My Dashboard</Link>
-          </li>
-          <li>
-            <Link to={`/self-review/${employeeData?.empId}`} onClick={handleSidebarClose}>Start PMS</Link>
-          </li>
-          <li>
-            <Link to={`/employee-performance/${employeeData?.empId}`} onClick={handleSidebarClose}>My Performance</Link>
-          </li>
-          <li>
-            <Link to={`/add-krakpi/${employeeData?.empId}`} onClick={handleSidebarClose}>Add KRA|KPI</Link>
-          </li>
-           <li>
-            <button className="employee-logout-btn" 
-             onClick={() => {
-                  localStorage.clear();
-                  navigate("/");
-                }}
-            >Logout</button>
-          </li>
-        </ul>
-        <button
-          className="employee-sidebar-logout-btn"
-          onClick={() => {
-            localStorage.clear();
-            navigate("/");
-          }}
-        >Logout</button>
-      </aside>
-
-      <main className="employee-main-content">
-        <header className="employee-dashboard-header">
-          <div className="employee-dashboard-title">Employee Dashboard</div>
-          
-          <div className="employee-dashboard-actions">
-            <div style={{ position: 'relative' }}>
-              <Bell
-                className="employee-dashboard-notificationButton employee-dashboard-bell-desktop"
-                onClick={handleNotificationToggle}
-              />
-              {notificationCount > 0 && (
-                <span className="notif-count">{notificationCount}</span>
-              )}
-            </div>
-            
             <button
               className="employee-logout-btn"
               onClick={() => {
                 localStorage.clear();
                 navigate("/");
               }}
-            >Logout</button>
+            >
+              Logout
+            </button>
+          </li>
+        </ul>
+      </aside>
+
+      <main className="employee-main-content">
+        <header className="employee-dashboard-header">
+          <div className="employee-dashboard-title">Employee Dashboard</div>
+          {/* 🔥 Removed top-right logout button */}
+          <div className="employee-dashboard-actions">
+            <div style={{ position: 'relative' }}>
+              <Bell
+                className="employee-dashboard-notificationButton employee-dashboard-bell-desktop"
+                onClick={handleNotificationToggle}
+              />
+              {notificationCount > 0 && <span className="notif-count">{notificationCount}</span>}
+            </div>
           </div>
           <div className="employee-dashboard-logo"><img src={logo} alt="Nikitha PMS" /></div>
         </header>
@@ -289,11 +199,7 @@ const EmployeeDashboard = () => {
           <div className="reporting-manager">
             <h3 className='employee-dashboard-info-h3'>Reporting Manager</h3>
             <div className="manager-info">
-              <img
-                src={defaultProfile}
-                alt="Manager"
-                className="manager-img"
-              />
+              <img src={defaultProfile} alt="Manager" className="manager-img" />
               <div>
                 <p><strong>Reports to:</strong> {employeeData?.reportingManager}</p>
                 <button className="employee-module-contact-manager-btn">Contact Manager</button>
@@ -311,10 +217,7 @@ const EmployeeDashboard = () => {
       </main>
 
       {notificationOpen && (
-        <Notification
-          onClose={() => setNotificationOpen(false)}
-          notifications={notifications}
-        />
+        <Notification onClose={() => setNotificationOpen(false)} notifications={notifications} />
       )}
     </div>
   );
