@@ -1,5 +1,7 @@
 package com.triviktech.entities.kpi;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.triviktech.entities.kra.KRA;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -8,7 +10,8 @@ import jakarta.validation.constraints.NotBlank;
  * Represents a Key Performance Indicator (KPI) entity.
  * <p>
  * A KPI is linked to a KRA (Key Result Area) and includes information
- * like description, weightage, self score, manager score, remarks, and averages.
+ * like description, weightage, self score, manager score, remarks, and
+ * averages.
  * <p>
  * Mapped to the "kpi" table in the database.
  */
@@ -35,6 +38,7 @@ public class KPI {
 
     @ManyToOne
     @JoinColumn(name = "kra_id")
+    @JsonIgnore
     private KRA kra;
 
     @Column(name = "average")
@@ -43,11 +47,11 @@ public class KPI {
     @Column(name = "review_2")
     private Integer review2;
 
-    @NotBlank(message = "Employee remark is mandatory")
+    // @NotBlank(message = "Employee remark is mandatory")
     @Column(name = "employee_remark", length = 1000)
     private String employeeRemark;
-    
-    @NotBlank(message = "Manager remark is mandatory")
+
+    // @NotBlank(message = "Manager remark is mandatory")
     @Column(name = "manager_remark", length = 1000)
     private String managerRemark;
 

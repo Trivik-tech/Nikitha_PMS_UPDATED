@@ -1,5 +1,23 @@
 package com.triviktech.controllers.manager;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.triviktech.entities.kra.KRA;
 import com.triviktech.payloads.request.krakpi.KraKpiRequestDto;
 import com.triviktech.payloads.request.manager.ManagerRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
@@ -13,19 +31,6 @@ import com.triviktech.services.krakpi.KraKpiService;
 import com.triviktech.services.manager.ManagerService;
 import com.triviktech.services.notification.NotificationService;
 import com.triviktech.utilities.validation.ValidationMessage;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 
 /**
@@ -261,6 +266,28 @@ public ResponseEntity<PmsStatusCountDto> getPmsCountsForManager(String managerId
     return ResponseEntity.ok(dto);
 }
 
+@Override
+@PostMapping("/assign/{employeeId}")
+public ResponseEntity<Map<String, String>> assignKras(
+        @PathVariable String employeeId,
+        @RequestBody Set<Long> kraIds) {
+
+    Map<String, String> result = kraKpiService.assignKrasToEmployees(employeeId, kraIds);
+
+    if ("failure".equals(result.get("status"))) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+    }
+    return ResponseEntity.ok(result);
+}
+
+@Override
+public List<KRA> getAllKraWithKpi() {
+    
+    return kraKpiService.getAllKraWithKpi();
+}
+
+
+
 // @Override
 // public void autoNotifyEmployees() {
 //     // Get all employees
@@ -304,4 +331,6 @@ public ResponseEntity<PmsStatusCountDto> getPmsCountsForManager(String managerId
 //     }
 
 // }
+
+
 }
