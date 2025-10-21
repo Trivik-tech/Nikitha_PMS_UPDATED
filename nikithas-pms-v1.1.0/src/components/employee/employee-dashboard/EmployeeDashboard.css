@@ -1,248 +1,148 @@
-/* Global Reset */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-    height: 100vh;
-    display: flex;
-    align-items: stretch;
-    justify-content: center;
-    overflow-x: hidden;
-    
-    .notif-count {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: red;
-  color: white;
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 50%;
-  z-index: 10;
-}
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  height: 100vh;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  overflow-x: hidden;
 }
 
-/* Dashboard Container */
 .employee-dashboard-container {
-    display: flex;
-    width: 100vw;
-    margin: 0;
-    overflow: hidden;
-    animation: fadeIn 0.5s ease-in-out;
+  display: flex;
+  width: 100vw;
+  margin: 0;
+  overflow: hidden;
+  animation: fadeIn 0.5s ease-in-out;
 }
 
-/* Sidebar Styles */
+/* Sidebar */
 .employee-dashboard-sidebar {
-    width: 250px;
-    background-color: #fff;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-left: 15px;
-    height: 96vh;
-    border-radius: 5px;
-    margin-top: 15px;
-    overflow-y: auto;
-    opacity: 0;
-    animation: slideIn 0.5s ease-out forwards;
+  width: 250px;
+  background-color: #fff;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-left: 15px;
+  height: 96vh;
+  border-radius: 5px;
+  margin-top: 15px;
+  overflow-y: auto;
+  opacity: 0;
+  animation: slideIn 0.5s ease-out forwards;
 }
 
-/* Employee Profile */
 .employee-profile-container {
-    text-align: center;
-    margin-bottom: 20px;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .employee-profile-img {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    margin-bottom: 8px;
-    object-fit: cover;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  margin-bottom: 8px;
+  object-fit: cover;
 }
 
 .employee-name {
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
 }
 
-/* Sidebar Links */
 .employee-dashboard-sidebar ul {
-    list-style-type: none;
-    padding: 0;
+  list-style: none;
 }
 
 .employee-dashboard-sidebar ul li {
-    margin-bottom: 12px;
-    opacity: 0;
-    animation: fadeInUp 0.5s ease-in-out 0.2s forwards;
+  margin-bottom: 12px;
 }
 
 .employee-dashboard-sidebar ul li a {
-    text-decoration: none;
-    color: #333;
-    font-size: 15px;
-    display: block;
-    padding: 8px;
-    transition: 0.3s;
+  text-decoration: none;
+  color: #333;
+  font-size: 15px;
+  display: block;
+  padding: 8px;
+  transition: 0.3s;
 }
 
 .employee-dashboard-sidebar ul li a:hover,
 .employee-dashboard-sidebar ul li a.active {
-    background-color: #4CAF50;
-    color: white;
-    border-radius: 4px;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 4px;
 }
 
-/* Main Content */
-.employee-main-content {
-    flex: 1;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    overflow-y: auto;
-    min-width: 0;
-}
-
-/* Dashboard Header */
-.employee-dashboard-header {
-    display: flex;
-    align-items: center;
-    background-color: #fff;
-    padding: 20px 28px;
-    border-radius: 6px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 15px;
-    width: 100%;
-    justify-content: space-between;
-    opacity: 0;
-    animation: fadeInUp 0.5s ease-in-out 0.3s forwards;
-}
-
-/* Dashboard Title (Align Left) */
-.employee-dashboard-title {
-    font-size: 22px;
-    font-weight: bold;
-    color: #333;
-    flex: 1;
-    text-align: left;
-    padding-left: 20px;
-}
-
-/* Logo (Centered) */
-.employee-dashboard-logo {
-    position: absolute;
-    right: 10px;   /* moved to right */
-    top: -25px;     /* optional: keep spacing from top */
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    transform: none; /* remove center transform */
-}
-
-
-.employee-dashboard-logo img {
-    height: 95px;
-    width: auto;
-    margin-top: 16%;
-}
-
-/* Right Section (Notification & Logout) */
-/* .employee-dashboard-actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-left: auto;
-} */
-
-/* Notification Button */
-.employee-dashboard-notificationButton {
-    width: 24px;
-    height: 24px;
-    cursor: pointer;
-    margin-right: 100px;
-    color: #333;
-    transition: transform 0.3s ease;
-}
-
-.employee-dashboard-notificationButton:hover {
-    color: #007bff;
-    transform: scale(1.2);
-}
-
-/* Logout Button */
+/* Logout button (sidebar only) */
 .employee-logout-btn {
-    background-color: black;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background 0.3s ease;
-    white-space: nowrap;
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
 }
 
 .employee-logout-btn:hover {
-    background-color: #c82333;
+  background-color: #c82333;
 }
 
-/* Details Section */
-.employee-info-container {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 20px;
-    height: 83vh;
-    position: relative;
-    opacity: 0;
-    animation: fadeIn 0.6s ease-in-out 0.4s forwards;
+/* Header */
+.employee-dashboard-header {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  padding: 20px 28px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+  width: 100%;
+  justify-content: space-between;
 }
 
-/* Employee Info Blocks */
-.employee-info,
-.reporting-manager {
-    background-color: #fff;
-    padding: 35px;
-    border-radius: 6px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 48%;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    opacity: 0;
-    animation: fadeInUp 0.5s ease-in-out 0.6s forwards;
+.employee-dashboard-title {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
 }
 
-.employee-info:hover,
-.reporting-manager:hover {
-    transform: scale(1.02);
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+.employee-dashboard-logo {
+  position: absolute;
+  right: 30px;
+  top: -10px;
 }
 
-/* Reporting Manager */
-.reporting-manager {
-    width: 48%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+.employee-dashboard-logo img {
+  height: 95px;
+  width: auto;
+  margin-top: 16%;
 }
 
-/* Manager Info */
-.manager-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+/* Notification Bell */
+.employee-dashboard-notificationButton {
+  position: absolute;
+  right: 110px; /* 👈 Moves bell to the left side of logo */
+  top: -10px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  color: #333;
+  transition: transform 0.3s ease;
 }
+
+.employee-dashboard-notificationButton:hover {
+  color: #007bff;
+  transform: scale(1.2);
+}
+
 .notif-count {
   position: absolute;
   top: -6px;
@@ -253,135 +153,97 @@ body {
   font-weight: bold;
   padding: 2px 5px;
   border-radius: 50%;
-  z-index: 10;
 }
 
+/* Main content */
+.employee-main-content {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
 
-/* Manager Image */
+.employee-info-container {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+  height: 83vh;
+}
+
+.employee-info,
+.reporting-manager {
+  background-color: #fff;
+  padding: 35px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 48%;
+}
+
+.employee-dashboard-info-h3 {
+  font-size: 22px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #4CAF50;
+  padding-bottom: 5px;
+}
+
+.manager-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
 .manager-img {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    margin-bottom: 8px;
-    object-fit: cover;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
-/* Contact Manager Button */
 .employee-module-contact-manager-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    width: 150px;
-    transition: background 0.3s ease;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .employee-module-contact-manager-btn:hover {
-    background-color: #0056b3;
+  background-color: #0056b3;
 }
 
-/* Headings */
-.employee-dashboard-info-h3 {
-    font-size: 22px;
-    margin-bottom: 15px;
-    border-bottom: 2px solid #4CAF50;
-    padding-bottom: 5px;
-}
-
-/* Spacing Between Details */
-p {
-    margin-bottom: 10px;
-    font-size: 16px;
-    line-height: 1.5;
-}
-
-/* Responsive styles */
+/* Responsive */
 @media (max-width: 992px) {
-    .employee-info,
-    .reporting-manager {
-        width: 100%;
-    }
+  .employee-info,
+  .reporting-manager {
+    width: 100%;
+  }
 }
 
 @media (max-width: 768px) {
-    .employee-dashboard-container {
-        flex-direction: column;
-    }
+  .employee-dashboard-container {
+    flex-direction: column;
+  }
 
-    .employee-dashboard-sidebar {
-        width: 100%;
-        height: auto;
-        min-width: auto;
-        margin-bottom: 15px;
-    }
-
-    .employee-main-content {
-        width: 100%;
-    }
-
-    .employee-dashboard-header {
-        flex-wrap: wrap;
-        padding: 15px;
-    }
-
-    .employee-dashboard-logo img {
-        height: 60px;
-    }
-
-    .employee-logout-btn {
-        order: 3;
-        margin-left: 15px;
-    }
+  .employee-dashboard-sidebar {
+    width: 100%;
+    height: auto;
+  }
 }
 
-@media (max-width: 480px) {
-    .employee-dashboard-header {
-        padding: 10px;
-    }
-
-    .employee-info-container {
-        padding: 15px;
-    }
-
-    .employee-info,
-    .reporting-manager {
-        padding: 20px;
-    }
-
-    .manager-info {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-}
-
-/* Keyframes */
 @keyframes fadeIn {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes slideIn {
-    0% {
-        transform: translateX(-100%);
-    }
-    100% {
-        transform: translateX(0);
-    }
-}
-
-@keyframes fadeInUp {
-    0% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
 }

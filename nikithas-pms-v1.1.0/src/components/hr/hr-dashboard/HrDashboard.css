@@ -11,13 +11,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0;
-    padding: 0;
 }
-.hamburger {
-  display: none;
-}
-
 
 .hr-dashboard-container {
     display: flex;
@@ -39,17 +33,6 @@ body {
     z-index: 1001;
     position: static;
 }
-.notification-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: red;
-  color: white;
-  font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 50%;
-  z-index: 10;
-}
 
 .hr-dashboard-profile-container {
     display: flex;
@@ -58,6 +41,7 @@ body {
     margin-bottom: 20px;
     text-align: center;
 }
+
 .hr-dashboard-profileImg {
     width: 60px;
     height: 60px;
@@ -65,19 +49,23 @@ body {
     margin-bottom: 8px;
     object-fit: cover;
 }
+
 .hr-dashboard-profile-container h2 {
     font-size: 15px;
     color: #333;
     margin-top: 10px;
     font-weight: bold;
 }
+
 .hr-dashboard-sidebar ul {
     list-style-type: none;
     padding: 0;
 }
+
 .hr-dashboard-sidebar ul li {
     margin-bottom: 12px;
 }
+
 .hr-dashboard-sidebar ul li a {
     text-decoration: none;
     color: #333;
@@ -87,6 +75,7 @@ body {
     transition: 0.3s;
     font-weight: 500;
 }
+
 .hr-dashboard-sidebar ul li a:hover, 
 .hr-dashboard-sidebar ul li a.active {
     background-color: #4CAF50;
@@ -116,24 +105,22 @@ body {
     width: 100%;
     position: relative;
 }
-.hr-dashboard-header h1 {
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
-}
+
 .hr-dashboard-logo {
     width: 120px;
     height: auto;
     position: absolute;
     margin-left: 90%;
     transform: translateX(-50%);
-    top: 5px; /* Pushes it up */
+    top: 0px;
 }
+
 .hr-dashboard-actions {
     display: flex;
     align-items: center;
     gap: 15px;
 }
+
 .hr-dashboard-notificationButton {
     background: none;
     border: none;
@@ -143,9 +130,11 @@ body {
     color: #333;
     transition: color 0.3s ease;
 }
+
 .hr-dashboard-notificationButton:hover {
     color: #4CAF50;
 }
+
 .hr-dashboard-logoutButton {
     background-color: black;
     color: white;
@@ -156,9 +145,11 @@ body {
     text-decoration: none;
     transition: background 0.3s ease;
 }
+
 .hr-dashboard-logoutButton:hover {
     background-color: #c82333;
 }
+
 .hr-dashboard-stats-container {
     display: flex;
     justify-content: space-between;
@@ -166,6 +157,7 @@ body {
     margin-bottom: 15px;
     margin-right: 15px;
 }
+
 .hr-dashboard-stat-card {
     background-color: #fff;
     padding: 15px;
@@ -179,12 +171,15 @@ body {
     gap: 15px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
 .stat-card-icon.user { font-size: 30px; color: #0b95f1; }
 .stat-card-icon.complete { font-size: 30px; color: #0bf13d; }
 .stat-card-icon.pending { font-size: 30px; color: #f1a10b; }
 .stat-card-icon.rate { font-size: 30px; color: #0be2f1; }
+
 .hr-dashboard-stat-card h2 { font-size: 18px; margin-bottom: 8px; }
 .hr-dashboard-stat-card p { font-size: 16px; font-weight: bold; }
+
 .hr-dashboard-stat-card:hover{
     transform: scale(1.02);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -207,7 +202,7 @@ body {
     gap: 20px;
     flex-wrap: wrap;
     align-items: stretch;
-    margin-top: 30px; /* Space for the heading */
+    margin-top: 30px;
 }
 
 .hr-dashboard-chart-box {
@@ -217,6 +212,7 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     border: 1px solid #e0e6ed;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
 }
 
 .hr-dashboard-chart-box:hover {
@@ -239,7 +235,6 @@ body {
     justify-content: center;
 }
 
-/* Chart Scroll Container for Bar Chart */
 .chart-scroll-container {
     width: 100%;
     height: 350px;
@@ -252,6 +247,7 @@ body {
     min-width: 100%;
     height: 100% !important;
 }
+
 .hr-dashboard-assessment-heading {
     position: absolute;
     top: 10px;
@@ -266,139 +262,7 @@ body {
     z-index: 10;
     color: #2c3e50;
 }
-.hr-dashboard-actions .notification-icon {
-    font-size: 22px;
-    cursor: pointer;
-}
 
-.stat-card-icon {
-    font-size: 30px;
-    color: #4CAF50; /* Default color for icons */
-    margin-bottom: 8px;
-}
-
-/* Responsive Design for Charts */
-@media (max-width: 1200px) {
-    .hr-dashboard-charts-wrapper {
-        flex-direction: column;
-    }
-    
-    .hr-dashboard-bar-chart,
-    .hr-dashboard-pie-chart {
-        min-width: 100%;
-        flex: none;
-    }
-    
-    .hr-dashboard-bar-chart {
-        min-height: 350px;
-    }
-    
-    .hr-dashboard-pie-chart {
-        min-height: 300px;
-    }
-}
-
-@media (max-width: 768px) {
-    .hr-dashboard-chart-box {
-        padding: 15px;
-    }
-    
-    .chart-scroll-container {
-        height: 300px;
-    }
-    
-    .hr-dashboard-bar-chart {
-        min-height: 300px;
-    }
-    
-    .hr-dashboard-pie-chart {
-        min-height: 250px;
-    }
-}
-
-@media screen and (max-width: 1600px) {
-    .hr-dashboard-container {
-        flex-direction: row;
-        justify-content: space-between;
-    }
-    .hr-dashboard-sidebar {
-        width: 250px;
-    }
-    .hr-dashboard-main-content {
-        padding: 20px;
-    }
-}
-
-@media screen and (max-width: 1400px) {
-    .hr-dashboard-container {
-        flex-direction: row;
-        justify-content: space-between;
-    }
-    .hr-dashboard-sidebar {
-        width: 220px;
-    }
-    .hr-dashboard-main-content {
-        padding: 25px;
-    }
-}
-
-@media screen and (max-width: 1200px) {
-    .hr-dashboard-container {
-        flex-direction: column;
-    }
-    .hr-dashboard-sidebar {
-        width: 200px;
-        margin: 10px 0;
-    }
-    .hr-dashboard-main-content {
-        padding: 20px;
-    }
-}
-
-@media screen and (max-width: 1024px) {
-    .hr-dashboard-chart-container {
-        flex-direction: column;
-    }
-}
-
-/* --- Animation Keyframes and Classes --- */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes fadeInDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideIn {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
-}
-
-.fade-in {
-  animation: fadeIn 0.8s ease-in-out both;
-}
-
-.fade-in-down {
-  animation: fadeInDown 0.8s ease-out both;
-}
-
-.fade-in-up {
-  animation: fadeInUp 0.8s ease-out both;
-}
-
-.slide-in {
-  animation: slideIn 0.5s ease-out both;
-}
-
-/* --- Notification Modal Wrapper Styles --- */
 .notification-modal-wrapper {
     position: fixed;
     top: 0; left: 0;
@@ -410,21 +274,87 @@ body {
     z-index: 1500;
 }
 
-/* Notification wrapper to position badge relative to the bell */
 .notification-wrapper {
   position: relative;
   display: inline-block;
 }
 
-/* Notification badge (red dot with count) - adjusted positioning */
 .notification-badge {
   position: absolute;
-  top: -3px;         /* Adjusted closer to bell */
-  right: 0px;        /* Aligns better to top-right corner of bell */
+  top: -3px;
+  right: 0px;
   background-color: red;
   color: white;
   font-size: 12px;
   padding: 2px 6px;
   border-radius: 50%;
   z-index: 10;
+}
+
+/* Chart Filter Dropdown inside Bar Chart */
+.chart-filter-inside {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 20;
+}
+
+.chart-filter-dropdown {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  background-color: #fff;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chart-filter-dropdown:hover {
+  border-color: #4caf50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+.chart-filter-dropdown:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 6px rgba(76, 175, 80, 0.4);
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 1200px) {
+    .hr-dashboard-charts-wrapper {
+        flex-direction: column;
+    }
+    .hr-dashboard-bar-chart, .hr-dashboard-pie-chart {
+        min-width: 100%;
+        flex: none;
+    }
+}
+
+@media (max-width: 768px) {
+  .chart-filter-inside {
+    top: 10px;
+    left: 10px;
+    width: 50%;
+  }
+
+  .chart-filter-dropdown {
+    width: 100%;
+  }
+
+  .hr-dashboard-chart-box {
+    padding: 15px;
+  }
+
+  .chart-scroll-container {
+    height: 300px;
+  }
+
+  .hr-dashboard-bar-chart {
+    min-height: 300px;
+  }
+
+  .hr-dashboard-pie-chart {
+    min-height: 250px;
+  }
 }
