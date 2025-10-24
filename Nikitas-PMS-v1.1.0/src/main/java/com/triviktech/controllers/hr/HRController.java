@@ -1,5 +1,6 @@
 package com.triviktech.controllers.hr;
 
+import com.triviktech.entities.employee.ExitEmployee;
 import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
@@ -141,6 +142,10 @@ public interface HRController {
             @PathVariable("lastWorkingDay") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate lastWorkingDay);
 
     void notifyAllEmployeesAndManagers();
+    @GetMapping("/exit-employees")
+    public List<ExitEmployee> getAllExitEmployees();
+        
+    
 
     @GetMapping("/monthly")
     public Map<String, Map<String, Integer>> getMonthlyDepartmentReport(

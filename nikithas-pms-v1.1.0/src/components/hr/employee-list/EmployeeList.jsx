@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { FaSearch, FaHome, FaEdit, FaDownload, FaTrash } from "react-icons/fa";
+import { FaHome, FaEdit, FaDownload } from "react-icons/fa";
 import logo from "../../../assets/images/nikithas-logo.png";
 import "./EmpResponsive.css";
 import "./EmployeeList.css";
@@ -22,13 +22,14 @@ export default function EmployeeList() {
   const [employeeName, setEmployeeName] = useState(null);
   const [successModal, setSuccessModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
-  const [isExporting, setIsExporting] = useState(false); // ✅ Export-specific loader only
+  const [isExporting, setIsExporting] = useState(false);
 
   const navigate = useNavigate();
   const { id: hrid } = useParams();
   const token = localStorage.getItem("token");
-  const hasFetchedRef = useRef(false); // Prevent duplicate API call in StrictMode
+  const hasFetchedRef = useRef(false);
 
+  // Fetch all employees
   const fetchEmployees = async () => {
     try {
       const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees`, {
@@ -47,11 +48,9 @@ export default function EmployeeList() {
       fetchEmployees();
       hasFetchedRef.current = true;
     }
-    console.log(hrid);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 🔍 Debounced search effect
+  // Debounced search
   useEffect(() => {
     const delayDebounce = setTimeout(async () => {
       if (!searchTerm.trim()) {
@@ -59,11 +58,11 @@ export default function EmployeeList() {
         return;
       }
       try {
-        const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees/${searchTerm}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          `${baseUrl}/api/v1/pms/hr/all-employees/${searchTerm}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
         setTeam(response.data);
-        console.log(response.data);
         setHasServerError(false);
       } catch (error) {
         console.error("Search failed:", error.message);
@@ -74,6 +73,7 @@ export default function EmployeeList() {
     return () => clearTimeout(delayDebounce);
   }, [searchTerm]);
 
+  // Sorting by Name
   const handleSort = () => {
     const sorted = [...team].sort((a, b) =>
       sortOrder === "asc"
@@ -90,20 +90,15 @@ export default function EmployeeList() {
     setModalOpen(true);
   };
 
-
-  const inactivateEmployee = async () => {
-
-  const inactivateEmployee = async (inactivateDate) => {
-
-    if (!employeeToUpdate) return;
+  // Inactivate / Exit employee
+  const inactivateEmployee = async (lastWorkingDay) => {
+    if (!employeeToUpdate || !lastWorkingDay) return;
 
     try {
-      await axios.put(
-        `${baseUrl}/api/v1/pms/hr/inactivate-employee/${employeeToUpdate}`,
+      await axios.post(
+        `${baseUrl}/api/v1/pms/hr/exit-employee/${employeeToUpdate}/${lastWorkingDay}`,
         {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       setEmployeeToUpdate(null);
       setModalOpen(false);
@@ -111,10 +106,14 @@ export default function EmployeeList() {
       setModalMessage("Employee marked as inactive successfully.");
       setSuccessModal(true);
     } catch (error) {
-      console.error("Error inactivating employee:", error.message);
+      console.error(
+        "Error inactivating employee:",
+        error.response?.data || error.message
+      );
     }
   };
 
+  // Format date
   const formatDate = (dateString) => {
     if (!dateString) return "-";
     const date = new Date(dateString);
@@ -125,6 +124,7 @@ export default function EmployeeList() {
     return `${day}-${month}-${year}`;
   };
 
+  // Download single employee PDF
   const handleDownloadData = async (id) => {
     try {
       const response = await axios.get(`${baseUrl}/api/v1/pms/hr/generate-report/${id}`, {
@@ -139,6 +139,7 @@ export default function EmployeeList() {
     }
   };
 
+  // Export all employees PDF
   const handleExportData = async () => {
     setIsExporting(true);
     try {
@@ -163,12 +164,11 @@ export default function EmployeeList() {
   const startIndex = (currentPage - 1) * entriesPerPage;
   const currentEntries = filteredTeam.slice(startIndex, startIndex + entriesPerPage);
 
-  const isMobile = false; // can enhance later with window size
+  const isMobile = false;
 
   return (
     <div className="employee-list-fullpage">
-      {isExporting && <Loader />} {/* ✅ Loader shown only when exporting */}
-
+      {isExporting && <Loader />}
       <div className="employee-list-container">
         <div className="employee-list-content">
           <div className="employee-list-header-flex">
@@ -179,7 +179,6 @@ export default function EmployeeList() {
               />
               <h1 className="employee-list-title">Employee List</h1>
             </div>
-
             <div className="employee-list-center">
               <input
                 type="text"
@@ -193,15 +192,15 @@ export default function EmployeeList() {
                 </Link>
               </div>
             </div>
-
             <img src={logo} alt="Company Logo" className="employee-list-company-logo" />
           </div>
 
           {hasServerError && (
             <div className="employee-list-error-message">
-              Failed to fetch data from server. Pl ease try again later.
+              Failed to fetch data from server. Please try again later.
             </div>
           )}
+
           <div className="employee-list-table-container">
             <div className="employee-list-table-scroll">
               {!isMobile ? (
@@ -295,7 +294,14 @@ export default function EmployeeList() {
             setModalOpen(false);
             setEmployeeToUpdate(null);
           }}
-          onConfirm={(date) => inactivateEmployee(date)}
+          onConfirm={() => {
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, "0");
+            const mm = String(today.getMonth() + 1).padStart(2, "0");
+            const yyyy = today.getFullYear();
+            const formattedDate = `${dd}-${mm}-${yyyy}`;
+            inactivateEmployee(formattedDate);
+          }}
           name={employeeName}
           id={employeeToUpdate}
         />
@@ -310,5 +316,4 @@ export default function EmployeeList() {
       </div>
     </div>
   );
-}
 }

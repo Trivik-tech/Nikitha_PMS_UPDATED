@@ -1,5 +1,6 @@
 package com.triviktech.services.hr;
 
+import com.triviktech.entities.employee.ExitEmployee;
 import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
 import com.triviktech.payloads.response.employee.EmployeeInfo;
@@ -80,5 +81,7 @@ public interface HrService {
 
     String processEmployeeExit(String empId, LocalDate lastWorkingDay);
     public ByteArrayInputStream generateAllEmployeesPmsPdfReport();
+
+    public List<ExitEmployee> getAllExitEmployees();
     
 }

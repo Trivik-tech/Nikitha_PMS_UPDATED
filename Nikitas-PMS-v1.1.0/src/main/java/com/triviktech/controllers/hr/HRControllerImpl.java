@@ -1,5 +1,6 @@
 package com.triviktech.controllers.hr;
 
+import com.triviktech.entities.employee.ExitEmployee;
 import com.triviktech.exception.validation.ValidationException;
 import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
@@ -315,5 +316,12 @@ public class HRControllerImpl implements HRController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(bis));
     }
+
+    @Override
+    public List<ExitEmployee> getAllExitEmployees() {
+        
+        return hrService.getAllExitEmployees();
+    }
+    
 
 }
