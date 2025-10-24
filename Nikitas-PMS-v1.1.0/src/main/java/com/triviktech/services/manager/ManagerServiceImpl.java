@@ -236,28 +236,29 @@ public class ManagerServiceImpl implements ManagerService {
     //         throw e;
     //     }
     // }
-@Override
-public List<EmployeeWithPmsStatus> listOfEmployeesForManager(String managerId) {
-    // 1. Get the manager
-    Manager manager = managerRepository.findByManagerId(managerId)
-            .orElseThrow(() -> new ManagerNotFoundException(managerId));
-
-    // 2. Get all employees under that manager
-    List<EmployeeInformation> employees = employeeInformationRepository.findAllByManager(manager);
-
-    // 3. Convert each employee entity to DTO with department info
-    return employees.stream().map(employee -> {
-        EmployeeWithPmsStatus dto = entityDtoConversion.entityToDtoConversion(
-                employee, EmployeeWithPmsStatus.class);
-
-        dto.setDepartment(entityDtoConversion.entityToDtoConversion(
-                employee.getDepartment(), DepartmentResponseDto.class));
-
-        return dto;
-    }).collect(Collectors.toList());
-}
 
 
+    @Override
+    public List<EmployeeWithPmsStatus> listOfEmployeesForManager(String managerId) {
+        // 1. Get the manager
+        Manager manager = managerRepository.findByManagerId(managerId)
+                .orElseThrow(() -> new ManagerNotFoundException(managerId));
+
+        // 2. Get all employees under that manager
+        List<EmployeeInformation> employees = employeeInformationRepository.findAllByManager(manager);
+
+        // 3. Convert each employee entity to DTO with department info
+        return employees.stream().map(employee -> {
+            EmployeeWithPmsStatus dto = entityDtoConversion.entityToDtoConversion(
+                    employee, EmployeeWithPmsStatus.class);
+
+
+            dto.setDepartment(entityDtoConversion.entityToDtoConversion(
+                    employee.getDepartment(), DepartmentResponseDto.class));
+
+            return dto;
+        }).collect(Collectors.toList());
+    }
     // @Override
     // public List<EmployeeInfo> findAllByReportingManager(String reportingManager)
     // {

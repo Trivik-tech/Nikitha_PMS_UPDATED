@@ -1,0 +1,213 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    scrollbar-width: none;
+}
+
+body::-webkit-scrollbar {
+    display: none;
+}
+
+/* Container */
+.Assign-KRAKPI-container {
+    width: 97vw;
+    height: 95vh;
+    overflow-y: auto;
+    background-color: #fff;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    border-radius: 10px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Header */
+.Assign-KRAKPI-header {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.Assign-KRAKPI-title-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+    padding: 10px 0;
+    animation: slideUp 0.3s ease-out;
+}
+
+.Assign-KRAKPI-title {
+    flex-grow: 1;
+    text-align: left;
+    font-size: 30px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.Assign-KRAKPI-company-logo {
+    height: 100px;
+}
+
+/* Filters */
+.Assign-KRAKPI-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin: 10px 0;
+}
+
+.Assign-KRAKPI-filters label {
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.Assign-KRAKPI-filters input {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 180px;
+    margin-top: 5px;
+    transition: border-color 0.3s ease;
+    text-align: center;
+}
+
+.Assign-KRAKPI-filters input:focus {
+    border-color: #4f46e5;
+}
+
+/* Section */
+.Assign-KRAKPI-section {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.Assign-KRAKPI-section:hover {
+    transform: translateY(-5px);
+}
+
+/* ✅ Highlight only header when selected */
+.Assign-KRAKPI-section-header {
+    background-color: #f7f7f7;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.Assign-KRAKPI-section-header.selected-header {
+    background-color: #e0e7ff;
+    border-left: 4px solid #4f46e5;
+}
+
+.Assign-KRAKPI-section-header input[type="checkbox"] {
+    margin-right: 10px;
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+.Assign-KRAKPI-section-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.Assign-KRAKPI-section-header.selected-header h3 {
+    color: #4f46e5;
+}
+
+.Assign-KRAKPI-section-header span {
+    font-size: 14px;
+    color: #666;
+    margin-left: auto;
+}
+
+/* Table */
+.Assign-KRAKPI-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    background-color: #fff;
+}
+
+.Assign-KRAKPI-table th, 
+.Assign-KRAKPI-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+/* Column Width */
+.Assign-KRAKPI-table th:nth-child(1),
+.Assign-KRAKPI-table td:nth-child(1) {
+    width: 25%;
+    text-align: left;
+}
+
+.Assign-KRAKPI-table th:nth-child(2),
+.Assign-KRAKPI-table td:nth-child(2) {
+    width: 10%;
+    text-align: center;
+}
+
+/* Actions */
+.Assign-KRAKPI-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.Assign-KRAKPI-submit-review-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    width: 180px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    background-color: #4f46e5;
+    color: white;
+    font-weight: bold;
+}
+
+.Assign-KRAKPI-submit-review-btn:hover {
+    background-color: #3730a3;
+    transform: translateY(-2px);
+}
+
+/* Icon */
+.Assign-KRAKPI-icon.home-icon {
+    font-size: 30px;
+    color: black;
+    transition: all 0.3s ease;
+}
+
+.Assign-KRAKPI-icon.home-icon:hover {
+    color: #0056b3;
+    transform: scale(1.1);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes slideUp {
+    0% {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
