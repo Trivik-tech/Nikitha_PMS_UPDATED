@@ -18,7 +18,7 @@ public class NotificationScheduler {
 
     @Scheduled(cron = "0 */2 * * * ?", zone = "Asia/Kolkata")
     public void sendDailyNotifications() {
-        hrControllerImpl.notifyAllEmployeesAndManagers();
+        // hrControllerImpl.notifyAllEmployeesAndManagers();
         // managerControllerImpl.autoNotifyEmployees();
     }
 }

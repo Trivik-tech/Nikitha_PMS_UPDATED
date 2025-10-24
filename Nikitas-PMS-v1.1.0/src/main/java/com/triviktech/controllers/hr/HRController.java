@@ -1,18 +1,14 @@
 package com.triviktech.controllers.hr;
 
+import com.triviktech.entities.employee.ExitEmployee;
 import com.triviktech.payloads.request.employee.Employee;
 import com.triviktech.payloads.request.hr.HrRequestDto;
-import com.triviktech.payloads.response.employee.EmployeeInfo;
-import com.triviktech.payloads.response.employee.EmployeeWithPmsStatus;
-import com.triviktech.payloads.response.employee.PmsPercentageDto;
-import com.triviktech.payloads.response.employee.PmsStatusCountDto;
+import com.triviktech.payloads.response.employee.*;
 import com.triviktech.payloads.response.hr.HrResponseDto;
 import com.triviktech.utilities.xlsxsupport.XlsxSupport;
-import jakarta.validation.Valid;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -23,140 +19,115 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-/**
- * HRController is the REST API interface for handling all HR-related operations
- * in the PMS (Performance Management System) application.
- *
- * <p>
- * Responsibilities include:
- * </p>
- * <ul>
- * <li>Registering HR users and employees.</li>
- * <li>Fetching and updating employee data, including search and department-wise
- * statistics.</li>
- * <li>Handling KRA/KPI and PMS (Performance Management System) workflows.</li>
- * <li>Generating reports and exporting employee data in PDF format.</li>
- * <li>Sending notifications to employees and managers.</li>
- * <li>Retrieving HR profile information and PMS status summaries.</li>
- * </ul>
- *
- * <p>
- * All endpoints are CORS-enabled for "http://localhost:3000".
- * </p>
- */
 @RequestMapping("/api/v1/pms/hr")
-@CrossOrigin(origins = "http://localhost:3000")
 public interface HRController {
 
-    @PostMapping("/register-hr")
+    @PostMapping("/register")
     ResponseEntity<?> registerHr(@RequestBody HrRequestDto hrRequestDto);
 
     @GetMapping("/{hrId}")
     ResponseEntity<HrResponseDto> getHrById(@PathVariable String hrId);
 
-    @PostMapping("/upload")
+    @PostMapping("/upload-employees")
     ResponseEntity<List<Object>> uploadEmployeesData(@RequestParam("file") MultipartFile file) throws IOException;
 
-    @GetMapping("/all-employees")
+    @GetMapping("/employees")
     ResponseEntity<List<EmployeeInfo>> allEmployees();
 
-    @GetMapping("/get-employee/{employeeId}")
+    @GetMapping("/employee/{employeeId}")
     ResponseEntity<EmployeeInfo> getEmployee(@PathVariable String employeeId);
 
     @GetMapping("/total-employees")
     ResponseEntity<Map<String, Integer>> totalEmployees();
 
-    @GetMapping("/all-employees/{search}")
-    ResponseEntity<List<EmployeeInfo>> searchEmployee(@PathVariable String search);
+    @GetMapping("/search")
+    ResponseEntity<List<EmployeeInfo>> searchEmployee(@RequestParam String search);
 
-    @DeleteMapping("/delete-employee/{employeeId}")
+    @DeleteMapping("/employee/{employeeId}")
     ResponseEntity<Map<String, String>> deleteEmployee(@PathVariable String employeeId);
 
-    @PutMapping("/update-employee/{empId}")
+    @PutMapping("/employee/{empId}")
     ResponseEntity<Map<String, String>> updateEmployee(@PathVariable String empId, @RequestBody Employee employee);
 
-    @GetMapping("/employee-list")
+    @GetMapping("/kra-kpi/approved")
     ResponseEntity<List<EmployeeInfo>> employeeListWithKraKpiApproved();
 
-    @GetMapping("/get-departments")
+    @GetMapping("/departments")
     ResponseEntity<Map<String, Object>> getDepartment();
 
-    @GetMapping("/employee-count-by-department")
+    @GetMapping("/employee-count")
     ResponseEntity<Map<String, List<Long>>> employeeCount();
 
-    @GetMapping("/keyMatrix")
+    @GetMapping("/key-matrix")
     ResponseEntity<Map<String, Integer>> keyMatrix();
 
-    @PatchMapping("/pms-initiated/{employeeId}")
-    ResponseEntity<Map<String, String>> pmsInitiated(@PathVariable String employeeId,
-            @RequestBody Map<String, Boolean> pms);
+    @PostMapping("/pms/initiate/{employeeId}")
+    ResponseEntity<Map<String, String>> pmsInitiated(@PathVariable String employeeId, @RequestBody Map<String, Boolean> pms);
 
-    @GetMapping("/employee-with-pms-initiated")
+    @GetMapping("/pms/initiated-employees")
     ResponseEntity<List<EmployeeInfo>> pmsInitiatedEmployees();
 
-    @GetMapping("/completed")
+    @GetMapping("/pms/completed")
     ResponseEntity<List<EmployeeWithPmsStatus>> getCompletedPmsForHR();
 
-    @PostMapping("/register-employee")
-    ResponseEntity<Map<String, String>> registerEmployee(@Valid @RequestBody Employee employee,
-            BindingResult bindingResult);
+    @PostMapping("/employee/register")
+    ResponseEntity<Map<String, String>> registerEmployee(@RequestBody Employee employee, BindingResult bindingResult);
 
-    @GetMapping("/pending")
+    @GetMapping("/pms/pending")
     ResponseEntity<List<EmployeeWithPmsStatus>> getPendingPmsForHR();
 
-    @GetMapping("/percentage")
+    @GetMapping("/pms/percentage")
     ResponseEntity<PmsPercentageDto> getPmsPercentageForHR();
 
-    @PostMapping("/notify/employee-and-manager/{employeeId}")
+    @PostMapping("/notify/{employeeId}")
     ResponseEntity<Map<String, String>> notifyEmployeeAndManager(@PathVariable String employeeId);
 
     @GetMapping("/profile")
-    ResponseEntity<Map<String, HrResponseDto>> profile(@AuthenticationPrincipal UserDetails hr);
+    ResponseEntity<Map<String, HrResponseDto>> profile(@RequestBody UserDetails hr);
 
-    /**
-     * Retrieves PMS status counts for HR.
-     */
-    @GetMapping("/status-count")
+    @GetMapping("/pms/status-count")
     ResponseEntity<PmsStatusCountDto> getPmsStatusCountForHR();
 
-    @GetMapping("/generate-report/{id}")
+    @GetMapping("/report/employee/{id}")
     ResponseEntity<Map<String, String>> generateEmployeeInfoReport(@PathVariable String id);
 
-    @GetMapping("/generate-employee-list")
+    @GetMapping("/report/employees")
     ResponseEntity<Map<String, String>> generateEmployeeList();
 
-    @GetMapping("/get-completed-pending-department")
+    @GetMapping("/department/completed-pending")
     ResponseEntity<Map<String, Map<String, Integer>>> getCompletedPendingByDepartments();
 
-    @GetMapping("/export-pdf/{employeeId}")
+    @GetMapping("/export/{employeeId}")
     ResponseEntity<InputStreamResource> exportPmsPdf(@PathVariable String employeeId);
 
-    @PostMapping("/upload-kra-kpi")
-    ResponseEntity<Map<String, List<XlsxSupport.KRA>>> uploadKraKpi(@RequestParam("file") MultipartFile file)
-            throws Exception;
+    @PostMapping("/kra-kpi/upload")
+    ResponseEntity<Map<String, List<XlsxSupport.KRA>>> uploadKraKpi(@RequestParam("file") MultipartFile file);
 
     @PostMapping("/exit-employee/{empId}/{lastWorkingDay}")
     ResponseEntity<String> processEmployeeExit(
             @PathVariable String empId,
             @PathVariable("lastWorkingDay") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate lastWorkingDay);
 
-    void notifyAllEmployeesAndManagers();
+    @GetMapping("/exit-employees")
+    ResponseEntity<List<ExitEmployee>> getAllExitEmployees();
 
-    @GetMapping("/monthly")
-    public Map<String, Map<String, Integer>> getMonthlyDepartmentReport(
+    @GetMapping("/department/monthly")
+    ResponseEntity<Map<String, Map<String, Integer>>> getMonthlyDepartmentReport(
             @RequestParam int year,
             @RequestParam int quarter,
             @RequestParam int month);
 
-    @GetMapping("/quarterly")
-    public Map<String, Map<String, Integer>> getQuarterlyDepartmentReport(
+    @GetMapping("/department/quarterly")
+    ResponseEntity<Map<String, Map<String, Integer>>> getQuarterlyDepartmentReport(
             @RequestParam int year,
             @RequestParam int quarter);
 
-    @GetMapping("/yearly")
-    public Map<String, Map<String, Integer>> getYearlyDepartmentReport(
-            @RequestParam int year);
+    @GetMapping("/department/yearly")
+    ResponseEntity<Map<String, Map<String, Integer>>> getYearlyDepartmentReport(@RequestParam int year);
 
-    @GetMapping("consolidated-report")
-    public ResponseEntity<InputStreamResource> downloadAllEmployeesReport();
+    @GetMapping("/report/all-employees")
+    ResponseEntity<InputStreamResource> downloadAllEmployeesReport();
+
+//     @PostMapping("/notify-all")
+//     ResponseEntity<Map<String, String>> notifyAllEmployeesAndManagers();
 }
