@@ -296,14 +296,7 @@ const HrDashboard = () => {
             <h2 className="hr-dashboard-assessment-heading">Assessment Status</h2>
             <div className="hr-dashboard-charts-wrapper">
               <div className="hr-dashboard-chart-box hr-dashboard-bar-chart">
-                <div className="chart-filter-inside">
-                  <select className="chart-filter-dropdown" value={filterType} onChange={(e) => setFilterType(e.target.value)}>
-                    <option value="" disabled>Filter</option>
-                    <option value="Monthly">Monthly</option>
-                    <option value="Quarterly">Quarterly</option>
-                    <option value="Yearly">Yearly</option>
-                  </select>
-                </div>
+                
                 <div className="chart-scroll-container">
                   <div style={{ minWidth: `${barChartMinWidth}px`, height: "320px" }}>
                     <Bar data={barData} options={barOptions} />

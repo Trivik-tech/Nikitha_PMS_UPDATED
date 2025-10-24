@@ -27,7 +27,11 @@ const PastEmployee = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      setTeam(response.data);
+          const data = Array.isArray(response.data)
+      ? response.data
+      : response.data.employees || [];
+setTeam(data);
+
       setHasServerError(false);
     } catch (error) {
       console.error("Error fetching past employees:", error.message);
