@@ -20,7 +20,6 @@ import { Bell } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import "./HrDashboard.css";
 import "./Responsive.css";
-import "../../urls/CommenUrl";
 import logo from "../../../assets/images/nikithas-logo.png";
 import profile from "../../../assets/images/profile1.jpg";
 import Notification from "../../modal/notification/Notification";
@@ -53,19 +52,14 @@ const HrDashboard = () => {
   const [notifications, setNotifications] = useState([]);
   const [hrId, setHrId] = useState(null);
   const [completedByDept, setCompletedByDept] = useState({});
-
-// const [pendingByDept, setPendingByDept] = useState({});
-
-// const [hrprofile,setProfile]=useState(null)
-
   const [pendingByDept, setPendingByDept] = useState({});
   const [hrprofile, setProfile] = useState(null);
-  const [filterType, setFilterType] = useState(""); // default empty for "Filter"
+  const [filterType, setFilterType] = useState("");
+  const [hrName, setHrName] = useState("");
 
-
-const [hrName, setHrName] = useState("");
-
-
+  // Upload modal states
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const token = localStorage.getItem("token");
   const isMobile = () => window.innerWidth <= 768;
@@ -159,27 +153,11 @@ const [hrName, setHrName] = useState("");
   const loadHr = async () => {
     try {
       const result = await axios.get(`${baseUrl}/api/v1/pms/hr/profile`, {
-
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        
-
         headers: { Authorization: `Bearer ${token}` },
-
       });
-      
       setHrId(result.data.profile.hrId);
-
-
-      setProfile(result.data.profile)
-      // console.log(result.data.profile)
-
-      setHrName(result.data.profile.name);
- 
-
       setProfile(result.data.profile);
-
+      setHrName(result.data.profile.name);
     } catch (error) {
       console.log(error.message);
     }
@@ -212,27 +190,9 @@ const [hrName, setHrName] = useState("");
   const barData = {
     labels: departments,
     datasets: [
-      {
-        label: "Total Employees",
-        data: employeeCount,
-        backgroundColor: "#007bff",
-        borderColor: "#0056b3",
-        borderWidth: 1,
-      },
-      {
-        label: "Completed",
-        data: departments.map((dept) => completedByDept[dept] || 0),
-        backgroundColor: "#28a745",
-        borderColor: "#1e7e34",
-        borderWidth: 1,
-      },
-      {
-        label: "Pending",
-        data: departments.map((dept) => pendingByDept[dept] || 0),
-        backgroundColor: "#ffc107",
-        borderColor: "#e0a800",
-        borderWidth: 1,
-      },
+      { label: "Total Employees", data: employeeCount, backgroundColor: "#007bff", borderColor: "#0056b3", borderWidth: 1 },
+      { label: "Completed", data: departments.map((dept) => completedByDept[dept] || 0), backgroundColor: "#28a745", borderColor: "#1e7e34", borderWidth: 1 },
+      { label: "Pending", data: departments.map((dept) => pendingByDept[dept] || 0), backgroundColor: "#ffc107", borderColor: "#e0a800", borderWidth: 1 },
     ],
   };
 
@@ -241,11 +201,7 @@ const [hrName, setHrName] = useState("");
     maintainAspectRatio: false,
     plugins: {
       legend: { position: "top" },
-      title: {
-        display: true,
-        text: `Department-wise Employee Statistics${filterType ? ` (${filterType})` : ""}`,
-        font: { size: 16, weight: "bold" },
-      },
+      title: { display: true, text: `Department-wise Employee Statistics${filterType ? ` (${filterType})` : ""}`, font: { size: 16, weight: "bold" } },
     },
     scales: {
       x: { beginAtZero: true, ticks: { font: { size: 11 } } },
@@ -257,75 +213,55 @@ const [hrName, setHrName] = useState("");
 
   const pieData = {
     labels: hasPieData ? ["Completed", "Pending"] : ["No Data"],
-    datasets: [
-      {
-        data: hasPieData ? [completionRate, pendingRate] : [1],
-        backgroundColor: hasPieData ? ["#28a745", "#ffa500"] : ["#d3d3d3"],
-      },
-    ],
+    datasets: [{ data: hasPieData ? [completionRate, pendingRate] : [1], backgroundColor: hasPieData ? ["#28a745", "#ffa500"] : ["#d3d3d3"] }],
   };
 
-  const pieOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: { legend: { position: "bottom" } },
+  const pieOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: "bottom" } } };
+
+  // File handlers
+  const handleFileChange = (e) => setSelectedFile(e.target.files[0]);
+
+  const handleFileUpload = async () => {
+    if (!selectedFile) return;
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    try {
+      await axios.post(`${baseUrl}/api/v1/pms/hr/upload-kra-kpi`, formData, {
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
+      });
+      alert("File uploaded successfully!");
+      setUploadModalOpen(false);
+    } catch (error) {
+      console.error(error);
+      alert("Upload failed!");
+    }
   };
 
   return (
     <>
       <div className="hr-dashboard-container">
         {/* Sidebar */}
-        <aside
-          className={`hr-dashboard-sidebar${sidebarOpen ? " open" : " closed"}${isMobile() ? " mobile" : ""}`}
-        >
+        <aside className={`hr-dashboard-sidebar${sidebarOpen ? " open" : " closed"}${isMobile() ? " mobile" : ""}`}>
           <div className="hr-dashboard-profile-container">
             <img src={profile} alt="Profile" className="hr-dashboard-profileImg" />
-
-
-            <h2 className="hr-dashboard-profile-name">{hrprofile?.name || "Avinash S.H"}</h2>
-
-           
-
-
-            <h2 className="hr-dashboard-profile-name">
-              {hrprofile?.name || "HR User"}
-            </h2>
-
+            <h2 className="hr-dashboard-profile-name">{hrprofile?.name || "HR User"}</h2>
           </div>
           <ul>
             <li><Link to="/hr-dashboard" className="active">HR Dashboard</Link></li>
             <li><Link to={`/employee-list/${hrId}`}>Employee List</Link></li>
             <li><Link to="/hr-startpms">Employee Performance</Link></li>
             <li><Link to="/hr-profile">My Profile</Link></li>
-
-            <li><Link to="/past-employees">Past Employee List</Link></li>
-             <button
-                className="hr-dashboard-logoutButton desktop-only"
-                onClick={() => {
-                  localStorage.clear();
-                  navigate("/");
-                }}
-              >
-                Logout
+            <li>
+              <button className="upload-krakpi-sidebar" onClick={() => setUploadModalOpen(true)}>
+                UPLOAD KRAKPI
               </button>
+            </li>
+            <li><Link to="/past-employees">Past Employee List</Link></li>
             {isMobile() && (
-              <li>
-                <button onClick={() => { localStorage.clear(); navigate("/"); }} className="logout-button">
-                  Logout
-                </button>
-              </li>
+              <li><button onClick={() => { localStorage.clear(); navigate("/"); }} className="logout-button">Logout</button></li>
             )}
-
-            <button
-              className="hr-dashboard-logoutButton desktop-only"
-              onClick={() => {
-                localStorage.clear();
-                navigate("/");
-              }}
-            >
-              Logout
-            </button>
-
+            <button className="hr-dashboard-logoutButton desktop-only" onClick={() => { localStorage.clear(); navigate("/"); }}>Logout</button>
           </ul>
         </aside>
 
@@ -344,9 +280,7 @@ const [hrName, setHrName] = useState("");
                     if (!notificationOpen) setNotificationCount(0);
                   }}
                 />
-                {notificationCount > 0 && (
-                  <span className="notification-badge">{notificationCount}</span>
-                )}
+                {notificationCount > 0 && <span className="notification-badge">{notificationCount}</span>}
               </div>
             </div>
           </header>
@@ -358,35 +292,24 @@ const [hrName, setHrName] = useState("");
             <div className="hr-dashboard-stat-card"><FaChartLine className="stat-card-icon rate" /><h2>Completion Rate</h2><p>{completionRate}%</p></div>
           </section>
 
-          {/* Chart Section */}
           <section className="hr-dashboard-chart-container fade-in-up">
             <h2 className="hr-dashboard-assessment-heading">Assessment Status</h2>
-
             <div className="hr-dashboard-charts-wrapper">
-              {/* Bar Chart */}
               <div className="hr-dashboard-chart-box hr-dashboard-bar-chart">
-                {/* Filter Dropdown inside Bar Chart, top-left */}
                 <div className="chart-filter-inside">
-                  <select
-                    className="chart-filter-dropdown"
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
-                  >
+                  <select className="chart-filter-dropdown" value={filterType} onChange={(e) => setFilterType(e.target.value)}>
                     <option value="" disabled>Filter</option>
                     <option value="Monthly">Monthly</option>
                     <option value="Quarterly">Quarterly</option>
                     <option value="Yearly">Yearly</option>
                   </select>
                 </div>
-
                 <div className="chart-scroll-container">
                   <div style={{ minWidth: `${barChartMinWidth}px`, height: "320px" }}>
                     <Bar data={barData} options={barOptions} />
                   </div>
                 </div>
               </div>
-
-              {/* Pie Chart */}
               <div className="hr-dashboard-chart-box hr-dashboard-pie-chart">
                 <Pie data={pieData} options={pieOptions} />
               </div>
@@ -397,10 +320,20 @@ const [hrName, setHrName] = useState("");
 
       {notificationOpen && (
         <div className="notification-modal-wrapper">
-          <Notification
-            onClose={() => setNotificationOpen(false)}
-            notifications={notifications}
-          />
+          <Notification onClose={() => setNotificationOpen(false)} notifications={notifications} />
+        </div>
+      )}
+
+      {uploadModalOpen && (
+        <div className="notification-modal-wrapper">
+          <div className="upload-modal">
+            <h2>Upload KRA/KPI Excel File</h2>
+            <input type="file" accept=".xls,.xlsx" onChange={handleFileChange} />
+            <div className="upload-modal-actions">
+              <button className="upload-krakpi-sidebar" onClick={handleFileUpload}>Upload</button>
+              <button className="upload-krakpi-sidebar" onClick={() => setUploadModalOpen(false)}>Cancel</button>
+            </div>
+          </div>
         </div>
       )}
     </>

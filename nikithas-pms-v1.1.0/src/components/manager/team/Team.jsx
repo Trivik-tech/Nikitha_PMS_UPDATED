@@ -84,6 +84,7 @@ export default function TeamPage() {
 
   const getButtonUI = (member) => {
     const { selfCompleted, pmsInitiated, managerCompleted,kraKpiRegistered } = member;
+    
 
     // Condition for Start PMS
     if (
@@ -102,18 +103,21 @@ export default function TeamPage() {
     }
 
     // Condition for Start Review
-    if (kraKpiRegistered===true && selfCompleted===false && pmsInitiated===false && managerCompleted===false) {
-      return (
+   
+       return (
         <button
           className="manager-team-start-pms-button"
-          onClick={() => navigate(`/approve-pms/${member.empId}`)}
+          onClick={() => navigate(`/assign-krakpi/${member.empId}`)}
         >
-          Assign Weightage
+          Assign KRA KPI
         </button>
-      );
-    }
+       )
+      
+      
+  
 
     // Disabled button for all other cases
+    if(pmsInitiated===true){
     return (
       <button
         className="manager-team-start-pms-button disabled"
@@ -123,6 +127,7 @@ export default function TeamPage() {
         Start PMS
       </button>
     );
+  }
   };
 
   return (
@@ -211,4 +216,4 @@ export default function TeamPage() {
       </div>
     </div>
   );
-}
+  }

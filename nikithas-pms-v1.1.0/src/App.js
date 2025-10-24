@@ -17,7 +17,8 @@ import Pending from './components/manager/status/pending/Pending';
 import EmployeeDetails from './components/hr/empdetails/EmployeeDetails';
 import HrProfile from './components/hr/profile/HrProfile';
 import StartPms from './components/hr/pms/StartPms';
-import Approve from './components/manager/approve-pms/Approve';
+// import Approve from './components/manager/approve-pms/Approve';
+import  AssingKraKpi from './components/manager/assign-krakpi/AssignKraKpi';
 
 import PendingList from './components/hr/status/pending/PendingList';
 import CompletedList  from './components/hr/status/complete/CompletedList';
@@ -198,7 +199,9 @@ function App() {
             <Route path="/manager-review/:id/:manager" element={<RequireAuth allowedRoles={['MANAGER']}><PerformanceReview /></RequireAuth>} />
             <Route path="/completed-assessments/:id" element={<RequireAuth allowedRoles={['MANAGER']}><Complete /></RequireAuth>} />
             <Route path="/pending-assessments/:id" element={<RequireAuth allowedRoles={['MANAGER']}><Pending /></RequireAuth>} />
-            <Route path="/approve-pms/:id" element={<RequireAuth allowedRoles={['MANAGER']}><Approve /></RequireAuth>} />
+            {/* <Route path="/approve-pms/:id" element={<RequireAuth allowedRoles={['MANAGER']}><Approve /></RequireAuth>} /> */}
+            <Route path="/assign-krakpi/:id" element={<RequireAuth allowedRoles={['MANAGER']}>< AssingKraKpi/></RequireAuth>} />
+
 
             {/* Employee Routes */}
             <Route path="/employee-dashboard" element={<RequireAuth allowedRoles={['EMPLOYEE']}><EmployeeDashboard /></RequireAuth>} />

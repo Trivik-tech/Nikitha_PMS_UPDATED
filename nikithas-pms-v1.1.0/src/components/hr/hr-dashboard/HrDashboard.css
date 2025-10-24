@@ -319,6 +319,52 @@ body {
   border-color: #4caf50;
   box-shadow: 0 0 6px rgba(76, 175, 80, 0.4);
 }
+.upload-modal {
+  background: #fff;
+  padding: 30px 25px;
+  border-radius: 8px;
+  text-align: center;
+  min-width: 300px;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+
+.upload-modal h2 {
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.upload-modal input[type="file"] {
+  margin-bottom: 20px;
+}
+
+.upload-modal-actions {
+  display: flex;
+  justify-content: space-around;
+}
+
+.upload-modal-actions button {
+  padding: 8px 16px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.upload-modal-actions button:first-child {
+  background-color: #28a745;
+  /* color: #fff; */
+}
+
+.upload-modal-actions button:last-child {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+
+
+
+
 
 /* --- Responsive Design --- */
 @media (max-width: 1200px) {

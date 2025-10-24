@@ -237,33 +237,25 @@ public class ManagerServiceImpl implements ManagerService {
     //     }
     // }
     @Override
-public List<EmployeeWithPmsStatus> listOfEmployeesForManager(String managerId) {
-    Manager manager = managerRepository.findByManagerId(managerId)
-            .orElseThrow(() -> new ManagerNotFoundException(managerId));
+    public List<EmployeeWithPmsStatus> listOfEmployeesForManager(String managerId) {
+        // 1. Get the manager
+        Manager manager = managerRepository.findByManagerId(managerId)
+                .orElseThrow(() -> new ManagerNotFoundException(managerId));
 
-    List<EmployeeInformation> employees = employeeInformationRepository.findAllByManager(manager);
+        // 2. Get all employees under that manager
+        List<EmployeeInformation> employees = employeeInformationRepository.findAllByManager(manager);
 
-    return employees.stream().map(employee -> {
-        EmployeeWithPmsStatus dto = entityDtoConversion.entityToDtoConversion(employee, EmployeeWithPmsStatus.class);
+        // 3. Convert each employee entity to DTO with department info
+        return employees.stream().map(employee -> {
+            EmployeeWithPmsStatus dto = entityDtoConversion.entityToDtoConversion(
+                    employee, EmployeeWithPmsStatus.class);
 
-        // Set department
-        dto.setDepartment(
-                entityDtoConversion.entityToDtoConversion(employee.getDepartment(), DepartmentResponseDto.class)
-        );
+            dto.setDepartment(entityDtoConversion.entityToDtoConversion(
+                    employee.getDepartment(), DepartmentResponseDto.class));
 
-        // PMS status if KraKpi exists
-        kraKpiRepository.findByEmployeeInformation(employee).ifPresent(kraKpi -> {
-            dto.setPmsInitiated(kraKpi.getPmsInitiated());
-            dto.setSelfCompleted(kraKpi.isSelfCompleted());
-            dto.setManagerCompleted(kraKpi.isManagerCompleted());
-            dto.setKraKpiRegistered(true);
-        });
-
-        return dto;
-    }).collect(Collectors.toList());
-}
-
-
+            return dto;
+        }).collect(Collectors.toList());
+    }
     // @Override
     // public List<EmployeeInfo> findAllByReportingManager(String reportingManager)
     // {
