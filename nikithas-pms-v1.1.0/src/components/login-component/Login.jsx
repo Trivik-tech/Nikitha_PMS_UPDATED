@@ -95,7 +95,7 @@ const Login = () => {
         <h1>PMS</h1>
         <h3>Login</h3>
 
-        <form>
+        <form onSubmit={onSubmit}>
           <div className="login-input-group">
             <label htmlFor="username">Username</label>
             <div className="login-input-wrapper">
@@ -127,7 +127,7 @@ const Login = () => {
           </div>
 
           <div className="login-links-container">
-            
+
             <a href="/forgot-password" className="login-forgot-password">Forgot password?</a>
           </div>
 
@@ -135,7 +135,7 @@ const Login = () => {
             type="submit"
             className="login-button"
             onClick={(e) => onSubmit(e)}
-            
+
           >
             Login
           </button>

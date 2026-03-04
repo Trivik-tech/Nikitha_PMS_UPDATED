@@ -1,7 +1,8 @@
 package com.triviktech.config.security;
 
 /**
- * Origins class holds constant URLs used for Cross-Origin Resource Sharing (CORS)
+ * Origins class holds constant URLs used for Cross-Origin Resource Sharing
+ * (CORS)
  * configuration or other network-related references in the application.
  * <p>
  * This class is made non-instantiable by providing a private constructor.
@@ -9,7 +10,8 @@ package com.triviktech.config.security;
 public class Origins {
 
     // Private constructor to prevent instantiation
-    private Origins() { }
+    private Origins() {
+    }
 
     /**
      * URL of the server environment.
@@ -23,5 +25,6 @@ public class Origins {
      * Typically used when running the frontend locally during development.
      */
     public static final String localUrl = "http://localhost:3000";
+    public static final String localUrl2 = "http://localhost:3001";
 
 }

@@ -175,8 +175,6 @@ function App() {
             <Route path="/hr-dashboard" element={<RequireAuth allowedRoles={['HR']}><HrDashboard /></RequireAuth>} />
             <Route path="/add-employee" element={<RequireAuth allowedRoles={['HR']}><EmployeeDetails /></RequireAuth>} />
 
-            <Route path="/hr-dashboard" element={<HrDashboard />} />
-            {/* <Route path="/hr-dashboard" element={<RequireAuth allowedRoles={['HR']}><HrDashboard /></RequireAuth>} /> */}
             <Route path="/add-employee/:id" element={<RequireAuth allowedRoles={['HR']}><EmployeeDetails /></RequireAuth>} />
 
             <Route path="/hr-profile" element={<RequireAuth allowedRoles={['HR']}><HrProfile /></RequireAuth>} />
@@ -186,10 +184,10 @@ function App() {
             <Route path="/hr/completed-assessments" element={<RequireAuth allowedRoles={['HR']}><CompletedList/></RequireAuth>} />
             <Route path="/employee-info/:id" element={<RequireAuth allowedRoles={['HR']}><EmployeeInfo /></RequireAuth>} />
             <Route path="/update-employee/:id" element={<RequireAuth allowedRoles={['HR']}><UpdateEmployee /></RequireAuth>} />
-            <Route path="/kra-kpi-report" element={<KraKpiReport/>}/>
-            <Route path="/kra-kpi-emp-list" element={<KraKpiList/>}/>
-            <Route path="/kra-kpi-upload" element={<KraKpiUpload/>}/>
-            <Route  path="/past-employees" element={<PastEmployee/>}/>
+            <Route path="/kra-kpi-report" element={<RequireAuth allowedRoles={['HR']}><KraKpiReport/></RequireAuth>}/>
+            <Route path="/kra-kpi-emp-list" element={<RequireAuth allowedRoles={['HR']}><KraKpiList/></RequireAuth>}/>
+            <Route path="/kra-kpi-upload" element={<RequireAuth allowedRoles={['HR']}><KraKpiUpload/></RequireAuth>}/>
+            <Route path="/past-employees" element={<RequireAuth allowedRoles={['HR']}><PastEmployee/></RequireAuth>}/>
             
 
             {/* Manager Routes */}
@@ -208,7 +206,7 @@ function App() {
 
             <Route path="/employee-performance/:id" element={<RequireAuth allowedRoles={['EMPLOYEE']}><Performance /></RequireAuth>} />
             <Route path="/add-krakpi/:id" element={<RequireAuth allowedRoles={['EMPLOYEE']}><KrakpiRegistration /></RequireAuth>} />
-            <Route path="/self-review/:id" element={<EmployeeReview />} />
+            <Route path="/self-review/:id" element={<RequireAuth allowedRoles={['EMPLOYEE']}><EmployeeReview /></RequireAuth>} />
 
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/" replace />} />

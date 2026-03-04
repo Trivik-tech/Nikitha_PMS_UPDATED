@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { FaArrowLeft, FaHome } from "react-icons/fa";
+import { FaHome } from "react-icons/fa";
 import axios from "axios";
 import "./HrProfile.css";
 import "./HrResponsive.css";
@@ -12,10 +12,12 @@ import { baseUrl } from '../../urls/CommenUrl';
 const HrProfile = () => {
   const [hrData, setHrData] = useState(null);
   const [loading, setLoading] = useState(true);
+  /* eslint-disable no-unused-vars */
   const navigate = useNavigate();
+  /* eslint-enable no-unused-vars */
   const token = localStorage.getItem('token');
 
-  const loadProfile = async () => {
+  const loadProfile = React.useCallback(async () => {
     try {
       const result = await axios.get(`${baseUrl}/api/v1/pms/hr/profile`, {
         headers: {
@@ -28,11 +30,11 @@ const HrProfile = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     loadProfile();
-  }, []);
+  }, [loadProfile]);
 
   if (loading) return <Loader />;
 

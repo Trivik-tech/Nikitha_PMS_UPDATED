@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./CompletedList.css";
 import "./CompletedListResponsive.css";
-import { FaSearch, FaHome ,FaDownload} from "react-icons/fa";
+import { FaSearch, FaHome, FaDownload } from "react-icons/fa";
 import logo from '../../../../assets/images/nikithas-logo.png';
 import axios from "axios";
-import {baseUrl} from '../../../urls/CommenUrl'
+import { baseUrl } from '../../../urls/CommenUrl'
 
 export default function CompletedList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,22 +13,13 @@ export default function CompletedList() {
   const [employees, setEmployees] = useState([]);
   const navigate = useNavigate();
   const entriesPerPage = 6;
-  const token =localStorage.getItem('token')
+  const token = localStorage.getItem('token')
 
-  useEffect(() => {
-    document.body.classList.add("fade-in");
-    return () => document.body.classList.remove("fade-in");
-  }, []);
-
-  useEffect(() => {
-    loadCompletedEmployees();
-  }, []);
-
-  const loadCompletedEmployees = async () => {
+  const loadCompletedEmployees = React.useCallback(async () => {
     try {
-      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/completed`,{
-        headers:{
-          Authorization:`Bearer ${token}`
+      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/completed`, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
       });
       setEmployees(result.data);
@@ -36,7 +27,17 @@ export default function CompletedList() {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    loadCompletedEmployees();
+  }, [loadCompletedEmployees]);
+
+
+  useEffect(() => {
+    document.body.classList.add("fade-in");
+    return () => document.body.classList.remove("fade-in");
+  }, []);
 
   const filteredEmployees = employees.filter(member =>
     member.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -53,40 +54,40 @@ export default function CompletedList() {
   };
 
   const exportPdf = async (empId) => {
-  try {
-    const response = await axios.get(`${baseUrl}/api/v1/pms/hr/export-pdf/${empId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
-      responseType: 'blob' // Important for binary file like PDF
-    });
+    try {
+      const response = await axios.get(`${baseUrl}/api/v1/pms/hr/export-pdf/${empId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        responseType: 'blob' // Important for binary file like PDF
+      });
 
-    // Create a Blob from the PDF stream
-    const blob = new Blob([response.data], { type: 'application/pdf' });
+      // Create a Blob from the PDF stream
+      const blob = new Blob([response.data], { type: 'application/pdf' });
 
-    // Create a temporary download link
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
+      // Create a temporary download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
 
-    // Set a meaningful filename
-    const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-    link.download = `Employee_Report_${empId}_${currentDate}.pdf`;
+      // Set a meaningful filename
+      const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+      link.download = `Employee_Report_${empId}_${currentDate}.pdf`;
 
-    // Append, click and remove the link
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+      // Append, click and remove the link
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
 
-    // Clean up the URL object
-    window.URL.revokeObjectURL(url);
-    
-    console.log("PDF downloaded successfully");
+      // Clean up the URL object
+      window.URL.revokeObjectURL(url);
 
-  } catch (error) {
-    console.error("Failed to download PDF:", error.message);
-  }
-};
+      console.log("PDF downloaded successfully");
+
+    } catch (error) {
+      console.error("Failed to download PDF:", error.message);
+    }
+  };
 
 
   return (
@@ -126,10 +127,10 @@ export default function CompletedList() {
                 <td className="hr-complete-team-member">{member.name}</td>
                 <td>{member.department?.name || "N/A"}</td>
                 <td>{member.currentDesignation}</td>
-               <td><FaDownload 
-               title="download"
-                className="employee-list-edit-icon"
-               onClick={()=>exportPdf(member.empId)}/></td>
+                <td><FaDownload
+                  title="download"
+                  className="employee-list-edit-icon"
+                  onClick={() => exportPdf(member.empId)} /></td>
 
               </tr>
             ))}

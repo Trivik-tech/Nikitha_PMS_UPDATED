@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+
 /**
  * EmployeeController is a REST API interface that defines endpoints related to
  * employee operations in the PMS (Performance Management System).
@@ -24,7 +25,6 @@ import java.util.Map;
  * Cross-origin requests are allowed from http://localhost:3000.
  */
 @RequestMapping("/api/v1/pms/employee")
-@CrossOrigin(origins = "http://localhost:3000")
 public interface EmployeeController {
 
     /**
@@ -40,10 +40,11 @@ public interface EmployeeController {
      * Registers KRA/KPI entries for an employee.
      *
      * @param kraKpiRequestDto The KRA/KPI details to register.
-     * @return A map containing success or error messages related to the registration.
+     * @return A map containing success or error messages related to the
+     *         registration.
      */
     @PostMapping("/register-kra-kpi")
-    ResponseEntity<Map<String,String>> kraKpiRegistrationForEmployee(@RequestBody KraKpiRequestDto kraKpiRequestDto);
+    ResponseEntity<Map<String, String>> kraKpiRegistrationForEmployee(@RequestBody KraKpiRequestDto kraKpiRequestDto);
 
     /**
      * Fetches the profile information of the authenticated employee.
@@ -58,11 +59,13 @@ public interface EmployeeController {
      * Allows an employee to submit a self-review for their KRA/KPI entries.
      *
      * @param kraKpiRequestDto The KRA/KPI self-review data.
-     * @param employeeId The ID of the employee performing the self-review.
-     * @return A map containing success or error messages related to the self-review.
+     * @param employeeId       The ID of the employee performing the self-review.
+     * @return A map containing success or error messages related to the
+     *         self-review.
      */
     @PutMapping("/self-review/{employeeId}")
-    ResponseEntity<Map<String,String >> selfReview(@RequestBody KraKpiRequestDto kraKpiRequestDto,@PathVariable String employeeId);
+    ResponseEntity<Map<String, String>> selfReview(@RequestBody KraKpiRequestDto kraKpiRequestDto,
+            @PathVariable String employeeId);
 
     /**
      * Checks if KRA/KPI entries already exist for a specific employee.
@@ -71,13 +74,15 @@ public interface EmployeeController {
      * @return A map with a boolean value indicating whether KRA/KPI already exists.
      */
     @GetMapping("/check-kra-kpi/{employeeId}")
-    ResponseEntity<Map<String,Boolean>> checkKraKpiAlreadyExists(@PathVariable String employeeId);
+    ResponseEntity<Map<String, Boolean>> checkKraKpiAlreadyExists(@PathVariable String employeeId);
 
     /**
-     * Fetches the list of all KRA/KPI entries for a specific employee, organized by category.
+     * Fetches the list of all KRA/KPI entries for a specific employee, organized by
+     * category.
      *
      * @param employeeId The ID of the employee whose KRA/KPI entries are requested.
-     * @return A map where the key is a category and the value is a list of KraKpiResponseDto objects.
+     * @return A map where the key is a category and the value is a list of
+     *         KraKpiResponseDto objects.
      */
     @GetMapping("/krakpi-list/{employeeId}")
     ResponseEntity<Map<String, List<KraKpiResponseDto>>> listOfKraKpi(@PathVariable String employeeId);

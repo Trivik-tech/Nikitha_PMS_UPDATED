@@ -33,9 +33,6 @@ import java.io.IOException;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    // Holds the latest JWT token globally (optional, can be used elsewhere)
-    public static String jwtToken = "";
-
     private final JwtService jwtService;
     private final ManagerDetailsService managerDetailsService;
     private final HrDetailsService hrDetailsService;
@@ -44,13 +41,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     /**
      * Constructor for JwtRequestFilter.
      *
-     * @param jwtService             JWT utility service for validation and extraction
+     * @param jwtService             JWT utility service for validation and
+     *                               extraction
      * @param managerDetailsService  Service to load Manager user details
      * @param hrDetailsService       Service to load HR user details
      * @param employeeDetailsService Service to load Employee user details
      */
     public JwtRequestFilter(JwtService jwtService, ManagerDetailsService managerDetailsService,
-                            HrDetailsService hrDetailsService, EmployeeDetailsService employeeDetailsService) {
+            HrDetailsService hrDetailsService, EmployeeDetailsService employeeDetailsService) {
         this.jwtService = jwtService;
         this.managerDetailsService = managerDetailsService;
         this.hrDetailsService = hrDetailsService;
@@ -95,7 +93,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         // Check if Authorization header contains a Bearer token
         if (tokenHeader != null && tokenHeader.startsWith("Bearer ")) {
             String token = tokenHeader.substring(7); // Extract token
-            jwtToken = token; // store globally if needed
 
             try {
                 // Validate token

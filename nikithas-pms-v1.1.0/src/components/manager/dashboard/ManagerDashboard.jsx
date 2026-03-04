@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Chart, ArcElement, Tooltip, Legend } from "chart.js";
 import { Pie, getElementsAtEvent } from "react-chartjs-2";
 import { Link, useNavigate, NavLink } from "react-router-dom";
@@ -47,54 +47,50 @@ const ManagerDashboard = () => {
     }
   }, [token, navigate]);
 
-  useEffect(() => {
-    const getProfile = async () => {
-      try {
-        const res = await axios.get(`${baseUrl}/api/v1/pms/manager/profile`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const id = res.data.managerId;
-        setManagerId(id);
-        setManagerData(res.data);
-        await getPercentage(id);
-      } catch (error) {
-        if (error.response?.status === 401) {
-          localStorage.clear();
-          navigate("/");
-        }
-      }
-    };
-    if (token) getProfile();
-  }, [token, navigate]);
-
-  useEffect(() => {
-    if (managerId) {
-      loadTeamSize(managerId);
-      loadAssessmentCount(managerId);
-    }
-  }, [managerId]);
-
-  const getPercentage = async (id) => {
+  const getPercentage = useCallback(async (id) => {
     try {
       const res = await axios.get(
         `${baseUrl}/api/v1/pms/manager/percentage/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setPercentageData(res.data);
-    } catch (error) {}
-  };
+    } catch (error) { }
+  }, [token]);
 
-  const loadTeamSize = async (id) => {
+  const getProfile = useCallback(async () => {
+    try {
+      const res = await axios.get(`${baseUrl}/api/v1/pms/manager/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const id = res.data.managerId;
+      setManagerId(id);
+      setManagerData(res.data);
+      await getPercentage(id);
+    } catch (error) {
+      if (error.response?.status === 401) {
+        localStorage.clear();
+        navigate("/");
+      }
+    }
+  }, [token, navigate, getPercentage]);
+
+  useEffect(() => {
+    if (token) getProfile();
+  }, [token, getProfile]);
+
+  /* Removed getPercentage definition from here as it was moved up */
+
+  const loadTeamSize = useCallback(async (id) => {
     try {
       const result = await axios.get(
         `${baseUrl}/api/v1/pms/manager/get-team-size/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setTeamSize(result.data?.team || 0);
-    } catch (error) {}
-  };
+    } catch (error) { }
+  }, [token]);
 
-  const loadAssessmentCount = async (id) => {
+  const loadAssessmentCount = useCallback(async (id) => {
     try {
       const res = await axios.get(
         `${baseUrl}/api/v1/pms/manager/pms/status-count/${id}`,
@@ -107,7 +103,15 @@ const ManagerDashboard = () => {
     } catch (err) {
       console.error("Error loading assessment count:", err);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    if (managerId) {
+      loadTeamSize(managerId);
+      loadAssessmentCount(managerId);
+    }
+  }, [managerId, loadTeamSize, loadAssessmentCount]);
+
 
   useEffect(() => {
     if (!token) return;
@@ -130,7 +134,7 @@ const ManagerDashboard = () => {
     });
     client.activate();
     return () => client.deactivate();
-  }, [token]);
+  }, [token, baseUrl]);
 
   const hasData =
     percentageData.completedPercentage !== 0 ||
@@ -142,9 +146,9 @@ const ManagerDashboard = () => {
       {
         data: hasData
           ? [
-              percentageData.completedPercentage,
-              percentageData.pendingPercentage,
-            ]
+            percentageData.completedPercentage,
+            percentageData.pendingPercentage,
+          ]
           : [1],
         backgroundColor: hasData ? ["#4c4eafff", "#FF9800"] : ["#d3d3d3"],
         borderWidth: 1,
@@ -278,11 +282,10 @@ const ManagerDashboard = () => {
             >
               <div className="stat-text">
                 <h2>Assessments Pending</h2>
-                <p>{`${assessmentCount.pending}/${teamSize} (${
-                  teamSize !== 0
-                    ? Math.round((assessmentCount.pending / teamSize) * 100)
-                    : 0
-                }%)`}</p>
+                <p>{`${assessmentCount.pending}/${teamSize} (${teamSize !== 0
+                  ? Math.round((assessmentCount.pending / teamSize) * 100)
+                  : 0
+                  }%)`}</p>
               </div>
             </Link>
           </div>
@@ -295,11 +298,10 @@ const ManagerDashboard = () => {
             >
               <div className="stat-text">
                 <h2>Assessments Complete</h2>
-                <p>{`${assessmentCount.completed}/${teamSize} (${
-                  teamSize !== 0
-                    ? Math.round((assessmentCount.completed / teamSize) * 100)
-                    : 0
-                }%)`}</p>
+                <p>{`${assessmentCount.completed}/${teamSize} (${teamSize !== 0
+                  ? Math.round((assessmentCount.completed / teamSize) * 100)
+                  : 0
+                  }%)`}</p>
               </div>
             </Link>
           </div>

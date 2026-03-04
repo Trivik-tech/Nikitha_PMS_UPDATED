@@ -3,7 +3,6 @@ package com.triviktech.controllers.auth;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
  * Allows cross-origin requests from http://localhost:3000
  */
 @RequestMapping("/api/v1/pms/auth")
-@CrossOrigin(origins = "http://localhost:3000")
 public interface ForgotPasswordController {
 
     /**
@@ -37,9 +35,11 @@ public interface ForgotPasswordController {
      * 1. OTP validation
      * 2. Password reset if a new password is provided
      *
-     * @param otp The OTP sent to the user's email
-     * @param newPassword Optional map containing the new password, e.g., {"password": "newPass123"}
-     * @return ResponseEntity containing a message about the success or failure of OTP validation
+     * @param otp         The OTP sent to the user's email
+     * @param newPassword Optional map containing the new password, e.g.,
+     *                    {"password": "newPass123"}
+     * @return ResponseEntity containing a message about the success or failure of
+     *         OTP validation
      *         and/or password reset
      */
     @PostMapping("/validate-reset")

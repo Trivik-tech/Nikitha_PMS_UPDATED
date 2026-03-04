@@ -8,54 +8,56 @@ import Modal from "../../modal/Modal";
 // import { baseUrl } from '../../urls/CommenUrl';
 
 
+const dummyData = [
+  {
+    kraName: "Technical Skills",
+    weightage: 40,
+    kpi: [
+      { description: "Code Quality and Standards", weightage: 15 },
+      { description: "Bug Fixing & Debugging", weightage: 10 },
+      { description: "Learning New Technologies", weightage: 15 },
+    ],
+  },
+  {
+    kraName: "Team Collaboration",
+    weightage: 30,
+    kpi: [
+      { description: "Peer Code Reviews", weightage: 10 },
+      { description: "Knowledge Sharing Sessions", weightage: 10 },
+      { description: "Cross-Team Support", weightage: 10 },
+    ],
+  },
+  {
+    kraName: "Productivity & Delivery",
+    weightage: 30,
+    kpi: [
+      { description: "Meeting Project Deadlines", weightage: 15 },
+      { description: "Task Ownership", weightage: 10 },
+      { description: "Time Management", weightage: 5 },
+    ],
+  },
+];
+
 const KraKpiUpload = () => {
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [title, setTitle] = useState("");
+  const [title] = useState("");
   const [krakpi, setKraKpi] = useState([]);
 
+  /* eslint-disable no-unused-vars */
   const { id: employeeId } = useParams();
   const token = localStorage.getItem("token");
+  /* eslint-enable no-unused-vars */
 
   const closeModal = () => {
     setShowModal(false);
   };
 
-  // Dummy data for KRA & KPI
-  const dummyData = [
-    {
-      kraName: "Technical Skills",
-      weightage: 40,
-      kpi: [
-        { description: "Code Quality and Standards", weightage: 15 },
-        { description: "Bug Fixing & Debugging", weightage: 10 },
-        { description: "Learning New Technologies", weightage: 15 },
-      ],
-    },
-    {
-      kraName: "Team Collaboration",
-      weightage: 30,
-      kpi: [
-        { description: "Peer Code Reviews", weightage: 10 },
-        { description: "Knowledge Sharing Sessions", weightage: 10 },
-        { description: "Cross-Team Support", weightage: 10 },
-      ],
-    },
-    {
-      kraName: "Productivity & Delivery",
-      weightage: 30,
-      kpi: [
-        { description: "Meeting Project Deadlines", weightage: 15 },
-        { description: "Task Ownership", weightage: 10 },
-        { description: "Time Management", weightage: 5 },
-      ],
-    },
-  ];
 
   useEffect(() => {
     // Instead of API call, set dummy data
     setKraKpi(dummyData);
-  }, [employeeId]);
+  }, []);
 
   return (
     <div className="employee-module-review-container">
@@ -90,7 +92,7 @@ const KraKpiUpload = () => {
                   <tr>
                     <th>KPI's</th>
                     <th style={{ width: "5%" }}>Weightage</th>
-                   
+
                   </tr>
                 </thead>
                 <tbody>
@@ -98,7 +100,7 @@ const KraKpiUpload = () => {
                     <tr key={kpiIndex}>
                       <td>{kpi.description}</td>
                       <td>{kpi.weightage}</td>
-                     
+
                     </tr>
                   ))}
                 </tbody>

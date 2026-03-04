@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FaHome, FaEdit, FaDownload } from "react-icons/fa";
 import logo from "../../../assets/images/nikithas-logo.png";
@@ -31,7 +31,7 @@ export default function EmployeeList() {
   const hasFetchedRef = useRef(false);
 
   // Fetch all employees
-  const fetchEmployees = async () => {
+  const fetchEmployees = useCallback(async () => {
     try {
       const response = await axios.get(`${baseUrl}/api/v1/pms/hr/all-employees`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -42,14 +42,14 @@ export default function EmployeeList() {
       console.error("Error fetching employee data:", error.message);
       setHasServerError(true);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     if (!hasFetchedRef.current) {
       fetchEmployees();
       hasFetchedRef.current = true;
     }
-  }, []);
+  }, [fetchEmployees]);
 
   // Debounced search
   useEffect(() => {
@@ -72,7 +72,7 @@ export default function EmployeeList() {
     }, 300);
 
     return () => clearTimeout(delayDebounce);
-  }, [searchTerm]);
+  }, [searchTerm, fetchEmployees, token]);
 
   // Sorting by Name
   const handleSort = () => {

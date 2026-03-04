@@ -597,7 +597,7 @@ public class HrServiceImpl implements HrService {
     public List<EmployeeWithPmsStatus> getCompletedPmsForHR() {
         return employeeInformationRepository.findAll().stream()
                 .map(employee -> {
-                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findFirstByEmployeeInformation(employee);
                     if (kraKpiOptional.isEmpty())
                         return null;
 
@@ -631,7 +631,7 @@ public class HrServiceImpl implements HrService {
     public List<EmployeeWithPmsStatus> getPendingPmsForHR() {
         return employeeInformationRepository.findAll().stream()
                 .map(employee -> {
-                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findFirstByEmployeeInformation(employee);
                     if (kraKpiOptional.isEmpty())
                         return null;
 
@@ -669,7 +669,7 @@ public class HrServiceImpl implements HrService {
         long completedCount = 0;
 
         for (EmployeeInformation employee : employees) {
-            Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+            Optional<KraKpi> kraKpiOptional = kraKpiRepository.findFirstByEmployeeInformation(employee);
             if (kraKpiOptional.isEmpty())
                 continue;
 
@@ -719,7 +719,7 @@ public class HrServiceImpl implements HrService {
 
         return allEmployees.stream()
                 .map(employee -> {
-                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findFirstByEmployeeInformation(employee);
 
                     if (kraKpiOptional.isPresent() && Boolean.TRUE.equals(kraKpiOptional.get().getManagerApproval())) {
                         EmployeeInfo employeeInfo = entityDtoConversion.entityToDtoConversion(employee,
@@ -756,7 +756,7 @@ public class HrServiceImpl implements HrService {
 
         EmployeeInformation employee = employeeById.get();
 
-        Optional<KraKpi> krakpi = kraKpiRepository.findByEmployeeInformation(employee);
+        Optional<KraKpi> krakpi = kraKpiRepository.findFirstByEmployeeInformation(employee);
         if (krakpi.isEmpty()) {
             response.put("status", "failure");
             response.put("message", "KRA/KPI not found for this employee");
@@ -820,7 +820,7 @@ public class HrServiceImpl implements HrService {
         // Employees
         Map<Boolean, Long> empResult = employeeInformationRepository.findAll()
                 .stream()
-                .map(kraKpiRepository::findByEmployeeInformation)
+                .map(kraKpiRepository::findFirstByEmployeeInformation)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.partitioningBy(
@@ -848,7 +848,7 @@ public class HrServiceImpl implements HrService {
     // // Employees
     // employeeInformationRepository.findAll().forEach(employee -> {
     // Optional<KraKpi> kraKpiOptional =
-    // kraKpiRepository.findByEmployeeInformation(employee);
+    // kraKpiRepository.findFirstByEmployeeInformation(employee);
     // if (kraKpiOptional.isPresent()) {
     // KraKpi kraKpi = kraKpiOptional.get();
     // boolean managerApproval = Boolean.TRUE.equals(kraKpi.getManagerApproval());
@@ -1072,7 +1072,7 @@ public class HrServiceImpl implements HrService {
         long pendingCount = 0;
 
         for (EmployeeInformation employee : employees) {
-            Optional<KraKpi> optionalKraKpi = kraKpiRepository.findByEmployeeInformation(employee);
+            Optional<KraKpi> optionalKraKpi = kraKpiRepository.findFirstByEmployeeInformation(employee);
             if (optionalKraKpi.isEmpty())
                 continue;
 
@@ -1109,7 +1109,7 @@ public class HrServiceImpl implements HrService {
             int pending = 0;
 
             for (EmployeeInformation employee : deptEmployees) {
-                Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+                Optional<KraKpi> kraKpiOptional = kraKpiRepository.findFirstByEmployeeInformation(employee);
                 if (kraKpiOptional.isPresent()) {
                     KraKpi kraKpi = kraKpiOptional.get();
                     boolean pmsInitiated = Boolean.TRUE.equals(kraKpi.getPmsInitiated());
@@ -1136,7 +1136,7 @@ public class HrServiceImpl implements HrService {
         EmployeeInformation employee = employeeInformationRepository.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
 
-        KraKpi kraKpi = kraKpiRepository.findByEmployeeInformation(employee)
+        KraKpi kraKpi = kraKpiRepository.findFirstByEmployeeInformation(employee)
                 .orElseThrow(() -> new RuntimeException("KRA/KPI data not found for employee: " + employeeId));
 
         EmployeePmsDto dto = new EmployeePmsDto();
@@ -1218,7 +1218,7 @@ public class HrServiceImpl implements HrService {
             document.open();
 
             for (EmployeeInformation employee : employees) {
-                KraKpi kraKpi = kraKpiRepository.findByEmployeeInformation(employee)
+                KraKpi kraKpi = kraKpiRepository.findFirstByEmployeeInformation(employee)
                         .orElse(null);
                 if (kraKpi == null)
                     continue;

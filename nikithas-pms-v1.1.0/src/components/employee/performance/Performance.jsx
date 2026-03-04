@@ -17,25 +17,24 @@ const Performance = () => {
   };
 
   useEffect(() => {
+    const loadKraKpis = async () => {
+      try {
+        const result = await axios.get(
+          `${baseUrl}/api/v1/pms/employee/krakpi-list/${employeeId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        console.log(result.data.krakpis);
+        setKraKpis(result.data.krakpis || []);
+      } catch (error) {
+        console.log(error);
+      }
+    };
     loadKraKpis();
-  }, []);
-
-  const loadKraKpis = async () => {
-    try {
-      const result = await axios.get(
-        `${baseUrl}/api/v1/pms/employee/krakpi-list/${employeeId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      console.log(result.data.krakpis);
-      setKraKpis(result.data.krakpis || []);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  }, [employeeId, token]);
 
   // ✅ Group KPIs by createdAt year instead of dateOfJoining
   const groupedByYear = kraKpis.reduce((acc, item) => {

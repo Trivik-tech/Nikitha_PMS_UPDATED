@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "./Approve.css";
 import "./ResponsiveApprovePms.css"
 import logo from "../../../assets/images/nikithas-logo.png";
@@ -25,29 +25,29 @@ const Approve = () => {
   const emplId = useParams();
   const token = localStorage.getItem("token");
 
-  useEffect(() => {
-    const loadKraKpis = async () => {
-      try {
-        const result = await axios.get(
-          `${baseUrl}/api/v1/pms/manager/kra-kpi/EMP1234/${emplId.id}`, {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
-        setKraKpis(result.data.kra || []);
-        setName(result.data.employee.name);
-        setDesignation(result.data.employee.currentDesignation);
-        setDepartment(result.data.employee.department);
-        setManager(result.data.employee.reportingManager);
-        setManagerApproval(result.data.managerApproval === true); // <-- Set approval state
-      } catch (error) {
-        console.error("Error loading KRA/KPI data:", error);
+  const loadKraKpis = useCallback(async () => {
+    try {
+      const result = await axios.get(
+        `${baseUrl}/api/v1/pms/manager/kra-kpi/EMP1234/${emplId.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       }
-    };
+      );
+      setKraKpis(result.data.kra || []);
+      setName(result.data.employee.name);
+      setDesignation(result.data.employee.currentDesignation);
+      setDepartment(result.data.employee.department);
+      setManager(result.data.employee.reportingManager);
+      setManagerApproval(result.data.managerApproval === true); // <-- Set approval state
+    } catch (error) {
+      console.error("Error loading KRA/KPI data:", error);
+    }
+  }, [emplId.id, token]);
 
+  useEffect(() => {
     loadKraKpis();
-  }, [emplId, token]);
+  }, [loadKraKpis]);
 
   const handleKRAWeightageChange = (index, value) => {
     const updated = [...krakpi];

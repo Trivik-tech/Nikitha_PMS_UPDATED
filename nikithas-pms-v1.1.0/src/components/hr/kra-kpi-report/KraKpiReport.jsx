@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "./KraKpiReport.css";
 import logo from "../../../assets/images/nikithas-logo.png";
 import { FaHome } from "react-icons/fa";
@@ -12,7 +12,9 @@ const Performance = () => {
   const [selectedQuarter, setSelectedQuarter] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [showQuarters, setShowQuarters] = useState(false);
+  /* eslint-disable no-unused-vars */
   const [hoveredQuarter, setHoveredQuarter] = useState(null);
+  /* eslint-enable no-unused-vars */
   const [showMonthsFor, setShowMonthsFor] = useState(null); // ⬅ track quarter hover
 
   const token = localStorage.getItem("token");
@@ -33,7 +35,7 @@ const Performance = () => {
     return `${Math.round(avg * 10)}/100`;
   };
 
-  const loadKraKpiYearly = async (year) => {
+  const loadKraKpiYearly = useCallback(async (year) => {
     if (!year) return; // nothing until a year is selected
     try {
       const result = await axios.get(
@@ -44,7 +46,7 @@ const Performance = () => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [token]);
 
   const loadKraKpiQuarterly = async (year, quarter) => {
     if (!quarter || !year) return; // nothing until a year is selected
@@ -118,11 +120,11 @@ const Performance = () => {
 
   useEffect(() => {
     loadKraKpiYearly(2025);
-  }, []);
+  }, [loadKraKpiYearly]);
 
   return (
     <div className="employee-module-container">
-           <div className="employee-module-header">
+      <div className="employee-module-header">
         <div className="employee-module-home-icon">
           <Link to="/employee-dashboard" className="icon-link">
             <FaHome className="per-icon home-icon" />
@@ -142,7 +144,7 @@ const Performance = () => {
           style={{ display: "inline-block", position: "relative" }}
           // Hover menu only works if a year is selected
           onMouseEnter={() => {
-            if (selectedYear) 
+            if (selectedYear)
               setShowQuarters(true);
           }}
           onMouseLeave={() => {
@@ -199,7 +201,7 @@ const Performance = () => {
                           onClick={(e) => {
                             e.stopPropagation();
                             setSelectedMonth(m);
-                            loadKraKpiMonthly(selectedYear,selectedQuarter,m);
+                            loadKraKpiMonthly(selectedYear, selectedQuarter, m);
                           }}
                         >
                           {m}

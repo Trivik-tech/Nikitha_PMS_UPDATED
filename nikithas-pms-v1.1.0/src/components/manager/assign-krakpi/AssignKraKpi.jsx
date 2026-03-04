@@ -8,7 +8,7 @@ import axios from "axios";
 import { baseUrl } from "../../urls/CommenUrl";
 
 const PerformanceReview = () => {
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("Opps! failed");
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
   const [krakpi, setKraKpi] = useState([]);
@@ -19,10 +19,12 @@ const PerformanceReview = () => {
   const token = localStorage.getItem("token");
 
   // Handle checkbox selection
-  const handleKraCheckboxChange = (kraId) => {    
+  const handleKraCheckboxChange = (kraId) => {
     setSelectedKraIds((prev) =>
       prev.includes(kraId) ? prev.filter((id) => id !== kraId) : [...prev, kraId]
     );
+    console.log(selectedKraIds);
+
   };
 
   // Assign selected KRAs to employee
@@ -60,25 +62,25 @@ const PerformanceReview = () => {
   };
 
   // Load KRA/KPI data
-  useEffect(() => {
-    const loadKraKpi = async () => {
-      try {
-        const result = await axios.get(
-          `${baseUrl}/api/v1/pms/manager/allkrawithkpi`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        setKraKpi(result.data);
-      } catch (error) {
-        console.error("Error fetching KRA/KPI:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const loadKraKpi = React.useCallback(async () => {
+    try {
+      const result = await axios.get(
+        `${baseUrl}/api/v1/pms/manager/allkrawithkpi`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setKraKpi(result.data);
+    } catch (error) {
+      console.error("Error fetching KRA/KPI:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
 
+  useEffect(() => {
     loadKraKpi();
-  }, [employeeId, token]);
+  }, [loadKraKpi]);
 
   if (loading) return <p>Loading KRA and KPI data...</p>;
 
@@ -117,9 +119,8 @@ const PerformanceReview = () => {
           return (
             <div key={kra.kraId} className="Assign-KRAKPI-section">
               <div
-                className={`Assign-KRAKPI-section-header ${
-                  isSelected ? "selected-header" : ""
-                }`}
+                className={`Assign-KRAKPI-section-header ${isSelected ? "selected-header" : ""
+                  }`}
               >
                 <input
                   type="checkbox"

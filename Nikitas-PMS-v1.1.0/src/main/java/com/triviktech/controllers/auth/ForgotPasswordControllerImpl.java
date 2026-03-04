@@ -16,11 +16,12 @@ import com.triviktech.services.auth.ForgotPasswordService;
  *
  * Responsibilities:
  * 1. Handle requests to generate a One-Time Password (OTP) for users who
- *    have forgotten their password.
+ * have forgotten their password.
  * 2. Validate the provided OTP and optionally reset the user's password
- *    if a new password is supplied.
+ * if a new password is supplied.
  *
- * This controller delegates the actual business logic to the ForgotPasswordService.
+ * This controller delegates the actual business logic to the
+ * ForgotPasswordService.
  *
  * Base URL mappings are inherited from the ForgotPasswordController interface.
  */
@@ -31,8 +32,8 @@ public class ForgotPasswordControllerImpl implements ForgotPasswordController {
     private ForgotPasswordService forgotPasswordService;
 
     public ResponseEntity<String> generateOtp(@RequestParam String email) {
-        String otp = forgotPasswordService.genrateOtp(email);
-        return ResponseEntity.ok("OTP sent successfully: " + otp);
+        forgotPasswordService.genrateOtp(email);
+        return ResponseEntity.ok("OTP sent successfully.");
     }
 
     @Override
@@ -45,8 +46,9 @@ public class ForgotPasswordControllerImpl implements ForgotPasswordController {
             return ResponseEntity.badRequest().body("Invalid or expired OTP.");
         }
 
-        if (newPassword != null && !newPassword.get("password").isEmpty()) {
-            boolean isReset = forgotPasswordService.resetPassword(otp, newPassword.get("password"));
+        String pwd = newPassword != null ? newPassword.get("password") : null;
+        if (pwd != null && !pwd.isEmpty()) {
+            boolean isReset = forgotPasswordService.resetPassword(otp, pwd);
             if (isReset) {
                 return ResponseEntity.ok("Password reset successful.");
             } else {

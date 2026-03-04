@@ -218,7 +218,7 @@ public class ManagerServiceImpl implements ManagerService {
     //                             DepartmentResponseDto.class));
 
     //             // Fetch KraKpi if present
-    //             Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+    //             Optional<KraKpi> kraKpiOptional = kraKpiRepository.findFirstByEmployeeInformation(employee);
 
     //             // Set PMS status fields only if KraKpi exists
     //             kraKpiOptional.ifPresent(kraKpi -> {
@@ -247,14 +247,31 @@ public class ManagerServiceImpl implements ManagerService {
         // 2. Get all employees under that manager
         List<EmployeeInformation> employees = employeeInformationRepository.findAllByManager(manager);
 
-        // 3. Convert each employee entity to DTO with department info
+        // 3. Convert each employee to DTO and include PMS status if present
         return employees.stream().map(employee -> {
+            // Convert EmployeeInformation -> EmployeeWithPmsStatus DTO
             EmployeeWithPmsStatus dto = entityDtoConversion.entityToDtoConversion(
                     employee, EmployeeWithPmsStatus.class);
 
-
+            // Add Department info
             dto.setDepartment(entityDtoConversion.entityToDtoConversion(
                     employee.getDepartment(), DepartmentResponseDto.class));
+
+            // Fetch KraKpi if present
+            Optional<KraKpi> kraKpiOptional = kraKpiRepository.findFirstByEmployeeInformation(employee);
+
+            // Set PMS status fields if KraKpi exists
+            kraKpiOptional.ifPresent(kraKpi -> {
+                dto.setPmsInitiated(kraKpi.getPmsInitiated());
+                dto.setSelfCompleted(kraKpi.isSelfCompleted());
+                dto.setManagerCompleted(kraKpi.isManagerCompleted());
+                dto.setKraKpiRegistered(Boolean.TRUE);
+            });
+
+            // If KraKpi does not exist, mark kraKpiRegistered as false
+            if (kraKpiOptional.isEmpty()) {
+                dto.setKraKpiRegistered(Boolean.FALSE);
+            }
 
             return dto;
         }).collect(Collectors.toList());
@@ -297,7 +314,7 @@ public class ManagerServiceImpl implements ManagerService {
     //             employeeId);
     //     if (employeeData.isPresent()) {
     //         EmployeeInformation employee = employeeData.get();
-    //         Optional<KraKpi> kraKpi = kraKpiRepository.findByEmployeeInformation(employee);
+    //         Optional<KraKpi> kraKpi = kraKpiRepository.findFirstByEmployeeInformation(employee);
     //         if (kraKpi.isPresent()) {
     //             KraKpi kraKpi1 = kraKpi.get();
     //             KraKpiResponseDto kraKpiResponseDto = entityDtoConversion.entityToDtoConversion(kraKpi1,
@@ -430,7 +447,7 @@ public KraKpiResponseDto getEmployeeKarKpi(String managerId, String employeeId) 
         }
 
         EmployeeInformation employee = employeeById.get();
-        Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+        Optional<KraKpi> kraKpiOptional = kraKpiRepository.findFirstByEmployeeInformation(employee);
 
         if (kraKpiOptional.isEmpty()) {
             throw new KraKpiNotFoundException("Kra Kpi Not found for employee with id :" + employeeId);
@@ -607,7 +624,7 @@ public Map<String, String> managerReview(String managerId, String employeeId, Kr
 //         }
 
 //         EmployeeInformation employee = employeeById.get();
-//         Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+//         Optional<KraKpi> kraKpiOptional = kraKpiRepository.findFirstByEmployeeInformation(employee);
 //         if (kraKpiOptional.isEmpty()) {
 //             throw new KraKpiNotFoundException("Kra Kpi not found for employee with id " + employeeId);
 //         }
@@ -697,7 +714,7 @@ public Map<String, String> managerReview(String managerId, String employeeId, Kr
 
         return employees.stream()
                 .map(employee -> {
-                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findFirstByEmployeeInformation(employee);
                     if (kraKpiOptional.isEmpty())
                         return null;
 
@@ -741,7 +758,7 @@ public Map<String, String> managerReview(String managerId, String employeeId, Kr
 
         return employees.stream()
                 .map(employee -> {
-                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+                    Optional<KraKpi> kraKpiOptional = kraKpiRepository.findFirstByEmployeeInformation(employee);
                     if (kraKpiOptional.isEmpty())
                         return null;
 
@@ -789,7 +806,7 @@ public Map<String, String> managerReview(String managerId, String employeeId, Kr
         long completedCount = 0;
 
         for (EmployeeInformation employee : employees) {
-            Optional<KraKpi> kraKpiOptional = kraKpiRepository.findByEmployeeInformation(employee);
+            Optional<KraKpi> kraKpiOptional = kraKpiRepository.findFirstByEmployeeInformation(employee);
 
             if (kraKpiOptional.isEmpty())
                 continue;
@@ -852,7 +869,7 @@ public PmsStatusCountDto getPmsCountsForManager(String managerId) {
     long pendingCount = 0;
 
     for (EmployeeInformation employee : employees) {
-        Optional<KraKpi> optionalKraKpi = kraKpiRepository.findByEmployeeInformation(employee);
+        Optional<KraKpi> optionalKraKpi = kraKpiRepository.findFirstByEmployeeInformation(employee);
         if (optionalKraKpi.isEmpty()) continue;
 
         KraKpi kraKpi = optionalKraKpi.get();

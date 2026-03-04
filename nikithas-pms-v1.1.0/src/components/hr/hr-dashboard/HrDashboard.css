@@ -278,6 +278,15 @@ body {
   position: relative;
   display: inline-block;
 }
+.upload-modal p {
+  font-size: 16px;
+  margin: 15px 0;
+  color: #333;
+  text-align: center;
+ }
+ 
+
+
 
 .notification-badge {
   position: absolute;
@@ -333,6 +342,17 @@ body {
   margin-bottom: 20px;
   font-size: 20px;
 }
+.upload-modal {
+  background-color: #007bff; /* Bright blue */
+  color: white;              /* White text for contrast */
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  width: 400px;
+  text-align: center;
+  transition: transform 0.3s ease-in-out;
+}
+
 
 .upload-modal input[type="file"] {
   margin-bottom: 20px;

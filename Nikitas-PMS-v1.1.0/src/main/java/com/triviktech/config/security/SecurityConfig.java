@@ -31,7 +31,8 @@ public class SecurityConfig {
     /**
      * Constructor injection for JWT request filter
      *
-     * @param jwtRequestFilter the filter that validates JWT tokens for incoming requests
+     * @param jwtRequestFilter the filter that validates JWT tokens for incoming
+     *                         requests
      */
     public SecurityConfig(JwtRequestFilter jwtRequestFilter) {
         this.jwtRequestFilter = jwtRequestFilter;
@@ -41,7 +42,8 @@ public class SecurityConfig {
      * Configures the SecurityFilterChain for the application.
      *
      * @param httpSecurity the HttpSecurity object provided by Spring Security
-     * @return SecurityFilterChain configured with JWT, roles, CORS, and stateless session
+     * @return SecurityFilterChain configured with JWT, roles, CORS, and stateless
+     *         session
      * @throws Exception in case of any configuration errors
      */
     @Bean
@@ -57,13 +59,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/v1/pms/auth/**", // Public endpoints for authentication
-                                "/ws/**"               // WebSocket endpoints
+                                "/ws/**" // WebSocket endpoints
                         ).permitAll()
                         .requestMatchers("/api/v1/pms/manager/**").hasRole("MANAGER")
-                        .requestMatchers("/api/v1/pms/hr/**","/api/v1/pms/krakpi/**").hasRole("HR")
+                        .requestMatchers("/api/v1/pms/hr/**", "/api/v1/pms/krakpi/**").hasRole("HR")
                         .requestMatchers("/api/v1/pms/employee/**").hasRole("EMPLOYEE")
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 // Add JWT filter before Spring Security's default authorization filter
                 .addFilterBefore(jwtRequestFilter, AuthorizationFilter.class)
                 .build();
@@ -73,7 +74,8 @@ public class SecurityConfig {
      * Provides a CORS configuration source for the application.
      * This allows requests from specified origins with allowed methods and headers.
      *
-     * @return CorsConfigurationSource object with allowed origins, headers, methods, and credentials
+     * @return CorsConfigurationSource object with allowed origins, headers,
+     *         methods, and credentials
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -82,8 +84,8 @@ public class SecurityConfig {
         // Allowed origins: frontend URLs
         configuration.setAllowedOrigins(Arrays.asList(
                 Origins.localUrl,
-                Origins.serverUrl
-        ));
+                Origins.localUrl2,
+                Origins.serverUrl));
 
         // Allowed HTTP methods
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));

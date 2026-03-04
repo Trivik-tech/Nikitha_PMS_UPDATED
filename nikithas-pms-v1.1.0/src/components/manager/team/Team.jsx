@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate, Link, useParams } from "react-router-dom";
 import axios from "axios";
 import "./Team.css";
@@ -22,7 +22,7 @@ export default function TeamPage() {
       navigator.userAgent
     );
 
-  const loadTeam = async () => {
+  const loadTeam = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token || !managerId) {
@@ -38,30 +38,73 @@ export default function TeamPage() {
           },
         }
       );
-      console.log(result.data)
       setTeamList(Array.isArray(result.data) ? result.data : []);
-      console.log(result.data)
     } catch (error) {
       setTeamList([]);
       console.error("Error fetching team list:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [managerId]);
 
   useEffect(() => {
     setLoading(true);
     loadTeam();
 
     if (!isMobile()) {
-      intervalRef.current = setInterval(loadTeam, 1000);
+      intervalRef.current = setInterval(loadTeam, 10000); // 10s is better than 1s
     }
 
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-    // eslint-disable-next-line
-  }, [managerId]);
+  }, [loadTeam]);
+
+  const getButtonUI = (member) => {
+    const {
+      kraKpiRegistered,
+      pmsInitiated,
+      selfCompleted,
+    } = member;
+
+    // Condition for Start PMS
+    if (
+      selfCompleted === true &&
+      pmsInitiated === true
+    ) {
+      return (
+        <Link
+          to={`/manager-review/${member.empId}/${managerId}`}
+          className="manager-team-start-pms-button"
+        >
+          Start PMS
+        </Link>
+      );
+    }
+
+    // Condition for Assign KRA KPI
+    if (!kraKpiRegistered) {
+      return (
+        <button
+          className="manager-team-start-pms-button"
+          onClick={() => navigate(`/assign-krakpi/${member.empId}`)}
+        >
+          Assign KRA KPI
+        </button>
+      );
+    }
+
+    // Disabled button for all other cases
+    return (
+      <button
+        className="manager-team-start-pms-button disabled"
+        disabled
+        style={{ opacity: 0.5, pointerEvents: "none" }}
+      >
+        Start PMS
+      </button>
+    );
+  };
 
   const filteredTeam = teamList.filter(
     (member) =>
@@ -80,54 +123,6 @@ export default function TeamPage() {
     if (newPage > 0 && newPage <= totalPages) {
       setCurrentPage(newPage);
     }
-  };
-
-  const getButtonUI = (member) => {
-    const { selfCompleted, pmsInitiated, managerCompleted,kraKpiRegistered } = member;
-    
-
-    // Condition for Start PMS
-    if (
-      selfCompleted === true &&
-      pmsInitiated === true &&
-      (managerCompleted === null || managerCompleted === false)
-    ) {
-      return (
-        <Link
-          to={`/manager-review/${member.empId}/${managerId}`}
-          className="manager-team-start-pms-button"
-        >
-          Start PMS
-        </Link>
-      );
-    }
-
-    // Condition for Start Review
-   
-       return (
-        <button
-          className="manager-team-start-pms-button"
-          onClick={() => navigate(`/assign-krakpi/${member.empId}`)}
-        >
-          Assign KRA KPI
-        </button>
-       )
-      
-      
-  
-
-    // Disabled button for all other cases
-    if(pmsInitiated===true){
-    return (
-      <button
-        className="manager-team-start-pms-button disabled"
-        disabled
-        style={{ opacity: 0.5, pointerEvents: "none" }}
-      >
-        Start PMS
-      </button>
-    );
-  }
   };
 
   return (
@@ -216,4 +211,4 @@ export default function TeamPage() {
       </div>
     </div>
   );
-  }
+}

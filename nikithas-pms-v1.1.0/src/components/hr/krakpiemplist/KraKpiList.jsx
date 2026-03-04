@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FaSearch, FaHome, FaEdit, FaTrash, FaDownload } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { FaHome, FaEdit, FaDownload } from "react-icons/fa";
 import logo from "../../../assets/images/nikithas-logo.png";
 
 import "./KraKpiList.css";
@@ -10,15 +10,17 @@ import { baseUrl } from "../../urls/CommenUrl";
 import { encrypt } from "../../utils/encryptUtils";
 import Modal from "../../modal/Modal";
 
-export default function EmployeeList() { 
+export default function EmployeeList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [team, setTeam] = useState([]); 
+  const [team, setTeam] = useState([]);
   const [sortOrder, setSortOrder] = useState("asc");
   const [hasServerError, setHasServerError] = useState(false);
+  /* eslint-disable no-unused-vars */
   const [modalOpen, setModalOpen] = useState(false);
   const [employeeToDelete, setEmployeeToDelete] = useState(null);
   const [employeeName, setEmployeeName] = useState(null);
+  /* eslint-enable no-unused-vars */
   const [successModal, setSuccessModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
@@ -54,7 +56,7 @@ export default function EmployeeList() {
         },
       });
       setTeam(response.data);
-      */ 
+      */
       setHasServerError(false);
     } catch (error) {
       console.error("Error fetching employee data:", error.message);
@@ -126,6 +128,7 @@ export default function EmployeeList() {
     return `${day}-${month}-${year}`;
   };
 
+  /* eslint-disable no-unused-vars */
   const handleDownloadData = async (id) => {
     try {
       const response = await axios.get(`${baseUrl}/api/v1/pms/hr/generate-report/${id}`, {
@@ -142,8 +145,9 @@ export default function EmployeeList() {
       console.error("PDF download failed:", error.message);
     }
   };
+  /* eslint-enable no-unused-vars */
 
-  const handleExportData= async()=> {
+  const handleExportData = async () => {
     try {
       const response = await axios.get(`${baseUrl}/api/v1/pms/hr/generate-employee-list`, {
         headers: {
@@ -199,7 +203,7 @@ export default function EmployeeList() {
                 <table className="employee-list-team-table">
                   <thead>
                     <tr>
-                      <th onClick={handleSort} style={{ cursor: "pointer" }}>Id{sortOrder==="asc"? "-":"||"}</th>
+                      <th onClick={handleSort} style={{ cursor: "pointer" }}>Id{sortOrder === "asc" ? "-" : "||"}</th>
                       <th>Name</th>
                       <th>Department</th>
                       <th>Email</th>
@@ -229,7 +233,7 @@ export default function EmployeeList() {
                             className="employee-list-edit-icon"
                             title="Edit"
                             onClick={() => {
-                           
+
                               navigate(`/kra-kpi-report `);
                             }}
                           />
@@ -241,9 +245,9 @@ export default function EmployeeList() {
                 </table>
               ) : (
                 <div className="employee-list-mobile-cards">
-                  {/* Mobile Cards */} 
+                  {/* Mobile Cards */}
                 </div>
-               )}
+              )}
             </div>
           </div>
 
@@ -256,12 +260,12 @@ export default function EmployeeList() {
               <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages}>
                 Next
               </button>
-              <button title="export" onClick={()=>handleExportData()}>Export <FaDownload /></button>
+              <button title="export" onClick={() => handleExportData()}>Export <FaDownload /></button>
             </div>
           )}
         </div>
 
-      {successModal && (
+        {successModal && (
           <Modal
             title="Success"
             message={modalMessage}

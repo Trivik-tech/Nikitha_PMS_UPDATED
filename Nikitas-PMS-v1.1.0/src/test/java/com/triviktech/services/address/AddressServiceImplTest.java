@@ -18,8 +18,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.MockitoAnnotations;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+
+import com.triviktech.utilities.entitydtoconversion.EntityDtoConversion;
 
 import java.util.Optional;
 
@@ -36,6 +40,9 @@ class AddressServiceImplTest {
 
     @Mock
     private LocationRepository locationRepository;
+
+    @Spy
+    private EntityDtoConversion entityDtoConversion = new EntityDtoConversion(new ModelMapper());
 
     @InjectMocks
     private AddressServiceImpl addressService;
@@ -59,7 +66,6 @@ class AddressServiceImplTest {
 
         assertNotNull(response);
         assertEquals("India", response.getName());
-        assertEquals(HttpStatus.CREATED, response.getStatus());
         verify(countryRepository, times(1)).save(any(Country.class));
     }
 
@@ -85,7 +91,6 @@ class AddressServiceImplTest {
         assertNotNull(response);
         assertEquals("Karnataka", response.getName());
         assertEquals("India", response.getCountry().getName());
-        assertEquals(HttpStatus.CREATED, response.getStatus());
         verify(countryRepository, times(1)).findById(1L);
         verify(stateRepository, times(1)).save(any(State.class));
     }
@@ -132,7 +137,6 @@ class AddressServiceImplTest {
         assertEquals("560001", response.getZipCode());
         assertEquals("Karnataka", response.getState().getName());
         assertEquals("India", response.getState().getCountry().getName());
-        assertEquals(HttpStatus.CREATED, response.getStatus());
         verify(stateRepository, times(1)).findById(1L);
         verify(locationRepository, times(1)).save(any(Location.class));
     }

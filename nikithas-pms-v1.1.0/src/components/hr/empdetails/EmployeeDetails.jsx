@@ -26,7 +26,7 @@ const EmployeeDetails = () => {
     reportingManager: "",
     emailId: "",
     role: ""
-    
+
   });
 
   const [file, setFile] = useState(null);
@@ -38,13 +38,25 @@ const EmployeeDetails = () => {
   const [departmentList, setDepartmentsList] = useState([]);
 
   const navigate = useNavigate();
-  const token=localStorage.getItem('token')
-  const {id:hrid}=useParams()
+  const token = localStorage.getItem('token')
+  const { id: hrid } = useParams()
 
   useEffect(() => {
+    const loadDepartments = async () => {
+      try {
+        const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-departments`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setDepartmentsList(result.data.departments || []);
+      } catch (error) {
+        console.error("Error loading departments:", error);
+      }
+    };
     loadDepartments();
-    console.log(hrid)
-  }, []);
+    console.log(hrid);
+  }, [hrid, token]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -87,10 +99,10 @@ const EmployeeDetails = () => {
     formData.append("file", file);
 
     try {
-      const result=await axios.post(`${baseUrl}/api/v1/pms/hr/upload`, formData, {
+      const result = await axios.post(`${baseUrl}/api/v1/pms/hr/upload`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization:`Bearer ${token}`
+          Authorization: `Bearer ${token}`
         }
       });
       console.log(result.data)
@@ -119,66 +131,55 @@ const EmployeeDetails = () => {
   };
 
   const handleSaveEmployee = async () => {
-  let result;
-  try {
-    setLoading(true);
-
-    if (!payload.role || payload.role === "Select Role") {
-      setModalTitle("Validation Error");
-      setModalMessage("Please select a valid role before saving.");
-      setStatusModal(true);
-      setLoading(false);
-      return;
-    }
-
-    const updatedEmployee = {
-      ...payload,
-      role: payload.role?.toUpperCase() || "",
-      department: payload.department?.toString() || "",
-      hrId:`${hrid}`
-    };
-
-    result = await axios.post(`${baseUrl}/api/v1/pms/hr/register-employee`, updatedEmployee,{
-      headers:{
-        Authorization:`Bearer ${token}`
-      }
-    });
-    console.log(result.data);
-
-    setModalTitle("Save Successful");
-    setModalMessage("Employee data saved successfully!");
-    setStatusModal(true);
-
-    setTimeout(() => {
-      navigate("/employee-list");
-    }, 2000);
-  } catch (error) {
-    console.error("Save failed:", error);
-
-    // ✅ Extract meaningful message from backend
-    const backendMessage = error?.response?.data?.message || "Something went wrong while saving the employee.";
-
-    setModalTitle("Save Failed");
-    setModalMessage(backendMessage); // ✅ Show dynamic backend error message
-    setStatusModal(true);
-  } finally {
-    setLoading(false);
-  }
-};
-
-
-  const loadDepartments = async () => {
+    let result;
     try {
-      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-departments`,{
-        headers:{
-          Authorization:`Bearer ${token}`
+      setLoading(true);
+
+      if (!payload.role || payload.role === "Select Role") {
+        setModalTitle("Validation Error");
+        setModalMessage("Please select a valid role before saving.");
+        setStatusModal(true);
+        setLoading(false);
+        return;
+      }
+
+      const updatedEmployee = {
+        ...payload,
+        role: payload.role?.toUpperCase() || "",
+        department: payload.department?.toString() || "",
+        hrId: `${hrid}`
+      };
+
+      result = await axios.post(`${baseUrl}/api/v1/pms/hr/register-employee`, updatedEmployee, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
       });
-      setDepartmentsList(result.data.departments || []);
+      console.log(result.data);
+
+      setModalTitle("Save Successful");
+      setModalMessage("Employee data saved successfully!");
+      setStatusModal(true);
+
+      setTimeout(() => {
+        navigate("/employee-list");
+      }, 2000);
     } catch (error) {
-      console.error("Error loading departments:", error);
+      console.error("Save failed:", error);
+
+      // ✅ Extract meaningful message from backend
+      const backendMessage = error?.response?.data?.message || "Something went wrong while saving the employee.";
+
+      setModalTitle("Save Failed");
+      setModalMessage(backendMessage); // ✅ Show dynamic backend error message
+      setStatusModal(true);
+    } finally {
+      setLoading(false);
     }
   };
+
+
+
 
   return (
     <div className="hr-module-add-employee-container">

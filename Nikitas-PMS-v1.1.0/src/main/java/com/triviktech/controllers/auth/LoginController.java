@@ -18,15 +18,15 @@ import java.util.Map;
  * Allows cross-origin requests from http://localhost:3000
  */
 @RequestMapping("/api/v1/pms/auth")
-@CrossOrigin(origins = "http://localhost:3000")
 public interface LoginController {
 
     /**
      * Authenticates the user with provided login credentials.
      *
-     * @param login          Object containing username and password
-     * @param bindingResult  Captures validation errors if any in the request body
-     * @return ResponseEntity containing a map with authentication details (e.g., JWT token, username)
+     * @param login         Object containing username and password
+     * @param bindingResult Captures validation errors if any in the request body
+     * @return ResponseEntity containing a map with authentication details (e.g.,
+     *         JWT token, username)
      */
     @PostMapping("/login")
     ResponseEntity<Map<String, String>> login(@RequestBody Login login, BindingResult bindingResult);
@@ -35,8 +35,9 @@ public interface LoginController {
      * Retrieves the role of the user associated with the given JWT token.
      *
      * @param token JWT token of the user
-     * @return ResponseEntity containing a map with role information (e.g., "role": "EMPLOYEE")
+     * @return ResponseEntity containing a map with role information (e.g., "role":
+     *         "EMPLOYEE")
      */
     @GetMapping("/{token}")
-    ResponseEntity<Map<String, String>> getRole(@PathVariable String token);
+    ResponseEntity<Map<String, String>> getRole(@PathVariable("token") String token);
 }

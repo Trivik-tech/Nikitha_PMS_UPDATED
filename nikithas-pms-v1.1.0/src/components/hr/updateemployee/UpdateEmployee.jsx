@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { FaHome } from "react-icons/fa";
 import "./EmployeeUpdate.css";
 import "./ResponsiveEmpUpdate.css";
@@ -36,7 +36,7 @@ const UpdateEmployee = () => {
   const navigate = useNavigate();
   const { id: encodedId } = useParams();
   const id = decrypt(encodedId);
-  const token=localStorage.getItem('token')
+  const token = localStorage.getItem('token')
 
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
@@ -46,30 +46,12 @@ const UpdateEmployee = () => {
     return localDate.toISOString().split("T")[0];
   };
 
-  useEffect(() => {
-    loadEmployee();
-    loadDepartments();
-  }, []);
-
-  const loadDepartments = async () => {
-    try {
-      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-departments`,{
-        headers:{
-          Authorization:`Bearer ${token}`
-        }
-      });
-      setDepartmentList(result.data.departments || []);
-    } catch (error) {
-      console.error("Error loading departments:", error);
-    }
-  };
-
-  const loadEmployee = async () => {
+  const loadEmployee = useCallback(async () => {
     try {
       setLoading(true);
-      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-employee/${id}`,{
-        headers:{
-          Authorization:`Bearer ${token}`
+      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-employee/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
       });
       const empData = result.data;
@@ -77,12 +59,31 @@ const UpdateEmployee = () => {
       empData.dob = formatDate(empData.dob);
       empData.dateOfJoining = formatDate(empData.dateOfJoining);
       setEmployee(empData);
-    } catch (error) {
-      console.error("Error loading employee:", error);
+    } catch (err) {
+      console.error("Error loading employee:", err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, token]);
+
+  const loadDepartments = useCallback(async () => {
+    try {
+      const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-departments`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setDepartmentList(result.data.departments || []);
+    } catch (err) {
+      console.error("Error loading departments:", err);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    loadEmployee();
+    loadDepartments();
+  }, [loadEmployee, loadDepartments]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -101,9 +102,9 @@ const UpdateEmployee = () => {
         department: employee.department?.toString() || ""
       };
 
-      const result = await axios.put(`${baseUrl}/api/v1/pms/hr/update-employee/${id}`, updatedEmployee,{
-        headers:{
-          Authorization:`Bearer ${token}`
+      await axios.put(`${baseUrl}/api/v1/pms/hr/update-employee/${id}`, updatedEmployee, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
       });
       setModalTitle("Success");

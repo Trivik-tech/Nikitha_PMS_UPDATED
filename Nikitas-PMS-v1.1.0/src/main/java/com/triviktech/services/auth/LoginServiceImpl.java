@@ -25,7 +25,7 @@ import java.util.Optional;
  */
 
 @Service
-public class LoginServiceImpl implements LoginService{
+public class LoginServiceImpl implements LoginService {
 
     private final JwtService jwtService;
 
@@ -33,7 +33,8 @@ public class LoginServiceImpl implements LoginService{
     private final HRRepository hrRepository;
     private final EmployeeInformationRepository employeeInformationRepository;
 
-    public LoginServiceImpl(JwtService jwtService, ManagerRepository managerRepository, HRRepository hrRepository, EmployeeInformationRepository employeeInformationRepository) {
+    public LoginServiceImpl(JwtService jwtService, ManagerRepository managerRepository, HRRepository hrRepository,
+            EmployeeInformationRepository employeeInformationRepository) {
         this.jwtService = jwtService;
 
         this.managerRepository = managerRepository;
@@ -43,35 +44,33 @@ public class LoginServiceImpl implements LoginService{
 
     @Override
     public String verifyLogin(Login login) {
-        if(managerRepository.existsById(login.getUsername())){
-            Optional<Manager> manager = managerRepository.findById(login.getUsername());
-            if(manager.isPresent()){
-                Manager manager1 = manager.get();
-                if(BCrypt.checkpw(login.getPassword(),manager1.getPassword())){
-                    return jwtService.generateToken(manager1.getManagerId(),manager1.getRole());
-                }
+        Optional<Manager> manager = managerRepository.findById(login.getUsername());
+        if (manager.isPresent()) {
+            Manager manager1 = manager.get();
+            if (BCrypt.checkpw(login.getPassword(), manager1.getPassword())) {
+                return jwtService.generateToken(manager1.getManagerId(), manager1.getRole());
             }
+            return null;
         }
-        else if(hrRepository.existsById(login.getUsername())){
-            Optional<HR> hr = hrRepository.findById(login.getUsername());
-            if(hr.isPresent()){
-                HR hr1 = hr.get();
-                if(BCrypt.checkpw(login.getPassword(),hr1.getPassword())){
-                    return jwtService.generateToken(hr1.getHrId(),hr1.getRole());
-                }
-            }
 
-        }
-        else if (employeeInformationRepository.existsById(login.getUsername())){
-            Optional<EmployeeInformation> employee = employeeInformationRepository.findById(login.getUsername());
-            if(employee.isPresent()){
-                EmployeeInformation employeeInformation = employee.get();
-                if(BCrypt.checkpw(login.getPassword(),employeeInformation.getPassword())){
-                    return jwtService.generateToken(employeeInformation.getEmpId(),employeeInformation.getRole());
-                }
+        Optional<HR> hr = hrRepository.findById(login.getUsername());
+        if (hr.isPresent()) {
+            HR hr1 = hr.get();
+            if (BCrypt.checkpw(login.getPassword(), hr1.getPassword())) {
+                return jwtService.generateToken(hr1.getHrId(), hr1.getRole());
             }
-
+            return null;
         }
+
+        Optional<EmployeeInformation> employee = employeeInformationRepository.findById(login.getUsername());
+        if (employee.isPresent()) {
+            EmployeeInformation employeeInformation = employee.get();
+            if (BCrypt.checkpw(login.getPassword(), employeeInformation.getPassword())) {
+                return jwtService.generateToken(employeeInformation.getEmpId(), employeeInformation.getRole());
+            }
+            return null;
+        }
+
         return null;
     }
 }

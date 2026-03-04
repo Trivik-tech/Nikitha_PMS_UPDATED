@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   FaUsers,
   FaClipboardCheck,
@@ -56,6 +56,9 @@ const HrDashboard = () => {
   const [hrprofile, setProfile] = useState(null);
   const [filterType, setFilterType] = useState("");
   const [hrName, setHrName] = useState("");
+  const [messageModalOpen, setMessageModalOpen] = useState(false);
+  const [messageContent, setMessageContent] = useState("");
+
 
   // Upload modal states
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
@@ -104,53 +107,41 @@ const HrDashboard = () => {
     fetchPercentageData();
   }, [token]);
 
-  useEffect(() => {
-    loadAllData();
-  }, [filterType]);
-
-  const loadAllData = async () => {
-    await getAllDepartment();
-    await getDepartmentsEmployeeCount();
-    await getKeyMatrix();
-    await loadHr();
-    await loadCompletedAndPendingByDepartment();
-  };
-
-  const getKeyMatrix = async () => {
+  const getKeyMatrix = useCallback(async () => {
     try {
       const result = await axios.get(`${baseUrl}/api/v1/pms/hr/status-count`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCompleted(result.data.completedCount);
       setPending(result.data.pendingCount);
-    } catch (error) {
-      console.error("Status Count Error:", error);
+    } catch (err) {
+      console.error("Status Count Error:", err);
     }
-  };
+  }, [token]);
 
-  const getAllDepartment = async () => {
+  const getAllDepartment = useCallback(async () => {
     try {
       const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-departments`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setDepartments(result.data.departments);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
     }
-  };
+  }, [token]);
 
-  const getDepartmentsEmployeeCount = async () => {
+  const getDepartmentsEmployeeCount = useCallback(async () => {
     try {
       const result = await axios.get(`${baseUrl}/api/v1/pms/hr/employee-count-by-department?filter=${filterType}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setEmployeeCount(result.data.employees);
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
     }
-  };
+  }, [filterType, token]);
 
-  const loadHr = async () => {
+  const loadHr = useCallback(async () => {
     try {
       const result = await axios.get(`${baseUrl}/api/v1/pms/hr/profile`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -158,32 +149,44 @@ const HrDashboard = () => {
       setHrId(result.data.profile.hrId);
       setProfile(result.data.profile);
       setHrName(result.data.profile.name);
-    } catch (error) {
-      console.log(error.message);
+    } catch (err) {
+      console.log(err.message);
     }
-  };
+  }, [token]);
 
-  const loadCompletedAndPendingByDepartment = async () => {
+  const loadCompletedAndPendingByDepartment = useCallback(async () => {
     try {
       const result = await axios.get(`${baseUrl}/api/v1/pms/hr/get-completed-pending-department?filter=${filterType}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = result.data;
-      const completed = {};
-      const pending = {};
+      const completedMap = {};
+      const pendingMap = {};
 
       Object.keys(data).forEach((dept) => {
-        completed[dept] = data[dept].completed || 0;
-        pending[dept] = data[dept].pending || 0;
+        completedMap[dept] = data[dept].completed || 0;
+        pendingMap[dept] = data[dept].pending || 0;
       });
 
-      setCompletedByDept(completed);
-      setPendingByDept(pending);
-    } catch (error) {
-      console.log("Error loading dept KRA/KPI stats:", error.message);
+      setCompletedByDept(completedMap);
+      setPendingByDept(pendingMap);
+    } catch (err) {
+      console.log("Error loading dept KRA/KPI stats:", err.message);
     }
-  };
+  }, [filterType, token]);
+
+  const loadAllData = useCallback(async () => {
+    await getAllDepartment();
+    await getDepartmentsEmployeeCount();
+    await getKeyMatrix();
+    await loadHr();
+    await loadCompletedAndPendingByDepartment();
+  }, [getAllDepartment, getDepartmentsEmployeeCount, getKeyMatrix, loadHr, loadCompletedAndPendingByDepartment]);
+
+  useEffect(() => {
+    loadAllData();
+  }, [loadAllData]);
 
   const barChartMinWidth = Math.max(480, departments.length * 120);
 
@@ -230,11 +233,14 @@ const HrDashboard = () => {
       await axios.post(`${baseUrl}/api/v1/pms/hr/upload-kra-kpi`, formData, {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
       });
-      alert("File uploaded successfully!");
+      setMessageContent("✅ File uploaded successfully!");
+      setMessageModalOpen(true);
       setUploadModalOpen(false);
+
     } catch (error) {
       console.error(error);
-      alert("Upload failed!");
+      setMessageContent("❌ Upload failed. Please try again.");
+      setMessageModalOpen(true);
     }
   };
 
@@ -296,7 +302,7 @@ const HrDashboard = () => {
             <h2 className="hr-dashboard-assessment-heading">Assessment Status</h2>
             <div className="hr-dashboard-charts-wrapper">
               <div className="hr-dashboard-chart-box hr-dashboard-bar-chart">
-                
+
                 <div className="chart-scroll-container">
                   <div style={{ minWidth: `${barChartMinWidth}px`, height: "320px" }}>
                     <Bar data={barData} options={barOptions} />
@@ -316,6 +322,23 @@ const HrDashboard = () => {
           <Notification onClose={() => setNotificationOpen(false)} notifications={notifications} />
         </div>
       )}
+      {messageModalOpen && (
+        <div className="notification-modal-wrapper">
+          <div className="upload-modal">
+
+            <p>{messageContent}</p>
+            <div className="upload-modal-actions">
+              <button
+                className="upload-krakpi-sidebar"
+                onClick={() => setMessageModalOpen(false)}
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
       {uploadModalOpen && (
         <div className="notification-modal-wrapper">

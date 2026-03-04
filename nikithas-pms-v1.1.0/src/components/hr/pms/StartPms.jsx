@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaSearch, FaHome } from "react-icons/fa";
 import axios from "axios";
@@ -16,12 +16,14 @@ export default function StartPms() {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState("");
   const [team, setTeam] = useState([]);
   const [sortOrder, setSortOrder] = useState("asc");
+  /* eslint-disable no-unused-vars */
   const [hasServerError, setHasServerError] = useState(false);
+  /* eslint-enable no-unused-vars */
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  const fetchEmployees = async () => {
+  const fetchEmployees = useCallback(async () => {
     try {
       const response = await axios.get(
         `${baseUrl}/api/v1/pms/hr/employee-with-pms-initiated`,
@@ -38,7 +40,7 @@ export default function StartPms() {
       console.error("Error fetching employee data:", error.message);
       setHasServerError(true);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     fetchEmployees();
@@ -46,7 +48,7 @@ export default function StartPms() {
       fetchEmployees();
     }, 2000);
     return () => clearInterval(intervalId);
-  }, []);
+  }, [fetchEmployees]);
 
   const entriesPerPage = 10;
 

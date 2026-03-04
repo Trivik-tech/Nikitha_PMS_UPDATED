@@ -13,9 +13,9 @@ import { decrypt } from "../../utils/encryptUtils";
 const EmployeeInfo = () => {
   const [employeeData, setEmployeeData] = useState(null);
   const [loading, setLoading] = useState(true);
- const { id: encodedId } = useParams();
+  const { id: encodedId } = useParams();
   const id = decrypt(encodedId);
-  const token=localStorage.getItem('token')
+  const token = localStorage.getItem('token')
 
   const formatDateToDDMMYYYY = (dateString) => {
     if (!dateString) return "-";
@@ -31,12 +31,12 @@ const EmployeeInfo = () => {
     const loadEmployeeData = async () => {
       try {
         const response = await axios.get(
-          `${baseUrl}/api/v1/pms/hr/get-employee/${id}`,{
-            headers:{
-              Authorization:`Bearer ${token}`
-            }
-
+          `${baseUrl}/api/v1/pms/hr/get-employee/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
           }
+
+        }
         );
 
         const data = response.data;
@@ -54,7 +54,7 @@ const EmployeeInfo = () => {
     };
 
     loadEmployeeData();
-  }, [id]);
+  }, [id, token]);
 
   if (loading) {
     return <Loader />;

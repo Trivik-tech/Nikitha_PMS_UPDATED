@@ -44,7 +44,6 @@ import java.util.Set;
  * </p>
  */
 @RequestMapping("/api/v1/pms/manager")
-@CrossOrigin(origins = "http://localhost:3000")
 public interface ManagerController {
 
         @PostMapping("/register-manager")
